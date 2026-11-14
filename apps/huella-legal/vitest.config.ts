@@ -6,6 +6,13 @@ process.env.NUXT_PUBLIC_TRACKERS_GOOGLE_ANALYTICS_ID = "";
 
 export default vitest.createNuxtConfig({
     root: import.meta.dirname,
+    nodeSpecs: [
+        "app/utils/coverHeight.spec.ts",
+        "app/utils/initials.spec.ts",
+        "layers/articles/app/utils/bylineAuthors.spec.ts",
+        "layers/interest/app/{schemas,utils}/**/*.spec.ts",
+        "layers/tracking/app/utils/consentTranslation.spec.ts",
+    ],
     setupFiles: ["./vitest.setup.ts"],
     // None of these ship: Storybook mocks; Playwright covers pages
     coverageExclude: ["**/app/pages/**", "**/__mocks__/**"],

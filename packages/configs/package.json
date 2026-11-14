@@ -33,6 +33,7 @@
     "@playwright/test": "catalog:",
     "@types/node": "catalog:",
     "@vitest/eslint-plugin": "^1.6.18",
+    "@vue/test-utils": "^2.4.11",
     "eslint": "catalog:",
     "eslint-plugin-better-tailwindcss": "^4.10.0",
     "eslint-plugin-format": "^2.0.1",
@@ -49,13 +50,17 @@
   },
   "peerDependencies": {
     "@nuxt/test-utils": "^4.3.2",
-    "@playwright/test": "catalog:"
+    "@playwright/test": "catalog:",
+    "@vue/test-utils": "^2.4.11"
   },
   "peerDependenciesMeta": {
     "@nuxt/test-utils": {
       "optional": true
     },
     "@playwright/test": {
+      "optional": true
+    },
+    "@vue/test-utils": {
       "optional": true
     }
   }

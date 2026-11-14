@@ -43,11 +43,11 @@ const setUp = async () => {
 
 describe("FormChallenge", () => {
     beforeEach(() => {
-        vi.useRealTimers();
         vi.clearAllMocks();
     });
 
     afterEach(() => {
+        vi.useRealTimers();
         document.body.replaceChildren();
     });
 
