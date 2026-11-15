@@ -50,7 +50,7 @@ export default defineNuxtConfig({
 
     $production: {
         hooks: {
-            "build:manifest"(manifest) {
+            "build:manifest": (manifest) => {
                 for (const chunk of Object.values(manifest)) {
                     chunk.prefetch = false;
                     if (chunk.resourceType === "script") chunk.preload = false;
@@ -96,7 +96,8 @@ export default defineNuxtConfig({
                 "X-Content-Type-Options": "nosniff",
                 "X-Frame-Options": "DENY",
                 "Referrer-Policy": "strict-origin-when-cross-origin",
-                "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+                "Permissions-Policy":
+                    "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
                 "Content-Security-Policy":
                     "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'",
             },

@@ -5,9 +5,9 @@ them in two arrays: `shared`, which [`node.ts`](../node.ts) and [`vue.ts`](../vu
 and `vueOnly`, which only `vue.ts` adds. A rule belongs in this folder when it
 applies to **every** project the package touches; a rule for one flavour goes in the factory that
 composes it instead — see the [package README](../../../README.md#-what-the-eslint-factories-bundle).
-`routeMeta.ts`, `tailwind.ts` and `layerBoundaries.ts` are composed by no factory: a project opts in
-by appending `eslint.routeMeta`, `eslint.tailwind(entryPoint)` or `eslint.layerBoundaries({ cores, kit })`
-after its factory.
+`routeMeta.ts`, `tailwind.ts`, `layerBoundaries.ts` and `pureDomain.ts` are composed by no factory: a
+project opts in by appending `eslint.routeMeta`, `eslint.tailwind(entryPoint)`,
+`eslint.layerBoundaries({ cores, kit })` or `eslint.pureDomain` after its factory.
 
 A rule no plugin ships lives in [`../rules`](../rules) as a `monorepo/<name>` rule with a
 `RuleTester` spec beside it, and a file here switches it on. Every file registers the same plugin
@@ -21,6 +21,7 @@ different objects under one name meet on a file.
 | [`index.ts`](./index.ts) | The `shared` and `vueOnly` lists the factories spread, in order. A plugin preset that needs no local customization is composed straight here instead of getting its own file |
 | [`boundaries.ts`](./boundaries.ts) | `@nx/enforce-module-boundaries` and the `depConstraints` table — the enforced copy of the Nx tag table; the readable one is the [root README](../../../../../README.md#-architecture--boundaries) |
 | [`coreIsolation.ts`](./coreIsolation.ts) | `no-restricted-imports` under `**/src/core/**`, keeping the framework-agnostic half of `content`/`i18n` free of the Nuxt and Nitro runtime — the list is in the [package README](../../../README.md#-what-the-eslint-factories-bundle) |
+| [`pureDomain.ts`](./pureDomain.ts) | `no-restricted-imports` and `no-restricted-globals` under `**/domain/**`, keeping a `domain/` folder free of `fs`, subprocesses, `process`, `@clack/prompts` and `adapters/`. Opt-in, appended by `infrastructure/scripts` |
 | [`layerIsolation.ts`](./layerIsolation.ts) | `no-restricted-imports` under `app/` and `server/`, keeping Nuxt's browser-facing layers free of the Node-only `tools/` layer |
 | [`constTables.ts`](./constTables.ts) | `monorepo/lookup-table-shape`: `constTables` for `**/*.ts` and `constTablesVue` for `**/*.vue` (Vue configs only). A module-scope lookup table keyed by a closed union is `UPPER_SNAKE = { … } as const satisfies Record<K, V>` — never annotated, never `Partial`. `Record<string, …>` and `Record<number, …>` are left alone |
 | [`propsInterface.ts`](./propsInterface.ts) | `monorepo/props-shape` under `**/*.vue`: `defineProps<Props>()` with `Props` declared as a separate `interface` rather than an inline type literal, and no optional prop defaulted to `undefined`. Vue configs only |
@@ -36,6 +37,7 @@ different objects under one name meet on a file.
 | [`ternaries.ts`](./ternaries.ts) | Core `no-nested-ternary` everywhere but specs |
 | [`sortCompare.ts`](./sortCompare.ts) | `@typescript-eslint/require-array-sort-compare` with string arrays included, for `.ts` outside specs, stories and `.storybook/` — the files every flavour type-checks |
 | [`ignores.ts`](./ignores.ts) | `baseIgnores` — the glob list every factory feeds into ESLint's `ignores` |
+| [`configFiles.ts`](./configFiles.ts) | Turns the type-aware rules off for a project's root `*.config.ts`, which sits outside its tsconfig. Every other rule still lints it, including the inline modules and hooks in a `nuxt.config.ts`. Last in `shared`, so nothing after it turns a type-aware rule back on |
 | [`jsonc.ts`](./jsonc.ts) | `eslint-plugin-jsonc`'s `sort-keys`, scoped to `**/projects/*/*.json` so the TMS locale files stay diffable |
 | [`format.ts`](./format.ts) | `format/prettier` with the Prettier options inline: `format` for scripts, `formatVue` for `**/*.vue` (Vue configs only), which also turns off every `vue/*` rule of type `layout` |
 | [`console.ts`](./console.ts) | `noConsole`: `no-console` at `error` for everything but `**/*.spec.ts`, where the Vitest console guard takes over |

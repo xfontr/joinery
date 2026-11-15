@@ -6,6 +6,7 @@ import {
     createNuxtConfig,
     createVueConfig,
     layerBoundaries,
+    pureDomain,
     routeMeta,
     tailwind,
 } from "./index.ts";
@@ -55,6 +56,24 @@ describe("eslint factories", () => {
         expect(await importBans(config, "e2e/home.spec.ts")).toContain("@playwright/test");
     });
 
+    it("lints a project's root config file, with only the rules that need its types turned off", async () => {
+        for (const rules of [
+            await resolve(createNodeConfig(), "vitest.config.ts"),
+            await resolve(createNuxtConfig(), "nuxt.config.ts"),
+        ]) {
+            expect(severity(rules?.["format/prettier"])).toBe(2);
+            expect(severity(rules?.["@typescript-eslint/no-floating-promises"])).toBe(0);
+        }
+    });
+
+    it("bans I/O in domain/ only, leaving adapters and specs free to use it", async () => {
+        const config = [...createNodeConfig(), pureDomain];
+
+        expect(await importBans(config, "src/map/domain/render.ts")).toContain("node:fs");
+        expect(await importBans(config, "src/map/adapters/files.ts")).toBeUndefined();
+        expect(await importBans(config, "src/map/domain/render.spec.ts")).toBeUndefined();
+    });
+
     it("lets specs log and build HTML, and nothing else", async () => {
         const config = createNodeConfig();
         const source = await resolve(config, "src/report.ts");
@@ -64,11 +83,6 @@ describe("eslint factories", () => {
         expect(severity(source?.["no-eval"])).toBe(2);
         expect(spec?.["no-console"]).toBeUndefined();
         expect(spec?.["no-eval"]).toBeUndefined();
-    });
-
-    it("keeps config files unlinted", async () => {
-        expect(await resolve(createNodeConfig(), "vitest.config.ts")).toBeUndefined();
-        expect(await resolve(createNuxtConfig(), "eslint.config.ts")).toBeUndefined();
     });
 
     it("applies the Vue rules only to the Vue flavours, and route meta only when appended", async () => {
