@@ -18,6 +18,7 @@ describe("package entrypoint", () => {
             "MisconfiguredVendorError",
             "NotFoundError",
             "OfetchHttpClient",
+            "PageNotFoundError",
             "TERM_RESOURCES",
             "UndefinedResourceError",
             "UndefinedVendorError",

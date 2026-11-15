@@ -141,9 +141,9 @@ the traps in it.
   the next version.
 - Pre-push runs lint, test and typecheck **in the working tree**, not the pushed commits, so an
   uncommitted fix can pass a push whose commits are red. Only the `TODO`/`FIXME` scan is range-based.
-- CI runs those three **plus `build`** and `pnpm docs:map --check`, so a green push is not yet a
-  green pipeline — `apps/huella-legal` typechecks on build, which is where most of that difference
-  shows up. The `--check` also runs in pre-commit.
+- CI runs those three **plus `build`**, `pnpm docs:map --check` and `pnpm invariants:check`, so a
+  green push is not yet a green pipeline — `apps/huella-legal` typechecks on build, which is where
+  most of that difference shows up. Both checks also run in pre-commit.
 - A fresh clone gets no hooks until `pnpm quick-start` runs, because lifecycle scripts are banned
   and `husky` has no `prepare` script to install itself.
 

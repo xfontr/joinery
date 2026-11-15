@@ -17,14 +17,7 @@ jobs:
                   persist-credentials: false
                   fetch-depth: 0
 
-            - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
-
-            - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-              with:
-                  node-version-file: .nvmrc
-                  cache: pnpm
-
-            - run: pnpm install --frozen-lockfile --ignore-scripts
+            - uses: ./.github/actions/install
 
             - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
               with:
@@ -34,6 +27,12 @@ jobs:
             # once, so "nothing changed here" is never a reason to skip it. Adding a script, hook,
             # workflow or skill without re-rendering fails this step.
             - run: pnpm docs:map --check
+
+            # Not affected-scoped either. The version check needs a base, since on a push to master
+            # a release commit moves every version.
+            - run: pnpm invariants:check ${INVARIANTS_BASE:+--base="$INVARIANTS_BASE"}
+              env:
+                  INVARIANTS_BASE: ${{ github.event_name == 'pull_request' && env.NX_BASE || '' }}
 
             - run: pnpm exec nx affected --base="$NX_BASE" --head="$NX_HEAD" -t lint typecheck test build
               env:
@@ -52,14 +51,7 @@ jobs:
                   persist-credentials: false
                   fetch-depth: 0
 
-            - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
-
-            - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-              with:
-                  node-version-file: .nvmrc
-                  cache: pnpm
-
-            - run: pnpm install --frozen-lockfile --ignore-scripts
+            - uses: ./.github/actions/install
 
             - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
               with:

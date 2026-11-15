@@ -20,7 +20,7 @@ const { getCategories } = (await import("./categories")) as unknown as {
     getCategories: (event: unknown) => Promise<Category[]>;
 };
 
-const CIVIL = fakeTerm({ name: "Derecho &amp; civil", description: "Personas y contratos." });
+const CIVIL = fakeTerm({ name: "Derecho & civil", description: "Personas y contratos." });
 const PENAL = fakeTerm({ name: "Derecho penal", description: "Teoría del delito." });
 
 describe("getCategories", () => {

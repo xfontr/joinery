@@ -3,7 +3,7 @@ import { ofetch } from "ofetch";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { OfetchHttpClient } from "#core/adapters/clients/OfetchHttpClient";
 import type { Entry, Term } from "#core/domain/content";
-import { NotFoundError, UpstreamError } from "#core/domain/errors";
+import { NotFoundError, PageNotFoundError } from "#core/domain/errors";
 import createProvider from "#core/registry";
 import { fakeEntry } from "./factories";
 import { wordpressHandlers } from "./wordpress";
@@ -26,6 +26,7 @@ const POSTS: Entry[] = ["1", "2", "3"].map((id) => ({
     title: `Post ${id}`,
     excerpt: { format: "html", value: `<p>Summary ${id}</p>` },
     body: { format: "html", value: `<p>Body ${id}</p>` },
+    wordCount: 2,
     publishedAt: "2026-02-01T09:00:00Z",
     updatedAt: "2026-02-02T09:00:00Z",
     image: { id: "40", url: "https://cms.test/cover.jpg", alt: "Cover", width: 1200, height: 630 },
@@ -47,6 +48,7 @@ const BARE_PAGE: Entry = {
     slug: "about",
     title: "About",
     body: { format: "html", value: "<p>About us</p>" },
+    wordCount: 2,
     terms: [],
     authors: [],
 };
@@ -146,11 +148,11 @@ describe("the fake WordPress", () => {
         });
     });
 
-    it("refuses a page past the end with a 400, as WordPress does", async () => {
+    it("refuses a page past the end the way WordPress does, which the provider reads as a 404", async () => {
         const failure = (await provider()).listEntries("posts", { page: 9 });
 
-        await expect(failure).rejects.toBeInstanceOf(UpstreamError);
-        await expect(failure).rejects.toMatchObject({ upstreamStatus: 400 });
+        await expect(failure).rejects.toBeInstanceOf(PageNotFoundError);
+        await expect(failure).rejects.toMatchObject({ statusCode: 404 });
     });
 
     it("answers a resource it was given no content for with a 404", async () => {

@@ -150,7 +150,8 @@ Node types even in a package that otherwise doesn't.
   array, call or expression that Prettier would wrap fails lint until `--fix` wraps it; a line it
   cannot break — a long string, comment, identifier or template literal — still passes. Prettier
   also owns `.vue` templates, so every `vue/*` layout rule is off rather than fighting it into a
-  `--fix` loop. `*.config.ts` files sit in `baseIgnores`, so they are never formatted
+  `--fix` loop. A project's root `*.config.ts` is formatted and linted like any file, with only
+  the type-aware rules off, since it sits outside the project's tsconfig
 - `eslint-plugin-prefer-arrow-functions` plus core `prefer-arrow-callback`, from
   [`lib/arrowFunctions.ts`](./src/eslint/lib/arrowFunctions.ts) — every `function` declaration,
   expression and object method becomes an arrow under `--fix`. The rule leaves a function alone
@@ -239,6 +240,12 @@ Node types even in a package that otherwise doesn't.
   object literal holding `tags` and `summary`, since without one the route still appears in
   Nitro's OpenAPI document, untagged and undescribed. The call sits after the `export default`
   handler, so a route reads handler first. `apps/huella-legal` opts in
+- `no-restricted-imports` under `**/domain/**`, from [`lib/pureDomain.ts`](./src/eslint/lib/pureDomain.ts) —
+  in no factory; a project opts in with `[...eslint.createNodeConfig(), eslint.pureDomain]`. A
+  `domain/` file imports no `fs`, subprocess, `process` or `@clack/prompts`, nothing from
+  `adapters/`, and reads no `process` global, so its specs need no mocks. It sets
+  `no-restricted-imports` with its own options, so it replaces `coreIsolation` on any file both
+  reach; append it only where no `src/core/` holds a `domain/`. `infrastructure/scripts` opts in
 - `monorepo/layer-boundaries`, from [`lib/layerBoundaries.ts`](./src/eslint/lib/layerBoundaries.ts) —
   in no factory; a Nuxt app split into layers opts in with
   `eslint.layerBoundaries({ cores: [...], kit: [...] })`. `cores` names the layers every feature may

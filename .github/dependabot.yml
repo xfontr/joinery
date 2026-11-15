@@ -2,7 +2,10 @@ version: 2
 
 updates:
     - package-ecosystem: github-actions
-      directory: /
+      # The composite actions pin their own actions, and `/` alone scans only .github/workflows.
+      directories:
+          - /
+          - /.github/actions/*
       schedule:
           interval: weekly
       cooldown:

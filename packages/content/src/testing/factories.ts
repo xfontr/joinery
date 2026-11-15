@@ -1,4 +1,5 @@
 import { fakerES } from "@faker-js/faker";
+import { countWords } from "#core/adapters/providers/wordpress/WordpressText";
 import type { Asset, Author, Entry, Term } from "#core/domain/content";
 
 export const faker = fakerES;
@@ -43,7 +44,7 @@ export const fakeEntry = (overrides: Partial<Entry> = {}): Entry => {
     const title = faker.lorem.sentence({ min: 3, max: 8 }).replace(/\.$/, "");
     const publishedAt = faker.date.past({ years: 2 });
 
-    return {
+    const entry: Entry = {
         id: id(),
         slug: faker.helpers.slugify(title).toLowerCase(),
         title,
@@ -58,4 +59,7 @@ export const fakeEntry = (overrides: Partial<Entry> = {}): Entry => {
         authors: [fakeAuthor()],
         ...overrides,
     };
+
+    // Counted from whichever body won, so an overridden body never carries the default's count
+    return { wordCount: countWords(entry.body.value), ...entry };
 };

@@ -17,6 +17,8 @@ export class UpstreamError extends ContentError {
     constructor(
         public readonly upstreamStatus: number | undefined,
         cause?: unknown,
+        /** The vendor's error body, for a provider to recognise its own error codes in. */
+        public readonly body?: unknown,
     ) {
         super(
             upstreamStatus && PASSTHROUGH_STATUSES.has(upstreamStatus) ? upstreamStatus : 502,
@@ -68,5 +70,11 @@ export class MalformedQueryError extends ContentError {
 export class NotFoundError extends ContentError {
     constructor(resource: string, slug: string) {
         super(404, `No "${resource}" found with slug "${slug}"`);
+    }
+}
+
+export class PageNotFoundError extends ContentError {
+    constructor(resource: string, page: number) {
+        super(404, `"${resource}" has no page ${page}`);
     }
 }

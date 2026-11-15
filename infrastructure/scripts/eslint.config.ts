@@ -1,3 +1,3 @@
 import { eslint } from "@monorepo/configs";
 
-export default eslint.createNodeConfig();
+export default [...eslint.createNodeConfig(), eslint.pureDomain];

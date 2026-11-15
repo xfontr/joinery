@@ -32,7 +32,7 @@ and are documented once in the [root README](../README.md#-getting-started).
 | `pnpm worktree:prepare` | [`package.json`](../package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
 | `pnpm docs:drift` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm docs:map` | [`package.json`](../package.json) | [`README.md`](../README.md) |
-| `pnpm package:check` | [`package.json`](../package.json) | [`README.md`](../README.md) |
+| `pnpm invariants:check` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm usage:flush` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm env:sync` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm workflow:setup` | [`package.json`](../package.json) | [`docs/workflows/README.md`](../docs/workflows/README.md) |
@@ -57,6 +57,7 @@ and are documented once in the [root README](../README.md#-getting-started).
 | `pnpm exec nx editor @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
 | `pnpm exec nx editor:dev @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
 | `pnpm exec nx coverage @monorepo/scripts` | [`infrastructure/scripts/package.json`](../infrastructure/scripts/package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
+| `pnpm exec nx cli @monorepo/scripts` | [`infrastructure/scripts/package.json`](../infrastructure/scripts/package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
 | `pnpm exec nx serve @monorepo/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
 | `pnpm exec nx docker:up @monorepo/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
 | `pnpm exec nx docker:down @monorepo/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
