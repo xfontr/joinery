@@ -35,24 +35,26 @@ stages:
     title: After launch
     goal: Close the effort; what is left is ordinary maintenance.
 
-# A project adds one extra per page, naming one of these with `type:`; the feature inventory lists them.
+# A project adds one extra per page template, custom page and blog, naming one of these with `type:`;
+# the feature inventory lists them, and a content page is not an extra of its own.
 types:
   - id: page-template
     stage: build
     title: Page template
-    complexity: 2
+    complexity: 5
     dependsOn: [standard-pages]
-    summary: A page on the shared page template, its content from the content source.
+    summary: One layout that several content pages share, such as legal and about pages; a page on it is only its slug in the content source.
     reuse: { plan: method, from: apps/huella-legal/layers/reading }
     doneWhen:
-      - It renders at its old URL from the content source, on the shared page template.
+      - Every page the feature inventory puts on it renders at its old URL from the content source.
+      - Adding another page to it is a slug, with no new component or route.
 
   - id: custom-page
     stage: build
     title: Custom page
     complexity: 5
     dependsOn: [component-kit, ci-deploy]
-    summary: A page with a layout of its own, built from the kit to its approved design.
+    summary: A page written in code rather than read from content, such as a landing, built from the kit to its approved design.
     reuse: { plan: new }
     doneWhen:
       - It matches its approved design at 390, 768 and 1280 px on a preview deploy.
@@ -135,7 +137,8 @@ capabilities:
     reuse: { plan: new }
     doneWhen:
       - A list of every page and feature the old site shows, each marked keep, drop or replace.
-      - Every kept page names its page type, as an extra in the project file.
+      - Every kept page names the page template it renders on, or is a custom page or a blog.
+      - Each page template, custom page and blog is an extra in the project file; a page on a template is not.
     lessons:
       - text: Comments, the about page, the subscription-confirmed page and hidden categories were all found late, some after launch.
         issues: [324, 328, 400, 392]
@@ -143,7 +146,7 @@ capabilities:
       - title: "[SPIKE] Inventory every page and feature of the old site"
         criteria:
           - Each item is marked keep, drop or replace, and every kept one maps to a capability.
-          - Every kept page is a page template or a custom page, added under the project's `extras` with its `type`.
+          - Every kept page names its page template, or is a custom page or a blog; each template, custom page and blog is under the project's `extras` with its `type`.
 
   - id: integrations-inventory
     stage: discovery
@@ -429,13 +432,13 @@ capabilities:
 
   - id: standard-pages
     stage: build
-    title: Standard pages
-    complexity: 5
+    title: Page shell
+    complexity: 3
     dependsOn: [component-kit, ci-deploy]
-    summary: The shared page layout, error pages and confirmation landings; each kept page is an extra of a page type.
+    summary: The route that finds a page by its slug in the content source, and the 404 and error pages; layouts are page templates.
     reuse: { plan: method, from: apps/huella-legal/layers/reading }
     doneWhen:
-      - The shared layout renders a page from the content source at its slug, confirmation landings included.
+      - A page from the content source renders at its slug on the page template the code assigns it, confirmation landings included.
       - The 404 and error pages render inside the shell.
     lessons:
       - text: The about page and the newsletter confirmation page were not in the plan.

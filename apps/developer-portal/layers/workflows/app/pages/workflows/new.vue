@@ -271,8 +271,8 @@ const STEPS = [
         id: "pages",
         title: "Pages",
         icon: "i-lucide-files",
-        question: "Which pages does it have?",
-        hint: "Add each page by the work it takes; each becomes a block with its own estimate and waits on what its type needs.",
+        question: "Which page templates, custom pages and blogs does it have?",
+        hint: "Add a layout once, not each page on it: the legal and about pages on one layout are one page template. Each becomes a block with its own estimate.",
     },
     {
         id: "features",

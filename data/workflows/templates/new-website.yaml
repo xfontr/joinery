@@ -36,24 +36,26 @@ stages:
     title: After launch
     goal: Close the effort; what is left is ordinary maintenance.
 
-# A project adds one extra per page, naming one of these with `type:`; the site brief lists them.
+# A project adds one extra per page template, custom page and blog, naming one of these with `type:`;
+# the site brief lists them, and a content page is not an extra of its own.
 types:
   - id: page-template
     stage: build
     title: Page template
-    complexity: 2
+    complexity: 5
     dependsOn: [standard-pages]
-    summary: A page on the shared page template, its content from the content source.
+    summary: One layout that several content pages share, such as legal and about pages; a page on it is only its slug in the content source.
     reuse: { plan: method, from: apps/huella-legal/layers/reading }
     doneWhen:
-      - It renders from the content source on the shared page template, on a preview deploy.
+      - Every page the site brief puts on it renders from the content source, on a preview deploy.
+      - Adding another page to it is a slug, with no new component or route.
 
   - id: custom-page
     stage: build
     title: Custom page
     complexity: 5
     dependsOn: [component-kit, ci-deploy]
-    summary: A page with a layout of its own, built from the kit to its approved design.
+    summary: A page written in code rather than read from content, such as a landing, built from the kit to its approved design.
     reuse: { plan: new }
     doneWhen:
       - It matches its approved design at 390, 768 and 1280 px on a preview deploy.
@@ -101,7 +103,8 @@ capabilities:
     doneWhen:
       - The audience, and the page they land on most, are written down.
       - Every page and feature is listed, each mapped to a capability or marked out of scope.
-      - Every page names its page type, as an extra in the project file.
+      - Every page names the page template it renders on, or is a custom page or a blog.
+      - Each page template, custom page and blog is an extra in the project file; a page on a template is not.
     lessons:
       - text: Comments, the about page and the subscription-confirmed page were all found late, some after launch.
         issues: [324, 328, 400]
@@ -401,13 +404,13 @@ capabilities:
 
   - id: standard-pages
     stage: build
-    title: Standard pages
-    complexity: 5
+    title: Page shell
+    complexity: 3
     dependsOn: [component-kit, ci-deploy]
-    summary: The about page, the legal pages, the error pages and any landing a form sends readers to.
+    summary: The route that finds a page by its slug in the content source, and the 404 and error pages; layouts are page templates.
     reuse: { plan: method, from: apps/huella-legal/layers/reading }
     doneWhen:
-      - Every page the site brief lists renders inside the shell, confirmation landings included.
+      - A page from the content source renders at its slug on the page template the code assigns it, confirmation landings included.
       - The 404 and error pages render inside the shell.
     lessons:
       - text: The about page and the newsletter confirmation page were not in the plan.
