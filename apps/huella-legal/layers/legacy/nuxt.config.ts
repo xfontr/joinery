@@ -21,5 +21,12 @@ export default defineNuxtConfig({
         "/post-sitemap.xml": moved("/sitemap.xml"),
         "/page-sitemap.xml": moved("/sitemap.xml"),
         "/author-sitemap.xml": moved("/sitemap.xml"),
+        "/empieza-aqui/": moved("/sobre/"),
+        "/recursos/": moved("/publicaciones/"),
+        "/recursos/conecta/": moved("/contacto/"),
+        "/chupitos-de-derecho/": moved("/publicaciones/"),
+        "/listado-de-preguntas-y-respuestas/": moved("/publicaciones/"),
+        "/consulta-legal-gratis/": moved("/contacto/"),
+        "/suscripcion/": moved("/"),
     },
 });
