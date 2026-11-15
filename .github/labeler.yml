@@ -4,6 +4,9 @@ app:developer-portal:
 app:huella-legal:
     - changed-files:
           - any-glob-to-any-file: apps/huella-legal/**
+app:marina-roustan:
+    - changed-files:
+          - any-glob-to-any-file: apps/marina-roustan/**
 package:configs:
     - changed-files:
           - any-glob-to-any-file: packages/configs/**
