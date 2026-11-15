@@ -21,40 +21,7 @@ if [ "$rel" = "packages/configs/src/eslint/lib/boundaries.ts" ]; then
     exit 2
 fi
 
-case "$rel" in
-    packages/*/package.json|apps/*/package.json|infrastructure/*/package.json)
-        # Lifecycle scripts are banned workspace-wide (CLAUDE.md), not just under packages/*: every
-        # workflow that installs uses --ignore-scripts, so one works locally and silently does
-        # nothing where it matters, regardless of which root it's added under
-        lifecycle=$(jq -r '.scripts // {} | keys[] | select(. == "postinstall" or . == "prepare" or . == "prepublish" or . == "prepublishOnly")' "$file" 2>/dev/null | tr '\n' ' ')
-
-        if [ -n "$lifecycle" ]; then
-            echo "$rel declares: $lifecycle" >&2
-            echo "Lifecycle scripts are banned here: CI installs with --ignore-scripts, so they do" >&2
-            echo "nothing there while still working locally." >&2
-            exit 2
-        fi
-
-        # The no-build-step rule is packages/*-only: apps and infrastructure projects are consumed
-        # directly, never published, so they're allowed a real build script
-        case "$rel" in
-            packages/*/package.json)
-                build=$(jq -r '.scripts // {} | keys[] | select(. == "build")' "$file" 2>/dev/null)
-
-                if [ -n "$build" ]; then
-                    echo "$rel declares a build script." >&2
-                    echo "packages/* export raw TypeScript/Vue source — no build script, no dist/, no main/types." >&2
-                    exit 2
-                fi
-                ;;
-            *) ;;
-        esac
-        ;;
-    *) ;;
-esac
-
-# A package.json git has never seen means a new project, and step 5 of new-package is the one skipped.
-# One it has seen before gets a different check: `version` is nx release's alone to move
+# A package.json git has never seen means a new project, and new-package's step 5 is the one skipped
 case "$rel" in
     packages/*/package.json|apps/*/package.json|infrastructure/*/package.json)
         if ! git -C "$root" ls-files --error-unmatch "$rel" >/dev/null 2>&1; then
@@ -65,13 +32,15 @@ case "$rel" in
             echo "  3. the tag table and the workspace-layout block in README.md" >&2
             exit 2
         fi
+        ;;
+    *) ;;
+esac
 
-        old_version=$(git -C "$root" show "HEAD:$rel" 2>/dev/null | jq -r '.version // empty')
-        new_version=$(jq -r '.version // empty' "$file" 2>/dev/null)
-        if [ -n "$old_version" ] && [ "$old_version" != "$new_version" ]; then
-            echo "$rel's version moved from $old_version to $new_version by hand." >&2
-            echo "nx release derives version from Conventional Commits — never hand-edit it, here or" >&2
-            echo "in any CHANGELOG.md." >&2
+# The bans themselves live in one gate that pre-commit and CI also run.
+case "$rel" in
+    package.json|packages/*/package.json|apps/*/package.json|infrastructure/*/package.json)
+        if ! report=$(cd "$root" && MONOREPO_GIT_HOOK=1 pnpm --silent invariants:check --base=HEAD 2>&1); then
+            echo "$report" >&2
             exit 2
         fi
         ;;

@@ -8,12 +8,12 @@ vi.mock("../../shared/adapters/git.ts", () => ({
     at: (...parts: string[]) => join(root.value, ...parts),
 }));
 
-import { readPackages } from "./files.ts";
+import { readManifests, readPackages } from "./files.ts";
 
 let directory: string;
 
 beforeEach(() => {
-    directory = mkdtempSync(join(tmpdir(), "package-contracts-files-"));
+    directory = mkdtempSync(join(tmpdir(), "invariants-files-"));
     root.value = directory;
     mkdirSync(join(directory, "packages"), { recursive: true });
 });
@@ -47,5 +47,18 @@ describe("package manifest filesystem adapter", () => {
         expect(packages).toHaveLength(2);
         expect(packages.find((pkg) => pkg.directory === "malformed")?.readError).toBeDefined();
         expect(packages.find((pkg) => pkg.directory === "missing")?.readError).toBeDefined();
+    });
+
+    it("reads the root manifest and every project's, skipping folders that are not projects", () => {
+        writeFileSync(join(directory, "package.json"), '{"name":"monorepo"}');
+        mkdirSync(join(directory, "apps", "web"), { recursive: true });
+        mkdirSync(join(directory, "apps", "scratch"), { recursive: true });
+        mkdirSync(join(directory, "infrastructure"), { recursive: true });
+        writeFileSync(join(directory, "apps", "web", "package.json"), "{}");
+
+        expect(readManifests().map((source) => source.path)).toEqual([
+            "package.json",
+            "apps/web/package.json",
+        ]);
     });
 });

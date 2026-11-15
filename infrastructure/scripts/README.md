@@ -24,7 +24,7 @@ src/
   workflow/         pnpm workflow:setup | workflow:sync | workflow:next | workflow:file | workflow:drop — set up, snapshot, list, file, drop
   drift/            pnpm docs:drift — warn when a project's docs may be stale, offer to file an issue
   map/              pnpm docs:map — render docs/FEATURES.md, the index of everything this repo can do
-  package-contracts/ pnpm package:check — validate package metadata and raw-source export contracts
+  invariants/       pnpm invariants:check — the repo rules every author is held to, run by hooks and CI
   usage/            pnpm usage:flush — move recorded script runs into data/telemetry/, the committed logs
   coverage-report/  pnpm test:coverage (root) — merge every project's coverage-final.json into one report
   shared/           whatever more than one script needs, laid out the same way
@@ -52,7 +52,7 @@ domain/      pure functions and their types. No fs, no subprocess, no clack, no 
 | [`workflow`](./src/workflow/README.md) | `pnpm workflow:setup`, `workflow:sync`, `workflow:next`, `workflow:file`, `workflow:drop` | Creating a new project's milestone and labels, snapshotting a workflow project's milestone issues with their blocked-by links and tagged commits, listing what is ready to take, filing a block of the map as linked tickets, and closing the untouched ones of an abandoned project |
 | [`drift`](./src/drift/README.md) | `pnpm docs:drift` | Warning when a changed project's docs look stale, and offering to file it |
 | [`map`](./src/map/README.md) | `pnpm docs:map` | Rendering the feature index, and asserting in CI that it's current |
-| [`package-contracts`](./src/package-contracts/README.md) | `pnpm package:check` | Validating package metadata, export targets and peer metadata without packing |
+| [`invariants`](./src/invariants/README.md) | `pnpm invariants:check` | Failing on a lifecycle script, a package build step, a hand-moved version or a broken package contract, and warning when the README's tag table or layout drifts |
 | [`usage`](./src/usage/README.md) | `pnpm usage:flush` | Moving the runs every script records into the committed log; the pre-commit hook runs it |
 | [`coverage-report`](./src/coverage-report/README.md) | `pnpm test:coverage` (root) | Merging every project's coverage into one browsable HTML report |
 
@@ -90,8 +90,10 @@ Two things that follow from it and are worth saying out loud:
   is answerable from a directory listing, and a `domain/` file that reaches for `node:fs` is in the
   wrong folder rather than merely doing something questionable.
 
-The direction is convention, not lint, today — the folders make it a generic glob rather than a
-hardcoded file list, so enforcing it is now cheap. See
+The `domain/` half is lint:
+[`eslint.pureDomain`](../../packages/configs/src/eslint/lib/pureDomain.ts) fails a `domain/` file
+that imports `fs`, a subprocess, `process`, `@clack/prompts` or an `adapters/` file. The rest of the
+direction is still convention. See
 [`0004-scripts-architecture.md`](../../docs/decisions/0004-scripts-architecture.md) for what was
 weighed on the way here, including the flat layout this replaced.
 
@@ -135,6 +137,12 @@ Entry points run straight with `node`, no build step and no `tsx`/`ts-node`: thi
 engines range already strips types. Node's stripping does no resolution rewriting, so **internal
 imports use the explicit `.ts` extension** — `./gh.ts`, not `./gh`.
 
+Every script line, here and in the root `package.json`, runs its entry through this package's `cli`
+script, `pnpm --silent cli src/<name>/index.ts`. `cli` is the one place the Node flags live:
+`--disable-warning=ExperimentalWarning` keeps Node 23's type-stripping warning out of every
+output, and a flag added later reaches every script at once. The entry path stays `argv[1]`, which
+is what usage recording names the script after.
+
 ## ✅ Tests
 
 `test` still passes with `--passWithNoTests`, because most of what's here is prompts and `gh`
@@ -163,5 +171,4 @@ and the branch is left pushed with a PR open but nothing armed to merge it.
 | Later need | What changes |
 | --- | --- |
 | A script that isn't a one-shot CLI (a watcher, a server) | It doesn't belong here — `infrastructure/` gets its own project for it, the way [`translations`](../translations/README.md) has one |
-| Enforcing the layer rule instead of stating it | A `no-restricted-imports` block over `src/*/domain/**` in this package's own `eslint.config.ts`, failing lint the moment a domain file imports `node:*` or `@clack/prompts`. Deferred because it costs this package the thin-wrapper `eslint.config.ts` every other project has |
 | Running one of the `gh` scripts in CI | [`ci.yml`](../../.github/workflows/ci.yml) already runs `docs:map --check`, which touches only git and the filesystem. Anything calling `gh` needs `GH_TOKEN` in the job env — `--ignore-scripts` is not the obstacle, since none of these is a lifecycle hook |

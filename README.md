@@ -116,7 +116,7 @@ simply never fire, while the portal has no current coverage or derived docs to s
 [`apps/huella-legal`](./apps/huella-legal/README.md) for the env vars it reads.
 
 The everyday commands. [`docs/FEATURES.md`](./docs/FEATURES.md) lists every other one — the
-`issue:*` scripts, `docs:drift`, `package:check` — with the doc that explains it.
+`issue:*` scripts, `docs:drift`, `invariants:check` — with the doc that explains it.
 The ones that take a target run against **affected** projects only (what changed since `master`),
 which is also what CI runs, except `pnpm test:coverage`. For the whole workspace instead, use
 `pnpm exec nx run-many -t <target>`.
@@ -146,8 +146,10 @@ checks, is in [`docs/guides/change-lifecycle.md`](./docs/guides/change-lifecycle
   commitlint through [`commitlint.config.mjs`](./commitlint.config.mjs). The
   [`commit-msg`](./.husky/commit-msg) hook tags the subject with the branch's issue number
   (`feat: [#50] add thing`), which is why the log here is number-first without anyone typing it.
-- [`pre-commit`](./.husky/pre-commit) blocks a commit while `docs/FEATURES.md` is stale, then stages the script runs and agent lint hits recorded since the last commit into
-  `data/telemetry/` ([`pnpm usage:flush`](./infrastructure/scripts/src/usage/README.md)).
+- [`pre-commit`](./.husky/pre-commit) blocks a commit while `docs/FEATURES.md` is stale or
+  [`pnpm invariants:check`](./infrastructure/scripts/src/invariants/README.md) fails, then stages
+  the script runs and agent lint hits recorded since the last commit into `data/telemetry/`
+  ([`pnpm usage:flush`](./infrastructure/scripts/src/usage/README.md)).
 - [`pre-push`](./.husky/pre-push) rejects a bad branch name or an added `TODO`/`FIXME` comment,
   then runs lint, test and typecheck on affected projects. File a flagged comment with
   [`pnpm issue:add`](./infrastructure/scripts/src/issue/README.md) and delete it.

@@ -28,6 +28,10 @@ pnpm docs:map --check
 echo ""
 success "Generated docs are up to date"
 
+echo ""
+info "Checking repo invariants..."
+pnpm invariants:check
+
 # A gitignored .env can't make a commit wrong, so a failed sync only reports.
 if [ -n "$(git diff --cached --name-only -- ':(glob)**/.env.example')" ]; then
     echo ""

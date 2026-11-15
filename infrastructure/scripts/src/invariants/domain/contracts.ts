@@ -1,4 +1,5 @@
 import { posix } from "node:path";
+import type { Finding } from "./findings.ts";
 
 export interface PackageSource {
     directory: string;
@@ -392,3 +393,12 @@ export const validatePackage = (source: PackageSource): PackageReport => {
 
     return { packageName, errors, skipped };
 };
+
+export const contractFindings = ({ packageName, errors }: PackageReport): Finding[] =>
+    errors.map((error) => ({
+        id: "package-contract",
+        title: "A package breaks its manifest contract",
+        detail: error,
+        evidence: [`packages/${packageName.replace("@monorepo/", "")}/package.json`],
+        blocks: true,
+    }));

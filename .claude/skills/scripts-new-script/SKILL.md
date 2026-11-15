@@ -22,11 +22,13 @@ src/<name>/domain/       the pure part
 src/<name>/README.md     what it's for, a 🗂 Structure block, 🧭 Deliberately deferred
 ```
 
-plus a line in [`package.json`](../../../infrastructure/scripts/package.json)'s `scripts`, a row in
+plus a line in [`package.json`](../../../infrastructure/scripts/package.json)'s `scripts` shaped
+`pnpm --silent cli src/<name>/index.ts`, never a bare `node` call, a row in
 the package README's
 command table, and — if a human types it rather than a hook or another script calling it — a
-forwarding line in the **root** `package.json`. `coverage` deliberately has no forward, because it
-rides on the root `test:coverage`.
+forwarding line in the **root** `package.json`, shaped
+`pnpm --silent --dir infrastructure/scripts cli src/<name>/index.ts`. `coverage` deliberately has
+no forward, because it rides on the root `test:coverage`.
 
 **Create `adapters/` and `domain/` even when one holds a single file.** The point of the layout is
 that `ls` answers "what runs, what talks to the outside, what's pure" before anyone opens anything;
