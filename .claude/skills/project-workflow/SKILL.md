@@ -104,8 +104,9 @@ template. Say which.
 
 ## 4. Sign-offs and settling
 
-- An `owner` block is the user's call, never yours. It is approved by closing its ticket on GitHub.
-  Never close one yourself.
+- An `owner` block is the user's call, never yours. The user approves it either by marking it done
+  in its panel on the project page under `pnpm dev`, with no ticket, or by closing its ticket on
+  GitHub. Never do either yourself, and don't file an owner ticket the user would rather settle.
 - Use `settled` with a one-line note and an `on:` date when a block was done or deliberately
   skipped without a ticket of its own, so the replay counts it from that day. Never settle
   something only to raise the %.
@@ -129,8 +130,9 @@ anything started or closed stays.
 When the project has a `<id>.diary.md`, append one line in the
 [diary's shape](../../../docs/workflows/README.md#-diary), with the time from `date`, on these
 events only: the user says they start or stop, a ticket closes (an `estimate` line), or the map, an
-estimate, a rule or a command turns out wrong. Never log routine success, and never grade your own
-work in it. Write the fact and the issue number, and leave the verdict to the user.
+estimate, a rule or a command turns out wrong. Every correction or complaint the user makes about
+the workflow, the tooling or the agent's output is one of those, logged as it happens. Never log
+routine success, and never grade your own work in it. Write the fact and the issue number, and leave the verdict to the user.
 
 ## 🎨 The design stage of a website rebuild
 

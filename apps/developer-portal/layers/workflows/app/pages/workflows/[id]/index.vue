@@ -273,7 +273,9 @@
                         :project="id"
                         :titles
                         :activity="activity?.capabilities[selected.id]"
+                        :can-settle="editable && isLatest"
                         @select="select"
+                        @settle="settleSelected"
                     />
                 </template>
             </USlideover>
@@ -286,6 +288,7 @@ import {
     pointsLine,
     type CapabilityState,
     type CapabilityView,
+    type SettledState,
 } from "#layers/workflows/shared/workflows.ts";
 import { projectActivity } from "#layers/workflows/shared/workflowActivity.ts";
 
@@ -293,6 +296,7 @@ const route = useRoute();
 const id = computed(() => String(route.params.id));
 
 const { data } = await useWorkflows();
+const { editable, edit } = useWorkflowEdit();
 
 /** The project as synced; the replay lays the same files over an earlier day. */
 const base = computed(() => data.value.projects.find(({ project }) => project.id === id.value));
@@ -337,6 +341,16 @@ const titles = computed(() =>
 
 const { selectedId, selected, stageId, activeIndex, activeStage, selectedStage, select } =
     useCapabilitySelection(view);
+
+const settleSelected = (settlement: { status: SettledState; note: string } | null) =>
+    selected.value &&
+    edit({
+        action: "settle",
+        project: id.value,
+        block: selected.value.id,
+        status: settlement?.status ?? null,
+        note: settlement?.note ?? "",
+    });
 
 const openStates = ref<Partial<Record<CapabilityState, boolean>>>({});
 const pick = (state: CapabilityState, capabilityId: string) => {

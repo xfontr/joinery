@@ -6,6 +6,7 @@ import {
     assembleWorkflows,
     PROJECT_ID,
     projectYaml,
+    SETTLED_STATES,
     TICKET_SIZES,
     type NewPage,
     type ProjectView,
@@ -184,6 +185,42 @@ const editSettings = (
     return null;
 };
 
+/** Settles a block that has no ticket, or with no `status` takes its settlement back. */
+const editSettle = (
+    edit: Record<string, unknown>,
+    document: Document,
+    view: ProjectView,
+): string | null => {
+    const block = textOf(edit.block);
+    const capability = view.capabilities.find(({ id }) => id === block);
+
+    if (!capability?.enabled) return `\`${block}\` isn't a block this project has on`;
+    if (capability.issues.some(({ reason }) => reason !== "not_planned")) {
+        return `${capability.title} has tickets, so it is finished by closing them on GitHub`;
+    }
+
+    if (edit.status === null) {
+        document.deleteIn(["settled", block]);
+        const settled = document.get("settled");
+        if (isMap(settled) && settled.items.length === 0) document.delete("settled");
+        return null;
+    }
+
+    const status = textOf(edit.status);
+    const note = textOf(edit.note);
+
+    if (!(SETTLED_STATES as readonly string[]).includes(status)) {
+        return `\`${status}\` isn't one of ${SETTLED_STATES.join(", ")}`;
+    }
+    if (!note) return "a settled block needs a note saying why";
+
+    if (!isMap(document.get("settled"))) document.set("settled", document.createNode({}));
+    const on = new Date().toISOString().slice(0, 10);
+    document.setIn(["settled", block], document.createNode({ status, on, note }));
+
+    return null;
+};
+
 /**
  * One edit to a project file through the YAML document model, so the comments and layout a person
  * wrote survive the round trip. Returns a problem, or null once the file is written.
@@ -215,9 +252,11 @@ export const applyEdit = async (body: unknown): Promise<string | null> => {
 
     if (document.errors.length > 0) return `${id}.yaml doesn't parse`;
 
-    if (edit.action !== "settings") return `\`${String(edit.action)}\` isn't an edit`;
+    let problem: string | null;
 
-    const problem = editSettings(edit, document, view, workflows);
+    if (edit.action === "settings") problem = editSettings(edit, document, view, workflows);
+    else if (edit.action === "settle") problem = editSettle(edit, document, view);
+    else return `\`${String(edit.action)}\` isn't an edit`;
 
     if (problem) return problem;
 

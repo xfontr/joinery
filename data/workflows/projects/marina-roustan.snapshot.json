@@ -1,13 +1,13 @@
 {
-    "syncedAt": "2026-11-15T13:09:27.847Z",
+    "syncedAt": "2026-11-15T14:34:15.868Z",
     "milestone": "Marina Roustan",
     "issues": [
         {
             "number": 446,
             "title": "Content audit, URL inventory, Feature inventory, Forms, integrations and providers, Hosting prototype",
             "url": "https://github.com/xfontr/monorepo/issues/446",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "content-audit",
                 "feature-inventory",
@@ -16,11 +16,16 @@
                 "url-inventory"
             ],
             "createdAt": "2026-11-15T13:08:51Z",
-            "closedAt": null,
-            "activity": [],
+            "closedAt": "2026-11-15T14:23:57Z",
+            "activity": [
+                "2026-11-15",
+                "2026-11-15",
+                "2026-11-15",
+                "2026-11-15"
+            ],
             "blockedBy": [],
             "branch": false,
-            "pr": false,
+            "pr": true,
             "owner": false,
             "complexity": 19
         },
@@ -59,7 +64,7 @@
             "activity": [],
             "blockedBy": [],
             "branch": false,
-            "pr": false,
+            "pr": true,
             "owner": false,
             "complexity": 18
         }
