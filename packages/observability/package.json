@@ -1,7 +1,7 @@
 {
   "name": "@monorepo/observability",
   "version": "0.0.14",
-  "description": "Shared telemetry",
+  "description": "Grafana Faro in the browser, OpenTelemetry on the server",
   "author": "Xifré Font",
   "license": "ISC",
   "type": "module",

@@ -1,7 +1,7 @@
 {
   "name": "@monorepo/scripts",
   "version": "0.0.0",
-  "description": "Repo-local dev tooling, one folder per script",
+  "description": "repo-local dev tooling, one folder per script",
   "private": true,
   "author": "Xifré Font",
   "license": "ISC",
