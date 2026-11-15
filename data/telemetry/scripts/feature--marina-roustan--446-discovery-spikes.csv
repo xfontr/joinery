@@ -11,3 +11,5 @@ at,script,command,target,flags,area,caller,tty,exit,ms
 2026-11-15,map,,,check,marina-roustan,claude-code,0,0,182
 2026-11-15,invariants,,,,marina-roustan,claude-code,0,0,56
 2026-11-15,invariants,,,json,marina-roustan,claude-code,0,0,29
+2026-11-15,map,,,check,marina-roustan,claude-code,0,0,130
+2026-11-15,invariants,,,,marina-roustan,claude-code,0,0,33

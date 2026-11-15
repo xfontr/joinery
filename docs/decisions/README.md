@@ -10,6 +10,13 @@ the issue holds the question, the file holds the answer. An issue comment can't 
 unsearchable outside `gh`, unreviewed, and gone from context the moment the issue itself is closed
 and forgotten.
 
+A report has to hold something a later reader needs and can't get back from the code: a fork that
+was really open, or findings a later ticket builds on. One spike ticket gets one report, however
+many blocks or questions it covers. A choice that was already made, or that copies an existing
+precedent unchanged, such as Huella Legal's host or contact form for another site, gets a line in a
+report, never a report of its own. When nothing was really open, the answer goes in the PR and no
+file is written.
+
 ## 🗂 Structure
 
 Copy [`TEMPLATE.md`](./TEMPLATE.md). A frontmatter block, then five sections, all of them short:

@@ -64,7 +64,8 @@ run at a time.
 
 The labels decide the route before any branch is linked. An `owner` ticket is skipped and the run
 moves on, since the owner closes it and a linked branch would show it as taken. A `spike` ticket
-skips Plan, Review and Polish: one agent writes a decision report per `cap:` label on it, runs
+skips Plan, Review and Polish: one agent writes a single decision report for the whole ticket, however
+many `cap:` labels it carries, runs
 `pnpm check`, and ships. Running the pipeline on a spike is the request for those reports.
 
 The planner is the only stage that decides structure, and it decides nothing new: every file it
