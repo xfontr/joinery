@@ -56,7 +56,10 @@
     }
   },
   "dependencies": {
-    "nuxt": "catalog:"
+    "@nuxt/fonts": "catalog:",
+    "@nuxt/ui": "^4.11.0",
+    "nuxt": "catalog:",
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

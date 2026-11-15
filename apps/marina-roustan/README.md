@@ -1,8 +1,13 @@
 # 📦 @monorepo/marina-roustan
 
-A Nuxt 4 rebuild of Marina Roustan's website. For now it is the scaffold: one placeholder page,
-the environment check and the test harness, so every page that follows lands on a pipeline that
-already lints, typechecks, tests and runs e2e.
+A Nuxt 4 rebuild of Marina Roustan's website. So far it is one placeholder page, the environment
+check, the test harness and the design tokens, so every page that follows lands on a pipeline that
+already lints, typechecks, tests and runs e2e, and on colours that already pass contrast.
+
+## 🎨 Design
+
+The brand, the tokens and their contrast table are in [`DESIGN.md`](./DESIGN.md); every token
+lives in [`layers/design`](./layers/design), on Nuxt UI and Tailwind v4.
 
 ## 🚀 Development
 
@@ -16,7 +21,7 @@ pnpm dev                                      # or from this directory
 | `pnpm dev` | Start the dev server. It reads no live site, so nothing it does reaches marinaroustan.com |
 | `pnpm build` | Production build (output in `.output/`) |
 | `pnpm preview` | Preview the production build |
-| `pnpm lint` | ESLint — the nuxt flavour, deliberately not type-checked |
+| `pnpm lint` | ESLint — the nuxt flavour, deliberately not type-checked, plus the Tailwind rules that ban raw palette steps |
 | `pnpm typecheck` | `nuxt typecheck`. Redundant before a build: `typescript.typeCheck: "build"` makes `pnpm build` do the same pass |
 | `pnpm test` | Vitest in the preset's projects, without coverage. `pnpm test:coverage` adds it — see [Testing](#-testing) |
 | `pnpm test:e2e` | Playwright against the built `.output/`. Run `pnpm build` first; `nx test:e2e` does it for you |
@@ -54,14 +59,15 @@ environment. A new variable goes in [`.env.example`](./.env.example) and a row h
 
 | Layer | Runs | Where | Command |
 | --- | --- | --- | --- |
-| `node` | Vitest on the [node preset](../../packages/configs/README.md) | `modules/`, `server/`, `shared/` | `pnpm test` |
+| `node` | Vitest on the [node preset](../../packages/configs/README.md) | `modules/`, `server/`, `shared/`, and `eslint.config.spec.ts` | `pnpm test` |
 | `nuxt` | Vitest in a booted Nuxt app on happy-dom, via `@nuxt/test-utils` | `app/` | `pnpm test` |
 | e2e | Playwright, Chromium only, at 390, 768 and 1280 px | [`e2e/`](./e2e) | `pnpm exec nx test:e2e @monorepo/marina-roustan` |
 
 [`vitest.config.ts`](./vitest.config.ts) and [`playwright.config.ts`](./playwright.config.ts) are
 wrappers over the shared presets in [`@monorepo/configs`](../../packages/configs/README.md), which
 own the project split, where coverage lives and the widths. This app only keeps `app/pages/**` out
-of the coverage denominator, because pages are Playwright's.
+of the coverage denominator, because pages are Playwright's, and lists `eslint.config.spec.ts` in
+`nodeSpecs`, since it sits outside every preset glob.
 
 ### 🎭 e2e
 

@@ -3,6 +3,8 @@ const SITE_URL = "https://marinaroustan.com";
 export default defineNuxtConfig({
     compatibilityDate: "2025-01-15",
 
+    modules: ["@nuxt/ui", "@nuxt/fonts"],
+
     devtools: false,
 
     app: {

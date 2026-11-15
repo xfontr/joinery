@@ -142,8 +142,9 @@ What the `website-rebuild` design capabilities expect, learned on Huella:
   drawn. Every element on an approved page should trace to an audit row.
 - **Design in code** with dev-only `/lab` pages on real content, two or three directions under
   `/lab/attempts/`, reviewed as screenshots at 390, 768 and 1280 px. No Figma or Penpot.
-- **Brand from the live site's computed styles**, then semantic tokens with a contrast table, and
-  the raw-palette lint ban from day one. Copy
+- **Brand from the live site's computed styles** (`pnpm brand:extract <url>…`), then semantic
+  tokens with a contrast table (`pnpm brand:contrast <main.css>`), and the raw-palette lint ban
+  from day one. Copy
   [`apps/huella-legal/layers/design`](../../../apps/huella-legal/layers/design) and its
   `eslint.config.ts` rule.
 - **The lab is a design, not code.** Production components are rebuilt on Nuxt UI from it, never
