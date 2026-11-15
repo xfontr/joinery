@@ -14,9 +14,10 @@ export const tagsInReadmeTable = (readme: string): string[] =>
         .map((line) => /^\| `((?:type|scope):[^`]+)`/.exec(line)?.[1] ?? "")
         .filter(Boolean);
 
-/** Project directories listed in the README's workspace-layout code block. */
+/** Project directories listed between the README's `docs:map:layout` markers. */
 export const projectsInLayoutBlock = (readme: string): string[] => {
-    const block = /## 🗂 Workspace layout\s*```([\s\S]*?)```/.exec(readme)?.[1] ?? "";
+    const block =
+        /<!-- docs:map:layout -->([\s\S]*?)<!-- \/docs:map:layout -->/.exec(readme)?.[1] ?? "";
 
     return [...block.matchAll(/^\s{4}([\w-]+)\//gm)].map((match) => match[1] ?? "");
 };

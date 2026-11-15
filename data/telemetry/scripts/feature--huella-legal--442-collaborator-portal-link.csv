@@ -2,3 +2,4 @@ at,script,command,target,flags,area,caller,tty,exit,ms
 2026-11-15,map,,,check,repo,claude-code,0,0,125
 2026-11-15,map,,,check,repo,claude-code,0,0,128
 2026-11-15,issue,pick,,title,huella-legal,claude-code,0,0,14458
+2026-11-15,invariants,,,,huella-legal,claude-code,0,0,30
