@@ -22,34 +22,30 @@ const toFormat = (tagSlugs: string[]): ArticleSummary["format"] => {
     return "articulo";
 };
 
-// WordPress renders titles and excerpts as entity-escaped HTML; this is display text, not sanitising
-export const toText = (html: string): string => textContent(parseFragment(html));
+// An excerpt is the one field still HTML; this is display text, not sanitising
+const toText = (html: string): string => textContent(parseFragment(html));
 
 export const toCategory = (term: Term): Category => ({
     id: term.id,
     slug: term.slug,
-    name: toText(term.name),
-    description: term.description && toText(term.description),
+    name: term.name,
+    description: term.description,
 });
 
 const toAuthor = (author: ContentAuthor): Author => ({
     id: author.id,
     slug: author.slug,
-    name: toText(author.name),
-    bio: author.bio && toText(author.bio),
+    name: author.name,
+    bio: author.bio,
     avatar: author.avatar,
 });
 
-const toReadingMinutes = (body: RichText): number => {
-    const text = body.format === "blocks" ? "" : toText(body.value);
-    const words = text.split(" ").filter(Boolean).length;
-
-    return Math.max(1, Math.ceil(words / WORDS_PER_MINUTE));
-};
+const toReadingMinutes = (wordCount = 0): number =>
+    Math.max(1, Math.ceil(wordCount / WORDS_PER_MINUTE));
 
 // WordPress closes an excerpt it generated itself with a bracketed ellipsis
 const toExcerpt = (excerpt?: RichText): string | undefined => {
-    if (!excerpt || excerpt.format === "blocks") return undefined;
+    if (!excerpt) return undefined;
 
     const text = toText(excerpt.value);
 
@@ -75,7 +71,7 @@ export const toArticleSummary = (entry: Entry): ArticleSummary => {
     return {
         id: entry.id,
         slug: entry.slug,
-        title: toText(entry.title),
+        title: entry.title,
         excerpt: toExcerpt(entry.excerpt),
         publishedAt: entry.publishedAt,
         updatedAt: entry.updatedAt,
@@ -84,7 +80,7 @@ export const toArticleSummary = (entry: Entry): ArticleSummary => {
         category: categories[0],
         tags,
         format: toFormat(tags.map(({ slug }) => slug)),
-        readingMinutes: toReadingMinutes(entry.body),
+        readingMinutes: toReadingMinutes(entry.wordCount),
         number: toNumber(entry.fields?.num),
         noindex: entry.seo?.noindex || undefined,
     };
