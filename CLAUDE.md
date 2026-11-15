@@ -82,7 +82,8 @@ far outside that is worth opening. The `comment-cleanup` skill runs the pass.
 - **Never invent structure the repo already solves.** A new file or folder copies the closest
   existing precedent — a huella-legal layer, a developer-portal folder, a scripts
   `domain/`/`adapters/` split — and keeps its naming. A folder shape found nowhere in the repo
-  needs the user's agreement first.
+  needs the user's agreement first. The settled naming rules are in
+  [`docs/concepts/conventions.md`](./docs/concepts/conventions.md).
 - **Never write a decision report unprompted.** Only when the user asks for one; you may ask whether
   they want one, but never write it on your own judgement. A `/ship-issue` run on a `spike` ticket
   is that ask.

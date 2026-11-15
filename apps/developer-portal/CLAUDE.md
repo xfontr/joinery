@@ -17,7 +17,10 @@ See [README.md](./README.md) for what each page reads, the snapshot and the depl
   node-only — `yaml`, `node:fs`, `git` — lives in `tools/` or a layer's `server/`, so it never
   reaches the browser bundle. `tools/` may import a `server/utils/` file that uses no Nitro
   auto-import, as it does `workflowFiles.ts`; the reverse is a lint error. Never add a root
-  `shared/`: a relative import into it breaks the prerendered build.
+  `shared/`: a relative import into it breaks the prerendered build. A type goes in the layer's
+  `shared/types/<Name>.ts`, one per file, never exported from a route, and a component at a layer's
+  root carries the layer's name (`TelemetryDayStrip`), per
+  [`conventions.md`](../../docs/concepts/conventions.md).
 - **No value is chosen outside the `design` layer.** The [README](./README.md#-design-system) lists
   the tokens and classes; a new size or colour is a token there, not a bracketed class.
 - **`tools/lib/invariants.ts` mirrors [`check-invariants.sh`](../../.claude/hooks/check-invariants.sh).**
