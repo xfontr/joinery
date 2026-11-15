@@ -1,14 +1,11 @@
 import { access, readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import type {
-    AuditMeta,
-    DecisionOutcome,
-    DecisionStatus,
-    DocKind,
-    DocLink,
-    DocPage,
-    DocsArtifact,
-} from "#layers/snapshot/shared/types.ts";
+import type { AuditMeta } from "#layers/snapshot/shared/types/AuditMeta.ts";
+import type { DecisionOutcome, DecisionStatus } from "#layers/snapshot/shared/decisions.ts";
+import type { DocKind } from "#layers/snapshot/shared/types/DocKind.ts";
+import type { DocLink } from "#layers/snapshot/shared/types/DocLink.ts";
+import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
+import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import { parseFindings } from "#layers/snapshot/shared/audits.ts";
 import { DECISION_OUTCOMES, DECISION_STATUSES } from "#layers/snapshot/shared/decisions.ts";
 import { frontmatterFields } from "../lib/decisions.ts";

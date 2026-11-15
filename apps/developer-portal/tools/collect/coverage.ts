@@ -1,11 +1,9 @@
 import { access, cp, mkdir, readFile, rm } from "node:fs/promises";
 import { resolve } from "node:path";
-import type {
-    CoverageArtifact,
-    CoverageMetric,
-    ProjectCoverage,
-    ProjectNode,
-} from "#layers/snapshot/shared/types.ts";
+import type { CoverageArtifact } from "#layers/snapshot/shared/types/CoverageArtifact.ts";
+import type { CoverageMetric } from "#layers/snapshot/shared/types/CoverageMetric.ts";
+import type { ProjectCoverage } from "#layers/snapshot/shared/types/ProjectCoverage.ts";
+import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 import { COVERAGE_DIR, MERGED_COVERAGE_DIR, WORKSPACE_ROOT } from "../lib/paths.ts";
 
 interface RawSummary {

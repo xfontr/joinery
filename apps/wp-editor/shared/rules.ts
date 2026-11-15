@@ -1,15 +1,13 @@
 import { Refusal } from "./refusal.ts";
-import type {
-    Changeset,
-    Item,
-    ItemState,
-    Proposal,
-    ReviewLevel,
-    RunReport,
-    Settings,
-    Snapshot,
-} from "./types.ts";
-import { DEFAULT_SETTINGS, MAX_PAUSE_MS, REVIEW_GATES } from "./types.ts";
+import type { Changeset } from "./types/Changeset.ts";
+import type { Item } from "./types/Item.ts";
+import type { ItemState } from "./types/ItemState.ts";
+import type { Proposal } from "./types/Proposal.ts";
+import type { ReviewLevel } from "./types/ReviewLevel.ts";
+import type { RunReport } from "./types/RunReport.ts";
+import type { Settings } from "./types/Settings.ts";
+import type { Snapshot } from "./types/Snapshot.ts";
+import { DEFAULT_SETTINGS, MAX_PAUSE_MS, REVIEW_GATES } from "./constants.ts";
 
 const RANK = { unreviewed: 0, seen: 1, confirmed: 2 } as const satisfies Record<
     ReviewLevel,

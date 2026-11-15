@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { dropPlan, issueAsOf, replayRange, ticketStatus } from "./ticket.ts";
-import type { SnapshotIssue } from "./types.ts";
+import type { SnapshotIssue } from "./types/SnapshotIssue.ts";
 
 const issue = (number: number, caps: string[], overrides: Partial<SnapshotIssue> = {}) =>
     ({

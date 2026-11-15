@@ -95,7 +95,7 @@
                     </div>
 
                     <div v-else class="divide-y divide-default">
-                        <IssueRow v-for="issue in visible" :key="issue.number" :issue />
+                        <HealthIssueRow v-for="issue in visible" :key="issue.number" :issue />
                     </div>
                 </UCard>
             </div>

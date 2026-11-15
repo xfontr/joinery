@@ -61,7 +61,7 @@ describe("article card", () => {
             const wrapper = await mount({ article: ARTICLE, variant });
 
             expect(wrapper.text()).toContain(ARTICLE.excerpt);
-            expect(wrapper.text()).toContain("byline.readingTime");
+            expect(wrapper.text()).toContain("articleByline.readingTime");
         },
     );
 
@@ -70,13 +70,13 @@ describe("article card", () => {
 
         const link = wrapper.find('a[href="/la-teoria-juridica-del-delito/#comentarios"]');
 
-        expect(link.text()).toBe("t(byline.comments)");
+        expect(link.text()).toBe("t(articleByline.comments)");
     });
 
     it("prints no count for a post nobody has commented on", async () => {
         const wrapper = await mount({ article: ARTICLE });
 
-        expect(wrapper.text()).not.toContain("byline.comments");
+        expect(wrapper.text()).not.toContain("articleByline.comments");
     });
 
     it("hides the image from assistive tech, since the title beside it already names the article", async () => {

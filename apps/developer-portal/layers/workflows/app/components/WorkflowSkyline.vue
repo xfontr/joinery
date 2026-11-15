@@ -3,19 +3,18 @@
         <li
             v-for="(stage, index) in stages"
             :key="stage.id"
-            class="flex min-w-0 flex-col gap-2"
+            class="relative flex min-w-0 flex-col gap-2"
             :style="{ '--hue': stageColor(index) }"
         >
             <div
-                class="tower flex cursor-pointer flex-wrap-reverse gap-0.75 rounded-lg p-1 transition-colors sm:p-1.5"
+                class="tower pointer-events-none relative z-10 flex flex-wrap-reverse gap-0.75 rounded-lg p-1 transition-colors sm:p-1.5"
                 :class="{ 'is-selected': stage.id === selected }"
-                @click="emit('select-stage', stage.id)"
             >
                 <button
                     v-for="capability in stage.capabilities"
                     :key="capability.id"
                     type="button"
-                    class="cell size-3 rounded-xs border sm:size-3.5"
+                    class="cell pointer-events-auto size-3 rounded-xs border sm:size-3.5"
                     :class="[capability.state, capability.id === highlight && 'is-highlighted']"
                     :aria-pressed="capability.id === highlight"
                     :style="{ '--state': capabilityColor(capability.state) }"
@@ -27,9 +26,10 @@
 
             <span class="h-0.5 rounded-full bg-(--hue) opacity-70" aria-hidden="true" />
 
+            <!-- Stretched over the whole column, so a click between the squares picks the stage too -->
             <button
                 type="button"
-                class="flex flex-col items-start gap-1 rounded-sm text-left"
+                class="flex flex-col items-start gap-1 rounded-sm text-left after:absolute after:inset-0"
                 :aria-pressed="stage.id === selected"
                 @click="emit('select-stage', stage.id)"
             >

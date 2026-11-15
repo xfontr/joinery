@@ -12,7 +12,7 @@ want, on a site built for reading, so it is held to one rule: it costs no other 
 
 | Path | What it is |
 | --- | --- |
-| [`pages/calculo-intereses.vue`](./app/pages/calculo-intereses.vue) | The page: the calculator, then the WordPress page `calculo-intereses` as its guide, through the core's `GET /api/pages/:slug` and `ArticleProse`. Prerendered, per [0028](../../../../docs/decisions/0028-huella-legal-urls-and-cutover.md) |
+| [`pages/interest-calculator.vue`](./app/pages/interest-calculator.vue) | The page: the calculator, then the WordPress page `calculo-intereses` as its guide, through the core's `GET /api/pages/:slug` and `ArticleProse`. Prerendered, per [0028](../../../../docs/decisions/0028-huella-legal-urls-and-cutover.md) |
 | [`InterestCalculator`](./app/components/InterestCalculator.vue) | Two `UTabs`, *Sencilla* and *Avanzada*, over the private parts below. Owns the arithmetic and the history. Hidden tabs stay mounted, so switching keeps each tab's fields |
 | `InterestCalculatorForm` | The legal and judicial presets and two native date inputs |
 | `InterestCalculatorAdvancedForm` | Adds a custom rate, a concept and each date as separate day, month and year fields, so a monthly debt changes one field per row |
@@ -34,7 +34,7 @@ translations. The WordPress page holds only that copy: the old jQuery calculator
 and the app's own heading stands above the calculator, so the page's title is never rendered.
 `calculo-intereses` is in `pageSlugs` only so that `GET /api/pages/:slug` will read it; the static
 route wins over `/:slug/`. If WordPress fails, the page renders the calculator without the guide
-rather than failing, which `calculo-intereses.spec.ts` pins.
+rather than failing, which `interest-calculator.spec.ts` pins.
 
 ## ⚡ What the rest of the site pays
 

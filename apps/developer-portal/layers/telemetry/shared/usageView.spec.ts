@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { LintRuleUsage, ScriptUsage } from "#layers/snapshot/shared/types.ts";
+import type { LintRuleUsage } from "#layers/snapshot/shared/types/LintRuleUsage.ts";
+import type { ScriptUsage } from "#layers/snapshot/shared/types/ScriptUsage.ts";
 import {
     dailyTotals,
     lintTable,

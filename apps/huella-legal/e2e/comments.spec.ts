@@ -91,22 +91,24 @@ test.describe("a refused comment", () => {
     });
 });
 
-test("the contents rail stays behind with the article once the thread scrolls into view", async ({
-    page,
-}) => {
-    test.skip((page.viewportSize()?.width ?? 0) < 1024, "The rail is an accordion below lg");
+test(
+    "the contents rail stays behind with the article once the thread scrolls into view",
+    { tag: "@desktop" },
+    async ({ page }) => {
+        await page.goto(PATH);
 
-    await page.goto(PATH);
+        await expect(async () => {
+            await page.getByRole("button", { name: "Enviar comentario" }).scrollIntoViewIfNeeded();
 
-    await expect(async () => {
-        await page.getByRole("button", { name: "Enviar comentario" }).scrollIntoViewIfNeeded();
+            const rail = await page
+                .getByRole("navigation", { name: "En este artículo" })
+                .boundingBox();
+            const thread = await section(page).boundingBox();
 
-        const rail = await page.getByRole("navigation", { name: "En este artículo" }).boundingBox();
-        const thread = await section(page).boundingBox();
-
-        expect(rail!.y + rail!.height).toBeLessThanOrEqual(thread!.y);
-    }).toPass();
-});
+            expect(rail!.y + rail!.height).toBeLessThanOrEqual(thread!.y);
+        }).toPass();
+    },
+);
 
 test("the comments section has no WCAG AA violations", async ({ page }) => {
     await page.goto(PATH);

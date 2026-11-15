@@ -23,9 +23,9 @@ const global = {
             props: { title: String, description: String },
             template: "<div class='empty'>{{ title }} {{ description }}</div>",
         },
-        ScriptActivity: true,
-        UsageTriage: true,
-        LintUsage: true,
+        TelemetryScriptActivity: true,
+        TelemetryUsageTriage: true,
+        TelemetryLintUsage: true,
     },
 };
 

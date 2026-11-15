@@ -1,4 +1,5 @@
-import type { ItemKey, Proposal } from "../../../../../shared/types.ts";
+import type { ItemKey } from "../../../../../shared/types/ItemKey.ts";
+import type { Proposal } from "../../../../../shared/types/Proposal.ts";
 import { review } from "../../../../services/operations.ts";
 
 export default defineEventHandler((event) =>

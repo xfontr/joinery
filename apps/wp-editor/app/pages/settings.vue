@@ -104,8 +104,8 @@
 
 <script setup lang="ts">
 import type { SelectItem } from "@nuxt/ui";
-import type { Settings } from "#shared/types.ts";
-import { DEFAULT_SETTINGS, MAX_PAUSE_MS } from "#shared/types.ts";
+import type { Settings } from "#shared/types/Settings.ts";
+import { DEFAULT_SETTINGS, MAX_PAUSE_MS } from "#shared/constants.ts";
 
 const toast = useToast();
 const { data: settings, error } = await useFetch<Settings>("/api/settings");

@@ -1,4 +1,4 @@
-import type { DecisionOutcome, DecisionStatus } from "#layers/snapshot/shared/types.ts";
+import type { DecisionOutcome, DecisionStatus } from "#layers/snapshot/shared/decisions.ts";
 import type { Tone } from "~/utils/format.ts";
 
 const DECISION_STATUS_LABELS = {

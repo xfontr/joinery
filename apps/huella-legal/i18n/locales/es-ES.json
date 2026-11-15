@@ -190,6 +190,10 @@
     "articleBibliography": {
         "title": "Bibliografía"
     },
+    "articleByline": {
+        "comments": "{count} comentario | {count} comentarios",
+        "readingTime": "{minutes} min de lectura"
+    },
     "articleListing": {
         "formats": {
             "all": "Todo",
@@ -240,10 +244,6 @@
             }
         },
         "title": "Colaboradores"
-    },
-    "byline": {
-        "comments": "{count} comentario | {count} comentarios",
-        "readingTime": "{minutes} min de lectura"
     },
     "categories": {
         "kicker": "Índice",

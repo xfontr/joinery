@@ -89,14 +89,14 @@
                             </p>
                         </div>
 
-                        <FeaturePicker
+                        <WorkflowFeaturePicker
                             v-else-if="section.id === 'features'"
                             :features
                             :editable
                             @toggle="toggle"
                         />
 
-                        <TicketSizePicker
+                        <WorkflowTicketSizePicker
                             v-else-if="section.id === 'tickets'"
                             v-model="draft.ticketSize"
                             :counts="base.tickets.toFile"

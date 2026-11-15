@@ -1,4 +1,4 @@
-import type { TicketSize } from "./types.ts";
+import type { TicketSize } from "./types/TicketSize.ts";
 
 /** A page the project adds once, as an extra naming one of its template's page types. */
 export interface NewPage {

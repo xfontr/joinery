@@ -18,7 +18,7 @@
                     fetchpriority="high"
                     class="size-full object-cover"
                 />
-                <MediaFallback v-else tone="slate" />
+                <ArticleMediaFallback v-else tone="slate" />
             </div>
             <p class="flex flex-wrap items-center gap-x-2 gap-y-1 font-sans text-xs">
                 <BaseKicker>{{
@@ -47,7 +47,7 @@
             <p v-if="lead.excerpt" class="max-w-measure font-serif text-reading text-toned">
                 {{ lead.excerpt }}
             </p>
-            <Byline
+            <ArticleByline
                 :authors
                 :published-at="lead.publishedAt"
                 :reading-minutes="lead.readingMinutes"

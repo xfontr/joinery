@@ -110,16 +110,17 @@ const readTerm = cachedRead(
     (slug) => ({ slug }),
 );
 
+// Each read awaits, so a malformed argument rejects like a failed read instead of throwing
 export const useContent = (event: H3Event) => ({
     listEntries: async (resource: EntryResource, query?: EntryQuery): Promise<Page<Entry>> =>
-        readEntries(event, resource, toEntryQuery(query)),
+        await readEntries(event, resource, toEntryQuery(query)),
 
     listTerms: async (resource: TermResource, query?: Query): Promise<Page<Term>> =>
-        readTerms(event, resource, toQuery(query)),
+        await readTerms(event, resource, toQuery(query)),
 
     getEntry: async (resource: EntryResource, slug: string): Promise<Entry> =>
-        readEntry(event, resource, toSlug(slug)),
+        await readEntry(event, resource, toSlug(slug)),
 
     getTerm: async (resource: TermResource, slug: string): Promise<Term> =>
-        readTerm(event, resource, toSlug(slug)),
+        await readTerm(event, resource, toSlug(slug)),
 });

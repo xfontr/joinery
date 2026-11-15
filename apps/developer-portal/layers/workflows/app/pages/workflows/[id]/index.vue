@@ -38,7 +38,7 @@
             <div v-else class="flex flex-col gap-6">
                 <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
                     <div class="flex min-w-0 flex-1 items-center gap-4">
-                        <ProgressRing :percent="view.progress.percent" :size="72" />
+                        <WorkflowProgressRing :percent="view.progress.percent" :size="72" />
                         <div class="min-w-0">
                             <p class="text-lg font-semibold">
                                 {{ view.progress.done }} of {{ view.progress.total }} done
@@ -191,7 +191,7 @@
                         v-if="activity || range"
                         class="mt-4 flex flex-wrap items-start gap-x-8 gap-y-3 border-t border-default pt-3"
                     >
-                        <ActivityStrip
+                        <WorkflowActivityStrip
                             v-if="activity"
                             :activity
                             :stages="base.stages"
@@ -226,7 +226,7 @@
                     </div>
                 </div>
 
-                <StageCards
+                <WorkflowStageCards
                     v-if="activeStage"
                     :stage="activeStage"
                     :index="activeIndex"
@@ -267,7 +267,7 @@
                 :description="selectedStage"
             >
                 <template #body>
-                    <CapabilityDetail
+                    <WorkflowCapabilityDetail
                         v-if="selected"
                         :capability="selected"
                         :project="id"

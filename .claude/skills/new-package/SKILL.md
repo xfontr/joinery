@@ -12,9 +12,9 @@ this skill exists — a scaffold that forgets step 5 lints clean until someone i
 
 | Root | For | Released? |
 | --- | --- | --- |
-| `packages/` | Shared product code an app imports | Yes — `nx.json` sets `release.projects: ["packages/*"]` |
-| `apps/` | A user-facing product | No — mark it `"private": true` |
-| `infrastructure/` | A service apps reach **over the network** (`translations`), or repo-local dev tooling nothing imports (`scripts`) — either way, deployable/runnable on its own | No — mark it `"private": true` |
+| `packages/` | Shared product code an app imports | Versioned and tagged, never published — `nx.json` sets `release.projects: ["packages/*"]` and the release runs `--skip-publish`. Still `"private": true` |
+| `apps/` | A user-facing product | No — `"private": true` |
+| `infrastructure/` | A service apps reach **over the network** (`translations`), or repo-local dev tooling nothing imports (`scripts`) — either way, deployable/runnable on its own | No — `"private": true` |
 
 The directory name is the package name: `packages/foo` → `@monorepo/foo`. Infrastructure is not
 separately namespaced (`infrastructure/translations` → `@monorepo/translations`).
@@ -31,6 +31,7 @@ with two entry points and optional peers. 2-space indent, because pnpm rewrites 
   "name": "@monorepo/<dirname>",
   "version": "0.0.1",
   "description": "<three words, no marketing>",
+  "private": true,
   "author": "Xifré Font",
   "license": "ISC",
   "type": "module",
@@ -55,6 +56,10 @@ with two entry points and optional peers. 2-space indent, because pnpm rewrites 
 ```
 
 - **No build step**: the `exports` map points at source. No `main`, no `types`, no `dist`.
+- **Script names are the stable ones** — `lint`, `typecheck`, `test`, `build` — delegating to the
+  namespaced plugin target where there is one (`nx eslint:lint`). CI, the hooks and `pnpm check`
+  call only those; [`conventions.md`](../../../docs/concepts/conventions.md) has why, and where
+  files and types go inside the project.
 - **Exactly two Nx tags**, `type:<kind>` and `scope:<area>`. They live here, not in a
   `project.json` — there are none in this workspace. Pick `<kind>` from the
   [root README's tag table](../../../README.md#-architecture--boundaries): a vendor wrapper is

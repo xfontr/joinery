@@ -205,7 +205,8 @@
 
 <script setup lang="ts">
 import { deploymentUrlFor } from "#layers/github/shared/deployments.ts";
-import type { ProjectMetrics, ProjectNode } from "#layers/snapshot/shared/types.ts";
+import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
+import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 
 const { data: snapshot } = await useSnapshot("projects");
 const { data: metricsSnapshot } = await useSnapshot("metrics");

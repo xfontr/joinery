@@ -79,7 +79,7 @@
 
 <script setup lang="ts">
 import { isApplied, isPending } from "#shared/rules.ts";
-import type { Item } from "#shared/types.ts";
+import type { Item } from "#shared/types/Item.ts";
 import type { ItemAction } from "~/composables/useChangeset";
 
 interface Props {

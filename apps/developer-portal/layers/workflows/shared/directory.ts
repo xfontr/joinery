@@ -3,7 +3,10 @@ import { isRecord } from "./reader.ts";
 import { projectView } from "./projectView.ts";
 import { readSnapshot } from "./snapshot.ts";
 import { readTemplate } from "./template.ts";
-import type { ProjectView, Snapshot, Template, WorkflowProblem } from "./types.ts";
+import type { ProjectView } from "./types/ProjectView.ts";
+import type { Snapshot } from "./types/Snapshot.ts";
+import type { Template } from "./types/Template.ts";
+import type { WorkflowProblem } from "./types/WorkflowProblem.ts";
 
 export type ParsedFile = { file: string } & (
     { ok: true; value: unknown } | { ok: false; error: string }

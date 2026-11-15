@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import type { RunReport } from "#shared/types.ts";
+import type { RunReport } from "#shared/types/RunReport.ts";
 
 interface Props {
     kind: RunReport["kind"];

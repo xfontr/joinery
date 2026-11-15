@@ -1,4 +1,4 @@
-import type { RunReport } from "#shared/types.ts";
+import type { RunReport } from "#shared/types/RunReport.ts";
 
 /** How each kind of bulk run names itself, what it did to an article, and what a rerun retries. */
 export const RUN_LABELS = {

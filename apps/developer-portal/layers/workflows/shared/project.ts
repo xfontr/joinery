@@ -1,17 +1,14 @@
 import { cycleProblem, readCapability } from "./capability.ts";
 import { complexityOf } from "./complexity.ts";
 import { asText, isRecord, Reader } from "./reader.ts";
-import {
-    SETTLED_STATES,
-    TICKET_SIZES,
-    type Capability,
-    type Feature,
-    type Group,
-    type Project,
-    type SettledState,
-    type Template,
-    type TicketSize,
-} from "./types.ts";
+import { SETTLED_STATES, TICKET_SIZES } from "./constants.ts";
+import type { Capability } from "./types/Capability.ts";
+import type { Feature } from "./types/Feature.ts";
+import type { Group } from "./types/Group.ts";
+import type { Project } from "./types/Project.ts";
+import type { SettledState } from "./types/SettledState.ts";
+import type { Template } from "./types/Template.ts";
+import type { TicketSize } from "./types/TicketSize.ts";
 
 const readSwitches = (reader: Reader, source: Record<string, unknown>): Project["switches"] => {
     const switches: Project["switches"] = {};

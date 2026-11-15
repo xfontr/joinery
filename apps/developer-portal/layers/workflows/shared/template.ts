@@ -1,6 +1,7 @@
 import { cycleProblem, readCapability } from "./capability.ts";
 import { isRecord, Reader } from "./reader.ts";
-import type { Capability, Template } from "./types.ts";
+import type { Capability } from "./types/Capability.ts";
+import type { Template } from "./types/Template.ts";
 
 const duplicates = (ids: string[]): string[] =>
     [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))].sort((a, b) =>

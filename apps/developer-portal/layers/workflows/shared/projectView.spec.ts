@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readProject } from "./project.ts";
 import { projectView } from "./projectView.ts";
 import { readTemplate } from "./template.ts";
-import type { SnapshotIssue } from "./types.ts";
+import type { SnapshotIssue } from "./types/SnapshotIssue.ts";
 
 const TEMPLATE = {
     id: "website-rebuild",

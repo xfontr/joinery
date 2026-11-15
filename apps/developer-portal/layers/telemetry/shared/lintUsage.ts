@@ -1,4 +1,5 @@
-import type { LintRuleUsage, LintUsage } from "#layers/snapshot/shared/types.ts";
+import type { LintRuleUsage } from "#layers/snapshot/shared/types/LintRuleUsage.ts";
+import type { LintUsage } from "#layers/snapshot/shared/types/LintUsage.ts";
 import type { UsageRecord } from "./usage.ts";
 
 export const FOUGHT_DISABLES = 3;

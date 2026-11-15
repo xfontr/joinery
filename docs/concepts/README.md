@@ -17,6 +17,7 @@ just doesn't yet, the fix is to write it there, not here.
 | [`boundaries.md`](./boundaries.md) | Why the Nx tag system is layered the way it is |
 | [`versioning.md`](./versioning.md) | How a version gets derived from a commit |
 | [`agent-setup.md`](./agent-setup.md) | The agent setup as one inspectable system |
+| [`conventions.md`](./conventions.md) | Where each kind of file lives and what it is called, across projects |
 
 Procedure lives in [`docs/guides/`](../guides/README.md) instead — a concept doc explains a
 constraint, a guide walks a task. A file that starts accumulating numbered steps has drifted into

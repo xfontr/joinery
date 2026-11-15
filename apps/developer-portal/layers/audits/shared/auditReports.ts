@@ -1,5 +1,5 @@
 import type { AuditFinding, AuditState, FindingStatus } from "#layers/snapshot/shared/audits.ts";
-import type { DocPage } from "#layers/snapshot/shared/types.ts";
+import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
 import { AUDIT_STATES, FINDING_STATUSES, auditStateOf } from "#layers/snapshot/shared/audits.ts";
 import { stripLeadingEmoji } from "#layers/docs/shared/docPages.ts";
 

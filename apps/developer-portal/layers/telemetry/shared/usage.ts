@@ -1,4 +1,5 @@
-import type { ScriptUsage, UsageArtifact } from "#layers/snapshot/shared/types.ts";
+import type { ScriptUsage } from "#layers/snapshot/shared/types/ScriptUsage.ts";
+import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 
 /** Below this many runs a share of 100% is one data point, not a pattern. */
 export const MIN_RUNS = 5;

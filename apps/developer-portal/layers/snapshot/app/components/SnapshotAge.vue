@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Manifest } from "#layers/snapshot/shared/types.ts";
+import type { Manifest } from "#layers/snapshot/shared/types/Manifest.ts";
 
 interface Props {
     manifest: Manifest | null;

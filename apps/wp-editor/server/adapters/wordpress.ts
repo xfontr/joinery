@@ -1,5 +1,8 @@
 import { ofetch } from "ofetch";
-import type { BaseMeta, PostType, Proposal, Snapshot } from "../../shared/types.ts";
+import type { BaseMeta } from "../../shared/types/BaseMeta.ts";
+import type { PostType } from "../../shared/types/PostType.ts";
+import type { Proposal } from "../../shared/types/Proposal.ts";
+import type { Snapshot } from "../../shared/types/Snapshot.ts";
 
 export interface WordPressCredentials {
     baseURL: string;

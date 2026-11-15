@@ -1,0 +1,86 @@
+<template>
+    <div class="flex items-center gap-3 font-sans text-meta text-muted">
+        <UAvatarGroup v-if="avatars" size="lg" aria-hidden="true" :ui="{ base: '-me-2' }">
+            <UAvatar
+                v-for="author in authors"
+                :key="author.id"
+                :src="author.avatar?.url"
+                :text="initials(author.name)"
+                alt=""
+            />
+        </UAvatarGroup>
+        <div class="overflow-hidden">
+            <ul
+                class="-ml-5 flex flex-wrap gap-y-1 [&>li]:flex [&>li]:before:w-5 [&>li]:before:shrink-0 [&>li]:before:text-center [&>li]:before:text-dimmed [&>li]:before:content-['·'/'']"
+            >
+                <li class="text-toned">
+                    <!-- One inline box: as flex items, the separators would lose the spaces around "y" -->
+                    <span>
+                        <template v-for="({ literal, author }, key) in names" :key>
+                            <template v-if="literal">{{ literal }}</template>
+                            <ULink
+                                v-else-if="author"
+                                :to="author.to"
+                                raw
+                                class="font-semibold text-highlighted underline-offset-3 hover:underline focus-visible:rounded-xs"
+                                >{{ author.name }}</ULink
+                            >
+                        </template>
+                    </span>
+                </li>
+                <li v-if="date">
+                    <time :datetime="publishedAt">{{ date }}</time>
+                </li>
+                <li v-if="readingMinutes">
+                    {{
+                        $t("articleByline.readingTime", { minutes: readingMinutes }, readingMinutes)
+                    }}
+                </li>
+                <li v-if="comments?.count">
+                    <ULink
+                        :to="comments.to"
+                        raw
+                        class="underline-offset-3 hover:underline focus-visible:rounded-xs"
+                    >
+                        {{
+                            $t("articleByline.comments", { count: comments.count }, comments.count)
+                        }}
+                    </ULink>
+                </li>
+            </ul>
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import type { RouteLocationRaw } from "vue-router";
+
+type BylineAuthor = Pick<Author, "id" | "name" | "avatar"> & { to: RouteLocationRaw };
+
+interface BylineComments {
+    count: number;
+    to: RouteLocationRaw;
+}
+
+interface Props {
+    authors: BylineAuthor[];
+    publishedAt?: string;
+    readingMinutes?: number;
+    comments?: BylineComments;
+    avatars?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), { avatars: false });
+
+const { locale, d } = useI18n();
+
+const names = computed(() =>
+    new Intl.ListFormat(locale.value, { type: "conjunction" })
+        .formatToParts(props.authors.map((_, index) => String(index)))
+        .map(({ type, value }) =>
+            type === "element" ? { author: props.authors[+value] } : { literal: value },
+        ),
+);
+
+const date = computed<string | undefined>(() => props.publishedAt && d(props.publishedAt, "long"));
+</script>

@@ -1,5 +1,6 @@
 import { asText, isRecord, Reader } from "./reader.ts";
-import type { Snapshot, SnapshotIssue } from "./types.ts";
+import type { Snapshot } from "./types/Snapshot.ts";
+import type { SnapshotIssue } from "./types/SnapshotIssue.ts";
 
 const readIssue = (reader: Reader, raw: unknown, where: string): SnapshotIssue | null => {
     if (!isRecord(raw) || typeof raw.number !== "number") {

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { ProjectNode } from "#layers/snapshot/shared/types.ts";
+import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 import { collectRetired, parseDeletions } from "./retired.ts";
 
 const run = vi.hoisted(() => ({ git: vi.fn() }));

@@ -236,7 +236,8 @@
 
 <script setup lang="ts">
 import { isApplied, isPending } from "#shared/rules.ts";
-import type { ItemKey, RunReport } from "#shared/types.ts";
+import type { ItemKey } from "#shared/types/ItemKey.ts";
+import type { RunReport } from "#shared/types/RunReport.ts";
 
 const route = useRoute();
 const router = useRouter();

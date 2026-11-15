@@ -28,7 +28,7 @@
                             <p class="text-sm text-muted">{{ current.hint }}</p>
                         </header>
 
-                        <TemplatePicker
+                        <WorkflowTemplatePicker
                             v-if="current.id === 'template'"
                             :templates="data.templates"
                             :model-value="draft.template"
@@ -77,14 +77,14 @@
                             <button type="submit" hidden />
                         </form>
 
-                        <FeaturePicker
+                        <WorkflowFeaturePicker
                             v-else-if="current.id === 'features' && template"
                             :features
                             editable
                             @toggle="toggle"
                         />
 
-                        <PagePicker
+                        <WorkflowPagePicker
                             v-else-if="current.id === 'pages' && template"
                             v-model="draft.pages"
                             :template
@@ -187,7 +187,7 @@
                                     <p class="text-xs text-muted">SP</p>
                                 </div>
                             </div>
-                            <EstimateReceipt
+                            <WorkflowEstimateReceipt
                                 v-if="receipt.length > 0"
                                 :rows="receipt"
                                 :total="points"
@@ -195,7 +195,7 @@
                             />
                             <div class="mt-4 border-t border-default pt-4">
                                 <p class="mb-2 text-xs font-medium text-muted">Ticket size</p>
-                                <TicketSizePicker
+                                <WorkflowTicketSizePicker
                                     v-model="draft.ticketSize"
                                     :counts="tickets"
                                     editable

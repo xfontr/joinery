@@ -1,4 +1,5 @@
-import type { Capability, Points } from "./types.ts";
+import type { Capability } from "./types/Capability.ts";
+import type { Points } from "./types/Points.ts";
 
 /** The template's estimates summed over these blocks; a block without one adds nothing. */
 export const complexityOf = (capabilities: Capability[]): number =>

@@ -2,18 +2,17 @@ import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { isMainThread } from "node:worker_threads";
-import type {
-    BaseMeta,
-    Changeset,
-    Item,
-    ItemKey,
-    ItemState,
-    Proposal,
-    RunReport,
-    Settings,
-    Snapshot,
-} from "../../shared/types.ts";
-import { DEFAULT_SETTINGS, parseKey } from "../../shared/types.ts";
+import type { BaseMeta } from "../../shared/types/BaseMeta.ts";
+import type { Changeset } from "../../shared/types/Changeset.ts";
+import type { Item } from "../../shared/types/Item.ts";
+import type { ItemKey } from "../../shared/types/ItemKey.ts";
+import type { ItemState } from "../../shared/types/ItemState.ts";
+import type { Proposal } from "../../shared/types/Proposal.ts";
+import type { RunReport } from "../../shared/types/RunReport.ts";
+import type { Settings } from "../../shared/types/Settings.ts";
+import type { Snapshot } from "../../shared/types/Snapshot.ts";
+import { DEFAULT_SETTINGS } from "../../shared/constants.ts";
+import { parseKey } from "../../shared/itemKey.ts";
 import { Refusal } from "../../shared/refusal.ts";
 
 const sortKeys = (value: unknown): unknown => {

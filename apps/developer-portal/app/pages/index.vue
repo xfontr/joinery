@@ -165,7 +165,7 @@
                                 :key="view.project.id"
                                 :project="view"
                             />
-                            <NewProjectCard />
+                            <WorkflowNewProjectCard />
                         </div>
                     </section>
                 </template>
@@ -314,7 +314,12 @@
                         </div>
 
                         <div v-else class="divide-y divide-default">
-                            <IssueRow v-for="issue in next" :key="issue.number" :issue compact />
+                            <HealthIssueRow
+                                v-for="issue in next"
+                                :key="issue.number"
+                                :issue
+                                compact
+                            />
                         </div>
                     </UCard>
                 </template>
@@ -517,7 +522,7 @@
 <script setup lang="ts">
 import { sortIssues } from "#layers/github/shared/issues.ts";
 import { toCollectionPath } from "#layers/docs/shared/docPages.ts";
-import type { ProjectNode } from "#layers/snapshot/shared/types.ts";
+import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 import { activeProjects } from "#layers/workflows/shared/workflows.ts";
 import { countByStatus, sortDecisions } from "#layers/decisions/shared/decisionReports.ts";
 import { countAll, sortAudits } from "#layers/audits/shared/auditReports.ts";

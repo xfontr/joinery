@@ -1,5 +1,5 @@
 import { defineEventHandler } from "h3";
-import type { DepsArtifact } from "../../shared/types.ts";
+import type { DepsArtifact } from "../../shared/types/DepsArtifact.ts";
 import { readArtifact } from "../utils/store.ts";
 
 export default defineEventHandler(async () => {

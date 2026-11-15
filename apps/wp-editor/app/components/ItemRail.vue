@@ -61,7 +61,8 @@
 </template>
 
 <script setup lang="ts">
-import type { Item, ItemKey } from "#shared/types.ts";
+import type { Item } from "#shared/types/Item.ts";
+import type { ItemKey } from "#shared/types/ItemKey.ts";
 
 interface Props {
     items: Item[];

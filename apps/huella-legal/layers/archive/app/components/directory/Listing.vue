@@ -25,7 +25,7 @@
             {{ normalizedQuery ? $t("directoryListing.matches", matches.length) : "" }}
         </output>
 
-        <Reveal
+        <DirectoryReveal
             v-if="matches.length"
             v-slot="{ items }"
             :items="matches"
@@ -37,7 +37,7 @@
                     <DirectoryCard :author="value" :count />
                 </li>
             </ul>
-        </Reveal>
+        </DirectoryReveal>
 
         <UEmpty
             v-else

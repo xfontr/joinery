@@ -4,7 +4,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { Refusal } from "../../shared/refusal.ts";
-import type { Changeset, ItemKey } from "../../shared/types.ts";
+import type { Changeset } from "../../shared/types/Changeset.ts";
+import type { ItemKey } from "../../shared/types/ItemKey.ts";
 import { createStore, lockStore, stableJson } from "./store.ts";
 
 const BASE = {

@@ -21,15 +21,14 @@ import {
     unconfirm,
     unreject,
 } from "../../shared/rules.ts";
-import type {
-    Changeset,
-    Item,
-    ItemKey,
-    ItemState,
-    Proposal,
-    RunReport,
-} from "../../shared/types.ts";
-import { parseKey, POST_TYPES } from "../../shared/types.ts";
+import type { Changeset } from "../../shared/types/Changeset.ts";
+import type { Item } from "../../shared/types/Item.ts";
+import type { ItemKey } from "../../shared/types/ItemKey.ts";
+import type { ItemState } from "../../shared/types/ItemState.ts";
+import type { Proposal } from "../../shared/types/Proposal.ts";
+import type { RunReport } from "../../shared/types/RunReport.ts";
+import { POST_TYPES } from "../../shared/constants.ts";
+import { parseKey } from "../../shared/itemKey.ts";
 import { Refusal } from "../../shared/refusal.ts";
 import type { Store } from "../adapters/store.ts";
 import type { WordPress } from "../adapters/wordpress.ts";

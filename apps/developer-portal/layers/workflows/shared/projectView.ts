@@ -2,21 +2,18 @@ import { routedNeeds } from "./capability.ts";
 import { featuresOf, isEnabled, isGroupEnabled } from "./project.ts";
 import { day, issueAsOf, ticketStatus } from "./ticket.ts";
 import { ticketsToFile } from "./ticketSize.ts";
-import {
-    CAPABILITY_LABEL_PREFIX,
-    CAPABILITY_STATES,
-    type Capability,
-    type CapabilityState,
-    type CapabilityView,
-    type Points,
-    type Progress,
-    type Project,
-    type ProjectView,
-    type Snapshot,
-    type StageView,
-    type Template,
-    type UnsortedIssue,
-} from "./types.ts";
+import { CAPABILITY_LABEL_PREFIX, CAPABILITY_STATES } from "./constants.ts";
+import type { Capability } from "./types/Capability.ts";
+import type { CapabilityState } from "./types/CapabilityState.ts";
+import type { CapabilityView } from "./types/CapabilityView.ts";
+import type { Points } from "./types/Points.ts";
+import type { Progress } from "./types/Progress.ts";
+import type { Project } from "./types/Project.ts";
+import type { ProjectView } from "./types/ProjectView.ts";
+import type { Snapshot } from "./types/Snapshot.ts";
+import type { StageView } from "./types/StageView.ts";
+import type { Template } from "./types/Template.ts";
+import type { UnsortedIssue } from "./types/UnsortedIssue.ts";
 
 const progressOf = (capabilities: CapabilityView[]): Progress => {
     const counted = capabilities.filter(

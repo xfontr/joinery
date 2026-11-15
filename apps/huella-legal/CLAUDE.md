@@ -25,6 +25,11 @@ See [README.md](./README.md) for the env vars, the i18n wiring and the telemetry
   it; `server/utils/` is only for helpers that know nothing about the domain, so a cached read that
   several routes share goes in `server/services/`. A vendor client that one layer calls goes in
   `server/adapters/`, named for the vendor, so it stays out of Nitro's auto-imports.
+  No component sits bare at a layer's `app/components/` root: it carries the layer's name there
+  (`NewsletterBand`) or goes in a folder naming what it belongs to (`article/Byline.vue`, which
+  registers `ArticleByline`). Page files are named in English after their route, the URL living in
+  `definePageMeta`'s `path`. The cross-project rules are in
+  [`conventions.md`](../../docs/concepts/conventions.md).
   A layer declares caching for its own routes under `rendering` in its `nuxt.config.ts`, never in
   [`modules/rendering.ts`](./modules/rendering.ts).
   Its links go under `nav` in its `app/app.config.ts`; the shell's `useSiteNav` only arranges those
