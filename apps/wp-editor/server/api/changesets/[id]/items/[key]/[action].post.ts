@@ -1,4 +1,4 @@
-import type { ItemKey } from "../../../../../../shared/types.ts";
+import type { ItemKey } from "../../../../../../shared/types/ItemKey.ts";
 import {
     applyItem,
     dryRunItem,

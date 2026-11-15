@@ -65,7 +65,8 @@
 
 <script setup lang="ts">
 import type { BadgeProps } from "@nuxt/ui";
-import type { ItemKey, RunReport } from "#shared/types.ts";
+import type { ItemKey } from "#shared/types/ItemKey.ts";
+import type { RunReport } from "#shared/types/RunReport.ts";
 
 interface Props {
     report: RunReport;

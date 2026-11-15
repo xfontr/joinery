@@ -3,8 +3,12 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { derivedStatus } from "../../shared/rules.ts";
-import type { ItemKey, PostType, Proposal, RunReport, Settings } from "../../shared/types.ts";
-import { DEFAULT_SETTINGS } from "../../shared/types.ts";
+import type { ItemKey } from "../../shared/types/ItemKey.ts";
+import type { PostType } from "../../shared/types/PostType.ts";
+import type { Proposal } from "../../shared/types/Proposal.ts";
+import type { RunReport } from "../../shared/types/RunReport.ts";
+import type { Settings } from "../../shared/types/Settings.ts";
+import { DEFAULT_SETTINGS } from "../../shared/constants.ts";
 import {
     applyItem,
     bulkApply,

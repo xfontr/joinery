@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { ItemState } from "#shared/types.ts";
+import type { ItemState } from "#shared/types/ItemState.ts";
 import { itemBadge, matchesFilter } from "./itemStatus.ts";
 
 const item = (state: Partial<ItemState>, proposal = true) => ({

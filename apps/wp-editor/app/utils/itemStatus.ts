@@ -1,6 +1,6 @@
 import type { BadgeProps } from "@nuxt/ui";
 import { isApplied, isPending, isReviewRequested } from "../../shared/rules.ts";
-import type { Item } from "#shared/types.ts";
+import type { Item } from "#shared/types/Item.ts";
 
 export const ITEM_FILTERS = [
     "all",

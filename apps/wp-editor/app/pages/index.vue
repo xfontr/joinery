@@ -72,7 +72,7 @@
 
 <script setup lang="ts">
 import type { BadgeProps } from "@nuxt/ui";
-import type { Changeset } from "#shared/types.ts";
+import type { Changeset } from "#shared/types/Changeset.ts";
 
 interface Row extends Changeset {
     counts: Record<

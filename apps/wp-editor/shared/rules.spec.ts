@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { Refusal } from "./refusal.ts";
-import type { Changeset, Item, ItemKey, ItemState, RunReport, Settings } from "./types.ts";
-import { DEFAULT_SETTINGS } from "./types.ts";
+import type { Changeset } from "./types/Changeset.ts";
+import type { Item } from "./types/Item.ts";
+import type { ItemKey } from "./types/ItemKey.ts";
+import type { ItemState } from "./types/ItemState.ts";
+import type { RunReport } from "./types/RunReport.ts";
+import type { Settings } from "./types/Settings.ts";
+import { DEFAULT_SETTINGS } from "./constants.ts";
 import {
     afterEdit,
     appliedText,

@@ -1,4 +1,9 @@
-import type { Changeset, Item, ItemKey, Proposal, RunReport, Settings } from "#shared/types.ts";
+import type { Changeset } from "#shared/types/Changeset.ts";
+import type { Item } from "#shared/types/Item.ts";
+import type { ItemKey } from "#shared/types/ItemKey.ts";
+import type { Proposal } from "#shared/types/Proposal.ts";
+import type { RunReport } from "#shared/types/RunReport.ts";
+import type { Settings } from "#shared/types/Settings.ts";
 
 export interface ChangesetView {
     changeset: Changeset;
