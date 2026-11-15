@@ -12,20 +12,22 @@ on, and the supporting services they depend on.
 
 ## 🗂 Workspace layout
 
+<!-- docs:map:layout -->
 ```
-apps/
-    huella-legal/     @monorepo/huella-legal — Huella Legal, a WIP law blog redesign (Nuxt 4)
-    developer-portal/ @monorepo/developer-portal — the repository's public portal/front door over its docs, projects, architecture and engineering health
-    wp-editor/        @monorepo/wp-editor — local-only review-and-apply tool for bulk edits to WordPress posts and pages
 packages/
     configs/          @monorepo/configs — shared ESLint, Vitest, Playwright and tsconfig presets
     content/          @monorepo/content — CMS entries and taxonomies + a Nuxt module
     i18n/             @monorepo/i18n — translations core + a Nuxt module
     observability/    @monorepo/observability — Grafana Faro in the browser, OpenTelemetry on the server
+apps/
+    developer-portal/ @monorepo/developer-portal — the repository's public portal/front door over its docs, projects, architecture and engineering health
+    huella-legal/     @monorepo/huella-legal — Huella Legal, a WIP law blog redesign (Nuxt 4)
+    wp-editor/        @monorepo/wp-editor — local-only review-and-apply tool for bulk edits to WordPress posts and pages
 infrastructure/
-    translations/     @monorepo/translations — TMS serving the locale files over HTTP
     scripts/          @monorepo/scripts — repo-local dev tooling, one folder per script
+    translations/     @monorepo/translations — TMS serving the locale files over HTTP
 ```
+<!-- /docs:map:layout -->
 
 `packages/*` is shared product code and the only thing `nx release` versions.
 `apps/*` are the user-facing products. `infrastructure/*` holds what stays outside that release
@@ -52,6 +54,7 @@ telemetry logs and the workflow templates, projects and snapshots — so `docs/`
 Projects are layered with Nx tags (declared in each `package.json` under `nx.tags`) and enforced by
 `@nx/enforce-module-boundaries` at lint time:
 
+<!-- docs:map:type-tags -->
 | Tag | May depend on | Who has it |
 | --- | --- | --- |
 | `type:app` | `type:integration`, `type:observability`, `type:config` | `developer-portal`, `huella-legal`, `wp-editor` |
@@ -60,9 +63,11 @@ Projects are layered with Nx tags (declared in each `package.json` under `nx.tag
 | `type:infra` | `type:config` | `translations` |
 | `type:tooling` | `type:config` | `scripts` |
 | `type:config` | nothing | `configs` |
+<!-- /docs:map:type-tags -->
 
 Every project also carries exactly one `scope:*` tag, and both rules apply at once:
 
+<!-- docs:map:scope-tags -->
 | Scope | May depend on | Who has it |
 | --- | --- | --- |
 | `scope:shared` | `scope:shared` | `configs`, `content`, `i18n`, `observability` |
@@ -70,6 +75,7 @@ Every project also carries exactly one `scope:*` tag, and both rules apply at on
 | `scope:internal` | `scope:internal`, `scope:shared` | `developer-portal`, `wp-editor` |
 | `scope:tooling` | `scope:tooling`, `scope:shared` | `scripts` |
 | `scope:infra` | `scope:infra`, `scope:shared` | `translations` |
+<!-- /docs:map:scope-tags -->
 
 The rule of thumb: apps compose, everything else stays a leaf, and nothing reaches into another
 product's scope. A tag gets a row when its first project exists, not before;
@@ -116,7 +122,7 @@ simply never fire, while the portal has no current coverage or derived docs to s
 [`apps/huella-legal`](./apps/huella-legal/README.md) for the env vars it reads.
 
 The everyday commands. [`docs/FEATURES.md`](./docs/FEATURES.md) lists every other one — the
-`issue:*` scripts, `docs:drift`, `package:check` — with the doc that explains it.
+`issue:*` scripts, `docs:drift`, `invariants:check` — with the doc that explains it.
 The ones that take a target run against **affected** projects only (what changed since `master`),
 which is also what CI runs, except `pnpm test:coverage`. For the whole workspace instead, use
 `pnpm exec nx run-many -t <target>`.
@@ -146,8 +152,10 @@ checks, is in [`docs/guides/change-lifecycle.md`](./docs/guides/change-lifecycle
   commitlint through [`commitlint.config.mjs`](./commitlint.config.mjs). The
   [`commit-msg`](./.husky/commit-msg) hook tags the subject with the branch's issue number
   (`feat: [#50] add thing`), which is why the log here is number-first without anyone typing it.
-- [`pre-commit`](./.husky/pre-commit) blocks a commit while `docs/FEATURES.md` is stale, then stages the script runs and agent lint hits recorded since the last commit into
-  `data/telemetry/` ([`pnpm usage:flush`](./infrastructure/scripts/src/usage/README.md)).
+- [`pre-commit`](./.husky/pre-commit) blocks a commit while `docs/FEATURES.md` is stale or
+  [`pnpm invariants:check`](./infrastructure/scripts/src/invariants/README.md) fails, then stages
+  the script runs and agent lint hits recorded since the last commit into `data/telemetry/`
+  ([`pnpm usage:flush`](./infrastructure/scripts/src/usage/README.md)).
 - [`pre-push`](./.husky/pre-push) rejects a bad branch name or an added `TODO`/`FIXME` comment,
   then runs lint, test and typecheck on affected projects. File a flagged comment with
   [`pnpm issue:add`](./infrastructure/scripts/src/issue/README.md) and delete it.

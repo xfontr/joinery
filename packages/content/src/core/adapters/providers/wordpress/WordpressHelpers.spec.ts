@@ -139,9 +139,10 @@ describe("toEntry", () => {
         expect(toEntry(entry)).toEqual({
             id: "7",
             slug: "hello-world",
-            title: "Hello &#8211; World",
+            title: "Hello – World",
             excerpt: { format: "html", value: "<p>Excerpt</p>" },
             body: { format: "html", value: "<p>Body</p>" },
+            wordCount: 1,
             publishedAt: "2026-01-02T03:04:05Z",
             updatedAt: "2026-01-03T03:04:05Z",
             image: {

@@ -12,7 +12,7 @@ const CATEGORY = fakeTerm();
 const TAG = fakeTerm({ resource: "tags" });
 
 const entry: Entry = fakeEntry({
-    title: "La &#8220;prueba&#8221; de la culpa &#8211; notas",
+    title: "La “prueba” de la culpa – notas",
     excerpt: { format: "html", value: "<p>Un resumen de la culpa [&hellip;]</p>\n" },
     body: { format: "html", value: words(460) },
     image: fakeAsset({ alt: "" }),
@@ -38,16 +38,6 @@ describe("toArticleSummary", () => {
             format: "articulo",
             readingMinutes: 2,
         });
-    });
-
-    it("decodes the names WordPress escaped", () => {
-        const result = summarise({
-            terms: [category("tfg", "TFG &amp; TFM")],
-            authors: [fakeAuthor({ name: "Ana &amp; Bruno" })],
-        });
-
-        expect(result.category?.name).toBe("TFG & TFM");
-        expect(result.authors[0]?.name).toBe("Ana & Bruno");
     });
 
     it("carries Yoast's noindex, so the sitemap and the feed can leave the post out", () => {
@@ -102,19 +92,12 @@ describe("the reading time", () => {
         [230, 1],
         [231, 2],
         [2300, 10],
-    ])("reads %i words in %i minutes", (count, minutes) => {
-        expect(summarise({ body: { format: "html", value: words(count) } }).readingMinutes).toBe(
-            minutes,
-        );
+    ])("reads %i words in %i minutes", (wordCount, minutes) => {
+        expect(summarise({ wordCount }).readingMinutes).toBe(minutes);
     });
 
-    // Bodies carry `<meta charset>` (50 posts) and empty icon spans (23 uses); neither is reading
-    it("does not count markup as reading", () => {
-        const html =
-            '<meta charset="utf-8"><span class="superfontello3-quote"></span>' +
-            `<img src="https://wp.test/uploads/a.jpg" alt="una foto larga">${words(230)}`;
-
-        expect(summarise({ body: { format: "html", value: html } }).readingMinutes).toBe(1);
+    it("reads an entry the CMS counted no words for as one minute, never zero", () => {
+        expect(summarise({ wordCount: undefined }).readingMinutes).toBe(1);
     });
 });
 

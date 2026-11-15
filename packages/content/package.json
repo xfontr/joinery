@@ -1,7 +1,7 @@
 {
   "name": "@monorepo/content",
   "version": "0.0.13",
-  "description": "Content ports",
+  "description": "CMS entries and taxonomies + a Nuxt module",
   "author": "Xifré Font",
   "license": "ISC",
   "type": "module",

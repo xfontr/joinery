@@ -46,12 +46,6 @@ describe("toPage", () => {
         expect(lead + html).not.toMatch(/script|<form/);
     });
 
-    it("decodes the entities WordPress escapes in a title", () => {
-        expect(page("<p>x</p>", { title: "Aviso &amp; privacidad" }).title).toBe(
-            "Aviso & privacidad",
-        );
-    });
-
     it("builds the permalink from the configured site, with or without its trailing slash", () => {
         const slug = "aviso-legal";
         const entry = fakeEntry({ slug });
@@ -60,11 +54,5 @@ describe("toPage", () => {
         expect(toPage(entry, { ...ORIGINS, siteUrl: `${SITE}/` }).permalink).toBe(
             `${SITE}/${slug}/`,
         );
-    });
-
-    it("has an empty body for a block document, which WordPress never serves", () => {
-        const entry = fakeEntry({ body: { format: "blocks", value: [] } });
-
-        expect(toPage(entry, ORIGINS).body).toMatchObject({ lead: "", html: "", toc: [] });
     });
 });

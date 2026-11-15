@@ -6,6 +6,19 @@ import { oneProject, readProject, readTemplate } from "./adapters/files.ts";
 import { readMap } from "./domain/filing.ts";
 import { setupPlan } from "./domain/setup.ts";
 
+const apply = (plan: ReturnType<typeof setupPlan>, write: boolean): void => {
+    const verb = write ? "Created" : "Creates";
+
+    if (plan.milestone !== null) {
+        if (write) createMilestone(plan.milestone);
+        out.info(`${verb} milestone ${plan.milestone}`);
+    }
+    for (const label of plan.labels) {
+        if (write) createLabel(label);
+        out.info(`${verb} label ${label}`);
+    }
+};
+
 /** Creates a project's milestone and the labels its tickets will carry; a dry run unless `--yes`. */
 export const setup = ({ positionals }: Args): void => {
     const id = oneProject(positionals);
@@ -30,13 +43,7 @@ export const setup = ({ positionals }: Args): void => {
         return;
     }
 
-    const create = (kind: string, name: string, make: (name: string) => void): void => {
-        if (write) make(name);
-        out.info(`${write ? "Created" : "Creates"} ${kind} ${name}`);
-    };
-
-    if (plan.milestone !== null) create("milestone", plan.milestone, createMilestone);
-    for (const label of plan.labels) create("label", label, createLabel);
+    apply(plan, write);
 
     if (!write) {
         out.note("Nothing was created. Run it again with --yes to create these.");

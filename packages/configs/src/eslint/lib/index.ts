@@ -19,6 +19,8 @@ import { useBeforeDefine, useBeforeDefineVue } from "./useBeforeDefine.ts";
 import noConsole from "./console.ts";
 import { unsafeCode, unsafeCodeVue } from "./unsafeCode.ts";
 import e2eFixture from "./e2eFixture.ts";
+import configFiles from "./configFiles.ts";
+import pureDomain from "./pureDomain.ts";
 import routeMeta from "./routeMeta.ts";
 import tailwind from "./tailwind.ts";
 import regexp from "./regexp.ts";
@@ -47,6 +49,7 @@ const shared: object[] = [
     e2eFixture,
     disableReasons,
     defaultExports,
+    configFiles,
 ];
 
 const vueOnly: object[] = [
@@ -63,4 +66,13 @@ const vueOnly: object[] = [
     defaultExportsVue,
 ];
 
-export { shared, vueOnly, vitestConfig, baseIgnores, routeMeta, tailwind, layerBoundaries };
+export {
+    shared,
+    vueOnly,
+    vitestConfig,
+    baseIgnores,
+    routeMeta,
+    tailwind,
+    layerBoundaries,
+    pureDomain,
+};

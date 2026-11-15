@@ -18,7 +18,7 @@ import {
     toSnapshot,
 } from "./domain/snapshot.ts";
 
-/** Writes one project's snapshot, or returns false when its milestone can't be read. */
+/** False when the milestone isn't there yet, so one missing milestone doesn't stop the others. */
 const syncOne = (id: string, activity: ReturnType<typeof activityByIssue>): boolean => {
     const read = syncTargetOf(readProject(id));
 
@@ -28,7 +28,6 @@ const syncOne = (id: string, activity: ReturnType<typeof activityByIssue>): bool
     try {
         issues = milestoneIssues(read.milestone);
     } catch (error) {
-        // A project created before its milestone mustn't stop the others from syncing.
         if (!(error instanceof ExpectedError)) throw error;
         out.warn(`${id}: ${error.message}`);
         return false;

@@ -237,7 +237,7 @@ describe("the list cache", () => {
     it("keys off the vendor, the resource and the normalised query", async () => {
         await useContent(EVENT).listEntries("posts", { page: 2, perPage: 6 });
 
-        expect(keyOf("content-list")).toBe(
+        expect(keyOf("content-entry-list")).toBe(
             contentKey(nitro.vendor!, "posts", { page: 2, perPage: 6 }),
         );
     });
@@ -246,25 +246,25 @@ describe("the list cache", () => {
         "gives %o the same entry as the first page",
         async (query) => {
             await useContent(EVENT).listEntries("posts");
-            const firstPage = keyOf("content-list");
+            const firstPage = keyOf("content-entry-list");
 
             await useContent(EVENT).listEntries("posts", query);
 
-            expect(keyOf("content-list")).toBe(firstPage);
+            expect(keyOf("content-entry-list")).toBe(firstPage);
         },
     );
 
     it("separates the resources of one vendor, and one filter from another", async () => {
         await useContent(EVENT).listEntries("posts");
-        const posts = keyOf("content-list");
+        const posts = keyOf("content-entry-list");
 
         await useContent(EVENT).listEntries("pages");
-        expect(keyOf("content-list")).not.toBe(posts);
+        expect(keyOf("content-entry-list")).not.toBe(posts);
 
         await useContent(EVENT).listEntries("posts", {
             term: { resource: "categories", id: "12" },
         });
-        expect(keyOf("content-list")).not.toBe(posts);
+        expect(keyOf("content-entry-list")).not.toBe(posts);
     });
 
     it("hands the cache the request, so a stale refresh can outlive the response", async () => {
@@ -273,12 +273,10 @@ describe("the list cache", () => {
         expect(nitro.calls[0]?.event).toBe(EVENT);
     });
 
-    it("caches for the window the app configures, not a fixed one", () => {
-        expect(nitro.caches["content-list"]).toMatchObject({
-            group: "content",
-            maxAge: 120,
-            swr: false,
-        });
+    it("caches entry and term lists for the window the app configures, not a fixed one", () => {
+        for (const name of ["content-entry-list", "content-term-list"]) {
+            expect(nitro.caches[name]).toMatchObject({ group: "content", maxAge: 120, swr: false });
+        }
     });
 });
 
@@ -287,25 +285,23 @@ describe("the item cache", () => {
     it("keys off the vendor, the resource and the trimmed slug", async () => {
         await useContent(EVENT).getEntry("posts", " hello-world ");
 
-        expect(keyOf("content-item")).toBe(
+        expect(keyOf("content-entry")).toBe(
             contentKey(nitro.vendor!, "posts", { slug: "hello-world" }),
         );
     });
 
     it("separates the same slug under two resources", async () => {
         await useContent(EVENT).getEntry("posts", "hello-world");
-        const post = keyOf("content-item");
+        const post = keyOf("content-entry");
 
         await useContent(EVENT).getEntry("pages", "hello-world");
 
-        expect(keyOf("content-item")).not.toBe(post);
+        expect(keyOf("content-entry")).not.toBe(post);
     });
 
-    it("caches for its own configured window, apart from the list's", () => {
-        expect(nitro.caches["content-item"]).toMatchObject({
-            group: "content",
-            maxAge: 480,
-            swr: true,
-        });
+    it("caches entries and terms for their own configured window, apart from the list's", () => {
+        for (const name of ["content-entry", "content-term"]) {
+            expect(nitro.caches[name]).toMatchObject({ group: "content", maxAge: 480, swr: true });
+        }
     });
 });

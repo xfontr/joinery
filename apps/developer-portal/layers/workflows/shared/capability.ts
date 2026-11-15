@@ -17,6 +17,7 @@ const readReuse = (reader: Reader, raw: unknown, where: string): Capability["reu
     if ((REUSE_PLANS as readonly string[]).includes(plan)) {
         return { plan: plan as ReusePlan, from: asText(rawReuse.from) };
     }
+
     reader.problems.push(
         `${where}: \`reuse.plan: ${plan || "(missing)"}\` isn't one of ${REUSE_PLANS.join(", ")}`,
     );
@@ -41,7 +42,6 @@ export const readCapability = (reader: Reader, raw: unknown, index: number): Cap
     }
 
     const reuse = readReuse(reader, raw.reuse, where);
-
     const complexity =
         typeof raw.complexity === "number" &&
         (COMPLEXITY_SCALE as readonly number[]).includes(raw.complexity)

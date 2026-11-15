@@ -141,19 +141,20 @@ the traps in it.
   the next version.
 - Pre-push runs lint, test and typecheck **in the working tree**, not the pushed commits, so an
   uncommitted fix can pass a push whose commits are red. Only the `TODO`/`FIXME` scan is range-based.
-- CI runs those three **plus `build`** and `pnpm docs:map --check`, so a green push is not yet a
-  green pipeline — `apps/huella-legal` typechecks on build, which is where most of that difference
-  shows up. The `--check` also runs in pre-commit.
+- CI runs those three **plus `build`**, `pnpm docs:map --check` and `pnpm invariants:check`, so a
+  green push is not yet a green pipeline — `apps/huella-legal` typechecks on build, which is where
+  most of that difference shows up. Both checks also run in pre-commit.
 - A fresh clone gets no hooks until `pnpm quick-start` runs, because lifecycle scripts are banned
   and `husky` has no `prepare` script to install itself.
 
 ## 🔗 The two places that must agree
 
-The Nx tag table is written twice: the enforced copy in
-[`boundaries.ts`](./packages/configs/src/eslint/lib/boundaries.ts) and the readable copy in the
-[root README](./README.md#-architecture--boundaries). Changing one without the other is the
-standing failure mode in this repo. Same for the workspace-layout block in the root README when a
-project is added.
+The root README's tag tables and workspace-layout block sit between `<!-- docs:map:… -->` markers
+and are rendered by `pnpm docs:map` from
+[`boundaries.ts`](./packages/configs/src/eslint/lib/boundaries.ts) and each project's
+`package.json` — `nx.tags` for the tables, `description` for its layout line. Edit those and
+re-render; CI's `docs:map --check` fails a hand edit between the markers, the way it does for
+`docs/FEATURES.md`.
 
 A Nuxt app's `tsconfig.json` is `files: []` plus references into `.nuxt/`, so anything that opens it
 fails while that directory is missing. Two mechanisms cover it. In [`nx.json`](./nx.json), `lint`,

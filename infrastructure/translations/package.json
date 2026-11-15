@@ -1,7 +1,7 @@
 {
   "name": "@monorepo/translations",
   "version": "0.0.0",
-  "description": "Translations infrastructure — a TMS that serves the project locale files over HTTP",
+  "description": "TMS serving the locale files over HTTP",
   "private": true,
   "author": "Xifré Font",
   "license": "ISC",

@@ -31,7 +31,7 @@ const handler = (await import("./index.get")).default as unknown as (
     event: unknown,
 ) => Promise<ArticleListing>;
 
-const CIVIL = fakeTerm({ slug: "derecho-civil", name: "Derecho &amp; civil" });
+const CIVIL = fakeTerm({ slug: "derecho-civil", name: "Derecho & civil" });
 const AUTHOR = fakeAuthor({ slug: "ana-ruiz" });
 const OLDEST = fakeEntry({
     publishedAt: "2023-01-01T00:00:00Z",
@@ -101,9 +101,9 @@ describe("GET /api/articles", () => {
         expect(error.message).toContain("page");
     });
 
-    it("reads a subject's own term, so the page has its description and decoded name", async () => {
+    it("reads a subject's own term, so the page has its description", async () => {
         nitro.query = { category: "derecho-civil" };
-        nitro.getTerm.mockResolvedValue({ ...CIVIL, description: "<p>Contratos</p>" });
+        nitro.getTerm.mockResolvedValue({ ...CIVIL, description: "Contratos" });
 
         const listing = await handler({});
 

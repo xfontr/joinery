@@ -30,21 +30,44 @@ export const defaultLayout = (definitions: readonly WidgetDefinition[]): Dashboa
 
 const isSize = (value: unknown): value is WidgetSize => WIDGET_SIZES.includes(value as WidgetSize);
 
-const savedList = (saved: object, key: string): unknown[] => {
-    const value = (saved as Record<string, unknown>)[key];
-    return Array.isArray(value) ? value : [];
+const savedPlacements = (
+    saved: object,
+    byId: Map<string, WidgetDefinition>,
+    seen: Set<string>,
+): WidgetPlacement[] => {
+    const entries: unknown[] =
+        "widgets" in saved && Array.isArray(saved.widgets) ? saved.widgets : [];
+    const widgets: WidgetPlacement[] = [];
+
+    for (const entry of entries) {
+        if (typeof entry !== "object" || entry === null) continue;
+
+        const id = "id" in entry ? entry.id : undefined;
+        const size = "size" in entry ? entry.size : undefined;
+        const definition = typeof id === "string" ? byId.get(id) : undefined;
+
+        if (!definition || seen.has(definition.id)) continue;
+
+        seen.add(definition.id);
+        widgets.push({ id: definition.id, size: isSize(size) ? size : definition.size });
+    }
+
+    return widgets;
 };
 
-const placementOf = (
-    entry: unknown,
-    byId: ReadonlyMap<string, WidgetDefinition>,
-): WidgetPlacement | null => {
-    if (typeof entry !== "object" || entry === null) return null;
+const savedHiddenIds = (
+    saved: object,
+    byId: Map<string, WidgetDefinition>,
+    seen: Set<string>,
+): string[] => {
+    const entries: unknown[] = "hidden" in saved && Array.isArray(saved.hidden) ? saved.hidden : [];
 
-    const { id, size } = entry as { id?: unknown; size?: unknown };
-    const definition = typeof id === "string" ? byId.get(id) : undefined;
+    return entries.filter((id): id is string => {
+        if (typeof id !== "string" || !byId.has(id) || seen.has(id)) return false;
 
-    return definition ? { id: definition.id, size: isSize(size) ? size : definition.size } : null;
+        seen.add(id);
+        return true;
+    });
 };
 
 /**
@@ -62,24 +85,8 @@ export const resolveLayout = (
 
     const byId = new Map(definitions.map((widget) => [widget.id, widget]));
     const seen = new Set<string>();
-    const widgets: WidgetPlacement[] = [];
-    const hidden: string[] = [];
-
-    for (const entry of savedList(saved, "widgets")) {
-        const placement = placementOf(entry, byId);
-
-        if (!placement || seen.has(placement.id)) continue;
-
-        seen.add(placement.id);
-        widgets.push(placement);
-    }
-
-    for (const id of savedList(saved, "hidden")) {
-        if (typeof id !== "string" || !byId.has(id) || seen.has(id)) continue;
-
-        seen.add(id);
-        hidden.push(id);
-    }
+    const widgets = savedPlacements(saved, byId, seen);
+    const hidden = savedHiddenIds(saved, byId, seen);
 
     for (const definition of definitions) {
         if (seen.has(definition.id)) continue;

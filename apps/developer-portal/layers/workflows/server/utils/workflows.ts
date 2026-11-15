@@ -46,29 +46,15 @@ const switchProblem = (template: Template, switches: Record<string, unknown>): s
     return null;
 };
 
-const pageProblem = (
-    template: Template,
-    taken: ReadonlySet<string>,
-    id: string,
-    type: string,
-    title: string,
-): string | null => {
-    if (!title) return "a page needs a title";
-    if (!PROJECT_ID.test(id)) return `\`${id}\` isn't a kebab-case page id`;
-    if (taken.has(id)) return `\`${id}\` is already taken in ${template.id}`;
-    if (!template.types.some((candidate) => candidate.id === type)) {
-        return `\`${type || "(none)"}\` isn't a page type of ${template.id}`;
-    }
-    return null;
-};
-
 /** The pages a new project adds, each an extra naming one of the template's page types. */
 const readPages = (
     template: Template,
     raw: unknown,
 ): { pages: NewPage[] } | { problem: string } => {
+    const failed = (problem: string) => ({ problem });
+
     if (raw === undefined) return { pages: [] };
-    if (!Array.isArray(raw)) return { problem: "the pages are a list" };
+    if (!Array.isArray(raw)) return failed("the pages are a list");
 
     const taken = new Set(template.capabilities.map(({ id }) => id));
     const pages: NewPage[] = [];
@@ -79,9 +65,12 @@ const readPages = (
             textOf(page[key]),
         );
 
-        const problem = pageProblem(template, taken, id, type, title);
-
-        if (problem) return { problem };
+        if (!title) return failed("a page needs a title");
+        if (!PROJECT_ID.test(id)) return failed(`\`${id}\` isn't a kebab-case page id`);
+        if (taken.has(id)) return failed(`\`${id}\` is already taken in ${template.id}`);
+        if (!template.types.some((candidate) => candidate.id === type)) {
+            return failed(`\`${type || "(none)"}\` isn't a page type of ${template.id}`);
+        }
 
         taken.add(id);
         pages.push({ id, type, title });
@@ -157,28 +146,42 @@ const createProject = async (
     return null;
 };
 
-const ticketSizeProblem = (view: ProjectView, size: string): string | null => {
+/** Applies a settings edit to the parsed project file, or returns why it can't. */
+const editSettings = (
+    edit: Record<string, unknown>,
+    document: Document,
+    view: ProjectView,
+    workflows: Workflows,
+): string | null => {
+    const { id } = view.project;
+    const details = Object.fromEntries(DETAILS.map((key) => [key, textOf(edit[key])] as const));
+
+    if (!details.title) return "a project needs a title";
+    if (!details.milestone) return "a project needs a milestone";
+
+    const switches = isRecord(edit.switches) ? edit.switches : {};
+    const problem =
+        switchProblem(view.template, switches) ??
+        milestoneProblem(workflows, id, details.milestone ?? "");
+
+    if (problem) return problem;
+
+    const size = textOf(edit.ticketSize);
+
     if (!(TICKET_SIZES as readonly string[]).includes(size))
         return `\`${size}\` isn't a ticket size`;
     if (size !== view.project.ticketSize && view.tickets.filed > 0) {
         return "the ticket size is fixed once a ticket is filed";
     }
-    return null;
-};
 
-const setSettings = (
-    document: Document,
-    view: ProjectView,
-    details: Record<string, string>,
-    switches: Record<string, unknown>,
-    size: string,
-): void => {
     for (const [key, value] of Object.entries(details)) document.set(key, value);
     if (Object.keys(switches).length > 0 && !isMap(document.get("switches"))) {
         document.set("switches", document.createNode({}));
     }
     for (const [key, on] of Object.entries(switches)) document.setIn(["switches", key], on);
     if (size !== view.project.ticketSize) document.set("ticketSize", size);
+
+    return null;
 };
 
 /**
@@ -214,24 +217,9 @@ export const applyEdit = async (body: unknown): Promise<string | null> => {
 
     if (edit.action !== "settings") return `\`${String(edit.action)}\` isn't an edit`;
 
-    const details = Object.fromEntries(DETAILS.map((key) => [key, textOf(edit[key])] as const));
-
-    if (!details.title) return "a project needs a title";
-    if (!details.milestone) return "a project needs a milestone";
-
-    const switches = isRecord(edit.switches) ? edit.switches : {};
-    const problem =
-        switchProblem(view.template, switches) ??
-        milestoneProblem(workflows, id, details.milestone ?? "");
+    const problem = editSettings(edit, document, view, workflows);
 
     if (problem) return problem;
-
-    const size = textOf(edit.ticketSize);
-    const sizeProblem = ticketSizeProblem(view, size);
-
-    if (sizeProblem) return sizeProblem;
-
-    setSettings(document, view, details, switches, size);
 
     await writeFile(path, document.toString({ lineWidth: 0 }), "utf8");
     return null;

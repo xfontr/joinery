@@ -96,14 +96,6 @@ describe("GET /api/search", () => {
         expect(nitro.listEntries).not.toHaveBeenCalled();
     });
 
-    it("answers a page past the end with a 404 rather than WordPress's 400", async () => {
-        nitro.listEntries.mockRejectedValue(
-            Object.assign(new Error("upstream"), { statusCode: 400 }),
-        );
-
-        await expect(handler({})).rejects.toMatchObject({ statusCode: 404 });
-    });
-
     it("answers a page past the end of a search with no match with a 404 too", async () => {
         nitro.query = { query: "culpa", page: "2" };
         nitro.listEntries.mockResolvedValue({ ...page([]), page: 2 });

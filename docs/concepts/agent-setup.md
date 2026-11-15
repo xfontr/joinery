@@ -25,12 +25,12 @@ command.
 | Hook | Enforces |
 | --- | --- |
 | [`eslint-fix.sh`](../../.claude/hooks/eslint-fix.sh) | Runs `eslint --fix` on the touched file, so style is corrected mechanically, and records each rule hit first for the portal's [lint usage](../../infrastructure/scripts/src/usage/README.md) |
-| [`check-invariants.sh`](../../.claude/hooks/check-invariants.sh) | Catches known cross-file and generated-file mistakes immediately after an edit |
+| [`check-invariants.sh`](../../.claude/hooks/check-invariants.sh) | Runs [`pnpm invariants:check`](../../infrastructure/scripts/src/invariants/README.md) after a manifest edit, and reminds about the cross-file steps of a new project or a boundary change |
 | [`guard-live.sh`](../../.claude/hooks/guard-live.sh) | Refuses `pnpm start`, `nuxt preview`, requests to the live WordPress site, force pushes and pushes to `master`: the things an unattended run must never do, whatever its prompt says |
 
-The same invariant checks run independently in scripts and CI where practical. Claude's hook is
-earlier feedback, not the only authority, so an edit made by hand reaches the same repository
-gate.
+The bans the hook enforces live in `pnpm invariants:check`, which `pre-commit` and `ci.yml` also
+run. Claude's hook is earlier feedback, not the only authority, so an edit made by hand fails the
+same gate. Its two reminders have no gate behind them.
 
 ## 🚫 What the deny list forecloses
 

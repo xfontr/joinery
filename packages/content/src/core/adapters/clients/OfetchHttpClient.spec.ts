@@ -140,7 +140,7 @@ describe("OfetchHttpClient", () => {
             ).rejects.toBeInstanceOf(UpstreamError);
         });
 
-        it("hands the upstream status to the domain, which is the only part it can act on", async () => {
+        it("hands the upstream status to the domain", async () => {
             const { $fetch } = createFailingFetch(fetchError(404));
 
             await expect(
@@ -149,6 +149,17 @@ describe("OfetchHttpClient", () => {
                 upstreamStatus: 404,
                 statusCode: 404,
             });
+        });
+
+        it("hands the vendor's error body to the domain, where a provider reads its own error codes", async () => {
+            const error = Object.assign(fetchError(400), {
+                data: { code: "rest_post_invalid_page_number" },
+            });
+            const { $fetch } = createFailingFetch(error);
+
+            await expect(
+                new OfetchHttpClient($fetch).get("https://wp.test/wp-json"),
+            ).rejects.toMatchObject({ body: { code: "rest_post_invalid_page_number" } });
         });
 
         // A network error carries no status, which is why it is optional rather than defaulted to
