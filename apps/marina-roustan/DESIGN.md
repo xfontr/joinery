@@ -22,15 +22,15 @@ picked. Tone is the one row a person wrote, from a screenshot of the home page a
 | Path | Role |
 | --- | --- |
 | [`layers/design/app/assets/main.css`](./layers/design/app/assets/main.css) | Every token: palettes, type scale, Nuxt UI's semantic roles pointed at them, and the base focus ring |
-| [`layers/design/app/app.config.ts`](./layers/design/app/app.config.ts) | Nuxt UI's colour aliases: primary sky, secondary ochre, neutral ink, error danger |
+| [`layers/design/app/app.config.ts`](./layers/design/app/app.config.ts) | Nuxt UI's colour aliases: primary tide, secondary ochre, neutral ink, error danger |
 | [`layers/design/nuxt.config.ts`](./layers/design/nuxt.config.ts) | Loads `main.css`, turns colour mode off and has `@nuxt/fonts` serve Lato at the four weights the site uses |
 
 ## 🎨 Tokens
 
-Palettes are namespaced (`marina-paper`, `marina-ink`, `marina-sky`, `marina-ochre`,
-`marina-danger`) so none shadows a Tailwind palette, and each runs 50–950 because Nuxt UI generates
+The palettes are `paper`, `ink`, `tide`, `ochre` and `danger`, none of them a Tailwind palette
+name, so none replaces one. Each runs 50–950 because Nuxt UI generates
 all eleven shades for every alias. Each ramp is the extract's own output, with the live colour
-unchanged at its step; `marina-danger` is the one generated from a chosen red, since the site shows
+unchanged at its step; `danger` is the one generated from a chosen red, since the site shows
 no error colour.
 
 Every text role on every surface, from `pnpm brand:contrast
@@ -39,41 +39,41 @@ re-runs it and replaces this table.
 
 | Role | Token | Surface | Ratio |
 | --- | --- | --- | --- |
-| `--ui-text-dimmed` | `marina-paper-600` | `--ui-bg` → `marina-paper-100` | 6.67:1 |
-| `--ui-text-dimmed` | `marina-paper-600` | `--ui-bg-muted` → `marina-paper-50` | 7.43:1 |
-| `--ui-text-dimmed` | `marina-paper-600` | `--ui-bg-elevated` → `marina-paper-50` | 7.43:1 |
-| `--ui-text-dimmed` | `marina-paper-600` | `--ui-bg-accented` → `marina-paper-200` | 6.16:1 |
-| `--ui-text-muted` | `marina-paper-600` | `--ui-bg` → `marina-paper-100` | 6.67:1 |
-| `--ui-text-muted` | `marina-paper-600` | `--ui-bg-muted` → `marina-paper-50` | 7.43:1 |
-| `--ui-text-muted` | `marina-paper-600` | `--ui-bg-elevated` → `marina-paper-50` | 7.43:1 |
-| `--ui-text-muted` | `marina-paper-600` | `--ui-bg-accented` → `marina-paper-200` | 6.16:1 |
-| `--ui-text-toned` | `marina-ink-600` | `--ui-bg` → `marina-paper-100` | 6.26:1 |
-| `--ui-text-toned` | `marina-ink-600` | `--ui-bg-muted` → `marina-paper-50` | 6.98:1 |
-| `--ui-text-toned` | `marina-ink-600` | `--ui-bg-elevated` → `marina-paper-50` | 6.98:1 |
-| `--ui-text-toned` | `marina-ink-600` | `--ui-bg-accented` → `marina-paper-200` | 5.79:1 |
-| `--ui-text` | `marina-ink-600` | `--ui-bg` → `marina-paper-100` | 6.26:1 |
-| `--ui-text` | `marina-ink-600` | `--ui-bg-muted` → `marina-paper-50` | 6.98:1 |
-| `--ui-text` | `marina-ink-600` | `--ui-bg-elevated` → `marina-paper-50` | 6.98:1 |
-| `--ui-text` | `marina-ink-600` | `--ui-bg-accented` → `marina-paper-200` | 5.79:1 |
-| `--ui-text-highlighted` | `marina-ink-700` | `--ui-bg` → `marina-paper-100` | 8.86:1 |
-| `--ui-text-highlighted` | `marina-ink-700` | `--ui-bg-muted` → `marina-paper-50` | 9.87:1 |
-| `--ui-text-highlighted` | `marina-ink-700` | `--ui-bg-elevated` → `marina-paper-50` | 9.87:1 |
-| `--ui-text-highlighted` | `marina-ink-700` | `--ui-bg-accented` → `marina-paper-200` | 8.19:1 |
-| `--ui-primary` | `marina-sky-600` | `--ui-bg` → `marina-paper-100` | 6.61:1 |
-| `--ui-primary` | `marina-sky-600` | `--ui-bg-muted` → `marina-paper-50` | 7.36:1 |
-| `--ui-primary` | `marina-sky-600` | `--ui-bg-elevated` → `marina-paper-50` | 7.36:1 |
-| `--ui-primary` | `marina-sky-600` | `--ui-bg-accented` → `marina-paper-200` | 6.11:1 |
-| `--ui-secondary` | `marina-ochre-600` | `--ui-bg` → `marina-paper-100` | 6.96:1 |
-| `--ui-secondary` | `marina-ochre-600` | `--ui-bg-muted` → `marina-paper-50` | 7.76:1 |
-| `--ui-secondary` | `marina-ochre-600` | `--ui-bg-elevated` → `marina-paper-50` | 7.76:1 |
-| `--ui-secondary` | `marina-ochre-600` | `--ui-bg-accented` → `marina-paper-200` | 6.43:1 |
-| `--ui-error` | `marina-danger-600` | `--ui-bg` → `marina-paper-100` | 7.13:1 |
-| `--ui-error` | `marina-danger-600` | `--ui-bg-muted` → `marina-paper-50` | 7.94:1 |
-| `--ui-error` | `marina-danger-600` | `--ui-bg-elevated` → `marina-paper-50` | 7.94:1 |
-| `--ui-error` | `marina-danger-600` | `--ui-bg-accented` → `marina-paper-200` | 6.59:1 |
-| `--ui-text-inverted` | `marina-paper-50` | `--ui-bg-inverted` → `marina-ink-600` | 6.98:1 |
+| `--ui-text-dimmed` | `paper-600` | `--ui-bg` → `paper-100` | 6.67:1 |
+| `--ui-text-dimmed` | `paper-600` | `--ui-bg-muted` → `paper-50` | 7.43:1 |
+| `--ui-text-dimmed` | `paper-600` | `--ui-bg-elevated` → `paper-50` | 7.43:1 |
+| `--ui-text-dimmed` | `paper-600` | `--ui-bg-accented` → `paper-200` | 6.16:1 |
+| `--ui-text-muted` | `paper-600` | `--ui-bg` → `paper-100` | 6.67:1 |
+| `--ui-text-muted` | `paper-600` | `--ui-bg-muted` → `paper-50` | 7.43:1 |
+| `--ui-text-muted` | `paper-600` | `--ui-bg-elevated` → `paper-50` | 7.43:1 |
+| `--ui-text-muted` | `paper-600` | `--ui-bg-accented` → `paper-200` | 6.16:1 |
+| `--ui-text-toned` | `ink-600` | `--ui-bg` → `paper-100` | 6.26:1 |
+| `--ui-text-toned` | `ink-600` | `--ui-bg-muted` → `paper-50` | 6.98:1 |
+| `--ui-text-toned` | `ink-600` | `--ui-bg-elevated` → `paper-50` | 6.98:1 |
+| `--ui-text-toned` | `ink-600` | `--ui-bg-accented` → `paper-200` | 5.79:1 |
+| `--ui-text` | `ink-600` | `--ui-bg` → `paper-100` | 6.26:1 |
+| `--ui-text` | `ink-600` | `--ui-bg-muted` → `paper-50` | 6.98:1 |
+| `--ui-text` | `ink-600` | `--ui-bg-elevated` → `paper-50` | 6.98:1 |
+| `--ui-text` | `ink-600` | `--ui-bg-accented` → `paper-200` | 5.79:1 |
+| `--ui-text-highlighted` | `ink-700` | `--ui-bg` → `paper-100` | 8.86:1 |
+| `--ui-text-highlighted` | `ink-700` | `--ui-bg-muted` → `paper-50` | 9.87:1 |
+| `--ui-text-highlighted` | `ink-700` | `--ui-bg-elevated` → `paper-50` | 9.87:1 |
+| `--ui-text-highlighted` | `ink-700` | `--ui-bg-accented` → `paper-200` | 8.19:1 |
+| `--ui-primary` | `tide-600` | `--ui-bg` → `paper-100` | 6.61:1 |
+| `--ui-primary` | `tide-600` | `--ui-bg-muted` → `paper-50` | 7.36:1 |
+| `--ui-primary` | `tide-600` | `--ui-bg-elevated` → `paper-50` | 7.36:1 |
+| `--ui-primary` | `tide-600` | `--ui-bg-accented` → `paper-200` | 6.11:1 |
+| `--ui-secondary` | `ochre-600` | `--ui-bg` → `paper-100` | 6.96:1 |
+| `--ui-secondary` | `ochre-600` | `--ui-bg-muted` → `paper-50` | 7.76:1 |
+| `--ui-secondary` | `ochre-600` | `--ui-bg-elevated` → `paper-50` | 7.76:1 |
+| `--ui-secondary` | `ochre-600` | `--ui-bg-accented` → `paper-200` | 6.43:1 |
+| `--ui-error` | `danger-600` | `--ui-bg` → `paper-100` | 7.13:1 |
+| `--ui-error` | `danger-600` | `--ui-bg-muted` → `paper-50` | 7.94:1 |
+| `--ui-error` | `danger-600` | `--ui-bg-elevated` → `paper-50` | 7.94:1 |
+| `--ui-error` | `danger-600` | `--ui-bg-accented` → `paper-200` | 6.59:1 |
+| `--ui-text-inverted` | `paper-50` | `--ui-bg-inverted` → `ink-600` | 6.98:1 |
 
-The brand sky (`marina-sky-400`, 2.72:1 on paper) and ochre (`marina-ochre-500`, 3.66:1) fail as
+The brand tide (`tide-400`, 2.72:1 on paper) and ochre (`ochre-500`, 3.66:1) fail as
 text, so the roles take their 600 steps; the brand steps stay for fills and decoration.
 
 | Type step | Spec (Lato, at 1280 px) | Where the live site uses it |

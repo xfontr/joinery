@@ -22,7 +22,7 @@ const restrictedClasses = async (classes: string): Promise<string[]> => {
 
 describe("eslint config", () => {
     it.each([
-        "bg-marina-sky-600",
+        "bg-tide-600",
         "hover:text-red-500",
         "bg-red-500/50",
         "bg-red-500!",
@@ -54,9 +54,9 @@ describe("eslint config", () => {
         "hover:border-[oklch(0.5_0.1_150)]",
         "fill-[var(--color-marina-sage-600)]",
         "bg-(--color-red-500)",
-        "text-(--color-marina-sky-400)",
-        "border-(--color-marina-ochre-500)",
-        "ring-(color:--color-marina-sky-400)",
+        "text-(--color-tide-400)",
+        "border-(--color-ochre-500)",
+        "ring-(color:--color-tide-400)",
         "bg-[red]",
         "border-[tomato]",
         "border-s-[#333]",
