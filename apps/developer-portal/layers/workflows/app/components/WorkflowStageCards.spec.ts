@@ -82,10 +82,11 @@ describe("WorkflowStageCards", () => {
             props: { stage: crowded.stages[0]!, index: 0 },
             global: { stubs: { UIcon: true } },
         });
-        const dots = wrapper.find("[role='img']");
-
-        expect(dots.attributes("aria-label")).toMatch(new RegExp(`^${count} `));
-        expect(dots.classes().includes("grid-rows-2")).toBe(stacked);
+        expect(wrapper.find(".sr-only").text()).toMatch(new RegExp(`^${count} `));
+        const dots = wrapper
+            .findAll("[aria-hidden='true']")
+            .find((group) => group.findAll("[title]").length === count);
+        expect(dots?.classes().includes("grid-rows-2")).toBe(stacked);
     });
 
     it("gives a switched-off block no card, since it isn't part of the project", async () => {

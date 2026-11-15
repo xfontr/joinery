@@ -57,6 +57,17 @@ const global = {
 const button = (wrapper: VueWrapper, label: string) =>
     wrapper.findAll("button").find((candidate) => candidate.text() === label);
 
+const options = (wrapper: VueWrapper, legend: string) =>
+    wrapper
+        .findAll("fieldset")
+        .find((group) => group.find("legend").text() === legend)
+        ?.findAll("label") ?? [];
+
+const choice = (wrapper: VueWrapper, legend: string, title: string) =>
+    options(wrapper, legend)
+        .find((option) => option.text().startsWith(title))
+        ?.find("input");
+
 beforeEach(() => {
     vi.clearAllMocks();
     state.editable = true;
@@ -77,11 +88,7 @@ describe("new project wizard", () => {
             .findAll("[role='switch']")
             .find((card) => card.text().includes("Search"))
             ?.trigger("click");
-        await wrapper
-            .find("[aria-label='Ticket size']")
-            .findAll("[role='radio']")
-            .find((option) => option.text().startsWith("Fast"))
-            ?.trigger("click");
+        await choice(wrapper, "Ticket size", "Fast")?.setValue();
         await button(wrapper, "Next")?.trigger("click");
         await button(wrapper, "Create project")?.trigger("click");
 
@@ -154,9 +161,7 @@ describe("new project wizard", () => {
     it("keeps the ticket size in view on every step, priced for the features picked so far", async () => {
         const wrapper = await mountSuspended(Page, { global });
         const size = (title: string) =>
-            wrapper
-                .find("[aria-label='Ticket size']")
-                .findAll("[role='radio']")
+            options(wrapper, "Ticket size")
                 .find((option) => option.text().startsWith(title))
                 ?.text();
 
@@ -252,7 +257,11 @@ describe("new project wizard", () => {
         );
         const wrapper = await mountSuspended(Page, { global });
 
-        expect(wrapper.find("[aria-checked='true']").text()).toContain("New website");
+        expect(
+            options(wrapper, "Template")
+                .find((option) => option.find<HTMLInputElement>("input").element.checked)
+                ?.text(),
+        ).toContain("New website");
     });
 
     it("won't move past the details until the project has a title", async () => {
@@ -297,11 +306,7 @@ describe("new project wizard", () => {
             .findAll("[role='switch']")
             .find((card) => card.text().includes("Search"))
             ?.trigger("click");
-        await wrapper
-            .find("[aria-label='Ticket size']")
-            .findAll("[role='radio']")
-            .find((option) => option.text().startsWith("Fast"))
-            ?.trigger("click");
+        await choice(wrapper, "Ticket size", "Fast")?.setValue();
         await button(wrapper, "Next")?.trigger("click");
         await button(wrapper, "Download YAML")?.trigger("click");
 

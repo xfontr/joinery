@@ -23,12 +23,12 @@ const mount = () =>
 describe("WorkflowTemplatePicker", () => {
     it("marks only the chosen template and reports the one clicked", async () => {
         const wrapper = await mount();
-        const [chosen, other] = wrapper.findAll("[role='radio']");
+        const [chosen, other] = wrapper.findAll<HTMLInputElement>("input[type='radio']");
 
-        expect(chosen!.attributes("aria-checked")).toBe("true");
-        expect(other!.attributes("aria-checked")).toBe("false");
+        expect(chosen!.element.checked).toBe(true);
+        expect(other!.element.checked).toBe(false);
 
-        await other!.trigger("click");
+        await other!.setValue();
 
         expect(wrapper.emitted("update:modelValue")).toEqual([["rebuild"]]);
     });
@@ -36,7 +36,7 @@ describe("WorkflowTemplatePicker", () => {
     it("prices each template in blocks, tickets and points before it is picked", async () => {
         const wrapper = await mount();
 
-        expect(wrapper.findAll("[role='radio']")[1]!.text()).toContain(
+        expect(wrapper.findAll("label")[1]!.text()).toContain(
             "1 blocks by default · 1–1 tickets · 3 SP",
         );
     });

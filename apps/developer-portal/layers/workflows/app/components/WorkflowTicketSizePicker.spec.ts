@@ -13,7 +13,7 @@ const mount = () =>
 
 describe("WorkflowTicketSizePicker", () => {
     it("prices every size in tickets, so the choice is made on the number", async () => {
-        const options = (await mount()).findAll("[role='radio']").map((option) => option.text());
+        const options = (await mount()).findAll("label").map((option) => option.text());
 
         expect(options[0]).toMatch(/^17\s*tickets/);
         expect(options[2]).toMatch(/^7\s*tickets/);
@@ -24,7 +24,7 @@ describe("WorkflowTicketSizePicker", () => {
             props: { modelValue: "block" },
         });
 
-        const options = wrapper.findAll("[role='radio']").map((option) => option.text());
+        const options = wrapper.findAll("label").map((option) => option.text());
 
         expect(options[0]).toMatch(/^Reviewed/);
         expect(options[2]).toMatch(/^Fast/);
@@ -41,15 +41,11 @@ describe("WorkflowTicketSizePicker", () => {
 
     it("marks only the current size as chosen and reports the one clicked", async () => {
         const wrapper = await mount();
-        const options = wrapper.findAll("[role='radio']");
+        const options = wrapper.findAll<HTMLInputElement>("input[type='radio']");
 
-        expect(options.map((option) => option.attributes("aria-checked"))).toEqual([
-            "true",
-            "false",
-            "false",
-        ]);
+        expect(options.map((option) => option.element.checked)).toEqual([true, false, false]);
 
-        await options[1]?.trigger("click");
+        await options[1]?.setValue();
         expect(wrapper.emitted("update:modelValue")).toEqual([["supervised"]]);
     });
 });

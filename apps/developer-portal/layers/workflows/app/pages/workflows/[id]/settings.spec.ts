@@ -145,7 +145,10 @@ describe("project settings", () => {
     it("locks every ticket size once a labelled ticket is in the milestone", async () => {
         state.data = withIssues([{ number: 1, state: "open", caps: ["search"] }]);
         const wrapper = await mountSuspended(Page, { global });
-        const sizes = wrapper.find("[aria-label='Ticket size']").findAll("[role='radio']");
+        const sizes = wrapper
+            .findAll("fieldset")
+            .find((group) => group.find("legend").text() === "Ticket size")!
+            .findAll("input[type='radio']");
 
         expect(sizes).toHaveLength(3);
         expect(sizes.every((size) => size.attributes("disabled") !== undefined)).toBe(true);
