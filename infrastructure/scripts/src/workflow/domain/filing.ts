@@ -461,7 +461,7 @@ export const bundlesOf = (
             0,
             ...(needs.get(id) ?? []).flatMap((need) => {
                 const dependency = byId.get(need);
-                if (!dependency || dependency.stage !== block.stage || walking.has(need)) return [];
+                if (dependency?.stage !== block.stage || walking.has(need)) return [];
 
                 const behind = levelOf(need, new Set([...walking, need]));
                 return [
