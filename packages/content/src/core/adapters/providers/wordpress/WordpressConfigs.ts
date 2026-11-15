@@ -9,3 +9,5 @@ export const TAXONOMIES: Record<string, TermResource | undefined> = {
     category: "categories",
     post_tag: "tags",
 };
+
+export const INVALID_PAGE_CODE = "rest_post_invalid_page_number";

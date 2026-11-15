@@ -17,6 +17,8 @@ export class UpstreamError extends ContentError {
     constructor(
         public readonly upstreamStatus: number | undefined,
         cause?: unknown,
+        // Not `data`, which h3's createError would hand to the client
+        public readonly body?: unknown,
     ) {
         super(
             upstreamStatus && PASSTHROUGH_STATUSES.has(upstreamStatus) ? upstreamStatus : 502,
@@ -68,5 +70,11 @@ export class MalformedQueryError extends ContentError {
 export class NotFoundError extends ContentError {
     constructor(resource: string, slug: string) {
         super(404, `No "${resource}" found with slug "${slug}"`);
+    }
+}
+
+export class PageNotFoundError extends ContentError {
+    constructor(resource: string, page: number) {
+        super(404, `No page ${page} of "${resource}"`);
     }
 }

@@ -151,6 +151,20 @@ describe("OfetchHttpClient", () => {
             });
         });
 
+        // A vendor names why it refused in the body, and a provider can't reach the transport's error
+        it("hands the refusal's body to the domain, off the field h3 would send to the client", async () => {
+            const { $fetch } = createFailingFetch(
+                Object.assign(fetchError(400), { data: { code: "rest_post_invalid_page_number" } }),
+            );
+
+            const error = await new OfetchHttpClient($fetch)
+                .get("https://wp.test/wp-json")
+                .catch((caught: UpstreamError) => caught);
+
+            expect(error).toMatchObject({ body: { code: "rest_post_invalid_page_number" } });
+            expect(error).not.toHaveProperty("data");
+        });
+
         // A network error carries no status, which is why it is optional rather than defaulted to
         // something that looks like an answer from upstream
         it("reports a failure that never reached the vendor without a status", async () => {

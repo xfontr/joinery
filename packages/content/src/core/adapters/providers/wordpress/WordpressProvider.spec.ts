@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import WordpressProvider from "./WordpressProvider";
+import { PageNotFoundError, UpstreamError } from "#core/domain/errors";
 import type { HttpClient } from "#core/ports/HttpClient";
 
 const get = vi.fn();
@@ -44,6 +45,8 @@ describe("WordpressProvider", () => {
         });
 
         it("sends no _embed for terms, which have nothing to embed", async () => {
+            respond([{ id: 3, name: "News", slug: "news", taxonomy: "category" }]);
+
             await build().listTerms("categories");
 
             expect(get).toHaveBeenCalledWith("/wp-json/wp/v2/categories", {
@@ -96,6 +99,28 @@ describe("WordpressProvider", () => {
             perPage: 6,
             total: 12,
             totalPages: 2,
+        });
+    });
+
+    describe("a page past the end", () => {
+        it("is a 404 rather than the 400 WordPress answers it with", async () => {
+            get.mockRejectedValue(
+                new UpstreamError(400, undefined, { code: "rest_post_invalid_page_number" }),
+            );
+
+            await expect(build().listEntries("posts", { page: 9 })).rejects.toBeInstanceOf(
+                PageNotFoundError,
+            );
+        });
+
+        it.each([
+            ["another 400", new UpstreamError(400, undefined, { code: "rest_invalid_param" })],
+            ["a 400 with no body", new UpstreamError(400)],
+            ["a network failure", new Error("ECONNREFUSED")],
+        ])("leaves %s as it was", async (_, cause) => {
+            get.mockRejectedValue(cause);
+
+            await expect(build().listEntries("posts", { page: 9 })).rejects.toBe(cause);
         });
     });
 });
