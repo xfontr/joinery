@@ -1,9 +1,7 @@
 import { relative } from "node:path";
-import type {
-    DepsArtifact,
-    OutdatedPackage,
-    VulnerabilityAdvisory,
-} from "#layers/snapshot/shared/types.ts";
+import type { DepsArtifact } from "#layers/snapshot/shared/types/DepsArtifact.ts";
+import type { OutdatedPackage } from "#layers/snapshot/shared/types/OutdatedPackage.ts";
+import type { VulnerabilityAdvisory } from "#layers/snapshot/shared/types/VulnerabilityAdvisory.ts";
 import { WORKSPACE_ROOT } from "../lib/paths.ts";
 import { runAllowFailure, tryRun } from "../lib/run.ts";
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { DocPage } from "#layers/snapshot/shared/types.ts";
+import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
 import {
     countByStatus,
     filterDecisions,

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { DocPage } from "#layers/snapshot/shared/types.ts";
+import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
 
 const store = vi.hoisted(() => ({ readArtifact: vi.fn() }));
 const h3 = vi.hoisted(() => ({ defineEventHandler: (handler: unknown) => handler }));

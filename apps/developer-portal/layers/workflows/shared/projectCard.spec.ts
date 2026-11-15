@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { activeProjects, projectCard } from "./projectCard.ts";
 import { projectView, readProject, readTemplate } from "./workflows.ts";
-import type { ProjectView } from "./types.ts";
+import type { ProjectView } from "./types/ProjectView.ts";
 
 const at = (percent: number) => ({ progress: { done: 0, total: 1, percent } }) as ProjectView;
 

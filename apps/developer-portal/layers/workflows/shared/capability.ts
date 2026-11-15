@@ -1,12 +1,8 @@
 import { asText, isRecord, type Reader } from "./reader.ts";
-import {
-    COMPLEXITY_SCALE,
-    KINDS,
-    REUSE_PLANS,
-    type Capability,
-    type Kind,
-    type ReusePlan,
-} from "./types.ts";
+import { COMPLEXITY_SCALE, KINDS, REUSE_PLANS } from "./constants.ts";
+import type { Capability } from "./types/Capability.ts";
+import type { Kind } from "./types/Kind.ts";
+import type { ReusePlan } from "./types/ReusePlan.ts";
 
 const readReuse = (reader: Reader, raw: unknown, where: string): Capability["reuse"] => {
     if (raw === undefined) return null;

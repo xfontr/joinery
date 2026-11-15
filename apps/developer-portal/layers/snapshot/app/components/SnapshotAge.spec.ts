@@ -1,7 +1,7 @@
 import { mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import SnapshotAge from "./SnapshotAge.vue";
-import type { Manifest } from "#layers/snapshot/shared/types.ts";
+import type { Manifest } from "#layers/snapshot/shared/types/Manifest.ts";
 
 const manifest: Manifest = {
     schemaVersion: 1,

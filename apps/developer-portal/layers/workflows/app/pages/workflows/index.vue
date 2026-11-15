@@ -61,7 +61,7 @@
                             :key="view.project.id"
                             :project="view"
                         />
-                        <NewProjectCard />
+                        <WorkflowNewProjectCard />
                     </div>
                 </section>
 

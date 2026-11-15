@@ -35,7 +35,7 @@ const global = {
             props: { title: String, description: String },
             template: "<div>{{ title }} {{ description }}</div>",
         },
-        IssueRow: {
+        HealthIssueRow: {
             props: { issue: Object },
             template: "<div class='row'>{{ issue.title }}</div>",
         },

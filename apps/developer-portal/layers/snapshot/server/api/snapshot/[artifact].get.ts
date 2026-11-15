@@ -1,24 +1,13 @@
 import { defineEventHandler, getRouterParam } from "h3";
-import type {
-    CoverageArtifact,
-    DepsArtifact,
-    DocsArtifact,
-    Manifest,
-    MetricsArtifact,
-    ProjectsArtifact,
-    UsageArtifact,
-} from "../../../shared/types.ts";
+import type { CoverageArtifact } from "../../../shared/types/CoverageArtifact.ts";
+import type { DepsArtifact } from "../../../shared/types/DepsArtifact.ts";
+import type { DocsArtifact } from "../../../shared/types/DocsArtifact.ts";
+import type { Manifest } from "../../../shared/types/Manifest.ts";
+import type { MetricsArtifact } from "../../../shared/types/MetricsArtifact.ts";
+import type { ProjectsArtifact } from "../../../shared/types/ProjectsArtifact.ts";
+import type { UsageArtifact } from "../../../shared/types/UsageArtifact.ts";
+import type { SnapshotResponse } from "../../../shared/types/SnapshotResponse.ts";
 import { readArtifact } from "../../utils/store.ts";
-
-export interface SnapshotResponse {
-    manifest: Manifest | null;
-    projects?: ProjectsArtifact | null;
-    coverage?: CoverageArtifact | null;
-    metrics?: MetricsArtifact | null;
-    deps?: DepsArtifact | null;
-    docs?: DocsArtifact | null;
-    usage?: UsageArtifact | null;
-}
 
 const readers = {
     projects: () => readArtifact<ProjectsArtifact>("projects"),

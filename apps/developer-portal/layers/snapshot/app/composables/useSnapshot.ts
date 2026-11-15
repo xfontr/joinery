@@ -1,4 +1,4 @@
-import type { SnapshotResponse } from "../../server/api/snapshot/[artifact].get.ts";
+import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 
 /**
  * `useFetch` keyed per resource, so two pages showing the same list share one request and one

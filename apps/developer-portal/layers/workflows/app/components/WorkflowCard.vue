@@ -3,7 +3,7 @@
         :to="`/workflows/${card.id}`"
         class="flex items-center gap-4 rounded-lg border border-default bg-default p-4 transition-colors hover:bg-elevated/50"
     >
-        <ProgressRing :percent="card.percent" :size="64" />
+        <WorkflowProgressRing :percent="card.percent" :size="64" />
         <div class="min-w-0 flex-1">
             <p class="truncate font-semibold">{{ card.title }}</p>
             <p class="truncate text-xs text-muted">{{ card.templateTitle }}</p>

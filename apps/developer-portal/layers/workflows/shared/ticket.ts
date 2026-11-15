@@ -1,4 +1,6 @@
-import type { Snapshot, SnapshotIssue, TicketStatus } from "./types.ts";
+import type { Snapshot } from "./types/Snapshot.ts";
+import type { SnapshotIssue } from "./types/SnapshotIssue.ts";
+import type { TicketStatus } from "./types/TicketStatus.ts";
 
 export const day = (timestamp: string): string => timestamp.slice(0, 10);
 

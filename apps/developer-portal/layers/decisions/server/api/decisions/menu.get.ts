@@ -1,5 +1,5 @@
 import { defineEventHandler } from "h3";
-import type { DocsArtifact } from "#layers/snapshot/shared/types.ts";
+import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import { readArtifact } from "#layers/snapshot/server/utils/store.ts";
 import { sortDecisions, toDecisionReports } from "../../../shared/decisionReports.ts";
 

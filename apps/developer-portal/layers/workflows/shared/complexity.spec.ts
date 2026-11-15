@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { complexityOf, pointsLine } from "./complexity.ts";
-import type { Capability } from "./types.ts";
+import type { Capability } from "./types/Capability.ts";
 
 const block = (complexity: number | null) => ({ complexity }) as Capability;
 

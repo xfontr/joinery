@@ -46,7 +46,7 @@ const global = {
         UAlert: Alert,
         StatTile: Tile,
         UButton: Button,
-        IssueRow: Issue,
+        HealthIssueRow: Issue,
         SnapshotAge: Snapshot,
         UIcon: true,
         WorkflowCard: {

@@ -1,4 +1,4 @@
-import type { ProjectView } from "./types.ts";
+import type { ProjectView } from "./types/ProjectView.ts";
 
 export interface ProjectCard {
     id: string;

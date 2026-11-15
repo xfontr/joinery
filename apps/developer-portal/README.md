@@ -395,8 +395,8 @@ the entire reason they exist as pure functions rather than more shell.
 The rules parse with `yaml` rather than a regex, because `@nuxt/content` reads these same bytes as
 YAML to render the page — a checker that disagreed with it about what parses would fail reports the
 dashboard shows correctly. The split is deliberate: the vocabulary is
-[`layers/snapshot/shared/decisions.ts`](./layers/snapshot/shared/decisions.ts), which `layers/snapshot/shared/types.ts` derives `DecisionStatus` and
-`DecisionOutcome` from and which client code can import; the parsing lives in `tools/` so a node-only
+[`layers/snapshot/shared/decisions.ts`](./layers/snapshot/shared/decisions.ts), which `DecisionStatus` and
+`DecisionOutcome` derive from and which client code can import; the parsing lives in `tools/` so a node-only
 dependency never reaches the browser bundle.
 
 Three checks here have no shell-hook twin, and each guards a shape a page's parser depends on:

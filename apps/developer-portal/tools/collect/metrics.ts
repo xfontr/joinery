@@ -1,11 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { matchesGlob, resolve } from "node:path";
-import type {
-    CoverageArtifact,
-    MetricsArtifact,
-    ProjectMetrics,
-    ProjectNode,
-} from "#layers/snapshot/shared/types.ts";
+import type { CoverageArtifact } from "#layers/snapshot/shared/types/CoverageArtifact.ts";
+import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
+import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
+import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 import { collectInvariants } from "../lib/invariants.ts";
 import { WORKSPACE_ROOT } from "../lib/paths.ts";
 import { git, tryRun } from "../lib/run.ts";

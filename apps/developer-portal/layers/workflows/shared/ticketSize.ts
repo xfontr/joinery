@@ -2,14 +2,12 @@ import { routedNeeds } from "./capability.ts";
 import { complexityOf } from "./complexity.ts";
 import { featuresOf, isEnabled } from "./project.ts";
 import type { NewPage } from "./projectFile.ts";
-import {
-    TICKET_SIZES,
-    type Capability,
-    type Project,
-    type ReceiptRow,
-    type Template,
-    type TicketSize,
-} from "./types.ts";
+import { TICKET_SIZES } from "./constants.ts";
+import type { Capability } from "./types/Capability.ts";
+import type { Project } from "./types/Project.ts";
+import type { ReceiptRow } from "./types/ReceiptRow.ts";
+import type { Template } from "./types/Template.ts";
+import type { TicketSize } from "./types/TicketSize.ts";
 
 /** The points a shared ticket holds before the next block wraps onto a new one. */
 export const TICKET_WIDTH = { supervised: 13, fast: 21 } as const;

@@ -9,7 +9,7 @@ const store = vi.hoisted(() => ({ readArtifact: vi.fn() }));
 vi.mock("h3", () => h3);
 vi.mock("../../utils/store.ts", () => store);
 
-import type { SnapshotResponse } from "./[artifact].get.ts";
+import type { SnapshotResponse } from "../../../shared/types/SnapshotResponse.ts";
 
 const route = (await import("./[artifact].get.ts")).default as (
     event: unknown,

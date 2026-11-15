@@ -1,4 +1,5 @@
-import type { DecisionOutcome, DecisionStatus, DocPage } from "#layers/snapshot/shared/types.ts";
+import type { DecisionOutcome, DecisionStatus } from "#layers/snapshot/shared/decisions.ts";
+import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
 import { DECISION_STATUSES } from "#layers/snapshot/shared/decisions.ts";
 import { stripLeadingEmoji } from "#layers/docs/shared/docPages.ts";
 

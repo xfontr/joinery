@@ -159,7 +159,7 @@
 </template>
 
 <script setup lang="ts">
-import type { DecisionOutcome, DecisionStatus } from "#layers/snapshot/shared/types.ts";
+import type { DecisionOutcome, DecisionStatus } from "#layers/snapshot/shared/decisions.ts";
 import type { DecisionSort } from "#layers/decisions/shared/decisionReports.ts";
 import {
     countByStatus,

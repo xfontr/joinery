@@ -1,7 +1,7 @@
-/** Mirrors `CAPABILITY_LABEL_PREFIX` in apps/developer-portal/layers/workflows/shared/types.ts. */
+/** Mirrors `CAPABILITY_LABEL_PREFIX` in apps/developer-portal/layers/workflows/shared/constants.ts. */
 export const CAPABILITY_LABEL_PREFIX = "cap:";
 
-/** Mirrors `OWNER_LABEL` in apps/developer-portal/layers/workflows/shared/types.ts. */
+/** Mirrors `OWNER_LABEL` in apps/developer-portal/layers/workflows/shared/constants.ts. */
 export const OWNER_LABEL = "owner";
 
 /** The one GitHub Project board every issue sits on. */

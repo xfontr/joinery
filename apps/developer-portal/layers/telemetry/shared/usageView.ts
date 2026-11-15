@@ -1,4 +1,6 @@
-import type { DayUsage, LintUsage, UsageArtifact } from "#layers/snapshot/shared/types.ts";
+import type { DayUsage } from "#layers/snapshot/shared/types/DayUsage.ts";
+import type { LintUsage } from "#layers/snapshot/shared/types/LintUsage.ts";
+import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import { FOUGHT_DISABLES, NOISY_SHARE } from "./lintUsage.ts";
 import { FAILING_RATE, MIN_RUNS, windowStart } from "./usage.ts";
 

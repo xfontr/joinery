@@ -1,5 +1,6 @@
 import { dirname } from "node:path";
-import type { ProjectNode, RetiredProject } from "#layers/snapshot/shared/types.ts";
+import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
+import type { RetiredProject } from "#layers/snapshot/shared/types/RetiredProject.ts";
 import { git } from "../lib/run.ts";
 import { isDeclaredTag } from "./graph.ts";
 

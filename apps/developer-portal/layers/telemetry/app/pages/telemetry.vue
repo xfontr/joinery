@@ -47,11 +47,11 @@
                         />
                     </div>
 
-                    <ScriptActivity :usage />
+                    <TelemetryScriptActivity :usage />
 
-                    <UsageTriage :usage />
+                    <TelemetryUsageTriage :usage />
 
-                    <LintUsage :lint="usage.lint" />
+                    <TelemetryLintUsage :lint="usage.lint" />
                 </template>
             </div>
         </template>
