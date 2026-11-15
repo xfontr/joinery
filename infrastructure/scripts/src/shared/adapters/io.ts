@@ -32,6 +32,9 @@ export const out = {
             ? log.error(message, { output: process.stderr })
             : line(process.stderr, message),
 
+    /** Undecorated even in a terminal, since whatever reads it parses it. */
+    json: (value: unknown): void => line(process.stdout, JSON.stringify(value)),
+
     note: (message: string, title?: string): void =>
         isInteractive()
             ? note(message, title)

@@ -23,7 +23,10 @@ loudly.
 ## 2. Commit
 
 The [`pre-commit`](../../.husky/pre-commit) hook runs `pnpm docs:map --check`, so a stale generated
-feature map blocks the commit. When the commit stages a `.env.example`, it also runs
+feature map blocks the commit, and
+[`pnpm invariants:check`](../../infrastructure/scripts/src/invariants/README.md), so a lifecycle
+script, a package build step or a broken package contract does too. When the commit stages a
+`.env.example`, it also runs
 [`pnpm env:sync`](../../infrastructure/scripts/src/env-sync/README.md), which never blocks. Last, it
 runs [`pnpm usage:flush`](../../infrastructure/scripts/src/usage/README.md) and stages its output, so
 the commit carries a row for every script run and every lint hit on an agent's edit since the
@@ -86,6 +89,7 @@ Every PR, and every push to `master`, runs [`ci.yml`](../../.github/workflows/ci
 | Step | Runs on | Pre-push ran it? |
 | --- | --- | --- |
 | `pnpm docs:map --check` | The whole workspace | No — pre-commit did |
+| `pnpm invariants:check`, with `--base` on a PR | The whole workspace | No — pre-commit did, without the version check |
 | `lint`, `typecheck`, `test` | Affected projects | Yes |
 | `build` | Affected projects | No |
 | `actions/dependency-review-action` | The PR's own diff, `warn-only` | No — the local stand-in is `pnpm audit` |

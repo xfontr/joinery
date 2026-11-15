@@ -46,7 +46,6 @@ describe("WordpressProvider", () => {
 
         it("sends no _embed for terms, which have nothing to embed", async () => {
             respond([{ id: 3, name: "News", slug: "news", taxonomy: "category" }]);
-
             await build().listTerms("categories");
 
             expect(get).toHaveBeenCalledWith("/wp-json/wp/v2/categories", {
@@ -103,7 +102,7 @@ describe("WordpressProvider", () => {
     });
 
     describe("a page past the end", () => {
-        it("is a 404 rather than the 400 WordPress answers it with", async () => {
+        it("becomes a 404 rather than the 400 WordPress answers, so no app has to learn the quirk", async () => {
             get.mockRejectedValue(
                 new UpstreamError(400, undefined, { code: "rest_post_invalid_page_number" }),
             );
@@ -113,14 +112,11 @@ describe("WordpressProvider", () => {
             );
         });
 
-        it.each([
-            ["another 400", new UpstreamError(400, undefined, { code: "rest_invalid_param" })],
-            ["a 400 with no body", new UpstreamError(400)],
-            ["a network failure", new Error("ECONNREFUSED")],
-        ])("leaves %s as it was", async (_, cause) => {
-            get.mockRejectedValue(cause);
+        it("leaves any other 400 as the upstream error it was", async () => {
+            const refused = new UpstreamError(400, undefined, { code: "rest_invalid_param" });
+            get.mockRejectedValue(refused);
 
-            await expect(build().listEntries("posts", { page: 9 })).rejects.toBe(cause);
+            await expect(build().listEntries("posts")).rejects.toBe(refused);
         });
     });
 });

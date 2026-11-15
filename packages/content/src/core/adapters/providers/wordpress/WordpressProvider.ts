@@ -9,14 +9,19 @@ import type {
 } from "#core/domain/content";
 import { PageNotFoundError, UpstreamError } from "#core/domain/errors";
 import ContentProvider from "#core/ports/ContentProvider";
-import { API_PATH, INVALID_PAGE_CODE } from "./WordpressConfigs";
+import { API_PATH } from "./WordpressConfigs";
 import { toEntry, toPage, toTerm, toWordpressQuery } from "./WordpressHelpers";
-import type { WordpressEntry, WordpressError, WordpressTerm } from "./WordpressTypes";
+import type { WordpressEntry, WordpressTerm } from "./WordpressTypes";
 
 const isPastLastPage = (cause: unknown): boolean =>
     cause instanceof UpstreamError &&
-    cause.upstreamStatus === 400 &&
-    (cause.body as WordpressError | undefined)?.code === INVALID_PAGE_CODE;
+    (cause.body as { code?: unknown } | undefined)?.code === "rest_post_invalid_page_number";
+
+const rethrowPastLastPage =
+    (resource: string, page: number) =>
+    (cause: unknown): never => {
+        throw isPastLastPage(cause) ? new PageNotFoundError(resource, page) : cause;
+    };
 
 class WordpressProvider extends ContentProvider {
     override async listEntries(resource: EntryResource, query?: EntryQuery): Promise<Page<Entry>> {
@@ -29,11 +34,7 @@ class WordpressProvider extends ContentProvider {
                     _embed: "wp:featuredmedia,wp:term,author",
                 },
             })
-            .catch((cause: unknown) => {
-                if (isPastLastPage(cause)) throw new PageNotFoundError(resource, query?.page ?? 1);
-
-                throw cause;
-            });
+            .catch(rethrowPastLastPage(resource, query?.page ?? 1));
 
         return toPage(response, query, toEntry);
     }

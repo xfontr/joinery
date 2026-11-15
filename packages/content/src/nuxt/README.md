@@ -74,7 +74,7 @@ runtime/server/utils/
 ```
 useContent(event).listEntries("posts", { perPage: 6 })
   → the query is defaulted and bounded, or 400               (query.ts)
-  → content-entries cache, keyed by contentKey(vendor, "posts", query)
+  → content-entry-list cache, keyed by contentKey(vendor, "posts", query)
     → createProvider(vendor, http) → provider.listEntries("posts", query)    (on a miss only)
       → GET :baseURL/wp-json/wp/v2/posts?per_page=6&_embed=…   (WordPress)
 
@@ -88,10 +88,10 @@ upstream request rather than one per entry.
 
 ## 🗃 Caching
 
-Each read is a `defineCachedFunction`, one per family and shape (`content-entries`, `content-terms`,
-`content-entry`, `content-term`), so each returns its own type with no cast. They are created once
-when the module loads, so concurrent misses for one key share a single upstream request. They are keyed by `contentKey` from the core, and the
-windows come from [`content.cache`](#options), defaulting to:
+Each read is a `defineCachedFunction`, one per kind and shape (`content-entry-list`,
+`content-term-list`, `content-entry`, `content-term`), so each returns its own type. They are created
+once when the module loads so concurrent misses for one key share a single upstream request.
+They are keyed by `contentKey` from the core, and the windows come from [`content.cache`](#options), defaulting to:
 
 | | `maxAge` | `swr` |
 | --- | --- | --- |
@@ -126,8 +126,9 @@ to purge.
 - **A slug from the router arrives encoded.** Read it with
   `getRouterParam(event, "slug", { decode: true })`, or an accented slug reaches WordPress encoded
   twice and 404s.
-- **`body` and `excerpt` are the vendor's HTML**, unsanitised. Every other text field is plain
-  text, so it is printed, never `v-html`ed.
+- **`body` and `excerpt` are the vendor's HTML**, so whatever reaches a page has to be rendered as
+  HTML or reduced to text first. `title`, names and bios are already plain text: the WordPress
+  provider decodes them.
 - **The vendor config is checked at read time, not build time.** It has to be: `baseURL` can be
   replaced at boot by `NUXT_CONTENT_VENDOR_BASE_URL`, so the values present during the build are not
   necessarily the deployed ones. Unset config fails on the first cache miss with a `500` naming what
@@ -142,4 +143,4 @@ to purge.
 | Later need | What changes |
 | --- | --- |
 | The browser reading content directly | There is no public content route, on purpose: an app's own route over `useContent` decides what reaches the browser, and a raw `Entry` carries unsanitised vendor HTML. A route that forwards query parameters gets the same ceilings for free |
-| Purging an entry when the CMS changes | Not built, because it would clear the wrong cache: since [0033](../../../../docs/decisions/0033-huella-legal-hybrid-prerender.md) a post is a prerendered file and lists sit in the CDN, which only a rebuild refreshes. #236 settled on a WordPress hook calling the build hook instead. An app that serves content at runtime would need a purge here, since `contentKey` is the only thing that knows the key format: clear the `content-entry` key and the `content-entries` group together, or a list and its article disagree for up to the gap between the two windows |
+| Purging an entry when the CMS changes | Every cache lives in Nitro's `cache` storage under the `content` group, and `contentKey` is the only thing that knows the key format, so a purge belongs here rather than in the app. Not built: Nitro's cache is per instance, and a prerendered app such as huella refreshes by rebuilding instead ([#236](https://github.com/xfontr/monorepo/issues/236)) |

@@ -1,7 +1,7 @@
 {
   "name": "@monorepo/configs",
   "version": "0.0.18",
-  "description": "",
+  "description": "shared ESLint, Vitest, Playwright and tsconfig presets",
   "private": true,
   "author": "Xifré Font",
   "license": "ISC",

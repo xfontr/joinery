@@ -75,6 +75,6 @@ export class NotFoundError extends ContentError {
 
 export class PageNotFoundError extends ContentError {
     constructor(resource: string, page: number) {
-        super(404, `No page ${page} of "${resource}"`);
+        super(404, `"${resource}" has no page ${page}`);
     }
 }

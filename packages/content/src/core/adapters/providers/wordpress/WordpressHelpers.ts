@@ -1,4 +1,3 @@
-import { decodeHTML } from "entities";
 import type {
     Asset,
     Author,
@@ -12,6 +11,7 @@ import type {
 import { DEFAULT_PER_PAGE } from "#core/domain/content";
 import type { HttpResponse, RequestOptions } from "#core/ports/HttpClient";
 import { TAXONOMIES, WP_MAX_PER_PAGE } from "./WordpressConfigs";
+import { countWords, toPlainText } from "./WordpressText";
 import type {
     WordpressEntry,
     WordpressMedia,
@@ -19,9 +19,6 @@ import type {
     WordpressUser,
     WordpressYoast,
 } from "./WordpressTypes";
-
-// Tags go before entities are decoded, so an escaped `&lt;` in a title survives as a character
-export const toPlainText = (html: string): string => decodeHTML(html.replaceAll(/<[^<>]*>/g, ""));
 
 const toPerPage = (perPage?: number): number =>
     Math.min(perPage ?? DEFAULT_PER_PAGE, WP_MAX_PER_PAGE);
@@ -78,7 +75,7 @@ export const toTerm = (term: WordpressTerm, resource: TermResource): Term => ({
     resource: TAXONOMIES[term.taxonomy] ?? resource,
     slug: term.slug,
     name: toPlainText(term.name),
-    description: term.description || undefined,
+    description: (term.description && toPlainText(term.description)) || undefined,
     seo: toSEO(term.yoast_head_json),
 });
 
@@ -144,6 +141,7 @@ export const toEntry = (entry: WordpressEntry): Entry => ({
     title: toPlainText(entry.title.rendered),
     excerpt: entry.excerpt ? { format: "html", value: entry.excerpt.rendered } : undefined,
     body: { format: "html", value: entry.content.rendered },
+    wordCount: countWords(entry.content.rendered),
     publishedAt: toIsoDate(entry.date_gmt),
     updatedAt: toIsoDate(entry.modified_gmt),
     image: toAsset(entry._embedded?.["wp:featuredmedia"]?.[0]),

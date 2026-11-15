@@ -1,10 +1,6 @@
 import { escapeText } from "entities";
 import { http, HttpResponse, type HttpHandler } from "msw";
-import {
-    API_PATH,
-    INVALID_PAGE_CODE,
-    TAXONOMIES,
-} from "#core/adapters/providers/wordpress/WordpressConfigs";
+import { API_PATH, TAXONOMIES } from "#core/adapters/providers/wordpress/WordpressConfigs";
 import type {
     WordpressEntry,
     WordpressTerm,
@@ -56,7 +52,7 @@ const toWordpressTerm = (term: Term): WordpressTerm => {
         name: escapeText(term.name),
         slug: term.slug,
         taxonomy,
-        description: term.description,
+        description: term.description && escapeText(term.description),
         yoast_head_json: toYoast(term.seo),
     };
 };
@@ -128,7 +124,7 @@ export const wordpressHandlers = (baseURL: string, content: WordpressContent): H
 
         // WordPress refuses a page past the end rather than answering an empty one
         if (page > totalPages) {
-            return HttpResponse.json({ code: INVALID_PAGE_CODE }, { status: 400 });
+            return HttpResponse.json({ code: "rest_post_invalid_page_number" }, { status: 400 });
         }
 
         return HttpResponse.json(matches.slice((page - 1) * perPage, page * perPage), {

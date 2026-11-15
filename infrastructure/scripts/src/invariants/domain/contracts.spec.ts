@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { validatePackage, type PackageSource } from "./validate.ts";
+import { validatePackage, type PackageSource } from "./contracts.ts";
 
 const source = (manifest: unknown, files: string[] = ["src/index.ts"]): PackageSource => ({
     directory: "demo",

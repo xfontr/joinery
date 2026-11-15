@@ -110,14 +110,15 @@ directory:
    everything else stays a leaf.
 2. Add the new tag to the `onlyDependOnLibsWithTags` of whatever is allowed to consume it — usually
    `type:app` alone. A new scope gets `["scope:<area>", "scope:shared"]` and joins no other list.
-3. Add the row to the tag or scope table in the
-   [root README](../../../README.md#-architecture--boundaries).
-   It is the readable copy of the same rules and it drifts the moment you forget.
+3. Run `pnpm docs:map`. It renders the tag and scope tables in the
+   [root README](../../../README.md#-architecture--boundaries) from `boundaries.ts` and every
+   project's `nx.tags`; never edit them by hand.
 
 ## 6. The root README
 
-Add the project to the workspace-layout block, in its root's group, with the same
-`@monorepo/name — one line` form as its neighbours.
+Give `package.json` a `description` — one lower-case line, the same form as its neighbours'. The
+workspace-layout block renders it as `@monorepo/name — description` on the `pnpm docs:map` run
+above.
 
 ## 7. Verify
 

@@ -5,17 +5,20 @@ import { ofetch } from "ofetch";
 import { OfetchHttpClient } from "#core/adapters/clients/OfetchHttpClient";
 import { contentKey } from "#core/contentKey";
 import type {
+    Entry,
     EntryQuery,
     EntryResource,
+    Page,
     Query,
     Resource,
+    Term,
     TermResource,
 } from "#core/domain/content";
 import { ContentError, ContentUnavailableError } from "#core/domain/errors";
 import type ContentProvider from "#core/ports/ContentProvider";
 import type { VendorConfig } from "#core/registry";
 import createProvider from "#core/registry";
-import type { CacheWindow, ContentConfig } from "#nuxt/config";
+import type { ContentConfig } from "#nuxt/config";
 import { toEntryQuery, toQuery, toSlug } from "./query";
 
 const readVendor = (event: H3Event): VendorConfig => {
@@ -49,67 +52,74 @@ const throwUnavailableError = (cause: unknown, resource: string): never => {
     throw createError(new ContentUnavailableError(resource, cause));
 };
 
-const defineRead = <R extends Resource, A, T>(
+type Window = keyof ContentConfig["cache"];
+
+/** One cached reader per kind and shape, so each returns its own type rather than a union to cast. */
+const cachedRead = <R extends Resource, A, T>(
     name: string,
-    window: CacheWindow,
-    read: (provider: ContentProvider, resource: R, argument: A) => Promise<T>,
-    toKeyQuery: (argument: A) => EntryQuery,
+    window: Window,
+    read: (provider: ContentProvider, resource: R, arg: A) => Promise<T>,
+    keyQuery: (arg: A) => EntryQuery,
 ) =>
     defineCachedFunction(
-        async (event: H3Event, resource: R, argument: A): Promise<T> => {
+        async (event: H3Event, resource: R, arg: A): Promise<T> => {
             const provider = await resolveProvider(readVendor(event));
 
-            return read(provider, resource, argument).catch((cause) =>
+            return read(provider, resource, arg).catch((cause) =>
                 throwUnavailableError(cause, resource),
             );
         },
         {
             name,
             group: "content",
-            ...window,
-            getKey: (event, resource, argument) =>
-                contentKey(readVendor(event), resource, toKeyQuery(argument)),
+            ...cache[window],
+            getKey: (event, resource, arg) =>
+                contentKey(readVendor(event), resource, keyQuery(arg)),
         },
     );
 
-const readEntries = defineRead(
-    "content-entries",
-    cache.list,
-    (provider, resource: EntryResource, query: EntryQuery) => provider.listEntries(resource, query),
+const readEntries = cachedRead(
+    "content-entry-list",
+    "list",
+    (provider, resource: EntryResource, query: EntryQuery): Promise<Page<Entry>> =>
+        provider.listEntries(resource, query),
     (query) => query,
 );
 
-const readTerms = defineRead(
-    "content-terms",
-    cache.list,
-    (provider, resource: TermResource, query: Query) => provider.listTerms(resource, query),
+const readTerms = cachedRead(
+    "content-term-list",
+    "list",
+    (provider, resource: TermResource, query: Query): Promise<Page<Term>> =>
+        provider.listTerms(resource, query),
     (query) => query,
 );
 
-const readEntry = defineRead(
+const readEntry = cachedRead(
     "content-entry",
-    cache.item,
-    (provider, resource: EntryResource, slug: string) => provider.getEntry(resource, slug),
+    "item",
+    (provider, resource: EntryResource, slug: string): Promise<Entry> =>
+        provider.getEntry(resource, slug),
     (slug) => ({ slug }),
 );
 
-const readTerm = defineRead(
+const readTerm = cachedRead(
     "content-term",
-    cache.item,
-    (provider, resource: TermResource, slug: string) => provider.getTerm(resource, slug),
+    "item",
+    (provider, resource: TermResource, slug: string): Promise<Term> =>
+        provider.getTerm(resource, slug),
     (slug) => ({ slug }),
 );
 
 export const useContent = (event: H3Event) => ({
-    listEntries: async (resource: EntryResource, query?: EntryQuery) =>
-        await readEntries(event, resource, toEntryQuery(query)),
+    listEntries: async (resource: EntryResource, query?: EntryQuery): Promise<Page<Entry>> =>
+        readEntries(event, resource, toEntryQuery(query)),
 
-    listTerms: async (resource: TermResource, query?: Query) =>
-        await readTerms(event, resource, toQuery(query)),
+    listTerms: async (resource: TermResource, query?: Query): Promise<Page<Term>> =>
+        readTerms(event, resource, toQuery(query)),
 
-    getEntry: async (resource: EntryResource, slug: string) =>
-        await readEntry(event, resource, toSlug(slug)),
+    getEntry: async (resource: EntryResource, slug: string): Promise<Entry> =>
+        readEntry(event, resource, toSlug(slug)),
 
-    getTerm: async (resource: TermResource, slug: string) =>
-        await readTerm(event, resource, toSlug(slug)),
+    getTerm: async (resource: TermResource, slug: string): Promise<Term> =>
+        readTerm(event, resource, toSlug(slug)),
 });

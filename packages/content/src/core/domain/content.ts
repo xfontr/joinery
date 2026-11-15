@@ -58,6 +58,7 @@ export interface Entry {
     title: string;
     excerpt?: RichText;
     body: RichText;
+    wordCount?: number;
     publishedAt?: string;
     updatedAt?: string;
     image?: Asset;

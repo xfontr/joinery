@@ -26,6 +26,7 @@ const POSTS: Entry[] = ["1", "2", "3"].map((id) => ({
     title: `Post ${id}`,
     excerpt: { format: "html", value: `<p>Summary ${id}</p>` },
     body: { format: "html", value: `<p>Body ${id}</p>` },
+    wordCount: 2,
     publishedAt: "2026-02-01T09:00:00Z",
     updatedAt: "2026-02-02T09:00:00Z",
     image: { id: "40", url: "https://cms.test/cover.jpg", alt: "Cover", width: 1200, height: 630 },
@@ -47,6 +48,7 @@ const BARE_PAGE: Entry = {
     slug: "about",
     title: "About",
     body: { format: "html", value: "<p>About us</p>" },
+    wordCount: 2,
     terms: [],
     authors: [],
 };
@@ -59,7 +61,7 @@ const SITE_URL = "https://site.test";
 const ESCAPED: Entry = fakeEntry({
     slug: "jornada",
     title: "Ley 1/2026 & <Reglamento>",
-    terms: [{ ...CIVIL, name: "Civil & Mercantil" }],
+    terms: [{ ...CIVIL, name: "Civil & Mercantil", description: "Contratos & <obligaciones>" }],
 });
 
 const server = setupServer(
@@ -165,11 +167,11 @@ describe("the fake WordPress", () => {
         });
     });
 
-    // The provider turns WordPress's 400 into a 404, so the fake has to send the code it reads
     it("refuses a page past the end the way WordPress does, which the provider reads as a 404", async () => {
-        await expect((await provider()).listEntries("posts", { page: 9 })).rejects.toBeInstanceOf(
-            PageNotFoundError,
-        );
+        const failure = (await provider()).listEntries("posts", { page: 9 });
+
+        await expect(failure).rejects.toBeInstanceOf(PageNotFoundError);
+        await expect(failure).rejects.toMatchObject({ statusCode: 404 });
     });
 
     it("answers a resource it was given no content for with a 404", async () => {

@@ -92,19 +92,12 @@ describe("the reading time", () => {
         [230, 1],
         [231, 2],
         [2300, 10],
-    ])("reads %i words in %i minutes", (count, minutes) => {
-        expect(summarise({ body: { format: "html", value: words(count) } }).readingMinutes).toBe(
-            minutes,
-        );
+    ])("reads %i words in %i minutes", (wordCount, minutes) => {
+        expect(summarise({ wordCount }).readingMinutes).toBe(minutes);
     });
 
-    // Bodies carry `<meta charset>` (50 posts) and empty icon spans (23 uses); neither is reading
-    it("does not count markup as reading", () => {
-        const html =
-            '<meta charset="utf-8"><span class="superfontello3-quote"></span>' +
-            `<img src="https://wp.test/uploads/a.jpg" alt="una foto larga">${words(230)}`;
-
-        expect(summarise({ body: { format: "html", value: html } }).readingMinutes).toBe(1);
+    it("reads an entry the CMS counted no words for as one minute, never zero", () => {
+        expect(summarise({ wordCount: undefined }).readingMinutes).toBe(1);
     });
 });
 

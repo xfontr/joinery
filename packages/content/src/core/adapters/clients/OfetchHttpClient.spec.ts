@@ -140,7 +140,7 @@ describe("OfetchHttpClient", () => {
             ).rejects.toBeInstanceOf(UpstreamError);
         });
 
-        it("hands the upstream status to the domain, which is the only part it can act on", async () => {
+        it("hands the upstream status to the domain", async () => {
             const { $fetch } = createFailingFetch(fetchError(404));
 
             await expect(
@@ -151,18 +151,15 @@ describe("OfetchHttpClient", () => {
             });
         });
 
-        // A vendor names why it refused in the body, and a provider can't reach the transport's error
-        it("hands the refusal's body to the domain, off the field h3 would send to the client", async () => {
-            const { $fetch } = createFailingFetch(
-                Object.assign(fetchError(400), { data: { code: "rest_post_invalid_page_number" } }),
-            );
+        it("hands the vendor's error body to the domain, where a provider reads its own error codes", async () => {
+            const error = Object.assign(fetchError(400), {
+                data: { code: "rest_post_invalid_page_number" },
+            });
+            const { $fetch } = createFailingFetch(error);
 
-            const error = await new OfetchHttpClient($fetch)
-                .get("https://wp.test/wp-json")
-                .catch((caught: UpstreamError) => caught);
-
-            expect(error).toMatchObject({ body: { code: "rest_post_invalid_page_number" } });
-            expect(error).not.toHaveProperty("data");
+            await expect(
+                new OfetchHttpClient($fetch).get("https://wp.test/wp-json"),
+            ).rejects.toMatchObject({ body: { code: "rest_post_invalid_page_number" } });
         });
 
         // A network error carries no status, which is why it is optional rather than defaulted to

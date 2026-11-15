@@ -8,8 +8,9 @@ const isJson = (contentType: string | null): boolean =>
     !contentType || JSON_CONTENT_TYPE.test(contentType.split(";")[0]!.trim());
 
 const rethrowAsUpstreamError = (cause: unknown): never => {
-    if (cause instanceof FetchError)
+    if (cause instanceof FetchError) {
         throw new UpstreamError(cause.response?.status, cause, cause.data);
+    }
 
     throw new UpstreamError(undefined, cause);
 };

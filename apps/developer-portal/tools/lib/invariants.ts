@@ -4,85 +4,36 @@ import type { InvariantFinding } from "#layers/snapshot/shared/types.ts";
 import { auditProblems } from "./audits.ts";
 import { decisionProblems } from "./decisions.ts";
 import { WORKSPACE_ROOT } from "./paths.ts";
+import { runAllowFailure } from "./run.ts";
 import { workflowProblems } from "./workflows.ts";
 
-const BOUNDARIES_PATH = "packages/configs/src/eslint/lib/boundaries.ts";
-const README_PATH = "README.md";
 const AUDITS_DIR = "docs/audits";
 const DECISIONS_DIR = "docs/decisions";
 const WORKFLOWS_DIR = "data/workflows";
 const WORKFLOWS_README = "docs/workflows/README.md";
 
-/**
- * Duplicated from `.claude/hooks/check-invariants.sh` rather than shelled out to it: that hook reads
- * a Claude tool payload on stdin, not usable as a CLI — and only a pure function can be pinned by a
- * spec.
- */
+/** Reads `pnpm invariants:check --json`, reporting unparseable output as a finding of its own. */
+export const parseGateFindings = (stdout: string): InvariantFinding[] => {
+    try {
+        const parsed = JSON.parse(stdout.trim().split("\n").at(-1) ?? "") as unknown;
+        if (!Array.isArray(parsed)) throw new TypeError("not an array");
 
-/** Every `sourceTag:` in the enforced copy of the tag table. */
-export const tagsInBoundaries = (source: string): string[] =>
-    [...source.matchAll(/sourceTag:\s*"([^"]+)"/g)].map((match) => match[1] ?? "");
-
-/** Every tag named in the leftmost column of the README's tag table. */
-export const tagsInReadmeTable = (readme: string): string[] =>
-    readme
-        .split("\n")
-        .map((line) => /^\| `((?:type|scope):[^`]+)`/.exec(line)?.[1] ?? "")
-        .filter(Boolean);
-
-/** Project directories listed in the README's workspace-layout code block. */
-export const projectsInLayoutBlock = (readme: string): string[] => {
-    const block = /## 🗂 Workspace layout\s*```([\s\S]*?)```/.exec(readme)?.[1] ?? "";
-
-    return [...block.matchAll(/^\s{4}([\w-]+)\//gm)].map((match) => match[1] ?? "");
-};
-
-export const compareTagTables = (boundaries: string, readme: string): InvariantFinding[] => {
-    const enforced = tagsInBoundaries(boundaries);
-    const documented = tagsInReadmeTable(readme);
-
-    const undocumented = enforced.filter((tag) => !documented.includes(tag));
-    const unenforced = documented.filter((tag) => !enforced.includes(tag));
-
-    const findings: InvariantFinding[] = [];
-
-    if (undocumented.length > 0) {
-        findings.push({
-            id: "tag-table-undocumented",
-            title: "A tag is enforced but not documented",
-            detail: `${undocumented.join(", ")} appears in boundaries.ts with no row in the README tag table.`,
-            evidence: [BOUNDARIES_PATH, README_PATH],
-        });
+        return parsed.map((finding: InvariantFinding) => ({
+            id: finding.id,
+            title: finding.title,
+            detail: finding.detail,
+            evidence: finding.evidence,
+        }));
+    } catch {
+        return [
+            {
+                id: "invariants-gate-unreadable",
+                title: "The invariants gate printed something other than its findings",
+                detail: "pnpm invariants:check --json did not end with a JSON array.",
+                evidence: ["infrastructure/scripts/src/invariants/README.md"],
+            },
+        ];
     }
-
-    if (unenforced.length > 0) {
-        findings.push({
-            id: "tag-table-unenforced",
-            title: "A tag is documented but not enforced",
-            detail: `${unenforced.join(", ")} has a README row but no depConstraints entry.`,
-            evidence: [README_PATH, BOUNDARIES_PATH],
-        });
-    }
-
-    return findings;
-};
-
-export const compareLayoutBlock = (readme: string, projectRoots: string[]): InvariantFinding[] => {
-    const listed = projectsInLayoutBlock(readme);
-    const missing = projectRoots
-        .map((root) => root.split("/").at(-1) ?? "")
-        .filter((directory) => directory && !listed.includes(directory));
-
-    if (missing.length === 0) return [];
-
-    return [
-        {
-            id: "layout-block-incomplete",
-            title: "A project is missing from the workspace layout",
-            detail: `${missing.join(", ")} exists in the workspace but is not in the README layout block.`,
-            evidence: [README_PATH],
-        },
-    ];
 };
 
 /** Dated audits only — `README.md` and `TEMPLATE.md` are the furniture around them. */
@@ -135,12 +86,9 @@ export const compareWorkflowShape = (
         evidence: [`${WORKFLOWS_DIR}/${file}`, WORKFLOWS_README],
     }));
 
-export const collectInvariants = async (
-    projectRoots: string[] = [],
-): Promise<InvariantFinding[]> => {
-    const [boundaries, readme, auditFiles, decisionFiles, workflows] = await Promise.all([
-        readFile(resolve(WORKSPACE_ROOT, BOUNDARIES_PATH), "utf8"),
-        readFile(resolve(WORKSPACE_ROOT, README_PATH), "utf8"),
+export const collectInvariants = async (): Promise<InvariantFinding[]> => {
+    const [gate, auditFiles, decisionFiles, workflows] = await Promise.all([
+        runAllowFailure("pnpm", ["--silent", "invariants:check", "--json"], WORKSPACE_ROOT),
         listAuditFiles(),
         listDecisionFiles(),
         workflowProblems(resolve(WORKSPACE_ROOT, WORKFLOWS_DIR), WORKSPACE_ROOT),
@@ -160,8 +108,7 @@ export const collectInvariants = async (
     );
 
     return [
-        ...compareTagTables(boundaries, readme),
-        ...compareLayoutBlock(readme, projectRoots),
+        ...parseGateFindings(gate),
         ...compareAuditShape(audits),
         ...compareDecisionShape(decisions),
         ...compareWorkflowShape(workflows),

@@ -22,30 +22,26 @@ const toFormat = (tagSlugs: string[]): ArticleSummary["format"] => {
     return "articulo";
 };
 
-// For the vendor's HTML fields, the excerpt, body and term description; this is display text, not sanitising
+// An excerpt is the one field still HTML; this is display text, not sanitising
 const toText = (html: string): string => textContent(parseFragment(html));
 
 export const toCategory = (term: Term): Category => ({
     id: term.id,
     slug: term.slug,
     name: term.name,
-    description: term.description && toText(term.description),
+    description: term.description,
 });
 
-const toAuthor = ({ id, slug, name, bio, avatar }: ContentAuthor): Author => ({
-    id,
-    slug,
-    name,
-    bio,
-    avatar,
+const toAuthor = (author: ContentAuthor): Author => ({
+    id: author.id,
+    slug: author.slug,
+    name: author.name,
+    bio: author.bio,
+    avatar: author.avatar,
 });
 
-const toReadingMinutes = (body: RichText): number => {
-    const text = toText(body.value);
-    const words = text.split(" ").filter(Boolean).length;
-
-    return Math.max(1, Math.ceil(words / WORDS_PER_MINUTE));
-};
+const toReadingMinutes = (wordCount = 0): number =>
+    Math.max(1, Math.ceil(wordCount / WORDS_PER_MINUTE));
 
 // WordPress closes an excerpt it generated itself with a bracketed ellipsis
 const toExcerpt = (excerpt?: RichText): string | undefined => {
@@ -84,7 +80,7 @@ export const toArticleSummary = (entry: Entry): ArticleSummary => {
         category: categories[0],
         tags,
         format: toFormat(tags.map(({ slug }) => slug)),
-        readingMinutes: toReadingMinutes(entry.body),
+        readingMinutes: toReadingMinutes(entry.wordCount),
         number: toNumber(entry.fields?.num),
         noindex: entry.seo?.noindex || undefined,
     };

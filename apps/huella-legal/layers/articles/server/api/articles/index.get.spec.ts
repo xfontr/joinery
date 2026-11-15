@@ -101,9 +101,9 @@ describe("GET /api/articles", () => {
         expect(error.message).toContain("page");
     });
 
-    it("reads a subject's own term, so the page has its description and decoded name", async () => {
+    it("reads a subject's own term, so the page has its description", async () => {
         nitro.query = { category: "derecho-civil" };
-        nitro.getTerm.mockResolvedValue({ ...CIVIL, description: "<p>Contratos</p>" });
+        nitro.getTerm.mockResolvedValue({ ...CIVIL, description: "Contratos" });
 
         const listing = await handler({});
 

@@ -50,7 +50,3 @@ export interface WordpressEntry {
         author?: WordpressUser[];
     };
 }
-
-export interface WordpressError {
-    code?: string;
-}

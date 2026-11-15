@@ -142,6 +142,7 @@ describe("toEntry", () => {
             title: "Hello – World",
             excerpt: { format: "html", value: "<p>Excerpt</p>" },
             body: { format: "html", value: "<p>Body</p>" },
+            wordCount: 1,
             publishedAt: "2026-01-02T03:04:05Z",
             updatedAt: "2026-01-03T03:04:05Z",
             image: {
@@ -217,33 +218,6 @@ describe("toEntry", () => {
             width: undefined,
             height: undefined,
         });
-    });
-
-    // The case the audit reproduced: every app either decoded these itself or printed `&amp;`
-    it("hands on the title as plain text, with entities decoded and tags gone", () => {
-        const title = "Ley &#8220;Org&aacute;nica&#8221; &amp; <em>c</em> &lt;1&gt;";
-
-        expect(toEntry({ ...entry, title: { rendered: title } }).title).toBe(
-            "Ley “Orgánica” & c <1>",
-        );
-    });
-
-    it("hands on term and author names and the bio as plain text", () => {
-        const result = toEntry({
-            ...entry,
-            _embedded: {
-                "wp:term": [
-                    [{ id: 3, name: "Civil &amp; Mercantil", slug: "c", taxonomy: "category" }],
-                ],
-                author: [
-                    { ...user, name: "J &amp; M", description: "Abogada &#8211; <b>Madrid</b>" },
-                ],
-            },
-        });
-
-        expect(result.terms[0]?.name).toBe("Civil & Mercantil");
-        expect(result.authors[0]).toMatchObject({ name: "J & M", bio: "Abogada – Madrid" });
-        expect(result.authors[0]?.avatar?.alt).toBe("J & M");
     });
 
     // An entry embeds every taxonomy the site defines, including custom ones the domain has no name for

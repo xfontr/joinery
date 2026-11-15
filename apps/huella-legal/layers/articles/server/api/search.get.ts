@@ -25,18 +25,14 @@ const parseSearchQuery = (event: H3Event) => {
     return result.output;
 };
 
-// WP answers a page past the end with a 400, which useContent passes through
-const isRefused = (error: unknown): boolean =>
-    (error as { statusCode?: unknown } | undefined)?.statusCode === 400;
-
 export default defineEventHandler(async (event): Promise<ArticleSearch> => {
     const { query, page } = parseSearchQuery(event);
 
-    const results = await useContent(event)
-        .listEntries("posts", { search: query, page, perPage: PER_PAGE })
-        .catch((error: unknown) => {
-            throw isRefused(error) ? notFound(`No page ${page} of results for "${query}"`) : error;
-        });
+    const results = await useContent(event).listEntries("posts", {
+        search: query,
+        page,
+        perPage: PER_PAGE,
+    });
 
     const found = toArticleSearch(query, results);
     const listed = found.items.filter(isListed);

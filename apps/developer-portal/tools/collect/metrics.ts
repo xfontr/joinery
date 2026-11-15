@@ -160,7 +160,7 @@ export const collectMetrics = async (
         commit,
         branch,
         projects: measured,
-        invariantFindings: await collectInvariants(projects.map((project) => project.root)),
+        invariantFindings: await collectInvariants(),
         conventionalCommitRate:
             subjects.length === 0 ? null : Math.round((conforming.length / subjects.length) * 100),
         commitsSinceLastRelease: release.ok ? release.value : null,

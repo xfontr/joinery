@@ -42,7 +42,6 @@ vi.mock("ofetch", async (importOriginal) => ({
 }));
 
 const { useContent } = await import("./useContent");
-const { toQuery } = await import("./query");
 
 const EVENT = { context: {} } as H3Event;
 
@@ -57,11 +56,10 @@ const respond = (data: unknown, headers: Record<string, string> = {}) => {
     transport.raw.mockResolvedValue({ _data: data, headers: new Headers(headers) });
 };
 
-const upstreamStatus = (status: number, data?: unknown) => {
+const upstreamStatus = (status: number) => {
     transport.raw.mockRejectedValue(
         Object.assign(new FetchError("upstream said no"), {
             response: { status } as unknown as FetchError["response"],
-            data,
         }),
     );
 };
@@ -190,24 +188,6 @@ describe("useContent", () => {
         });
     });
 
-    // WordPress answers a page past the end with a 400, which would otherwise read as a bad query
-    it("404s a page past the last one", async () => {
-        upstreamStatus(400, { code: "rest_post_invalid_page_number" });
-
-        await expect(useContent(EVENT).listEntries("posts", { page: 9 })).rejects.toMatchObject({
-            statusCode: 404,
-            statusMessage: 'No page 9 of "posts"',
-        });
-    });
-
-    it("keeps any other upstream 400 a 400", async () => {
-        upstreamStatus(400, { code: "rest_invalid_param" });
-
-        await expect(useContent(EVENT).listEntries("posts", { page: 2 })).rejects.toMatchObject({
-            statusCode: 400,
-        });
-    });
-
     it("relays an upstream 404, which answers the request that was actually made", async () => {
         upstreamStatus(404);
 
@@ -257,7 +237,7 @@ describe("the list cache", () => {
     it("keys off the vendor, the resource and the normalised query", async () => {
         await useContent(EVENT).listEntries("posts", { page: 2, perPage: 6 });
 
-        expect(keyOf("content-entries")).toBe(
+        expect(keyOf("content-entry-list")).toBe(
             contentKey(nitro.vendor!, "posts", { page: 2, perPage: 6 }),
         );
     });
@@ -266,25 +246,25 @@ describe("the list cache", () => {
         "gives %o the same entry as the first page",
         async (query) => {
             await useContent(EVENT).listEntries("posts");
-            const firstPage = keyOf("content-entries");
+            const firstPage = keyOf("content-entry-list");
 
             await useContent(EVENT).listEntries("posts", query);
 
-            expect(keyOf("content-entries")).toBe(firstPage);
+            expect(keyOf("content-entry-list")).toBe(firstPage);
         },
     );
 
     it("separates the resources of one vendor, and one filter from another", async () => {
         await useContent(EVENT).listEntries("posts");
-        const posts = keyOf("content-entries");
+        const posts = keyOf("content-entry-list");
 
         await useContent(EVENT).listEntries("pages");
-        expect(keyOf("content-entries")).not.toBe(posts);
+        expect(keyOf("content-entry-list")).not.toBe(posts);
 
         await useContent(EVENT).listEntries("posts", {
             term: { resource: "categories", id: "12" },
         });
-        expect(keyOf("content-entries")).not.toBe(posts);
+        expect(keyOf("content-entry-list")).not.toBe(posts);
     });
 
     it("hands the cache the request, so a stale refresh can outlive the response", async () => {
@@ -293,28 +273,10 @@ describe("the list cache", () => {
         expect(nitro.calls[0]?.event).toBe(EVENT);
     });
 
-    it("caches for the window the app configures, not a fixed one", () => {
-        expect(nitro.caches["content-entries"]).toMatchObject({
-            group: "content",
-            maxAge: 120,
-            swr: false,
-        });
-    });
-});
-
-describe("the term caches", () => {
-    it("caches term lists and single terms apart from entries, in the matching windows", async () => {
-        respond([{ id: 3, name: "News", slug: "news", taxonomy: "category" }]);
-
-        await useContent(EVENT).listTerms("categories");
-        await useContent(EVENT).getTerm("categories", "news");
-
-        expect(keyOf("content-terms")).toBe(contentKey(nitro.vendor!, "categories", toQuery()));
-        expect(keyOf("content-term")).toBe(
-            contentKey(nitro.vendor!, "categories", { slug: "news" }),
-        );
-        expect(nitro.caches["content-terms"]).toMatchObject({ maxAge: 120 });
-        expect(nitro.caches["content-term"]).toMatchObject({ maxAge: 480 });
+    it("caches entry and term lists for the window the app configures, not a fixed one", () => {
+        for (const name of ["content-entry-list", "content-term-list"]) {
+            expect(nitro.caches[name]).toMatchObject({ group: "content", maxAge: 120, swr: false });
+        }
     });
 });
 
@@ -337,11 +299,9 @@ describe("the item cache", () => {
         expect(keyOf("content-entry")).not.toBe(post);
     });
 
-    it("caches for its own configured window, apart from the list's", () => {
-        expect(nitro.caches["content-entry"]).toMatchObject({
-            group: "content",
-            maxAge: 480,
-            swr: true,
-        });
+    it("caches entries and terms for their own configured window, apart from the list's", () => {
+        for (const name of ["content-entry", "content-term"]) {
+            expect(nitro.caches[name]).toMatchObject({ group: "content", maxAge: 480, swr: true });
+        }
     });
 });

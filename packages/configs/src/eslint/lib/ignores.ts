@@ -1,3 +1,3 @@
-const baseIgnores = ["**/dist", "**/coverage", "**/*.d.ts", "*.config.ts", "**/storybook-static"];
+const baseIgnores = ["**/dist", "**/coverage", "**/*.d.ts", "**/storybook-static"];
 
 export default baseIgnores;
