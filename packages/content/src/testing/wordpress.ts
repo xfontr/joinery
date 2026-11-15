@@ -1,20 +1,17 @@
+import { escapeText } from "entities";
 import { http, HttpResponse, type HttpHandler } from "msw";
-import { API_PATH, TAXONOMIES } from "#core/adapters/providers/wordpress/WordpressConfigs";
+import {
+    API_PATH,
+    INVALID_PAGE_CODE,
+    TAXONOMIES,
+} from "#core/adapters/providers/wordpress/WordpressConfigs";
 import type {
     WordpressEntry,
     WordpressTerm,
     WordpressUser,
     WordpressYoast,
 } from "#core/adapters/providers/wordpress/WordpressTypes";
-import type {
-    Author,
-    Entry,
-    EntryResource,
-    RichText,
-    SEO,
-    Term,
-    TermResource,
-} from "#core/domain/content";
+import type { Author, Entry, EntryResource, SEO, Term, TermResource } from "#core/domain/content";
 
 export type WordpressContent = Partial<
     Record<EntryResource, Entry[]> & Record<TermResource, Term[]>
@@ -56,7 +53,7 @@ const toWordpressTerm = (term: Term): WordpressTerm => {
 
     return {
         id: Number(term.id),
-        name: term.name,
+        name: escapeText(term.name),
         slug: term.slug,
         taxonomy,
         description: term.description,
@@ -67,23 +64,20 @@ const toWordpressTerm = (term: Term): WordpressTerm => {
 // The provider names an avatar after its author, so an avatar's `alt` doesn't survive the trip
 const toWordpressUser = (author: Author): WordpressUser => ({
     id: Number(author.id),
-    name: author.name,
+    name: escapeText(author.name),
     slug: author.slug,
-    description: author.bio,
+    description: author.bio && escapeText(author.bio),
     simple_local_avatar: author.avatar
         ? { media_id: Number(author.avatar.id), full: author.avatar.url }
         : false,
 });
 
-// WordPress only ever renders HTML, so a block document has nothing to stand in for it
-const toRendered = (text: RichText): string => (text.format === "blocks" ? "" : text.value);
-
 const toWordpressEntry = (entry: Entry): WordpressEntry => ({
     id: Number(entry.id),
     slug: entry.slug,
-    title: { rendered: entry.title },
-    content: { rendered: toRendered(entry.body) },
-    excerpt: entry.excerpt && { rendered: toRendered(entry.excerpt) },
+    title: { rendered: escapeText(entry.title) },
+    content: { rendered: entry.body.value },
+    excerpt: entry.excerpt && { rendered: entry.excerpt.value },
     date_gmt: entry.publishedAt?.replace(/Z$/, ""),
     modified_gmt: entry.updatedAt?.replace(/Z$/, ""),
     yoast_head_json: toYoast(entry.seo),
@@ -134,7 +128,7 @@ export const wordpressHandlers = (baseURL: string, content: WordpressContent): H
 
         // WordPress refuses a page past the end rather than answering an empty one
         if (page > totalPages) {
-            return HttpResponse.json({ code: "rest_post_invalid_page_number" }, { status: 400 });
+            return HttpResponse.json({ code: INVALID_PAGE_CODE }, { status: 400 });
         }
 
         return HttpResponse.json(matches.slice((page - 1) * perPage, page * perPage), {

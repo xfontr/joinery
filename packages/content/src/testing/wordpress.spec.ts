@@ -3,7 +3,7 @@ import { ofetch } from "ofetch";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { OfetchHttpClient } from "#core/adapters/clients/OfetchHttpClient";
 import type { Entry, Term } from "#core/domain/content";
-import { NotFoundError, UpstreamError } from "#core/domain/errors";
+import { NotFoundError, PageNotFoundError } from "#core/domain/errors";
 import createProvider from "#core/registry";
 import { fakeEntry } from "./factories";
 import { wordpressHandlers } from "./wordpress";
@@ -53,12 +53,22 @@ const BARE_PAGE: Entry = {
 
 const GENERATED = fakeEntry({ slug: "generated" });
 
+const SITE_URL = "https://site.test";
+
+// Characters WordPress escapes on the way out, so a fake that skipped escaping would pass this
+const ESCAPED: Entry = fakeEntry({
+    slug: "jornada",
+    title: "Ley 1/2026 & <Reglamento>",
+    terms: [{ ...CIVIL, name: "Civil & Mercantil" }],
+});
+
 const server = setupServer(
     ...wordpressHandlers(BASE_URL, {
         posts: [...POSTS, GENERATED],
         pages: [BARE_PAGE],
         categories: [CIVIL],
     }),
+    ...wordpressHandlers(SITE_URL, { posts: [ESCAPED] }),
 );
 
 // The real provider on the real client, built the way the Nuxt reader builds it, so the fake is held
@@ -101,6 +111,15 @@ describe("the fake WordPress", () => {
 
     it("leaves out what an entry doesn't have instead of inventing it", async () => {
         await expect((await provider()).getEntry("pages", "about")).resolves.toEqual(BARE_PAGE);
+    });
+
+    it("round-trips a title and a term name WordPress would escape", async () => {
+        const site = await createProvider(
+            { name: "wordpress", baseURL: SITE_URL },
+            new OfetchHttpClient(ofetch.create({ baseURL: SITE_URL })),
+        );
+
+        await expect(site.getEntry("posts", "jornada")).resolves.toEqual(ESCAPED);
     });
 
     it("serves terms under the taxonomy the provider maps back to their resource", async () => {
@@ -146,11 +165,11 @@ describe("the fake WordPress", () => {
         });
     });
 
-    it("refuses a page past the end with a 400, as WordPress does", async () => {
-        const failure = (await provider()).listEntries("posts", { page: 9 });
-
-        await expect(failure).rejects.toBeInstanceOf(UpstreamError);
-        await expect(failure).rejects.toMatchObject({ upstreamStatus: 400 });
+    // The provider turns WordPress's 400 into a 404, so the fake has to send the code it reads
+    it("refuses a page past the end the way WordPress does, which the provider reads as a 404", async () => {
+        await expect((await provider()).listEntries("posts", { page: 9 })).rejects.toBeInstanceOf(
+            PageNotFoundError,
+        );
     });
 
     it("answers a resource it was given no content for with a 404", async () => {

@@ -24,18 +24,6 @@ describe("toArticle", () => {
         });
     });
 
-    it("renders a block body as empty rather than failing the page", () => {
-        const entry = fakeEntry({ body: { format: "blocks", value: [] } });
-
-        expect(toArticle(entry, PUBLICATION).body).toEqual({
-            lead: "",
-            html: "",
-            toc: [],
-            notes: [],
-            bibliography: [],
-        });
-    });
-
     // The canonical address keeps WordPress's trailing slash, so a citation never costs a redirect
     it.each(["https://revista.test", "https://revista.test/"])(
         "cites the post at its permalink on %s",

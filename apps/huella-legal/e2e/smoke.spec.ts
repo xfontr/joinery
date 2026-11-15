@@ -4,9 +4,7 @@ import { ESCAPED, HEADING } from "./fakes.ts";
 test("opens an article by its slug", async ({ page }) => {
     await page.goto(`/${ESCAPED.slug}/`);
 
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-        ESCAPED.title.replace("&amp;", "&"),
-    );
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(ESCAPED.title);
     await expect(page.getByRole("heading", { level: 2, name: HEADING })).toBeVisible();
 });
 

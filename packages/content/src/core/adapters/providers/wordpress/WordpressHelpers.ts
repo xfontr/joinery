@@ -1,3 +1,4 @@
+import { decodeHTML } from "entities";
 import type {
     Asset,
     Author,
@@ -18,6 +19,9 @@ import type {
     WordpressUser,
     WordpressYoast,
 } from "./WordpressTypes";
+
+// Tags go before entities are decoded, so an escaped `&lt;` in a title survives as a character
+export const toPlainText = (html: string): string => decodeHTML(html.replaceAll(/<[^<>]*>/g, ""));
 
 const toPerPage = (perPage?: number): number =>
     Math.min(perPage ?? DEFAULT_PER_PAGE, WP_MAX_PER_PAGE);
@@ -73,7 +77,7 @@ export const toTerm = (term: WordpressTerm, resource: TermResource): Term => ({
     // Falls back to what the caller asked for, so a custom taxonomy is never relabelled as a tag
     resource: TAXONOMIES[term.taxonomy] ?? resource,
     slug: term.slug,
-    name: term.name,
+    name: toPlainText(term.name),
     description: term.description || undefined,
     seo: toSEO(term.yoast_head_json),
 });
@@ -93,7 +97,7 @@ const toAvatar = (user: WordpressUser): Asset | undefined => {
     return {
         id: String(avatar.media_id ?? user.id),
         url: avatar.full,
-        alt: user.name,
+        alt: toPlainText(user.name),
     };
 };
 
@@ -105,8 +109,8 @@ const toAuthor = (user: WordpressUser): Author[] => {
         {
             id: String(user.id),
             slug: user.slug,
-            name: user.name,
-            bio: user.description || undefined,
+            name: toPlainText(user.name),
+            bio: (user.description && toPlainText(user.description)) || undefined,
             avatar: toAvatar(user),
         },
     ];
@@ -137,7 +141,7 @@ const toFields = (acf: WordpressEntry["acf"]): Entry["fields"] =>
 export const toEntry = (entry: WordpressEntry): Entry => ({
     id: String(entry.id),
     slug: entry.slug,
-    title: entry.title.rendered,
+    title: toPlainText(entry.title.rendered),
     excerpt: entry.excerpt ? { format: "html", value: entry.excerpt.rendered } : undefined,
     body: { format: "html", value: entry.content.rendered },
     publishedAt: toIsoDate(entry.date_gmt),

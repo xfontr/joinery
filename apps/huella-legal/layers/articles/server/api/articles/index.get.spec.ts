@@ -31,7 +31,7 @@ const handler = (await import("./index.get")).default as unknown as (
     event: unknown,
 ) => Promise<ArticleListing>;
 
-const CIVIL = fakeTerm({ slug: "derecho-civil", name: "Derecho &amp; civil" });
+const CIVIL = fakeTerm({ slug: "derecho-civil", name: "Derecho & civil" });
 const AUTHOR = fakeAuthor({ slug: "ana-ruiz" });
 const OLDEST = fakeEntry({
     publishedAt: "2023-01-01T00:00:00Z",

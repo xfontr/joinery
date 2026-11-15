@@ -16,8 +16,10 @@ export const DEFAULT_PER_PAGE = 10;
 
 export const MAX_SEARCH_LENGTH = 100;
 
-export type RichText =
-    { format: "html" | "markdown"; value: string } | { format: "blocks"; value: unknown[] };
+export interface RichText {
+    format: "html";
+    value: string;
+}
 
 export interface Asset {
     id: string;

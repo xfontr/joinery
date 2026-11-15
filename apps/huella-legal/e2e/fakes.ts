@@ -40,9 +40,9 @@ const HOSTILE =
     '<iframe src="javascript:window.pwned=1"></iframe>' +
     '<svg onload="window.pwned=1"></svg>';
 
-// WordPress escapes the ampersand, so this one proves the page decodes entities
+// The fake WordPress escapes the ampersand as the real one does, so this proves it arrives decoded
 export const ESCAPED = fakeEntry({
-    title: `${faker.lorem.words(3)} &amp; ${faker.lorem.words(2)}`,
+    title: `${faker.lorem.words(3)} & ${faker.lorem.words(2)}`,
     body: {
         format: "html",
         value: `<p>${faker.lorem.paragraph()}</p><h2>${HEADING}</h2><p>${faker.lorem.paragraph()}</p>${HOSTILE}`,

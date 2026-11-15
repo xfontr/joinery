@@ -12,7 +12,7 @@ const CATEGORY = fakeTerm();
 const TAG = fakeTerm({ resource: "tags" });
 
 const entry: Entry = fakeEntry({
-    title: "La &#8220;prueba&#8221; de la culpa &#8211; notas",
+    title: "La “prueba” de la culpa – notas",
     excerpt: { format: "html", value: "<p>Un resumen de la culpa [&hellip;]</p>\n" },
     body: { format: "html", value: words(460) },
     image: fakeAsset({ alt: "" }),
@@ -38,16 +38,6 @@ describe("toArticleSummary", () => {
             format: "articulo",
             readingMinutes: 2,
         });
-    });
-
-    it("decodes the names WordPress escaped", () => {
-        const result = summarise({
-            terms: [category("tfg", "TFG &amp; TFM")],
-            authors: [fakeAuthor({ name: "Ana &amp; Bruno" })],
-        });
-
-        expect(result.category?.name).toBe("TFG & TFM");
-        expect(result.authors[0]?.name).toBe("Ana & Bruno");
     });
 
     it("carries Yoast's noindex, so the sitemap and the feed can leave the post out", () => {
