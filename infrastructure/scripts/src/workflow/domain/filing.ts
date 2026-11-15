@@ -157,10 +157,11 @@ export type Filing = { ok: true; tickets: PlannedTicket[] } | { ok: false; reaso
 
 export const KIND_LABELS = { build: "enhancement", spike: "spike", owner: OWNER_LABEL } as const;
 
-const checklist = (criteria: string[]): string =>
-    criteria.length > 0
-        ? `**Acceptance criteria:**\n\n${criteria.map((line) => `- [ ] ${line}`).join("\n")}`
-        : "";
+const checklist = (criteria: string[]): string => {
+    if (criteria.length === 0) return "";
+    const items = criteria.map((line) => `- [ ] ${line}`).join("\n");
+    return `**Acceptance criteria:**\n\n${items}`;
+};
 
 // The same words as the portal's block panel, which a reader sees before the ticket.
 const REUSE_LABELS: Record<string, string> = {
@@ -173,18 +174,19 @@ const REUSE_LABELS: Record<string, string> = {
 const startFrom = ({ reuse }: Block): string => {
     const label = reuse ? REUSE_LABELS[reuse.plan] : undefined;
     if (!label) return "";
-    return `**Start from:** ${label}${reuse?.from ? ` \`${reuse.from}\`` : ""}.`;
+    const from = reuse?.from ? ` \`${reuse.from}\`` : "";
+    return `**Start from:** ${label}${from}.`;
+};
+
+const lessonLine = ({ text, issues }: Block["lessons"][number]): string => {
+    if (issues.length === 0) return `- ${text}`;
+    const refs = issues.map((issue) => `#${issue}`).join(", ");
+    return `- ${text} (${refs})`;
 };
 
 const lessonsOf = ({ lessons }: Block): string =>
     lessons.length > 0
-        ? `**Lessons from earlier projects:**\n\n${lessons
-              .map(({ text, issues }) =>
-                  issues.length > 0
-                      ? `- ${text} (${issues.map((issue) => `#${issue}`).join(", ")})`
-                      : `- ${text}`,
-              )
-              .join("\n")}`
+        ? `**Lessons from earlier projects:**\n\n${lessons.map(lessonLine).join("\n")}`
         : "";
 
 /** What an agent needs to start without opening the template: the ask, the bar, the precedent, the traps. */
@@ -210,7 +212,7 @@ const bundleBodyOf = (blocks: Block[]): string =>
                 .filter(Boolean)
                 .join("\n\n"),
         ),
-        `Filed from the workflow map, blocks ${blocks.map(({ id }) => `\`${id}\``).join(", ")}.`,
+        `Filed from the workflow map, blocks ${blocks.map(({ id }) => "`" + id + "`").join(", ")}.`,
     ].join("\n\n");
 
 const numbers = (issues: SnapshotIssue[]): string =>
