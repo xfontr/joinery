@@ -88,34 +88,36 @@ test("the about page is one step from the header, so a would-be author can find 
     );
 });
 
-test("the publications dropdown previews the newest reads once it opens", async ({ page }) => {
-    test.skip((page.viewportSize()?.width ?? 0) < DESKTOP, "The dropdowns only exist from lg");
+test(
+    "the publications dropdown previews the newest reads once it opens",
+    { tag: "@desktop" },
+    async ({ page }) => {
+        await page.goto("/");
+        await openDropdown(page, "Publicaciones");
 
-    await page.goto("/");
-    await openDropdown(page, "Publicaciones");
+        await expect(
+            page.getByRole("list", { name: "Destacado y lo último" }).getByRole("link"),
+        ).toHaveCount(3);
+    },
+);
 
-    await expect(
-        page.getByRole("list", { name: "Destacado y lo último" }).getByRole("link"),
-    ).toHaveCount(3);
-});
+test(
+    "the areas dropdown leads to the biggest areas and the whole index",
+    { tag: "@desktop" },
+    async ({ page }) => {
+        await page.goto("/");
+        await openDropdown(page, "Áreas");
 
-test("the areas dropdown leads to the biggest areas and the whole index", async ({ page }) => {
-    test.skip((page.viewportSize()?.width ?? 0) < DESKTOP, "The dropdowns only exist from lg");
+        await expect(
+            page
+                .getByRole("list", { name: "Las áreas con más publicaciones" })
+                .getByRole("link", { name: new RegExp(`^${SUBJECT.name}\\s`) }),
+        ).toHaveAttribute("href", `/areas/${SUBJECT.slug}/`);
+        await expect(page.getByRole("link", { name: "Todas las áreas" }).first()).toBeVisible();
+    },
+);
 
-    await page.goto("/");
-    await openDropdown(page, "Áreas");
-
-    await expect(
-        page
-            .getByRole("list", { name: "Las áreas con más publicaciones" })
-            .getByRole("link", { name: new RegExp(`^${SUBJECT.name}\\s`) }),
-    ).toHaveAttribute("href", `/areas/${SUBJECT.slug}/`);
-    await expect(page.getByRole("link", { name: "Todas las áreas" }).first()).toBeVisible();
-});
-
-test("an open header dropdown has no WCAG AA violations", async ({ page }) => {
-    test.skip((page.viewportSize()?.width ?? 0) < DESKTOP, "The dropdowns only exist from lg");
-
+test("an open header dropdown has no WCAG AA violations", { tag: "@desktop" }, async ({ page }) => {
     await page.goto("/");
     await openDropdown(page, "Publicaciones");
     await expect(page.getByRole("list", { name: "Destacado y lo último" })).toBeVisible();
@@ -125,26 +127,29 @@ test("an open header dropdown has no WCAG AA violations", async ({ page }) => {
     expect(violations).toEqual([]);
 });
 
-test("the header follows a client-side navigation before anyone has touched it", async ({
-    page,
-}) => {
-    test.skip((page.viewportSize()?.width ?? 0) < DESKTOP, "The inline menu only exists from lg");
+test(
+    "the header follows a client-side navigation before anyone has touched it",
+    { tag: "@desktop" },
+    async ({ page }) => {
+        await page.goto("/publicaciones/");
 
-    await page.goto("/publicaciones/");
+        await page
+            .getByRole("complementary")
+            .getByRole("link", { name: new RegExp(`^${SUBJECT.name}\\s`) })
+            .click();
+        await expect(page).toHaveURL(new RegExp(`/areas/${SUBJECT.slug}/$`));
 
-    await page
-        .getByRole("complementary")
-        .getByRole("link", { name: new RegExp(`^${SUBJECT.name}\\s`) })
-        .click();
-    await expect(page).toHaveURL(new RegExp(`/areas/${SUBJECT.slug}/$`));
+        const nav = page.getByRole("banner").getByRole("navigation", { name: "Principal" });
 
-    const nav = page.getByRole("banner").getByRole("navigation", { name: "Principal" });
-
-    await expect(nav.getByRole("link", { name: "Áreas" })).toHaveAttribute("aria-current", "true");
-    await expect(nav.getByRole("link", { name: "Publicaciones" })).not.toHaveAttribute(
-        "aria-current",
-    );
-});
+        await expect(nav.getByRole("link", { name: "Áreas" })).toHaveAttribute(
+            "aria-current",
+            "true",
+        );
+        await expect(nav.getByRole("link", { name: "Publicaciones" })).not.toHaveAttribute(
+            "aria-current",
+        );
+    },
+);
 
 test.describe("the not-found page", () => {
     test.use({ allowedConsole: [NOT_FOUND_DOCUMENT] });
@@ -172,31 +177,28 @@ test.describe("the not-found page", () => {
     });
 });
 
-test("a tap on the menu before the page hydrates still opens it once the app wakes", async ({
-    page,
-    baseURL,
-}) => {
-    test.skip((page.viewportSize()?.width ?? 0) >= DESKTOP, "The menu only exists below lg");
+test(
+    "a tap on the menu before the page hydrates still opens it once the app wakes",
+    { tag: "@mobile" },
+    async ({ page, baseURL }) => {
+        let release = () => {};
+        const held = new Promise<void>((resolve) => (release = resolve));
 
-    let release = () => {};
-    const held = new Promise<void>((resolve) => (release = resolve));
+        await page.route("**/_nuxt/*.js", async (route) => {
+            await held;
+            await route.continue();
+        });
 
-    await page.route("**/_nuxt/*.js", async (route) => {
-        await held;
-        await route.continue();
-    });
+        // The frame's goto, since the fixture's `page.goto` waits for a hydration the held JS blocks
+        await page.mainFrame().goto(`${baseURL}/`, { waitUntil: "domcontentloaded" });
+        await page.getByRole("button", { name: "Abrir menú" }).click();
+        release();
 
-    // The frame's goto, since the fixture's `page.goto` waits for a hydration the held JS blocks
-    await page.mainFrame().goto(`${baseURL}/`, { waitUntil: "domcontentloaded" });
-    await page.getByRole("button", { name: "Abrir menú" }).click();
-    release();
+        await expect(page.getByRole("dialog", { name: "Menú" })).toBeVisible();
+    },
+);
 
-    await expect(page.getByRole("dialog", { name: "Menú" })).toBeVisible();
-});
-
-test("the open mobile menu has no WCAG AA violations", async ({ page }) => {
-    test.skip((page.viewportSize()?.width ?? 0) >= DESKTOP, "The menu only exists below lg");
-
+test("the open mobile menu has no WCAG AA violations", { tag: "@mobile" }, async ({ page }) => {
     await page.goto("/");
     await openMenu(page);
 
