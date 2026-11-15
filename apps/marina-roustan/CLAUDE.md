@@ -10,6 +10,13 @@ See [README.md](./README.md) for the commands, the env vars and the test harness
   re-check it per request. A new env var goes in `.env.example` with a row in the README table.
 - **Local dev and e2e never read the live site.** A content source or vendor gets a fake in the
   repo before `pnpm dev` or a spec reads it.
+- **Colour reaches a component only through Nuxt UI's `--ui-*` roles** (`bg-muted`, `text-primary`,
+  `border-accented`…). Tokens live only in
+  [`layers/design/app/assets/main.css`](./layers/design/app/assets/main.css), and
+  `no-restricted-classes` in [`eslint.config.ts`](./eslint.config.ts) rejects any palette step and
+  any arbitrary type or colour value. A token change re-runs `pnpm brand:contrast
+  apps/marina-roustan/layers/design/app/assets/main.css` and pastes its table into
+  [`DESIGN.md`](./DESIGN.md).
 - Typechecking runs on build (`typescript.typeCheck: "build"`), so `pnpm build` already covers what
   `pnpm typecheck` would.
 - [`tsconfig.json`](./tsconfig.json) only references `./.nuxt/tsconfig.*.json`, which nothing

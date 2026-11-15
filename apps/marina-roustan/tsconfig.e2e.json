@@ -1,5 +1,6 @@
 {
-    // Playwright and the e2e preload run on plain Node, outside every tsconfig Nuxt generates
+    // Playwright, the e2e preload and the lint config's spec run on plain Node, outside every
+    // tsconfig Nuxt generates
     "extends": "@monorepo/configs/tsconfig/node.json",
-    "include": ["e2e/**/*.ts", "playwright.config.ts"]
+    "include": ["e2e/**/*.ts", "playwright.config.ts", "eslint.config.ts", "eslint.config.spec.ts"]
 }

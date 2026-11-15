@@ -1,0 +1,133 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/* Ramps from `pnpm brand:extract`, except marina-danger, generated from #B84D43; see DESIGN.md */
+@theme static {
+    --color-marina-paper-50: #f6fbfe;
+    --color-marina-paper-100: #def1fc;
+    --color-marina-paper-200: #d7e8f2;
+    --color-marina-paper-300: #c7d7e0;
+    --color-marina-paper-400: #96a3ab;
+    --color-marina-paper-500: #6a757c;
+    --color-marina-paper-600: #4b5459;
+    --color-marina-paper-700: #3a4146;
+    --color-marina-paper-800: #21272b;
+    --color-marina-paper-900: #14181a;
+    --color-marina-paper-950: #080b0c;
+
+    --color-marina-ink-50: #f2fcff;
+    --color-marina-ink-100: #e9f8ff;
+    --color-marina-ink-200: #d5e9f4;
+    --color-marina-ink-300: #c0d8e7;
+    --color-marina-ink-400: #89a6b6;
+    --color-marina-ink-500: #58788b;
+    --color-marina-ink-600: #375b6f;
+    --color-marina-ink-700: #284453;
+    --color-marina-ink-800: #152934;
+    --color-marina-ink-900: #0c1920;
+    --color-marina-ink-950: #050b0f;
+
+    --color-marina-sky-50: #eefdff;
+    --color-marina-sky-100: #e0faff;
+    --color-marina-sky-200: #c7ebff;
+    --color-marina-sky-300: #acdcf8;
+    --color-marina-sky-400: #5e98b8;
+    --color-marina-sky-500: #497a95;
+    --color-marina-sky-600: #2f586d;
+    --color-marina-sky-700: #244456;
+    --color-marina-sky-800: #112936;
+    --color-marina-sky-900: #081922;
+    --color-marina-sky-950: #030b11;
+
+    --color-marina-ochre-50: #fff5e5;
+    --color-marina-ochre-100: #ffeed8;
+    --color-marina-ochre-200: #ffdab7;
+    --color-marina-ochre-300: #ffc699;
+    --color-marina-ochre-400: #d48f58;
+    --color-marina-ochre-500: #b6671e;
+    --color-marina-ochre-600: #7e3f00;
+    --color-marina-ochre-700: #623100;
+    --color-marina-ochre-800: #3f1b00;
+    --color-marina-ochre-900: #281000;
+    --color-marina-ochre-950: #140600;
+
+    --color-marina-danger-50: #fff3ef;
+    --color-marina-danger-100: #ffece8;
+    --color-marina-danger-200: #ffd6ce;
+    --color-marina-danger-300: #ffbdb3;
+    --color-marina-danger-400: #e28277;
+    --color-marina-danger-500: #b84d43;
+    --color-marina-danger-600: #88322b;
+    --color-marina-danger-700: #6b2721;
+    --color-marina-danger-800: #45130f;
+    --color-marina-danger-900: #2c0a08;
+    --color-marina-danger-950: #160503;
+
+    --font-sans: Lato, ui-sans-serif, system-ui, sans-serif;
+
+    /* The live site's steps at 1280 px, sizes in rem of 16 px */
+    --text-h1: 3.44rem;
+    --text-h1--line-height: 0.9;
+    --text-h2: 3.28125rem;
+    --text-h2--line-height: 1.1;
+    --text-h2-sm: 3rem;
+    --text-h2-sm--line-height: 1.1;
+    --text-h3-lg: 2.49375rem;
+    --text-h3-lg--line-height: 1.2;
+    --text-h3: 1.44375rem;
+    --text-h3--line-height: 1.2;
+    --text-card: 1.3125rem;
+    --text-card--line-height: 1.2;
+    --text-body: 1.3125rem;
+    --text-body--line-height: 1.6;
+}
+
+/* Nuxt UI's semantic roles, pointed at the Marina palette. Light only: colour mode is off. */
+:root {
+    --ui-bg: var(--color-marina-paper-100);
+    --ui-bg-muted: var(--color-marina-paper-50);
+    --ui-bg-elevated: var(--color-marina-paper-50);
+    --ui-bg-accented: var(--color-marina-paper-200);
+    --ui-bg-inverted: var(--color-marina-ink-600);
+
+    --ui-text-dimmed: var(--color-marina-paper-600);
+    --ui-text-muted: var(--color-marina-paper-600);
+    --ui-text-toned: var(--color-marina-ink-600);
+    --ui-text: var(--color-marina-ink-600);
+    --ui-text-highlighted: var(--color-marina-ink-700);
+    --ui-text-inverted: var(--color-marina-paper-50);
+
+    --ui-border: var(--color-marina-paper-300);
+    --ui-border-muted: var(--color-marina-paper-200);
+    --ui-border-accented: var(--color-marina-ink-400);
+    --ui-border-inverted: var(--color-marina-ink-600);
+
+    /* The brand sky (400) and ochre (500) fail contrast as text; the 600 steps are legible */
+    --ui-primary: var(--color-marina-sky-600);
+    --ui-secondary: var(--color-marina-ochre-600);
+    --ui-error: var(--color-marina-danger-600);
+
+    /* Nuxt UI's controls are rounded-md, 1.5 × this, so they land on the live site's 7 px */
+    --ui-radius: calc(7px / 1.5);
+}
+
+html {
+    background: var(--ui-bg);
+    color: var(--ui-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+@layer base {
+    /* Any utility outranks this layer, so a component only spells out how its ring differs */
+    :focus-visible {
+        outline: 2px solid var(--ui-primary);
+        outline-offset: 2px;
+    }
+}
+
+/* Tailwind v4 preflight leaves native <button> at `cursor: default`, and UButton renders one */
+button:not(:disabled) {
+    cursor: pointer;
+}
