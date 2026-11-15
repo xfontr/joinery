@@ -1,15 +1,16 @@
 import { ESLint, type Linter } from "eslint";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import config from "./eslint.config.ts";
 
 const RULE = "better-tailwindcss/no-restricted-classes";
 
+const eslint = new ESLint({
+    cwd: import.meta.dirname,
+    overrideConfigFile: true,
+    overrideConfig: config as Linter.Config[],
+});
+
 const restrictedClasses = async (classes: string): Promise<string[]> => {
-    const eslint = new ESLint({
-        cwd: import.meta.dirname,
-        overrideConfigFile: true,
-        overrideConfig: config as Linter.Config[],
-    });
     const [result] = await eslint.lintText(
         `<template>\n    <div class="${classes}" />\n</template>\n`,
         { filePath: `${import.meta.dirname}/app/components/Probe.vue` },
@@ -19,6 +20,9 @@ const restrictedClasses = async (classes: string): Promise<string[]> => {
         .filter(({ ruleId }) => ruleId === RULE)
         .map(({ message }) => message);
 };
+
+// The first lint loads the Tailwind entry CSS, which took 6.6 s in CI against a 5 s test timeout.
+beforeAll(() => restrictedClasses(""), 30_000);
 
 describe("eslint config", () => {
     it.each([
