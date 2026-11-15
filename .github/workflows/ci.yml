@@ -41,7 +41,7 @@ jobs:
     e2e:
         needs: checks
         runs-on: ubuntu-latest
-        # Ships the browsers, and its tag must equal @playwright/test's exact version in huella-legal
+        # Ships the browsers, and its tag must equal @playwright/test's exact version in the catalog
         container:
             image: mcr.microsoft.com/playwright:v1.64.0-noble
             options: --user 1001
@@ -67,7 +67,9 @@ jobs:
                   name: playwright
                   # Off by default, and it would drop .playwright/ with each failure's error-context.md
                   include-hidden-files: true
-                  path: apps/huella-legal/.playwright
+                  path: |
+                      apps/huella-legal/.playwright
+                      apps/marina-roustan/.playwright
 
     # Needs a base ref to diff against, so it's meaningless on a push to master.
     dependency-review:

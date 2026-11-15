@@ -51,6 +51,9 @@ and are documented once in the [root README](../README.md#-getting-started).
 | `pnpm exec nx preview @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
 | `pnpm exec nx nuxt-prepare @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
 | `pnpm exec nx test:e2e @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
+| `pnpm exec nx preview @monorepo/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
+| `pnpm exec nx nuxt-prepare @monorepo/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
+| `pnpm exec nx test:e2e @monorepo/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
 | `pnpm exec nx dev:api @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
 | `pnpm exec nx mocks:reset @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
 | `pnpm exec nx nuxt-prepare @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |

@@ -6,4 +6,5 @@ The deployable applications in this monorepo.
 | --- | --- |
 | `developer-portal` | AI, with next to no human supervision |
 | `huella-legal` | AI-assisted, with 95% of the code supervised by a human |
+| `marina-roustan` | AI, with next to no human supervision |
 | `wp-editor` | AI, with next to no human supervision |

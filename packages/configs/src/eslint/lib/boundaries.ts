@@ -30,6 +30,10 @@ const boundaries: object = {
                         onlyDependOnLibsWithTags: ["scope:huella-legal", "scope:shared"],
                     },
                     {
+                        sourceTag: "scope:marina-roustan",
+                        onlyDependOnLibsWithTags: ["scope:marina-roustan", "scope:shared"],
+                    },
+                    {
                         sourceTag: "scope:internal",
                         onlyDependOnLibsWithTags: ["scope:internal", "scope:shared"],
                     },

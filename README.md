@@ -22,6 +22,7 @@ packages/
 apps/
     developer-portal/ @monorepo/developer-portal — the repository's public portal/front door over its docs, projects, architecture and engineering health
     huella-legal/     @monorepo/huella-legal — Huella Legal, a WIP law blog redesign (Nuxt 4)
+    marina-roustan/   @monorepo/marina-roustan — Marina Roustan, a website rebuild (Nuxt 4)
     wp-editor/        @monorepo/wp-editor — local-only review-and-apply tool for bulk edits to WordPress posts and pages
 infrastructure/
     scripts/          @monorepo/scripts — repo-local dev tooling, one folder per script
@@ -57,7 +58,7 @@ Projects are layered with Nx tags (declared in each `package.json` under `nx.tag
 <!-- docs:map:type-tags -->
 | Tag | May depend on | Who has it |
 | --- | --- | --- |
-| `type:app` | `type:integration`, `type:observability`, `type:config` | `developer-portal`, `huella-legal`, `wp-editor` |
+| `type:app` | `type:integration`, `type:observability`, `type:config` | `developer-portal`, `huella-legal`, `marina-roustan`, `wp-editor` |
 | `type:integration` | `type:config` | `content`, `i18n` |
 | `type:observability` | `type:config` | `observability` |
 | `type:infra` | `type:config` | `translations` |
@@ -72,6 +73,7 @@ Every project also carries exactly one `scope:*` tag, and both rules apply at on
 | --- | --- | --- |
 | `scope:shared` | `scope:shared` | `configs`, `content`, `i18n`, `observability` |
 | `scope:huella-legal` | `scope:huella-legal`, `scope:shared` | `huella-legal` |
+| `scope:marina-roustan` | `scope:marina-roustan`, `scope:shared` | `marina-roustan` |
 | `scope:internal` | `scope:internal`, `scope:shared` | `developer-portal`, `wp-editor` |
 | `scope:tooling` | `scope:tooling`, `scope:shared` | `scripts` |
 | `scope:infra` | `scope:infra`, `scope:shared` | `translations` |
