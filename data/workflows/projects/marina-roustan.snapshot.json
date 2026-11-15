@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-15T14:34:15.868Z",
+    "syncedAt": "2026-11-15T15:32:54.210Z",
     "milestone": "Marina Roustan",
     "issues": [
         {
@@ -43,7 +43,7 @@
             "closedAt": null,
             "activity": [],
             "blockedBy": [],
-            "branch": false,
+            "branch": true,
             "pr": false,
             "owner": false,
             "complexity": 10
@@ -52,16 +52,20 @@
             "number": 448,
             "title": "App scaffold, Test harness and fake content, Environment discipline",
             "url": "https://github.com/xfontr/monorepo/issues/448",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "app-scaffold",
                 "env-discipline",
                 "test-harness"
             ],
             "createdAt": "2026-11-15T13:09:18Z",
-            "closedAt": null,
-            "activity": [],
+            "closedAt": "2026-11-15T15:23:04Z",
+            "activity": [
+                "2026-11-15",
+                "2026-11-15",
+                "2026-11-15"
+            ],
             "blockedBy": [],
             "branch": false,
             "pr": true,

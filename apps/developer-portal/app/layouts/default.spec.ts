@@ -36,9 +36,9 @@ const global = {
         },
         UDashboardSearchButton: { template: "<button aria-label='search'>search</button>" },
         UNavigationMenu: {
-            props: { items: Array },
+            props: { items: Array, modelValue: Array },
             template:
-                "<nav><template v-for='item in items'><a :href='item.to'>{{ item.label }} {{ item.badge }}</a><a v-for='child in item.children' class='child' :href='child.to'>{{ child.label }}</a></template></nav>",
+                "<nav :data-open='modelValue?.join()'><template v-for='item in items'><a :href='item.to' @click.prevent='item.onClick?.()'>{{ item.label }} {{ item.badge }}</a><a v-for='child in item.children' class='child' :href='child.to'>{{ child.label }}</a></template></nav>",
         },
         UDashboardSearch: Search,
         NuxtLink: { props: { to: String }, template: "<a :href='to'><slot /></a>" },
@@ -95,6 +95,32 @@ describe("default layout", () => {
         expect(
             wrapper.findAll("nav a.child").map((link) => [link.text(), link.attributes("href")]),
         ).toEqual([["0036 Drop the UI kit", "/decisions/0036-ui"]]);
+    });
+
+    it("opens a submenu when its entry is clicked, not only from the arrow beside it", async () => {
+        state.menus = {
+            "/api/decisions/menu": [{ label: "0036 Drop the UI kit", to: "/decisions/0036-ui" }],
+        };
+        const wrapper = await mountSuspended(Layout, { global });
+        const decisions = wrapper.findAll("nav a").find((link) => link.text() === "Decisions")!;
+
+        await decisions.trigger("click");
+
+        expect(decisions.element.closest("nav")?.getAttribute("data-open")).toBe("decisions");
+    });
+
+    it("folds the open submenu back when another entry is clicked, so only one stays open", async () => {
+        state.menus = {
+            "/api/decisions/menu": [{ label: "0036 Drop the UI kit", to: "/decisions/0036-ui" }],
+        };
+        const wrapper = await mountSuspended(Layout, { global });
+        const entry = (label: string) =>
+            wrapper.findAll("nav a").find((link) => link.text().trim() === label)!;
+
+        await entry("Decisions").trigger("click");
+        await entry("Coverage").trigger("click");
+
+        expect(wrapper.findAll("nav[data-open='decisions']")).toHaveLength(0);
     });
 
     it("renders non-zero badges, uses the repository source link, and defers search data", async () => {

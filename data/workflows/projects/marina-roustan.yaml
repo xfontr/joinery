@@ -21,3 +21,8 @@ extras:
   - id: articulos-page
     type: blog
     title: "Artículos"
+settled:
+  scope-signoff:
+    status: done
+    on: 2026-11-15
+    note: Easy choices, not much to explain. Check ADR
