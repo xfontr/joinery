@@ -18,6 +18,40 @@ import {
     toSnapshot,
 } from "./domain/snapshot.ts";
 
+/** Writes one project's snapshot, or returns false when its milestone can't be read. */
+const syncOne = (id: string, activity: ReturnType<typeof activityByIssue>): boolean => {
+    const read = syncTargetOf(readProject(id));
+
+    if ("problem" in read) throw new ExpectedError(`${id}.yaml can't be synced: ${read.problem}.`);
+
+    let issues: ReturnType<typeof milestoneIssues>;
+    try {
+        issues = milestoneIssues(read.milestone);
+    } catch (error) {
+        // A project created before its milestone mustn't stop the others from syncing.
+        if (!(error instanceof ExpectedError)) throw error;
+        out.warn(`${id}: ${error.message}`);
+        return false;
+    }
+
+    const snapshot = toSnapshot(
+        read.milestone,
+        issues,
+        read.area ? areaIssuesWithoutMilestone(read.area) : [],
+        activity,
+        new Date().toISOString(),
+    );
+
+    if (sameIssues(readSnapshot(id), snapshot)) {
+        out.success(`${id}: unchanged — ${describeSnapshot(snapshot)}.`);
+        return true;
+    }
+
+    writeSnapshot(id, snapshot);
+    out.success(`${id}: wrote ${snapshotPath(id)} — ${describeSnapshot(snapshot)}.`);
+    return true;
+};
+
 /** Snapshots each project's milestone and commit activity beside its project file. */
 export const sync = ({ positionals }: Args): void => {
     const known = projectIds();
@@ -33,42 +67,7 @@ export const sync = ({ positionals }: Args): void => {
     }
 
     const activity = activityByIssue(commitLog());
-
-    const failed: string[] = [];
-
-    for (const id of ids) {
-        const read = syncTargetOf(readProject(id));
-
-        if ("problem" in read)
-            throw new ExpectedError(`${id}.yaml can't be synced: ${read.problem}.`);
-
-        let issues: ReturnType<typeof milestoneIssues>;
-        try {
-            issues = milestoneIssues(read.milestone);
-        } catch (error) {
-            // A project created before its milestone mustn't stop the others from syncing.
-            if (!(error instanceof ExpectedError)) throw error;
-            out.warn(`${id}: ${error.message}`);
-            failed.push(id);
-            continue;
-        }
-
-        const snapshot = toSnapshot(
-            read.milestone,
-            issues,
-            read.area ? areaIssuesWithoutMilestone(read.area) : [],
-            activity,
-            new Date().toISOString(),
-        );
-
-        if (sameIssues(readSnapshot(id), snapshot)) {
-            out.success(`${id}: unchanged — ${describeSnapshot(snapshot)}.`);
-            continue;
-        }
-
-        writeSnapshot(id, snapshot);
-        out.success(`${id}: wrote ${snapshotPath(id)} — ${describeSnapshot(snapshot)}.`);
-    }
+    const failed = ids.filter((id) => !syncOne(id, activity));
 
     if (failed.length > 0) throw new ExpectedError(`Not synced: ${failed.join(", ")}.`);
 };

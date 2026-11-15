@@ -30,14 +30,13 @@ export const setup = ({ positionals }: Args): void => {
         return;
     }
 
-    if (plan.milestone !== null) {
-        if (write) createMilestone(plan.milestone);
-        out.info(`${write ? "Created" : "Creates"} milestone ${plan.milestone}`);
-    }
-    for (const label of plan.labels) {
-        if (write) createLabel(label);
-        out.info(`${write ? "Created" : "Creates"} label ${label}`);
-    }
+    const create = (kind: string, name: string, make: (name: string) => void): void => {
+        if (write) make(name);
+        out.info(`${write ? "Created" : "Creates"} ${kind} ${name}`);
+    };
+
+    if (plan.milestone !== null) create("milestone", plan.milestone, createMilestone);
+    for (const label of plan.labels) create("label", label, createLabel);
 
     if (!write) {
         out.note("Nothing was created. Run it again with --yes to create these.");
