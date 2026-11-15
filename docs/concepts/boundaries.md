@@ -47,7 +47,7 @@ not import telemetry: instrumentation stays the app's job, as the
 Every project carries exactly one `scope:*` tag beside its `type:*` tag, and both rules apply to
 every import. `scope:shared` may depend only on itself, so a shared package can never reach into an
 app. Every other scope may depend on itself and `scope:shared`, so an app-specific package can't be
-imported by another app, nor `scripts` by the TMS. The rules cost five rows and pass today, since
+imported by another app, nor `scripts` by the TMS. The rules cost six rows and pass today, since
 every edge in the graph is an app or a tool importing a shared package; they exist so the first
 `scope:huella-legal` package is bound by them the moment it is tagged, with no one remembering to
 add a rule.
