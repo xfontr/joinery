@@ -11,6 +11,7 @@ import type {
 import { DEFAULT_PER_PAGE } from "#core/domain/content";
 import type { HttpResponse, RequestOptions } from "#core/ports/HttpClient";
 import { TAXONOMIES, WP_MAX_PER_PAGE } from "./WordpressConfigs";
+import { countWords, toPlainText } from "./WordpressText";
 import type {
     WordpressEntry,
     WordpressMedia,
@@ -73,8 +74,8 @@ export const toTerm = (term: WordpressTerm, resource: TermResource): Term => ({
     // Falls back to what the caller asked for, so a custom taxonomy is never relabelled as a tag
     resource: TAXONOMIES[term.taxonomy] ?? resource,
     slug: term.slug,
-    name: term.name,
-    description: term.description || undefined,
+    name: toPlainText(term.name),
+    description: (term.description && toPlainText(term.description)) || undefined,
     seo: toSEO(term.yoast_head_json),
 });
 
@@ -93,7 +94,7 @@ const toAvatar = (user: WordpressUser): Asset | undefined => {
     return {
         id: String(avatar.media_id ?? user.id),
         url: avatar.full,
-        alt: user.name,
+        alt: toPlainText(user.name),
     };
 };
 
@@ -105,8 +106,8 @@ const toAuthor = (user: WordpressUser): Author[] => {
         {
             id: String(user.id),
             slug: user.slug,
-            name: user.name,
-            bio: user.description || undefined,
+            name: toPlainText(user.name),
+            bio: (user.description && toPlainText(user.description)) || undefined,
             avatar: toAvatar(user),
         },
     ];
@@ -137,9 +138,10 @@ const toFields = (acf: WordpressEntry["acf"]): Entry["fields"] =>
 export const toEntry = (entry: WordpressEntry): Entry => ({
     id: String(entry.id),
     slug: entry.slug,
-    title: entry.title.rendered,
+    title: toPlainText(entry.title.rendered),
     excerpt: entry.excerpt ? { format: "html", value: entry.excerpt.rendered } : undefined,
     body: { format: "html", value: entry.content.rendered },
+    wordCount: countWords(entry.content.rendered),
     publishedAt: toIsoDate(entry.date_gmt),
     updatedAt: toIsoDate(entry.modified_gmt),
     image: toAsset(entry._embedded?.["wp:featuredmedia"]?.[0]),

@@ -8,10 +8,11 @@ const isJson = (contentType: string | null): boolean =>
     !contentType || JSON_CONTENT_TYPE.test(contentType.split(";")[0]!.trim());
 
 const rethrowAsUpstreamError = (cause: unknown): never => {
-    throw new UpstreamError(
-        cause instanceof FetchError ? cause.response?.status : undefined,
-        cause,
-    );
+    if (cause instanceof FetchError) {
+        throw new UpstreamError(cause.response?.status, cause, cause.data);
+    }
+
+    throw new UpstreamError(undefined, cause);
 };
 
 export class OfetchHttpClient implements HttpClient {

@@ -6,15 +6,7 @@ import type {
     WordpressUser,
     WordpressYoast,
 } from "#core/adapters/providers/wordpress/WordpressTypes";
-import type {
-    Author,
-    Entry,
-    EntryResource,
-    RichText,
-    SEO,
-    Term,
-    TermResource,
-} from "#core/domain/content";
+import type { Author, Entry, EntryResource, SEO, Term, TermResource } from "#core/domain/content";
 
 export type WordpressContent = Partial<
     Record<EntryResource, Entry[]> & Record<TermResource, Term[]>
@@ -76,14 +68,13 @@ const toWordpressUser = (author: Author): WordpressUser => ({
 });
 
 // WordPress only ever renders HTML, so a block document has nothing to stand in for it
-const toRendered = (text: RichText): string => (text.format === "blocks" ? "" : text.value);
 
 const toWordpressEntry = (entry: Entry): WordpressEntry => ({
     id: Number(entry.id),
     slug: entry.slug,
     title: { rendered: entry.title },
-    content: { rendered: toRendered(entry.body) },
-    excerpt: entry.excerpt && { rendered: toRendered(entry.excerpt) },
+    content: { rendered: entry.body.value },
+    excerpt: entry.excerpt && { rendered: entry.excerpt.value },
     date_gmt: entry.publishedAt?.replace(/Z$/, ""),
     modified_gmt: entry.updatedAt?.replace(/Z$/, ""),
     yoast_head_json: toYoast(entry.seo),
