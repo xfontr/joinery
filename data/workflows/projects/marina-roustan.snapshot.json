@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-15T15:32:54.210Z",
+    "syncedAt": "2026-11-15T15:42:09.950Z",
     "milestone": "Marina Roustan",
     "issues": [
         {
@@ -71,6 +71,170 @@
             "pr": true,
             "owner": false,
             "complexity": 18
+        },
+        {
+            "number": 459,
+            "title": "Content migration",
+            "url": "https://github.com/xfontr/monorepo/issues/459",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "content-migration"
+            ],
+            "createdAt": "2026-11-15T15:38:38Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 5
+        },
+        {
+            "number": 460,
+            "title": "Design lab",
+            "url": "https://github.com/xfontr/monorepo/issues/460",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "design-lab"
+            ],
+            "createdAt": "2026-11-15T15:38:52Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [
+                {
+                    "number": 447,
+                    "open": true,
+                    "closedAt": null
+                }
+            ],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 13
+        },
+        {
+            "number": 461,
+            "title": "Content source, CI build and preview deploys",
+            "url": "https://github.com/xfontr/monorepo/issues/461",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "ci-deploy",
+                "content-source"
+            ],
+            "createdAt": "2026-11-15T15:39:20Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [
+                {
+                    "number": 459,
+                    "open": true,
+                    "closedAt": null
+                }
+            ],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 21
+        },
+        {
+            "number": 462,
+            "title": "Rendering and caching",
+            "url": "https://github.com/xfontr/monorepo/issues/462",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "rendering-strategy"
+            ],
+            "createdAt": "2026-11-15T15:39:35Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [
+                {
+                    "number": 461,
+                    "open": true,
+                    "closedAt": null
+                }
+            ],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 13
+        },
+        {
+            "number": 463,
+            "title": "Security hardening, Observability",
+            "url": "https://github.com/xfontr/monorepo/issues/463",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "observability",
+                "security"
+            ],
+            "createdAt": "2026-11-15T15:39:51Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [
+                {
+                    "number": 461,
+                    "open": true,
+                    "closedAt": null
+                }
+            ],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 16
+        },
+        {
+            "number": 464,
+            "title": "Images",
+            "url": "https://github.com/xfontr/monorepo/issues/464",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "images"
+            ],
+            "createdAt": "2026-11-15T15:40:08Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [
+                {
+                    "number": 461,
+                    "open": true,
+                    "closedAt": null
+                }
+            ],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 5
+        },
+        {
+            "number": 465,
+            "title": "[OWNER] Approve the design direction",
+            "url": "https://github.com/xfontr/monorepo/issues/465",
+            "state": "closed",
+            "reason": "not_planned",
+            "caps": [
+                "design-approval"
+            ],
+            "createdAt": "2026-11-15T15:40:55Z",
+            "closedAt": "2026-11-15T15:42:07Z",
+            "activity": [],
+            "blockedBy": [
+                {
+                    "number": 460,
+                    "open": true,
+                    "closedAt": null
+                }
+            ],
+            "branch": false,
+            "pr": false,
+            "owner": true,
+            "complexity": 1
         }
     ],
     "noMilestone": []

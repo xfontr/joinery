@@ -16,3 +16,5 @@ What the snapshot and the commits can't record. The format and when to write are
 - 2026-11-15 16:20 · friction · `workflow:sync` exits 1 on every run because `huella-legal-editorial` has no milestone on GitHub; the other projects still sync first
 - 2026-11-15 16:27 · friction · The portal's sidebar submenus only unfolded from their arrow, which the owner reported as not working (it worked in headless Chromium); an entry now unfolds on click, and only one stays open
 - 2026-11-15 16:28 · note · `scope-signoff` settled from the project page with no ticket, the settle control's first real use
+- 2026-11-15 16:34 · estimate · #448 · 18 SP, about 1 h 55 min from pick to merge through /ship-issue in a second session; the PR was open 57 min of that
+- 2026-11-15 16:42 · friction · #465 · Filing the next wave in a loop filed the `design-approval` owner ticket, though the owner settles decisions from the page; it was closed as not planned
