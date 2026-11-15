@@ -94,12 +94,9 @@ const rows = computed(() => scriptRows(usage));
 const scripts = computed(() => scriptQuadrants(rows.value));
 const rules = computed(() => ruleQuadrants(usage.lint));
 const idle = computed(() => rows.value.filter((row) => row.runs === 0));
+const lastRun = (last: string | null): string =>
+    last ? `last run ${last.slice(0, 10)}` : "never run";
 const idleList = computed(() =>
-    idle.value
-        .map(
-            (row) =>
-                `${row.name} (${row.last ? `last run ${row.last.slice(0, 10)}` : "never run"})`,
-        )
-        .join(" · "),
+    idle.value.map((row) => `${row.name} (${lastRun(row.last)})`).join(" · "),
 );
 </script>

@@ -15,32 +15,10 @@ export interface Workflows {
     problems: WorkflowProblem[];
 }
 
-/** A broken file becomes a problem rather than a throw, so one bad edit never blanks the page. */
-export const assembleWorkflows = (
-    templateFiles: ParsedFile[],
-    projectFiles: ParsedFile[],
-    snapshotFiles: Record<string, ParsedFile>,
-): Workflows => {
-    const problems: WorkflowProblem[] = [];
+const readTemplates = (files: ParsedFile[], problems: WorkflowProblem[]): Template[] => {
     const templates: Template[] = [];
 
-    const snapshotOf = (parsed: ParsedFile | undefined): Snapshot | null => {
-        if (!parsed) return null;
-
-        const where = `projects/${parsed.file}`;
-
-        if (!parsed.ok) {
-            problems.push({ file: where, message: parsed.error });
-            return null;
-        }
-
-        const { snapshot, problems: found } = readSnapshot(parsed.value);
-
-        problems.push(...found.map((message) => ({ file: where, message })));
-        return snapshot;
-    };
-
-    for (const parsed of templateFiles) {
+    for (const parsed of files) {
         const where = `templates/${parsed.file}`;
 
         if (!parsed.ok) {
@@ -59,6 +37,34 @@ export const assembleWorkflows = (
         }
         if (template.id) templates.push(template);
     }
+
+    return templates;
+};
+
+/** A broken file becomes a problem rather than a throw, so one bad edit never blanks the page. */
+export const assembleWorkflows = (
+    templateFiles: ParsedFile[],
+    projectFiles: ParsedFile[],
+    snapshotFiles: Record<string, ParsedFile>,
+): Workflows => {
+    const problems: WorkflowProblem[] = [];
+    const templates = readTemplates(templateFiles, problems);
+
+    const snapshotOf = (parsed: ParsedFile | undefined): Snapshot | null => {
+        if (!parsed) return null;
+
+        const where = `projects/${parsed.file}`;
+
+        if (!parsed.ok) {
+            problems.push({ file: where, message: parsed.error });
+            return null;
+        }
+
+        const { snapshot, problems: found } = readSnapshot(parsed.value);
+
+        problems.push(...found.map((message) => ({ file: where, message })));
+        return snapshot;
+    };
 
     const projects: ProjectView[] = [];
 

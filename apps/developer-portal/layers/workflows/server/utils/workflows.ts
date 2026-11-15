@@ -1,13 +1,14 @@
 import { existsSync } from "node:fs";
 import { readFile, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { isMap, parseDocument } from "yaml";
+import { isMap, parseDocument, type Document } from "yaml";
 import {
     assembleWorkflows,
     PROJECT_ID,
     projectYaml,
     TICKET_SIZES,
     type NewPage,
+    type ProjectView,
     type Template,
     type TicketSize,
     type Workflows,
@@ -45,10 +46,29 @@ const switchProblem = (template: Template, switches: Record<string, unknown>): s
     return null;
 };
 
+const pageProblem = (
+    template: Template,
+    taken: ReadonlySet<string>,
+    id: string,
+    type: string,
+    title: string,
+): string | null => {
+    if (!title) return "a page needs a title";
+    if (!PROJECT_ID.test(id)) return `\`${id}\` isn't a kebab-case page id`;
+    if (taken.has(id)) return `\`${id}\` is already taken in ${template.id}`;
+    if (!template.types.some((candidate) => candidate.id === type)) {
+        return `\`${type || "(none)"}\` isn't a page type of ${template.id}`;
+    }
+    return null;
+};
+
 /** The pages a new project adds, each an extra naming one of the template's page types. */
-const readPages = (template: Template, raw: unknown): NewPage[] | string => {
-    if (raw === undefined) return [];
-    if (!Array.isArray(raw)) return "the pages are a list";
+const readPages = (
+    template: Template,
+    raw: unknown,
+): { pages: NewPage[] } | { problem: string } => {
+    if (raw === undefined) return { pages: [] };
+    if (!Array.isArray(raw)) return { problem: "the pages are a list" };
 
     const taken = new Set(template.capabilities.map(({ id }) => id));
     const pages: NewPage[] = [];
@@ -59,18 +79,15 @@ const readPages = (template: Template, raw: unknown): NewPage[] | string => {
             textOf(page[key]),
         );
 
-        if (!title) return "a page needs a title";
-        if (!PROJECT_ID.test(id)) return `\`${id}\` isn't a kebab-case page id`;
-        if (taken.has(id)) return `\`${id}\` is already taken in ${template.id}`;
-        if (!template.types.some((candidate) => candidate.id === type)) {
-            return `\`${type || "(none)"}\` isn't a page type of ${template.id}`;
-        }
+        const problem = pageProblem(template, taken, id, type, title);
+
+        if (problem) return { problem };
 
         taken.add(id);
         pages.push({ id, type, title });
     }
 
-    return pages;
+    return { pages };
 };
 
 const milestoneProblem = (workflows: Workflows, id: string, milestone: string): string | null => {
@@ -111,9 +128,11 @@ const createProject = async (
 
     if (problem) return problem;
 
-    const extras = readPages(template, edit.extras);
+    const read = readPages(template, edit.extras);
 
-    if (typeof extras === "string") return extras;
+    if ("problem" in read) return read.problem;
+
+    const extras = read.pages;
 
     const project = {
         id,
@@ -136,6 +155,30 @@ const createProject = async (
         throw error;
     }
     return null;
+};
+
+const ticketSizeProblem = (view: ProjectView, size: string): string | null => {
+    if (!(TICKET_SIZES as readonly string[]).includes(size))
+        return `\`${size}\` isn't a ticket size`;
+    if (size !== view.project.ticketSize && view.tickets.filed > 0) {
+        return "the ticket size is fixed once a ticket is filed";
+    }
+    return null;
+};
+
+const setSettings = (
+    document: Document,
+    view: ProjectView,
+    details: Record<string, string>,
+    switches: Record<string, unknown>,
+    size: string,
+): void => {
+    for (const [key, value] of Object.entries(details)) document.set(key, value);
+    if (Object.keys(switches).length > 0 && !isMap(document.get("switches"))) {
+        document.set("switches", document.createNode({}));
+    }
+    for (const [key, on] of Object.entries(switches)) document.setIn(["switches", key], on);
+    if (size !== view.project.ticketSize) document.set("ticketSize", size);
 };
 
 /**
@@ -184,19 +227,11 @@ export const applyEdit = async (body: unknown): Promise<string | null> => {
     if (problem) return problem;
 
     const size = textOf(edit.ticketSize);
+    const sizeProblem = ticketSizeProblem(view, size);
 
-    if (!(TICKET_SIZES as readonly string[]).includes(size))
-        return `\`${size}\` isn't a ticket size`;
-    if (size !== view.project.ticketSize && view.tickets.filed > 0) {
-        return "the ticket size is fixed once a ticket is filed";
-    }
+    if (sizeProblem) return sizeProblem;
 
-    for (const [key, value] of Object.entries(details)) document.set(key, value);
-    if (Object.keys(switches).length > 0 && !isMap(document.get("switches"))) {
-        document.set("switches", document.createNode({}));
-    }
-    for (const [key, on] of Object.entries(switches)) document.setIn(["switches", key], on);
-    if (size !== view.project.ticketSize) document.set("ticketSize", size);
+    setSettings(document, view, details, switches, size);
 
     await writeFile(path, document.toString({ lineWidth: 0 }), "utf8");
     return null;

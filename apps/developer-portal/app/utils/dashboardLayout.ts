@@ -30,6 +30,23 @@ export const defaultLayout = (definitions: readonly WidgetDefinition[]): Dashboa
 
 const isSize = (value: unknown): value is WidgetSize => WIDGET_SIZES.includes(value as WidgetSize);
 
+const savedList = (saved: object, key: string): unknown[] => {
+    const value = (saved as Record<string, unknown>)[key];
+    return Array.isArray(value) ? value : [];
+};
+
+const placementOf = (
+    entry: unknown,
+    byId: ReadonlyMap<string, WidgetDefinition>,
+): WidgetPlacement | null => {
+    if (typeof entry !== "object" || entry === null) return null;
+
+    const { id, size } = entry as { id?: unknown; size?: unknown };
+    const definition = typeof id === "string" ? byId.get(id) : undefined;
+
+    return definition ? { id: definition.id, size: isSize(size) ? size : definition.size } : null;
+};
+
 /**
  * Reads whatever the browser had saved against the widgets that exist now: unknown ids are
  * dropped, and a widget the saved layout never saw takes its default place.
@@ -48,25 +65,16 @@ export const resolveLayout = (
     const widgets: WidgetPlacement[] = [];
     const hidden: string[] = [];
 
-    const savedWidgets: unknown[] =
-        "widgets" in saved && Array.isArray(saved.widgets) ? saved.widgets : [];
-    const savedHidden: unknown[] =
-        "hidden" in saved && Array.isArray(saved.hidden) ? saved.hidden : [];
+    for (const entry of savedList(saved, "widgets")) {
+        const placement = placementOf(entry, byId);
 
-    for (const entry of savedWidgets) {
-        if (typeof entry !== "object" || entry === null) continue;
+        if (!placement || seen.has(placement.id)) continue;
 
-        const id = "id" in entry ? entry.id : undefined;
-        const size = "size" in entry ? entry.size : undefined;
-        const definition = typeof id === "string" ? byId.get(id) : undefined;
-
-        if (!definition || seen.has(definition.id)) continue;
-
-        seen.add(definition.id);
-        widgets.push({ id: definition.id, size: isSize(size) ? size : definition.size });
+        seen.add(placement.id);
+        widgets.push(placement);
     }
 
-    for (const id of savedHidden) {
+    for (const id of savedList(saved, "hidden")) {
         if (typeof id !== "string" || !byId.has(id) || seen.has(id)) continue;
 
         seen.add(id);
