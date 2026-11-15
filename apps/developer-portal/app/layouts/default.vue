@@ -23,6 +23,8 @@
                         {{ group.label }}
                     </p>
                     <UNavigationMenu
+                        :model-value="group.open"
+                        @update:model-value="(values) => toggle(group.open, values)"
                         :items="group.items"
                         :collapsed
                         orientation="vertical"
@@ -119,10 +121,15 @@ const menus = Object.fromEntries(
     ),
 );
 
-const navGroups = computed<{ label: string; items: NavigationMenuItem[] }[]>(() =>
+const route = useRoute();
+
+/** One submenu open in the whole sidebar, so opening any entry folds the others back. */
+const openKey = ref<string | null>(null);
+
+const navItems = computed(() =>
     GROUPS.map(({ label, items }) => ({
         label,
-        items: items.flatMap((key) => {
+        items: items.flatMap((key): NavigationMenuItem[] => {
             const link = nav[key];
             const count = counts.value[key] ?? 0;
             const children = menus[key]?.value ?? [];
@@ -133,6 +140,10 @@ const navGroups = computed<{ label: string; items: NavigationMenuItem[] }[]>(() 
                           label: link.label,
                           icon: link.icon,
                           to: link.to,
+                          value: key,
+                          onClick: () => {
+                              openKey.value = children.length === 0 ? null : key;
+                          },
                           badge: count === 0 ? undefined : String(count),
                           children: children.length === 0 ? undefined : children,
                       },
@@ -141,6 +152,34 @@ const navGroups = computed<{ label: string; items: NavigationMenuItem[] }[]>(() 
         }),
     })),
 );
+
+/** Each menu sees the open key only when it holds that entry. */
+const navGroups = computed(() =>
+    navItems.value.map((group) => ({
+        ...group,
+        open: group.items.some(({ value }) => value === openKey.value) ? [openKey.value!] : [],
+    })),
+);
+
+/** The arrow adds or removes one value; an added one becomes the only open entry. */
+const toggle = (was: string[], value: string | string[] | undefined): void => {
+    const values = Array.isArray(value) ? value : [value ?? ""].filter(Boolean);
+    const added = values.find((value) => !was.includes(value));
+    if (added) openKey.value = added;
+    else if (was.length > 0 && values.length === 0) openKey.value = null;
+};
+
+/** The page a reader lands on, by link or by URL, shows its section's submenu. */
+const unfoldCurrent = (): void => {
+    const current = navItems.value
+        .flatMap(({ items }) => items)
+        .find(({ to }) => route.path === to || route.path.startsWith(`${String(to)}/`));
+    openKey.value = current?.children ? String(current.value) : null;
+};
+
+// The prerendered HTML has every submenu closed, so opening one before hydration would mismatch.
+onMounted(unfoldCurrent);
+watch(() => route.path, unfoldCurrent);
 
 const searchOpen = ref(false);
 
