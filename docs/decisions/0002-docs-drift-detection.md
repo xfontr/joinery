@@ -1,6 +1,6 @@
 ---
 issue: 40
-status: to-implement
+status: implemented
 decision: accepted
 ---
 
