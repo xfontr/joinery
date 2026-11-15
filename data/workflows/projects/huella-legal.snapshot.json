@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-11T10:39:05.073Z",
+    "syncedAt": "2026-11-15T12:30:41.975Z",
     "milestone": "Huella Legal",
     "issues": [
         {
@@ -1391,17 +1391,21 @@
             "number": 331,
             "title": "Run huella-legal Nuxt specs in a shared environment",
             "url": "https://github.com/xfontr/monorepo/issues/331",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "test-harness"
             ],
             "createdAt": "2026-10-31T21:41:59Z",
-            "closedAt": null,
-            "activity": [],
+            "closedAt": "2026-11-15T10:41:31Z",
+            "activity": [
+                "2026-11-14",
+                "2026-11-15",
+                "2026-11-15"
+            ],
             "blockedBy": [],
             "branch": false,
-            "pr": false,
+            "pr": true,
             "owner": false,
             "complexity": 3
         },
