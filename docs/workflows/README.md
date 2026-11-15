@@ -55,32 +55,37 @@ blocks that need them, and closing the ticket is the approval. Nothing else wait
 
 ## 📄 Page types
 
-A site's pages aren't known until its feature inventory lists them, and each needs different work. A
-template's `types` are blocks a project adds once per page, under `extras`, by naming one with
-`type:`. The extra takes the type's stage, estimate, criteria and needs; its own fields win, and its
-`dependsOn` adds to the type's.
+A site's pages aren't known until its feature inventory lists them. The work is in the layouts,
+not the pages: five legal and about pages on one layout are one page template, and putting a sixth
+on it is a slug in the code. A template's `types` are blocks a project adds once per page template,
+custom page and blog, under `extras`, by naming one with `type:`. A page that renders on a page
+template is never an extra of its own. The extra takes the type's stage, estimate, criteria and
+needs; its own fields win, and its `dependsOn` adds to the type's.
 
 ```yaml
 extras:
-  - { id: services-page, type: custom-page, title: Services page }
-  - { id: legal-notice-page, type: page-template, title: Legal notice page }
+  - { id: legal-page, type: page-template, title: Legal and about }
+  - { id: services-page, type: page-template, title: Services }
+  - { id: launch-page, type: custom-page, title: Launch landing }
 ```
 
-Both website templates have the same four types, and the new-project wizard adds pages as these
-extras. A site can have several blogs, each with or without comments.
+Both website templates have the same four types, and the new-project wizard adds them as these
+extras. A site can have several page templates and several blogs, each blog with or without
+comments.
 
 | Type | For | SP | Needs |
 | --- | --- | --- | --- |
-| `page-template` | A page on the shared page template, its content from the content source | 2 | `standard-pages` |
-| `custom-page` | A page with a layout of its own, built from the kit to its approved design | 5 | `component-kit`, `ci-deploy` |
+| `page-template` | One layout several content pages share; each page on it is a slug | 5 | `standard-pages` |
+| `custom-page` | A page written in code rather than read from content, such as a landing | 5 | `component-kit`, `ci-deploy` |
 | `blog` | Posts and their paginated listings | 13 | `component-kit`, `ci-deploy` |
 | `blog-comments` | A blog whose posts take comments | 13 | `component-kit`, `ci-deploy`, `comments` |
 
 `comments` is the comments setup, 8 SP, and `onDemand`: the first blog with comments brings it into
 the map, and every later one costs nothing more for it.
 
-`standard-pages` is the shared layout, the error pages and the confirmation landings that every
-page template sits on. The template's `reuse` paths into Huella Legal are `method`: an example to
+`standard-pages`, titled *Page shell*, is the route that renders a content page at its slug on the
+page template the code assigns it, and the 404 and error pages. It keeps its id because Huella's
+tickets carry `cap:standard-pages`. The template's `reuse` paths into Huella Legal are `method`: an example to
 follow, not code to copy into a site that isn't a legal blog.
 
 ## 🤝 The contract with GitHub

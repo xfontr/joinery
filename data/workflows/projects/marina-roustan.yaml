@@ -1,0 +1,21 @@
+id: marina-roustan
+title: Marina Roustan
+template: website-rebuild
+area: app:marina-roustan
+milestone: Marina Roustan
+summary: ""
+
+switches:
+  content-migration: true
+  staging-gate: false
+  newsletter: false
+
+ticketSize: fast
+
+extras:
+  - id: standard-page
+    type: page-template
+    title: Standard
+  - id: articulos-page
+    type: blog
+    title: "Artículos"

@@ -40,12 +40,15 @@ hundred.
 
 ## 1.4 Adding the pages
 
-A feature inventory or site brief ends with every page in the project's `extras`, each naming a
-page type from the template: `page-template`, `custom-page`, `blog` or `blog-comments`. Comments
-are set up once, by the first blog that takes them, so a second one adds no comments work. Show the
-user the list before the scope sign-off closes, since each page becomes its own block and ticket
-cost. A page that fits no type is an ordinary extra with its own `dependsOn`, and a lesson for the
-template.
+A feature inventory or site brief ends with every page template, custom page and blog in the
+project's `extras`, each naming a type from the template: `page-template`, `custom-page`, `blog` or
+`blog-comments`. **A page on a template is not an extra.** The legal, about and privacy pages on one
+layout are one `page-template`, whose `summary` names them; a page with a different layout is a second
+template, and a page written in code, such as a landing, is a `custom-page`. Never suggest one extra
+per content page. Comments are set up once, by the first blog that takes them, so a second one adds
+no comments work. Show the user the list before the scope sign-off closes, since each extra becomes
+its own block and ticket cost. A page that fits no type is an ordinary extra with its own
+`dependsOn`, and a lesson for the template.
 
 ## 1.5 Drafting a map for a custom project
 
