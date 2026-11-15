@@ -3,6 +3,7 @@ import { join, relative } from "node:path";
 import { at, repoRoot } from "../../shared/adapters/git.ts";
 import { PROJECT_ROOTS } from "../../shared/domain/layout.ts";
 import type { Doc, ProjectScripts } from "../domain/capabilities.ts";
+import { BOUNDARIES_PATH, README_PATH, type ProjectManifest } from "../domain/readme.ts";
 
 const read = (path: string): string => readFileSync(path, "utf8");
 
@@ -31,19 +32,29 @@ const nameField = (text: string): string | undefined =>
 
 export const rootScripts = (): string[] => scriptNames(readJson(at("package.json")));
 
-export const projectScripts = (): ProjectScripts[] =>
+export const projectManifests = (): (ProjectManifest & { scripts: string[] })[] =>
     PROJECT_ROOTS.flatMap((top) =>
         dirsIn(at(top)).flatMap((dir) => {
             try {
                 const pkg = readJson(at(top, dir, "package.json"));
+                const nx = (pkg.nx ?? {}) as { tags?: string[] };
                 return [
-                    { root: `${top}/${dir}`, name: String(pkg.name), scripts: scriptNames(pkg) },
+                    {
+                        root: `${top}/${dir}`,
+                        name: String(pkg.name),
+                        description: typeof pkg.description === "string" ? pkg.description : "",
+                        tags: nx.tags ?? [],
+                        scripts: scriptNames(pkg),
+                    },
                 ];
             } catch {
                 return [];
             }
         }),
     );
+
+export const projectScripts = (): ProjectScripts[] =>
+    projectManifests().map(({ root, name, scripts }) => ({ root, name, scripts }));
 
 export const hookNames = (): string[] =>
     filesIn(at(".husky")).filter((name) => !name.startsWith("_"));
@@ -116,3 +127,9 @@ export const readMap = (): string => {
 };
 
 export const writeMap = (markdown: string): void => writeFileSync(at(MAP_PATH), markdown);
+
+export const readBoundaries = (): string => read(at(BOUNDARIES_PATH));
+
+export const readReadme = (): string => read(at(README_PATH));
+
+export const writeReadme = (markdown: string): void => writeFileSync(at(README_PATH), markdown);

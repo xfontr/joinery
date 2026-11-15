@@ -5,11 +5,13 @@ agent skill in the repo, each with the doc that explains it. It exists because t
 all *reference* — a README answers "how does X work" for an X you already know about, and nothing
 answered "what is in here". See
 [`0001-feature-discoverability.md`](../../../../docs/decisions/0001-feature-discoverability.md).
+It also renders the root README's tag tables and workspace-layout block — see
+[🧱 The README regions](#-the-readme-regions).
 
 | Command | What it does |
 | --- | --- |
-| `pnpm docs:map` | Re-render the map |
-| `pnpm docs:map --check` | Exit 1 if the checked-in map differs from the render — the CI step |
+| `pnpm docs:map` | Re-render the map and the README regions |
+| `pnpm docs:map --check` | Exit 1 if either checked-in file differs from the render — the CI step |
 
 ## 🗂 Structure
 
@@ -19,6 +21,7 @@ main.ts                   render, then write it or assert it with --check
 adapters/files.ts         the filesystem and git side
 domain/capabilities.ts    what counts as a capability, and which doc explains one
 domain/render.ts          capabilities + docs → the markdown
+domain/readme.ts          boundaries.ts + project manifests → the README regions
 ```
 
 The `--check` contract below is unchanged by that split — it still exits 1 on a stale map and 0 on
@@ -67,6 +70,21 @@ map, which is where a human can judge it.
 
 The forcing function comes from the exact-match half regardless: a new script, hook, workflow or
 skill changes the render, so it fails CI until the map is regenerated.
+
+## 🧱 The README regions
+
+Three blocks of the root README are generated, each between a `<!-- docs:map:<name> -->` and
+`<!-- /docs:map:<name> -->` marker pair. Everything outside the markers stays hand-written.
+
+| Region | Rendered from |
+| --- | --- |
+| `layout` | Each project's `package.json` `name` and `description`, grouped by root in `PROJECT_ROOTS` order |
+| `type-tags` | The `type:*` entries in `boundaries.ts`'s `depConstraints`, in file order, plus every project holding the tag |
+| `scope-tags` | The `scope:*` entries, the same way |
+
+`boundaries.ts` is read as text rather than imported, because a relative import from another
+project trips the boundary rule it declares. A render that parses no constraint, or a README with a
+marker missing, exits 1 instead of writing empty tables.
 
 ## 🧭 Deliberately deferred
 
