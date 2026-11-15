@@ -262,7 +262,7 @@ a commit. A commit without `[#N]` counts nowhere, and neither does work that lef
 | Need | How |
 | --- | --- |
 | Create a new project's milestone and the labels its tickets need, before the first sync | `pnpm workflow:setup <id>` to see it, `--yes` to do it |
-| Refresh the snapshot the portal draws | `pnpm workflow:sync [<id>]` |
+| Refresh the snapshot the portal draws | `pnpm workflow:sync [<id>]`. The post-checkout and post-merge hooks run it in the background in the main checkout, never in a worktree, where a ship-issue run would stop on the file |
 | What can be taken now, live from GitHub | `pnpm workflow:next <id>` |
 | See what filing a block would create, with the blocks its ticket size bundles it with | `pnpm workflow:file <id> <block>` |
 | File it | `pnpm workflow:file <id> <block> --yes` |
@@ -270,7 +270,8 @@ a commit. A commit without `[#N]` counts nowhere, and neither does work that lef
 | Abandon a project's tickets: close every untouched one as not planned, keep anything started or closed | `pnpm workflow:drop <id>` to see it, `--yes` to do it, then delete the project |
 | Create a project | The plus card after the projects on the Workflows page under `pnpm dev developer-portal`, or after the workflows on the dashboard: a wizard through the template, the details and the features, with the blocks every project gets listed beside them and the ticket size in a side panel that prices each size as you switch. It writes the project file and nothing else; on the deployed portal Create is locked and the same file comes as a download to add in a PR. Tickets are filed with `workflow:file` |
 | Switch a feature, set the ticket size, edit or delete a project | The project's **Settings** page under `pnpm dev`, which writes the project file keeping its comments. Deleting sits at the bottom behind typing the id, and removes the project file and its snapshot; nothing on GitHub changes, so run `workflow:drop` first when the tickets should go too. The template can't change, since the switches and settled blocks belong to it. The deployed portal shows Settings read-only |
-| Settle a block without a ticket, add an extra or a page | Edit `projects/<id>.yaml`; give a settlement `on: YYYY-MM-DD` so the replay counts it from that day |
+| Settle a block without a ticket | Under `pnpm dev`, the block's panel on the project page marks it done or skipped with a one-line note, stamped with today's `on:` date so the replay counts it from that day, or takes it back. A block with a ticket is finished by closing the ticket |
+| Add an extra or a page | Edit `projects/<id>.yaml` |
 | Change the generic map | Edit the template. Every block names the issues its lessons came from |
 
 `workflow:file` uses the block's suggested `tickets`, or one ticket from its title and `doneWhen`

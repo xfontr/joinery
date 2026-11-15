@@ -410,3 +410,78 @@ describe("applyEdit ticket size", () => {
         expect(await projectFile()).not.toContain("ticketSize");
     });
 });
+
+describe("applyEdit settle", () => {
+    const settle = (overrides: Record<string, unknown> = {}) => ({
+        action: "settle",
+        project: "blog",
+        block: "comments",
+        status: "done",
+        note: "Decided in the kickoff call.",
+        ...overrides,
+    });
+
+    beforeEach(async () => {
+        await writeFile(
+            join(dir, "projects", "blog.yaml"),
+            PROJECT.replace("comments: false", "comments: true"),
+        );
+    });
+
+    it("stamps today's date, so the replay counts the block from the day it was settled", async () => {
+        await expect(applyEdit(settle())).resolves.toBeNull();
+
+        const today = new Date().toISOString().slice(0, 10);
+        const { projects } = await loadWorkflows();
+
+        expect(projects[0]?.project.settled.comments).toEqual({
+            status: "done",
+            on: today,
+            note: "Decided in the kickoff call.",
+        });
+        expect(await projectFile()).toContain("# Kept: a person wrote this.");
+    });
+
+    it("takes a settlement back without leaving an empty `settled` behind", async () => {
+        await applyEdit(settle());
+        await expect(applyEdit(settle({ status: null }))).resolves.toBeNull();
+
+        expect(await projectFile()).not.toContain("settled");
+    });
+
+    it.each([
+        [{ note: " " }, "a settled block needs a note saying why"],
+        [{ status: "approved" }, "`approved` isn't one of done, skipped"],
+        [{ block: "search" }, "`search` isn't a block this project has on"],
+    ])(
+        "refuses %j instead of writing a settlement the page can't explain",
+        async (body, problem) => {
+            await expect(applyEdit(settle(body))).resolves.toBe(problem);
+        },
+    );
+
+    it("refuses a block with a ticket, which only closing the ticket finishes", async () => {
+        await writeFile(
+            join(dir, "projects", "blog.snapshot.json"),
+            JSON.stringify({
+                syncedAt: "2026-11-09T00:00:00Z",
+                milestone: "Blog",
+                issues: [
+                    {
+                        number: 8,
+                        title: "Comments",
+                        url: "",
+                        state: "open",
+                        reason: null,
+                        caps: ["comments"],
+                        closedAt: null,
+                    },
+                ],
+            }),
+        );
+
+        await expect(applyEdit(settle())).resolves.toBe(
+            "Comments has tickets, so it is finished by closing them on GitHub",
+        );
+    });
+});

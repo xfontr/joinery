@@ -32,6 +32,47 @@
         <p v-if="why" class="text-muted">
             {{ why }}
         </p>
+        <section v-if="settleable" class="flex flex-col gap-2">
+            <h3 class="text-xs font-semibold tracking-wide text-dimmed uppercase">Settle</h3>
+            <div v-if="settled" class="flex items-center gap-2">
+                <span class="flex-1 text-muted">Settled in the project file, with no ticket.</span>
+                <UButton
+                    label="Undo"
+                    icon="i-lucide-undo-2"
+                    color="neutral"
+                    variant="outline"
+                    size="xs"
+                    @click="emit('settle', null)"
+                />
+            </div>
+            <template v-else>
+                <UInput
+                    v-model="settleNote"
+                    placeholder="Why, in one line"
+                    aria-label="Why it is settled"
+                    class="w-full"
+                />
+                <div class="flex gap-2">
+                    <UButton
+                        label="Mark done"
+                        icon="i-lucide-check"
+                        size="xs"
+                        :disabled="noteMissing"
+                        @click="settle('done')"
+                    />
+                    <UButton
+                        label="Skip"
+                        icon="i-lucide-circle-slash"
+                        color="neutral"
+                        variant="outline"
+                        size="xs"
+                        :disabled="noteMissing"
+                        @click="settle('skipped')"
+                    />
+                </div>
+            </template>
+        </section>
+
         <code
             v-if="fileCommand"
             class="block rounded-md bg-elevated px-2 py-1 font-mono text-xs select-all"
@@ -120,6 +161,7 @@ import type { CapabilityActivity } from "#layers/workflows/shared/workflowActivi
 import {
     ticketStatus,
     type CapabilityView,
+    type SettledState,
     type SnapshotIssue,
 } from "#layers/workflows/shared/workflows.ts";
 
@@ -130,6 +172,8 @@ interface Props {
     /** Capability id to its title, for the blocks it needs and unblocks. */
     titles?: Record<string, string>;
     editable?: boolean;
+    /** Whether a block with no ticket can be marked done or skipped from here. */
+    canSettle?: boolean;
     activity?: CapabilityActivity | null;
     /** The title of the group holding this capability when that group is switched off. */
     groupOff?: string | null;
@@ -140,10 +184,15 @@ const {
     project = null,
     titles = {},
     editable = false,
+    canSettle = false,
     activity = null,
     groupOff = null,
 } = defineProps<Props>();
-const emit = defineEmits<{ toggle: [on: boolean]; select: [capability: string] }>();
+const emit = defineEmits<{
+    toggle: [on: boolean];
+    select: [capability: string];
+    settle: [settlement: { status: SettledState; note: string } | null];
+}>();
 
 const label = computed(() => capabilityStateLabel(capability.state));
 const tone = computed(() => capabilityStateTone(capability.state));
@@ -152,6 +201,16 @@ const kindText = computed(() =>
 );
 const kindIconName = computed(() => blockKindIcon(capability.kind) ?? undefined);
 const unfiled = computed(() => capability.issues.every(({ reason }) => reason === "not_planned"));
+const settled = computed(
+    () => unfiled.value && (capability.state === "done" || capability.state === "skipped"),
+);
+const settleable = computed(() => canSettle && unfiled.value && capability.state !== "off");
+const settleNote = ref("");
+const noteMissing = computed(() => !settleNote.value.trim());
+const settle = (status: SettledState): void => {
+    emit("settle", { status, note: settleNote.value.trim() });
+    settleNote.value = "";
+};
 const fileCommand = computed(() =>
     project && unfiled.value && ["can-file", "waiting-on-you"].includes(capability.state)
         ? `pnpm workflow:file ${project} ${capability.id}`
@@ -171,9 +230,11 @@ const why = computed(() => {
         case "can-file":
             return "Nothing it needs is undecided, so its tickets can be filed now.";
         case "waiting-on-you":
-            return unfiled.value
-                ? "Only you can approve this: file its ticket and close it, or settle it in the project file. Everything after it waits."
-                : "Only you can close this, and everything after it waits.";
+            if (!unfiled.value) return "Only you can close this, and everything after it waits.";
+            if (canSettle) {
+                return "Only you can approve this: mark it done below, or file its ticket and close it. Everything after it waits.";
+            }
+            return "Only you can approve this: file its ticket and close it, or settle it in the project file. Everything after it waits.";
         case "ready":
             return "Nothing open blocks it, so an agent can take it.";
         default:

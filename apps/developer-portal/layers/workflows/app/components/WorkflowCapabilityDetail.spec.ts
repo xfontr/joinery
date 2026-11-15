@@ -146,6 +146,33 @@ describe("WorkflowCapabilityDetail", () => {
         expect(wrapper.emitted("select")).toEqual([["moderation"]]);
     });
 
+    it("marks an owner block done only with a note, since a settlement with no reason can't be read later", async () => {
+        const wrapper = await mountSuspended(WorkflowCapabilityDetail, {
+            props: { capability: capabilityWith([], true, "spam-protection"), canSettle: true },
+        });
+        const done = wrapper.findAll("button").find((button) => button.text() === "Mark done")!;
+
+        expect(done.attributes("disabled")).toBeDefined();
+
+        await wrapper.find("input").setValue("Approved in the kickoff call.");
+        await done.trigger("click");
+
+        expect(wrapper.emitted("settle")).toEqual([
+            [{ status: "done", note: "Approved in the kickoff call." }],
+        ]);
+    });
+
+    it("offers no settling for a block with a live ticket, which GitHub finishes", async () => {
+        const wrapper = await mountSuspended(WorkflowCapabilityDetail, {
+            props: {
+                capability: capabilityWith([{ number: 6, state: "open", reason: null }]),
+                canSettle: true,
+            },
+        });
+
+        expect(wrapper.text()).not.toContain("Mark done");
+    });
+
     it("names the open blocker beside a blocked ticket", async () => {
         const wrapper = await mountSuspended(WorkflowCapabilityDetail, {
             props: {
