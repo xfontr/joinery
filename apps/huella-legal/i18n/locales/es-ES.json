@@ -96,6 +96,7 @@
             "label": "Mapa del sitio",
             "links": {
                 "about": "Sobre Huella Legal",
+                "collaboratorPortal": "Portal de colaboradores",
                 "collaborators": "Colaboradores",
                 "contact": "Contacto",
                 "cookieSettings": "Configurar cookies",

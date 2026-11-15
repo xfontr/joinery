@@ -48,4 +48,4 @@ curl -so /dev/null -w '%{http_code} %{redirect_url}\n' https://<host>/Categoria/
 | --- | --- |
 | Body links straight to the new homes | Old post bodies link to `www` by absolute URL and still resolve, images included, through one 301. Rewriting them to root-relative, and uploads to the WordPress host, is 0028's change 6 in the body pipeline |
 | `/?p=<id>` | It renders the home page. Mapping it needs a query map of every post ID, for a URL only WordPress's `shortlink` emitted |
-| Dropping the layer | Once Search Console shows no traffic to the old families, delete the directory |
+| Dropping the layer | Once Search Console shows no traffic to the old families, delete the directory, after moving the `/wp-admin/…` forward elsewhere: the footer's collaborator portal link relies on it |
