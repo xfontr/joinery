@@ -215,8 +215,8 @@ const ship = async (issue, touched, reviewNote) => {
 };
 
 /**
- * A spike's answer is a decision report per block it covers, not code, so it skips the planner, the
- * code reviewers and the comment pass; running ship-issue on it is the ask for those reports.
+ * A spike's answer is at most one decision report for the whole ticket, not code, so it skips the
+ * planner, the code reviewers and the comment pass; running ship-issue on it is the ask for it.
  */
 const shipSpike = async (issue, pick) => {
     phase("Implement");
@@ -224,8 +224,10 @@ const shipSpike = async (issue, pick) => {
     const researched = await checkUntilGreen(
         issue,
         `Issue #${issue} is a spike. Answer it with the \`decision-report\` skill: the user running ` +
-            `ship-issue on it is their request for those reports. Write one report for each block it ` +
-            `covers (${blocks}), each answering that block's acceptance criteria, and change no code. ` +
+            `ship-issue on it is their request for one. Write a single report for the whole ticket, ` +
+            `however many blocks it covers (${blocks}), answering their acceptance criteria in ` +
+            `tables, and change no code. A choice the issue or an existing precedent already makes, ` +
+            `such as the host or a provider another app uses, is one line in it, never a section. ` +
             `If a question can only be answered by the user, report checkPassed=false and say which.\n\n` +
             `Brief:\n${pick.brief}`,
         "research",

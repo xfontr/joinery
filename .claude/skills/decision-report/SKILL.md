@@ -39,7 +39,15 @@ gh issue view <n>
 Ask the user only for what the repo can't tell you: a preference between two options that are
 genuinely equivalent on the evidence, or a constraint that exists only in their head.
 
-## 2. Write the file
+## 2. Decide whether it earns a file
+
+One question or one spike ticket gets one report, however many blocks or sub-questions it covers.
+Before writing, strike every part whose answer was already given: by the user, by the issue, or by
+an existing precedent copied unchanged. Each of those is one line in the report. If nothing is left
+that was really open, or that a later ticket builds on, write no report and put the answer in the PR.
+[`docs/decisions/README.md`](../../../docs/decisions/README.md) has the rule.
+
+## 3. Write the file
 
 Copy [`docs/decisions/TEMPLATE.md`](../../../docs/decisions/TEMPLATE.md) to
 `docs/decisions/<NNNN>-<slug>.md` and fill in its frontmatter and its five sections —
@@ -81,7 +89,7 @@ of an outcome, not a design doc arguing for it. Follow `house-docs` like any oth
   session, and who asked what belong in the PR. The report states what is true, and a reverted
   attempt appears only as a row in Options considered.
 
-## 3. Make it executable while `status` is `to-implement`
+## 4. Make it executable while `status` is `to-implement`
 
 **A report whose work hasn't landed is read next by whoever does the work, and that is usually
 another agent with none of your session.** Everything it needs has to be on the page, because the
@@ -106,7 +114,7 @@ Confirmation earns a `| Claim | Check |` table once there is more than one claim
 per row, so the implementer can work down it instead of parsing a paragraph into a checklist. A
 single-claim report keeps the sentence.
 
-None of this loosens §2's brevity, because the detail **replaces** the discussion rather than
+None of this loosens §3's brevity, because the detail **replaces** the discussion rather than
 stacking on it: `0018` carries twelve file:line anchors, a seven-row change table, an order and a
 ten-row Confirmation table in 1,854 words, against a corpus median near 1,500. A path and a line are
 shorter than the paragraph that gestures at the same file.
@@ -114,7 +122,7 @@ shorter than the paragraph that gestures at the same file.
 Reports whose `status` is `implemented` or `wont-implement` owe none of this — nobody picks them up,
 and they're a record of what was found. The obligation is the handoff, not the prose style.
 
-## 4. Close the loop
+## 5. Close the loop
 
 **When the follow-up work lands (or is dropped), flip the `status:` field in the same PR.** That's
 one of the two frontmatter fields expected to change after the fact — it's how
