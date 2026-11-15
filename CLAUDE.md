@@ -89,10 +89,10 @@ far outside that is worth opening. The `comment-cleanup` skill runs the pass.
 
 ## 📦 Dependencies
 
-- **Adding a validation or utility library is a check-in, not a ban.** Say what it buys you and lay
-  out the hand-rolled alternative, then let the answer decide — don't just add it, especially in a
-  package whose dependency list is one or two entries. `content` and `i18n` show what the reasoning
-  looks like once it's settled: see their `✅ Validation` sections.
+- **Prefer a maintained library to hand-rolled code.** For a solved problem — parsing, decoding,
+  escaping, validation, dates — add the package to the project that needs it, without asking. A new
+  dependency is not a cost to argue down; reimplementing one is. A short dependency list is not a
+  reason to keep it short.
 - Internal: `"@monorepo/x": "workspace:*"`. Every project also has `@monorepo/configs` in
   `devDependencies`.
 - Shared third-party (nuxt, vue, vite, typescript, vitest, playwright, eslint, node types, hono):
