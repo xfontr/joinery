@@ -1,0 +1,68 @@
+{
+    "syncedAt": "2026-11-15T13:09:27.847Z",
+    "milestone": "Marina Roustan",
+    "issues": [
+        {
+            "number": 446,
+            "title": "Content audit, URL inventory, Feature inventory, Forms, integrations and providers, Hosting prototype",
+            "url": "https://github.com/xfontr/monorepo/issues/446",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "content-audit",
+                "feature-inventory",
+                "hosting-prototype",
+                "integrations-inventory",
+                "url-inventory"
+            ],
+            "createdAt": "2026-11-15T13:08:51Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 19
+        },
+        {
+            "number": 447,
+            "title": "Brand extraction, Design tokens",
+            "url": "https://github.com/xfontr/monorepo/issues/447",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "brand-extraction",
+                "design-tokens"
+            ],
+            "createdAt": "2026-11-15T13:09:05Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 10
+        },
+        {
+            "number": 448,
+            "title": "App scaffold, Test harness and fake content, Environment discipline",
+            "url": "https://github.com/xfontr/monorepo/issues/448",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "app-scaffold",
+                "env-discipline",
+                "test-harness"
+            ],
+            "createdAt": "2026-11-15T13:09:18Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 18
+        }
+    ],
+    "noMilestone": []
+}

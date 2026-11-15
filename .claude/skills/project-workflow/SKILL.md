@@ -124,6 +124,14 @@ stays. Only on their go, add `--yes`, then delete the project from its Settings 
 because `drop` reads the milestone from the project file. It closes as not planned and never deletes;
 anything started or closed stays.
 
+## 7. Keeping the diary
+
+When the project has a `<id>.diary.md`, append one line in the
+[diary's shape](../../../docs/workflows/README.md#-diary), with the time from `date`, on these
+events only: the user says they start or stop, a ticket closes (an `estimate` line), or the map, an
+estimate, a rule or a command turns out wrong. Never log routine success, and never grade your own
+work in it. Write the fact and the issue number, and leave the verdict to the user.
+
 ## 🎨 The design stage of a website rebuild
 
 What the `website-rebuild` design capabilities expect, learned on Huella:
