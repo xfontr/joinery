@@ -73,7 +73,7 @@ towards coverage. The options are only what differs per app:
 | Option | What it does |
 | --- | --- |
 | `root` | The app root, `import.meta.dirname` |
-| `nodeSpecs` | Specs under `app/` that need no Nuxt runtime; they move to the `node` project |
+| `nodeSpecs` | Specs that need no Nuxt runtime but sit outside the `node` globs, such as one under `app/` or at the app root; they move to the `node` project |
 | `setupFiles` | Setup files for the two Nuxt projects only, after the console guard. They run after the Nuxt entry registers its boot but before it runs |
 | `coverageExclude` | Paths kept out of the denominator |
 | `thresholds` | Vitest's coverage thresholds. They only bite on a `--coverage` run |

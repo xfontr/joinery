@@ -12,7 +12,7 @@ const autoUnmount = fileURLToPath(new URL("./setup/autoUnmount.ts", import.meta.
 export interface NuxtConfigOptions {
     /** The app root, usually `import.meta.dirname`. */
     root: string;
-    /** Specs under `app/` that need no Nuxt runtime, moved to the node project. */
+    /** Specs under `app/` or the app root that need no Nuxt runtime, moved to the node project. */
     nodeSpecs?: string[];
     /** Setup files for the `nuxt` project, run after the Nuxt entry registers its boot but before it runs. */
     setupFiles?: string[];
