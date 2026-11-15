@@ -62,7 +62,7 @@ literal; anything else is declared empty, as above. Never read `process.env` in
 module.ts                          # build-time: runs in Node during the consumer's build (@nuxt/kit)
 config.ts                          # the contract between both halves: the windows, the config shape
 runtime/server/utils/
-├── useContent.ts                  # the Nitro auto-import: two cached functions over the provider
+├── useContent.ts                  # the Nitro auto-import: four cached functions over the provider
 └── query.ts                       # defaults and ceilings for a typed query, each refusal a typed 400 or 404
 ```
 
@@ -74,12 +74,12 @@ runtime/server/utils/
 ```
 useContent(event).listEntries("posts", { perPage: 6 })
   → the query is defaulted and bounded, or 400               (query.ts)
-  → content-list cache, keyed by contentKey(vendor, "posts", query)
+  → content-entries cache, keyed by contentKey(vendor, "posts", query)
     → createProvider(vendor, http) → provider.listEntries("posts", query)    (on a miss only)
       → GET :baseURL/wp-json/wp/v2/posts?per_page=6&_embed=…   (WordPress)
 
 useContent(event).getEntry("posts", "hello-world")
-  → content-item cache, keyed by the slug alone
+  → content-entry cache, keyed by the slug alone
     → provider.getEntry(...) → a one-item list by slug, since WordPress has no single-document endpoint
 ```
 
@@ -88,8 +88,9 @@ upstream request rather than one per entry.
 
 ## 🗃 Caching
 
-Both reads are `defineCachedFunction`s, created once when the module loads so concurrent misses for
-one key share a single upstream request. They are keyed by `contentKey` from the core, and the
+Each read is a `defineCachedFunction`, one per family and shape (`content-entries`, `content-terms`,
+`content-entry`, `content-term`), so each returns its own type with no cast. They are created once
+when the module loads, so concurrent misses for one key share a single upstream request. They are keyed by `contentKey` from the core, and the
 windows come from [`content.cache`](#options), defaulting to:
 
 | | `maxAge` | `swr` |
@@ -125,9 +126,8 @@ to purge.
 - **A slug from the router arrives encoded.** Read it with
   `getRouterParam(event, "slug", { decode: true })`, or an accented slug reaches WordPress encoded
   twice and 404s.
-- **`title` and `body` are the vendor's HTML.** WordPress renders every text field, entities and
-  all, so whatever reaches a page has to be rendered as HTML or decoded first — see
-  [deferred](../../README.md#-deliberately-deferred).
+- **`body` and `excerpt` are the vendor's HTML**, unsanitised. Every other text field is plain
+  text, so it is printed, never `v-html`ed.
 - **The vendor config is checked at read time, not build time.** It has to be: `baseURL` can be
   replaced at boot by `NUXT_CONTENT_VENDOR_BASE_URL`, so the values present during the build are not
   necessarily the deployed ones. Unset config fails on the first cache miss with a `500` naming what
@@ -142,4 +142,4 @@ to purge.
 | Later need | What changes |
 | --- | --- |
 | The browser reading content directly | There is no public content route, on purpose: an app's own route over `useContent` decides what reaches the browser, and a raw `Entry` carries unsanitised vendor HTML. A route that forwards query parameters gets the same ceilings for free |
-| Purging an entry when the CMS changes | Both caches live in Nitro's `cache` storage under the `content` group, and `contentKey` is the only thing that knows the key format, so a purge belongs here rather than in the app |
+| Purging an entry when the CMS changes | Not built, because it would clear the wrong cache: since [0033](../../../../docs/decisions/0033-huella-legal-hybrid-prerender.md) a post is a prerendered file and lists sit in the CDN, which only a rebuild refreshes. #236 settled on a WordPress hook calling the build hook instead. An app that serves content at runtime would need a purge here, since `contentKey` is the only thing that knows the key format: clear the `content-entry` key and the `content-entries` group together, or a list and its article disagree for up to the gap between the two windows |

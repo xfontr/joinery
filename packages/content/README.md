@@ -7,7 +7,7 @@ Three entry points, kept apart by the `exports` map:
 
 | Import | Contains | Depends on |
 | --- | --- | --- |
-| `@monorepo/content` | domain, ports, adapters, vendor registry, cache key | `ofetch`, `ohash` |
+| `@monorepo/content` | domain, ports, adapters, vendor registry, cache key | `ofetch`, `ohash`, `entities` |
 | `@monorepo/content/nuxt` | the Nuxt module and its runtime files — see [`src/nuxt/README.md`](./src/nuxt/README.md) | `@nuxt/kit`, `h3`, `nitropack` |
 | `@monorepo/content/testing` | `faker` (Spanish locale), `fakeAsset`, `fakeAuthor`, `fakeEntry`, `fakeTerm` and `wordpressHandlers(baseURL, content)`, MSW handlers faking a WordPress upstream for e2e | `msw`, `@faker-js/faker` |
 
@@ -74,11 +74,11 @@ Four resources, in two families, because a taxonomy is not a document:
 `isEntryResource` / `isTermResource` are exported to sort a string from a URL into one of them.
 Both unions are derived from the runtime arrays, so the list and the type cannot drift apart.
 
-`body` and `excerpt` are `RichText` — `{ format, value }`, where `format` is `html`, `markdown`
-or `blocks`. The `blocks` case exists from the start so a structured-content vendor is not a
-breaking change later. **`title` is not `RichText`, and holds whatever the vendor rendered** —
-for WordPress that is entity-escaped HTML, so a consumer has to render it as HTML. See
-[deferred](#-deliberately-deferred).
+`body` and `excerpt` are `RichText`, `{ format: "html", value }`. They are the only HTML in the
+domain. `title`, the names of a term and an author, and `bio` are **plain text**: the WordPress
+mapper strips tags and decodes entities with [`entities`](https://github.com/fb55/entities), so
+`Ley &#8220;Org&aacute;nica&#8221; &amp; c` arrives as `Ley “Orgánica” & c` and an app prints it as
+it is. `Term.description` is passed through as WordPress stores it.
 
 `seo` holds only the text an SEO plugin stores: title, description and `noindex`. Its URLs point at
 the CMS host, so the consuming app builds canonicals against its own routes. For WordPress, `seo`
@@ -264,7 +264,7 @@ setupServer(...wordpressHandlers(baseURL, { posts: entries, categories: terms })
 
 | Export | Serves | Contract it keeps |
 | --- | --- | --- |
-| `wordpressHandlers(baseURL, content)` | `GET <baseURL>/wp-json/wp/v2/:resource` for each resource given | `?slug=`, `?categories=` and `?tags=` by term id, `?search=` on every word across title, excerpt and body, `page` and `per_page`, `x-wp-total`/`x-wp-totalpages`, a `400` for a page past the end, a `404` for a resource with no content |
+| `wordpressHandlers(baseURL, content)` | `GET <baseURL>/wp-json/wp/v2/:resource` for each resource given | `?slug=`, `?categories=` and `?tags=` by term id, `?search=` on every word across title, excerpt and body, `page` and `per_page`, `x-wp-total`/`x-wp-totalpages`, WordPress's `400` with `rest_post_invalid_page_number` for a page past the end, a `404` for a resource with no content. Titles, names and bios go out entity-escaped, as WordPress sends them |
 
 [`wordpress.spec.ts`](./src/testing/wordpress.spec.ts) runs the real `WordpressProvider` on the
 real client against the handlers, and asserts every `Entry` field comes back unchanged, so a fake
@@ -275,7 +275,7 @@ The same entry exports seeded `@faker-js/faker` factories for the domain types, 
 states only the fields it asserts on and the rest is filled in:
 
 ```ts
-const entry = fakeEntry({ title: "La &#8220;prueba&#8221;", terms: [fakeTerm({ slug: "derecho-penal" })] });
+const entry = fakeEntry({ title: "La “prueba”", terms: [fakeTerm({ slug: "derecho-penal" })] });
 ```
 
 | Export | Builds |
@@ -301,7 +301,8 @@ All of them extend `ContentError`, so one `instanceof` catches anything the pack
 | `MalformedQueryError` | 400 | a query parameter is unparseable or out of range — the message says what was expected |
 | `UndefinedResourceError` | 404 | the request names a resource, or a taxonomy, the domain does not have — the message lists the ones it does |
 | `NotFoundError` | 404 | the vendor answered, with nothing under that slug |
-| `UpstreamError` | 400 / 404 / 502 | the transport failed, or the vendor answered with something other than JSON. A 400 or 404 relays the answer to the request that was actually made; **everything else is a 502**, because an upstream 401 or 403 means *our* credentials are wrong and must never invite the client to retry with different ones |
+| `PageNotFoundError` | 404 | a list asked for a page past the last one. WordPress answers that with a 400, which would otherwise read as a malformed query |
+| `UpstreamError` | 400 / 404 / 502 | the transport failed, or the vendor answered with something other than JSON. A 400 or 404 relays the answer to the request that was actually made; **everything else is a 502**, because an upstream 401 or 403 means *our* credentials are wrong and must never invite the client to retry with different ones. The vendor's error body is on `body`, for a provider to read its refusal code; it is not called `data` because h3 sends an error's `data` to the client |
 | `ContentUnavailableError` | 502 | the vendor failed for that resource in a way nothing else diagnosed (original error in `cause`) |
 | `UndefinedVendorError` | 500 | config names a vendor the registry doesn't have — the message lists the registered names |
 | `MisconfiguredVendorError` | 500 | the vendor exists but its config cannot work — `problems` lists every reason |
@@ -328,11 +329,12 @@ Sized for a small monorepo. When it grows:
 | Later need | What changes |
 | --- | --- |
 | A timeout, or a retry policy | `OfetchHttpClient` passes only headers and query, so a slow vendor holds an SSR request open until the platform kills it — and SWR cannot help, because it only serves stale content after a successful fill. ofetch supports both natively: default them in the client, or widen `RequestOptions` if a provider needs to tune them per call |
-| A `title` that is not HTML | `Entry.title` is a bare `string` holding whatever the vendor rendered, so a consumer has to know to `v-html` it while `body` and `excerpt` say so in their own type. Decode entities in the mapper (making it genuinely plain text) or type it `RichText` — the inconsistency is the bug, not the choice |
 | Untrusted authors in the CMS | nothing sanitises the HTML in `body`. That is fine while the CMS is first-party, and a documented assumption rather than an oversight — a vendor whose authors are not trusted needs sanitising where it is rendered |
 | A vendor with more than one document family | `Resource` is two closed unions. A vendor with custom post types needs them opened up, and `TAXONOMIES` in the WordPress adapter is where the mapping between its names and ours already lives |
+| Draft previews | Every read is cached and anonymous, and since [0033](../../docs/decisions/0033-huella-legal-hybrid-prerender.md) every post is a prerendered file. A preview needs an uncached read authenticated with an application password from env, and a runtime route the app opts into per request |
+| Lighter list payloads | A list carries each entry's full `body`. A `_fields` projection would shrink the cached page, but a listing still needs the body for reading time, so it would also need a `wordCount` on `Entry` computed in the provider, and listed entries would stop carrying a body |
 | A vendor that actually serves locales | Nothing here has a locale axis — not `Query`, not the cache key, not the Nuxt reader. Adding one is a single change across all three, and it has to be: a key that gains an axis *after* entries exist serves the wrong language until every one of them expires. A Polylang- or WPML-aware provider maps it to that plugin's `lang` parameter, and the Nuxt reader's `query.ts` should bound the tag — a BCP-47 pattern allows arbitrarily long subtag chains |
 | A query axis one vendor serves and another can't | There is no error for it, because there is no such axis today. Add one — a 400 naming the vendor and the parameter — rather than letting a provider drop the axis: a dropped one is cached under the value that was asked for, which is worse than refusing |
-| Structured content | `RichText` already carries a `blocks` format, so a Contentful or Sanity provider is not a breaking change for consumers |
+| Structured content | `RichText` is HTML only. A Contentful or Sanity provider widens it to a union with a `blocks` format, which is a breaking change for consumers, who then branch on `format` |
 | Tracing the upstream call | nothing here emits a span, and it cannot: the boundary rules let `type:integration` depend on `type:config` only, and the Nuxt reader builds its own transport. Instrument at the Nitro level from the consuming app, or make the client injectable — but only when there is something to swap |
 | A third vendor package, or an app adapter that wants this plumbing | `@monorepo/content` and `@monorepo/i18n` keep matching copies of their vendor plumbing on purpose: the boundaries forbid either importing the other, and while there are two consumers a second copy of one contract costs less than a package. When a third appears (a newsletter's Mailchimp client, say), extract a vendor kit with its own boundaries tag that the integration packages may depend on: the base error with `UpstreamError`, `UndefinedVendorError` and `MisconfiguredVendorError`, the `HttpClient` port and its ofetch adapter, a `createRegistry(providers)` factory, `assertConfigured`, the h3 error mapping and the key escaping. Each package keeps its domain and its named errors. [D2](../../docs/audits/2026-10-21-monorepo.md#-duplication) lists the copies |
