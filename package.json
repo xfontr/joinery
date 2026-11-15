@@ -34,6 +34,8 @@
         "workflow:next": "pnpm --silent --dir infrastructure/scripts cli src/workflow/index.ts next",
         "workflow:file": "pnpm --silent --dir infrastructure/scripts cli src/workflow/index.ts file",
         "workflow:drop": "pnpm --silent --dir infrastructure/scripts cli src/workflow/index.ts drop",
+        "brand:extract": "pnpm --silent --dir infrastructure/scripts cli src/brand/index.ts extract",
+        "brand:contrast": "pnpm --silent --dir infrastructure/scripts cli src/brand/index.ts contrast",
         "release": "nx release --skip-publish",
         "release:dry": "nx release --skip-publish --dry-run"
     },

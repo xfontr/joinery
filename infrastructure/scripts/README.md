@@ -22,6 +22,7 @@ src/
   env-sync/         pnpm env:sync — lay every .env out like its .env.example, never losing a value
   worktree/         pnpm worktree:prepare — copy env files into a linked worktree and install it
   workflow/         pnpm workflow:setup | workflow:sync | workflow:next | workflow:file | workflow:drop — set up, snapshot, list, file, drop
+  brand/            pnpm brand:extract | brand:contrast — read a live site's brand, check its tokens' contrast
   drift/            pnpm docs:drift — warn when a project's docs may be stale, offer to file an issue
   map/              pnpm docs:map — render docs/FEATURES.md, the index of everything this repo can do
   invariants/       pnpm invariants:check — the repo rules every author is held to, run by hooks and CI
@@ -50,6 +51,7 @@ domain/      pure functions and their types. No fs, no subprocess, no clack, no 
 | [`worktree`](./src/worktree/README.md) | `pnpm worktree:prepare` | Copying env files into a linked worktree and installing it the way CI does |
 | [`env-sync`](./src/env-sync/README.md) | `pnpm env:sync` | Keeping each `.env` in its `.env.example`'s order and comments, creating missing ones |
 | [`workflow`](./src/workflow/README.md) | `pnpm workflow:setup`, `workflow:sync`, `workflow:next`, `workflow:file`, `workflow:drop` | Creating a new project's milestone and labels, snapshotting a workflow project's milestone issues with their blocked-by links and tagged commits, listing what is ready to take, filing a block of the map as linked tickets, and closing the untouched ones of an abandoned project |
+| [`brand`](./src/brand/README.md) | `pnpm brand:extract`, `brand:contrast` | Reading a live site's colours, type and radii from computed styles, and printing a token file's contrast table, failing below 4.5:1 |
 | [`drift`](./src/drift/README.md) | `pnpm docs:drift` | Warning when a changed project's docs look stale, and offering to file it |
 | [`map`](./src/map/README.md) | `pnpm docs:map` | Rendering the feature index, and asserting in CI that it's current |
 | [`invariants`](./src/invariants/README.md) | `pnpm invariants:check` | Failing on a lifecycle script, a package build step, a hand-moved version or a broken package contract, and warning when the README's tag table or layout drifts |
@@ -165,6 +167,9 @@ out to it rather than calling the GitHub API, so they inherit whatever account i
 instead of needing a token. `map/` needs neither, which is why it's the one that runs in CI. `ship/`
 additionally needs the repo's *Allow auto-merge* setting on — without it, `gh pr merge --auto` fails
 and the branch is left pushed with a PR open but nothing armed to merge it.
+
+`brand:extract` needs Playwright's Chromium (`pnpm exec playwright install chromium`) and the
+network, since it loads the live pages it reads.
 
 ## 🧭 Deliberately deferred
 

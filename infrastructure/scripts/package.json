@@ -24,6 +24,8 @@
     "workflow:next": "pnpm --silent cli src/workflow/index.ts next",
     "workflow:file": "pnpm --silent cli src/workflow/index.ts file",
     "workflow:drop": "pnpm --silent cli src/workflow/index.ts drop",
+    "brand:extract": "pnpm --silent cli src/brand/index.ts extract",
+    "brand:contrast": "pnpm --silent cli src/brand/index.ts contrast",
     "coverage": "pnpm --silent cli src/coverage-report/index.ts",
     "cli": "node --disable-warning=ExperimentalWarning",
     "lint": "nx eslint:lint",
@@ -40,13 +42,17 @@
   },
   "dependencies": {
     "@clack/prompts": "^1.8.1",
+    "@playwright/test": "catalog:",
+    "culori": "^4.0.2",
     "istanbul-lib-coverage": "^3.2.2",
     "istanbul-lib-report": "^3.0.1",
     "istanbul-reports": "^3.2.0",
+    "postcss": "^8.5.32",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@monorepo/configs": "workspace:*",
+    "@types/culori": "^4.0.1",
     "@types/istanbul-lib-coverage": "^2.0.6",
     "@types/istanbul-lib-report": "^3.0.3",
     "@types/istanbul-reports": "^3.0.4",
