@@ -22,7 +22,7 @@
         <div
             class="mt-5 flex max-w-measure flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
         >
-            <Byline
+            <ArticleByline
                 :authors="bylineAuthors"
                 :published-at="article.publishedAt"
                 :reading-minutes="article.readingMinutes"

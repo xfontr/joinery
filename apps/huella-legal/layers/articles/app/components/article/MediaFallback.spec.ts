@@ -2,7 +2,7 @@ import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
 import MediaFallback from "./MediaFallback.vue";
 
-describe("media fallback", () => {
+describe("article media fallback", () => {
     it("is hidden from assistive tech, since it stands in for an image that has no alt to give", async () => {
         const wrapper = await mountSuspended(MediaFallback, {
             props: { label: "Imagen del artículo" },

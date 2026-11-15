@@ -14,7 +14,7 @@ const ANA = { ...fakeAuthor({ name: "Ana de la Torre" }), to: "/colaboradores/an
 const LUIS = { ...fakeAuthor({ name: "Luis Martín" }), to: "/colaboradores/luis" };
 const MARTA = { ...fakeAuthor({ name: "Marta Gil" }), to: "/colaboradores/marta" };
 
-describe("byline", () => {
+describe("article byline", () => {
     it('joins names the Spanish way, with commas and a final "y"', async () => {
         const wrapper = await mountSuspended(Byline, {
             props: { authors: [ANA, LUIS, MARTA] },
@@ -53,7 +53,7 @@ describe("byline", () => {
             global,
         });
 
-        expect(wrapper.text()).toContain('t(byline.readingTime, {"minutes":7})');
+        expect(wrapper.text()).toContain('t(articleByline.readingTime, {"minutes":7})');
     });
 
     it("links the comment count where it's told to, with the count as the plural", async () => {
@@ -64,7 +64,7 @@ describe("byline", () => {
 
         const link = wrapper.find('a[href$="#comentarios"]');
 
-        expect(link.text()).toBe('t(byline.comments, {"count":3})');
+        expect(link.text()).toBe('t(articleByline.comments, {"count":3})');
     });
 
     it("prints no comment count at zero", async () => {
@@ -73,7 +73,7 @@ describe("byline", () => {
             global,
         });
 
-        expect(wrapper.text()).not.toContain("byline.comments");
+        expect(wrapper.text()).not.toContain("articleByline.comments");
     });
 
     it("hides the avatar stack from assistive tech, since the names follow it", async () => {

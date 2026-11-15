@@ -1,7 +1,7 @@
 import { mockNuxtImport, mountSuspended, registerEndpoint } from "@nuxt/test-utils/runtime";
 import { createError } from "h3";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import CalculoIntereses from "./calculo-intereses.vue";
+import InterestCalculatorPage from "./interest-calculator.vue";
 
 const wordpress = vi.hoisted(() => ({ fails: false }));
 
@@ -30,9 +30,9 @@ beforeEach(() => {
     clearNuxtData();
 });
 
-describe("calculo-intereses page", () => {
+describe("interest calculator page", () => {
     it("renders the WordPress page's body as the guide", async () => {
-        const wrapper = await mountSuspended(CalculoIntereses);
+        const wrapper = await mountSuspended(InterestCalculatorPage);
 
         expect(wrapper.findAll("h2").map((heading) => heading.text())).toContain("guide-heading");
     });
@@ -40,7 +40,7 @@ describe("calculo-intereses page", () => {
     it("still renders the calculator when WordPress fails, only without the guide", async () => {
         wordpress.fails = true;
 
-        const wrapper = await mountSuspended(CalculoIntereses);
+        const wrapper = await mountSuspended(InterestCalculatorPage);
 
         expect(wrapper.find("[role=tablist]").exists()).toBe(true);
         expect(wrapper.text()).not.toContain("guide-heading");

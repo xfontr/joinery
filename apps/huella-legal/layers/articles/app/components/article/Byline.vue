@@ -32,7 +32,9 @@
                     <time :datetime="publishedAt">{{ date }}</time>
                 </li>
                 <li v-if="readingMinutes">
-                    {{ $t("byline.readingTime", { minutes: readingMinutes }, readingMinutes) }}
+                    {{
+                        $t("articleByline.readingTime", { minutes: readingMinutes }, readingMinutes)
+                    }}
                 </li>
                 <li v-if="comments?.count">
                     <ULink
@@ -40,7 +42,9 @@
                         raw
                         class="underline-offset-3 hover:underline focus-visible:rounded-xs"
                     >
-                        {{ $t("byline.comments", { count: comments.count }, comments.count) }}
+                        {{
+                            $t("articleByline.comments", { count: comments.count }, comments.count)
+                        }}
                     </ULink>
                 </li>
             </ul>

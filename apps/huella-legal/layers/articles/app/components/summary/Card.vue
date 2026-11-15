@@ -14,7 +14,7 @@
                 loading="lazy"
                 class="size-full object-cover"
             />
-            <MediaFallback v-else />
+            <ArticleMediaFallback v-else />
         </div>
 
         <div class="flex min-w-0 flex-col" :class="ui.gap">
@@ -40,7 +40,7 @@
                 {{ article.excerpt }}
             </p>
 
-            <Byline
+            <ArticleByline
                 :authors
                 :published-at="article.publishedAt"
                 :reading-minutes="article.readingMinutes"

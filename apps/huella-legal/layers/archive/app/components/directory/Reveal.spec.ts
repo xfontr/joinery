@@ -21,7 +21,7 @@ const mountReveal = (items = ITEMS) =>
 const shown = (wrapper: Awaited<ReturnType<typeof mountReveal>>) =>
     wrapper.findAll("a").map((link) => link.text());
 
-describe("reveal", () => {
+describe("directory reveal", () => {
     it("hands the slot only the first items and offers the rest behind one button", async () => {
         const wrapper = await mountReveal();
 
