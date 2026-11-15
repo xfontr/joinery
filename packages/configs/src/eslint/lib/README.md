@@ -19,7 +19,7 @@ different objects under one name meet on a file.
 | File | What it configures |
 | --- | --- |
 | [`index.ts`](./index.ts) | The `shared` and `vueOnly` lists the factories spread, in order. A plugin preset that needs no local customization is composed straight here instead of getting its own file |
-| [`boundaries.ts`](./boundaries.ts) | `@nx/enforce-module-boundaries` and the `depConstraints` table — the enforced copy of the Nx tag table; the readable one is the [root README](../../../../../README.md#-architecture--boundaries) |
+| [`boundaries.ts`](./boundaries.ts) | `@nx/enforce-module-boundaries` and the `depConstraints` table — the enforced copy of the Nx tag table; `pnpm docs:map` renders the readable one into the [root README](../../../../../README.md#-architecture--boundaries) |
 | [`coreIsolation.ts`](./coreIsolation.ts) | `no-restricted-imports` under `**/src/core/**`, keeping the framework-agnostic half of `content`/`i18n` free of the Nuxt and Nitro runtime — the list is in the [package README](../../../README.md#-what-the-eslint-factories-bundle) |
 | [`layerIsolation.ts`](./layerIsolation.ts) | `no-restricted-imports` under `app/` and `server/`, keeping Nuxt's browser-facing layers free of the Node-only `tools/` layer |
 | [`constTables.ts`](./constTables.ts) | `monorepo/lookup-table-shape`: `constTables` for `**/*.ts` and `constTablesVue` for `**/*.vue` (Vue configs only). A module-scope lookup table keyed by a closed union is `UPPER_SNAKE = { … } as const satisfies Record<K, V>` — never annotated, never `Partial`. `Record<string, …>` and `Record<number, …>` are left alone |

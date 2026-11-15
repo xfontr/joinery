@@ -1,6 +1,6 @@
 {
   "name": "@monorepo/wp-editor",
-  "description": "Local bulk editor for WordPress posts",
+  "description": "local-only review-and-apply tool for bulk edits to WordPress posts and pages",
   "private": true,
   "type": "module",
   "scripts": {

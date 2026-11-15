@@ -17,6 +17,10 @@ URL that 404s costs readers and rankings. This layer sends every one of those to
 | `/noticias/`, `/page/<n>/` | `/publicaciones/` | `nuxt.config.ts` |
 | `/comments/feed/` | `/feed/` | `nuxt.config.ts` |
 | Yoast's four sitemaps | `/sitemap.xml` | `nuxt.config.ts` |
+| `/empieza-aqui/` | `/sobre/` | `nuxt.config.ts` |
+| `/recursos/`, `/chupitos-de-derecho/`, `/listado-de-preguntas-y-respuestas/` | `/publicaciones/` | `nuxt.config.ts` |
+| `/recursos/conecta/`, `/consulta-legal-gratis/` | `/contacto/` | `nuxt.config.ts` |
+| `/suscripcion/` | `/`, whose newsletter band replaced the form | `nuxt.config.ts` |
 | `/?s=<term>` | `/buscar/?query=<term>` | [`legacy.ts`](./server/middleware/legacy.ts): a route rule can't match a query |
 | `/wp-content/…`, `/wp-admin/…`, `/wp-login.php`, `/wp-json/…` | The same path on `content.vendor.baseURL` | `legacy.ts`: the WordPress host is runtime config |
 

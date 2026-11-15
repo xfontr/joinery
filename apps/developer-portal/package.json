@@ -1,6 +1,6 @@
 {
   "name": "@monorepo/developer-portal",
-  "description": "Internal developer portal over the workspace",
+  "description": "the repository's public portal/front door over its docs, projects, architecture and engineering health",
   "private": true,
   "type": "module",
   "imports": {

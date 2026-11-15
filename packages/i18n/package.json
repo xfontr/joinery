@@ -1,7 +1,7 @@
 {
   "name": "@monorepo/i18n",
   "version": "0.0.19",
-  "description": "I18n ports",
+  "description": "translations core + a Nuxt module",
   "author": "Xifré Font",
   "license": "ISC",
   "type": "module",
