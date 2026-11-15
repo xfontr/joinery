@@ -1,0 +1,13 @@
+at,script,command,target,flags,area,caller,tty,exit,ms
+2026-11-15,issue,pick,,title;type=feature,marina-roustan,claude-code,0,0,13023
+2026-11-15,issue,brief,,,marina-roustan,claude-code,0,0,1461
+2026-11-15,issue,brief,,,marina-roustan,claude-code,0,0,1546
+2026-11-15,worktree,,,,marina-roustan,claude-code,0,0,9438
+2026-11-15,issue,brief,,,marina-roustan,claude-code,0,0,1746
+2026-11-15,dev,,,,marina-roustan,human,1,0,303854
+2026-11-15,issue,pick,,title,marina-roustan,claude-code,0,0,14415
+2026-11-15,issue,brief,,,marina-roustan,claude-code,0,0,1604
+2026-11-15,invariants,,,,marina-roustan,claude-code,0,0,33
+2026-11-15,map,,,check,marina-roustan,claude-code,0,0,182
+2026-11-15,invariants,,,,marina-roustan,claude-code,0,0,56
+2026-11-15,invariants,,,json,marina-roustan,claude-code,0,0,29

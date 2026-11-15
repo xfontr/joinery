@@ -9,6 +9,7 @@ switches:
   content-migration: true
   staging-gate: false
   newsletter: false
+  consent-analytics: false
 
 ticketSize: fast
 
@@ -16,6 +17,7 @@ extras:
   - id: standard-page
     type: page-template
     title: Standard
+    summary: Aviso legal, servicios and libro cáncer, each a WordPress page whose content matches the live site.
   - id: articulos-page
     type: blog
     title: "Artículos"
