@@ -22,6 +22,7 @@ data/workflows/
   templates/<id>.yaml              the blocks, what each needs, its lessons and reuse plan
   projects/<id>.yaml               which template, which milestone, switches, ticket size, settled blocks, extras
   projects/<id>.snapshot.json      written by `pnpm workflow:sync`, never by hand
+  projects/<id>.diary.md           dated lines on what the snapshot and commits can't record
 ```
 
 | Noun | Is | Lives in |
@@ -277,6 +278,32 @@ when it has none. The [sync's README](../../infrastructure/scripts/src/workflow/
 details. The portal's invariant checks validate every file. Each `reuse.from` path has to exist,
 every id, stage and switch has to resolve, and `dependsOn` may not loop.
 
+## 📓 Diary
+
+A project that is testing the workflow keeps a diary at `projects/<id>.diary.md`, holding only what
+the snapshot and `[#N]` commits can't record: the hours actually spent, and where the map, an
+estimate or a rule was wrong. These lines are what the template's `lessons` come from afterwards.
+Each entry is one line, appended, in a fixed shape so a later tool can parse it without rewriting
+the file:
+
+```markdown
+- 2026-11-15 14:10 · start
+- 2026-11-15 15:02 · friction · #446 · workflow:file refused X because Y; did Z by hand
+- 2026-11-15 18:40 · estimate · #447 · 10 SP, took 25 min: tokens copied from Huella almost as-is
+```
+
+| Type | When |
+| --- | --- |
+| `start` / `stop` | The owner sits down or stops. Nothing else measures the hours |
+| `estimate` | A ticket closes: its points against what it actually took. The close time is in the snapshot already |
+| `map` | A block nobody drew, a missing or wrong `dependsOn`, a block that didn't apply |
+| `rule` | A rule blocked something, or saved a redo |
+| `friction` | A command failed or confused, or something was done by hand |
+| `note` | Anything else worth keeping |
+
+Lines state what happened, not whether it was good. Judging a rule waits until the diary is read
+whole, after the project.
+
 ## 🧭 Deliberately deferred
 
 | Later need | What changes |
@@ -289,3 +316,5 @@ every id, stage and switch has to resolve, and `dependsOn` may not loop.
 | Weighting blocks by size | Progress counts each block once, since weighting by ticket count would reward splitting tickets |
 | Replaying a linked branch | GitHub keeps no history of them, so a past day knows a ticket was started only from a commit naming it |
 | Showing switched-off blocks on the graph | They aren't part of the project; its Settings page is where they are |
+| Diary entries on the page | Markers on the replay and the activity strip, by type. Waits until a diary has enough real lines to show which view matters |
+| `pnpm workflow:log` | A command that stamps the time and checks the type. Waits until the line shape has held for one project |

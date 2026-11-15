@@ -12,6 +12,7 @@ and its rules stay in the doc for whatever owns it.
 | `workflows/templates/<id>.yaml` | People, when a shipped project teaches the map something | `pnpm workflow:*`, the portal's Workflows page | Yes, against [the workflow rules](../docs/workflows/README.md) |
 | `workflows/projects/<id>.yaml` | The `project-workflow` skill, the portal's wizard and Settings page under `pnpm dev` | `pnpm workflow:*`, the portal's Workflows page | Yes, for settlements and extras |
 | `workflows/projects/<id>.snapshot.json` | [`pnpm workflow:sync`](../infrastructure/scripts/src/workflow/README.md) | The portal's Workflows page | Never |
+| `workflows/projects/<id>.diary.md` | People and agents, against [the diary rules](../docs/workflows/README.md#-diary) | People, after the project | Yes, appended one line at a time |
 
 ## 📐 Rules
 
