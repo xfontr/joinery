@@ -115,7 +115,7 @@ export const bundlesOf = (
             0,
             ...(needs.get(capability.id) ?? []).flatMap((need) => {
                 const dependency = byId.get(need);
-                if (!dependency || dependency.stage !== capability.stage || walking.has(need)) {
+                if (dependency?.stage !== capability.stage || walking.has(need)) {
                     return [];
                 }
 

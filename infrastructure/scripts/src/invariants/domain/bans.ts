@@ -8,14 +8,14 @@ export interface ManifestSource {
     baseVersion?: string;
 }
 
-const LIFECYCLE_SCRIPTS = [
+const LIFECYCLE_SCRIPTS = new Set([
     "preinstall",
     "install",
     "postinstall",
     "prepare",
     "prepublish",
     "prepublishOnly",
-];
+]);
 
 const SOURCE_ONLY_FIELDS = ["main", "types", "typings", "module"];
 
@@ -59,7 +59,7 @@ export const manifestBans = ({ path, manifest, baseVersion }: ManifestSource): F
     const findings: Finding[] = [];
     const scripts = scriptNames(manifest);
 
-    const lifecycle = scripts.filter((name) => LIFECYCLE_SCRIPTS.includes(name));
+    const lifecycle = scripts.filter((name) => LIFECYCLE_SCRIPTS.has(name));
     if (lifecycle.length > 0) findings.push(lifecycleFinding(path, lifecycle));
 
     if (isPackage(path)) {

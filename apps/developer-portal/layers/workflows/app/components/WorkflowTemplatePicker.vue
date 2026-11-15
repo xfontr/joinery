@@ -1,17 +1,22 @@
 <template>
-    <div role="radiogroup" aria-label="Template" class="flex flex-col gap-3">
-        <button
+    <fieldset class="flex flex-col gap-3">
+        <legend class="sr-only">Template</legend>
+        <label
             v-for="card in cards"
             :key="card.id"
-            type="button"
-            role="radio"
-            :aria-checked="card.id === modelValue"
-            class="flex cursor-pointer flex-col gap-3 rounded-xl border p-5 text-left transition-colors hover:bg-elevated/50"
+            class="flex cursor-pointer flex-col gap-3 rounded-xl border p-5 text-left transition-colors hover:bg-elevated/50 has-focus-visible:ring-2 has-focus-visible:ring-primary"
             :class="
                 card.id === modelValue ? 'border-primary bg-primary/5' : 'border-default bg-default'
             "
-            @click="emit('update:modelValue', card.id)"
         >
+            <input
+                type="radio"
+                class="sr-only"
+                :name
+                :value="card.id"
+                :checked="card.id === modelValue"
+                @change="emit('update:modelValue', card.id)"
+            />
             <span class="flex items-start justify-between gap-3">
                 <span>
                     <span class="block text-base font-semibold">{{ card.title }}</span>
@@ -34,8 +39,8 @@
                 </span>
             </span>
             <span class="text-xs text-dimmed tabular-nums">{{ card.counts }}</span>
-        </button>
-    </div>
+        </label>
+    </fieldset>
 </template>
 
 <script setup lang="ts">
@@ -48,6 +53,7 @@ interface Props {
 
 const { templates, modelValue } = defineProps<Props>();
 const emit = defineEmits<{ "update:modelValue": [template: string] }>();
+const name = useId();
 
 const cards = computed(() =>
     templates.map((template) => {

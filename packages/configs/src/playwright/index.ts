@@ -9,6 +9,8 @@ export interface PlaywrightOptions {
     command: string;
     env?: Record<string, string>;
     widths?: number[];
+    /** The first width a `@desktop` test runs at; a `@mobile` test runs only below it. */
+    desktopFrom?: number;
 }
 
 /** Chromium at each width, with specs in `e2e/`, failing the run on anything the server logs. */
@@ -17,6 +19,7 @@ export const createConfig = ({
     command,
     env = {},
     widths = [390, 768, 1280],
+    desktopFrom = 1024,
 }: PlaywrightOptions): PlaywrightTestConfig => {
     const baseURL = `http://localhost:${port}`;
     // Outside `outputDir`, which Playwright empties after the server may already have written
@@ -32,6 +35,7 @@ export const createConfig = ({
         projects: widths.map((width) => ({
             name: `${width}px`,
             use: { browserName: "chromium", viewport: { width, height: 900 } },
+            grepInvert: width >= desktopFrom ? /@mobile/ : /@desktop/,
         })),
         webServer: {
             command,

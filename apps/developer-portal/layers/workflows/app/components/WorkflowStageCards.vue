@@ -52,10 +52,12 @@
                         </span>
                     </span>
                     <span class="mt-auto -mr-5 flex flex-wrap items-end gap-1.5 pt-2">
+                        <span v-if="capability.issues.length > 0" class="sr-only">{{
+                            ticketSummary(capability.issues)
+                        }}</span>
                         <span
                             v-if="capability.issues.length > 0"
-                            role="img"
-                            :aria-label="ticketSummary(capability.issues)"
+                            aria-hidden="true"
                             class="gap-1.5"
                             :class="
                                 capability.issues.length > TWO_ROWS_FROM

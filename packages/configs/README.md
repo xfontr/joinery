@@ -119,8 +119,10 @@ export default playwright.createConfig({
 });
 ```
 
-Chromium at 390, 768 and 1280 px, one project per width. Specs live in `e2e/` and output in
-`.playwright/`. There are no screenshot baselines, for the reason
+Chromium at 390, 768 and 1280 px, one project per width. A test tagged `@desktop` runs only from
+`desktopFrom` (1024 px, Tailwind's `lg`) and one tagged `@mobile` only below it, so a test for a
+layout one width range doesn't have is never collected there rather than skipped at runtime. Specs
+live in `e2e/` and output in `.playwright/`. There are no screenshot baselines, for the reason
 [Huella Legal's README](../../apps/huella-legal/README.md#-e2e) gives. `@playwright/test` is a
 `catalog:` entry, pinned to the version in CI's image tag, so the app and this package resolve the
 same copy; a second one fails every spec with "Requiring @playwright/test second time".
