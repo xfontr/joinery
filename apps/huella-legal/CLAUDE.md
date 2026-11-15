@@ -61,10 +61,12 @@ See [README.md](./README.md) for the env vars, the i18n wiring and the telemetry
   and `http.route` — a 404 never matches a route, so the fallback is what a crawler hits, and leaving
   the query on it mints an unbounded number of operation names.
   [`observability.spec.ts`](./server/plugins/observability.spec.ts) pins it.
-- `pnpm test` runs two Vitest projects: **node** for `server/`, `shared/` and `tools/`, and **nuxt**
-  for `app/`, each in the app root and in every layer. Nitro's auto-imports don't exist under the
-  node project, so a spec for anything in `server/` stubs them as globals, `defineNitroPlugin`
-  before the import. Content domain values in any spec come from `@monorepo/content/testing`'s
+- `pnpm test` runs three Vitest projects: **node** for `server/`, `shared/` and `tools/`, and
+  **nuxt** and **nuxt-isolated** for `app/`, each in the app root and in every layer. **nuxt** shares
+  one environment across files, so a spec there restores whatever global it changes; the
+  [configs README](../../packages/configs/README.md) says which specs go where. Nitro's auto-imports
+  don't exist under the node project, so a spec for anything in `server/` stubs them as globals,
+  `defineNitroPlugin` before the import. Content domain values in any spec come from `@monorepo/content/testing`'s
   `fake*` factories.
 - **`vitest.config.ts` and `playwright.config.ts` are wrappers over `@monorepo/configs`.** A setting
   every Nuxt app would want goes in the preset; only this app's specifics are passed as options.

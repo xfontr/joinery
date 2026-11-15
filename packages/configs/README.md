@@ -65,25 +65,38 @@ exemption. [`0032`](../../docs/decisions/0032-console-output-policy.md) has the 
 export default vitest.createNuxtConfig({ root: import.meta.dirname, thresholds: { lines: 90 } });
 ```
 
-Two projects: `node` for `server/`, `shared/`, `modules/` and `tools/`, and `nuxt` for `app/`, booted through
-`@nuxt/test-utils` on happy-dom. Both also cover the same directories inside each `layers/*`, which
-Nuxt auto-registers, and the layers' sources count towards coverage. The options are only what differs per app:
+Three projects: `node` for `server/`, `shared/`, `modules/` and `tools/`, and `nuxt` and
+`nuxt-isolated` for `app/`, booted through `@nuxt/test-utils` on happy-dom. All three also cover the
+same directories inside each `layers/*`, which Nuxt auto-registers, and the layers' sources count
+towards coverage. The options are only what differs per app:
 
 | Option | What it does |
 | --- | --- |
 | `root` | The app root, `import.meta.dirname` |
 | `nodeSpecs` | Specs under `app/` that need no Nuxt runtime; they move to the `node` project |
-| `setupFiles` | Setup files for the `nuxt` project only, after the console guard. They run after the Nuxt entry registers its boot but before it runs |
+| `setupFiles` | Setup files for the two Nuxt projects only, after the console guard. They run after the Nuxt entry registers its boot but before it runs |
 | `coverageExclude` | Paths kept out of the denominator |
 | `thresholds` | Vitest's coverage thresholds. They only bite on a `--coverage` run |
 
 - **The `node` project stubs the Nitro globals no spec controls**, today only `defineRouteMeta`, in
   [`stubs.ts`](./src/vitest/setup/stubs.ts). A spec still stubs the ones whose behaviour it asserts
   on, such as `readBody`.
+- **`nuxt` runs its specs in one shared environment (`isolate: false`), and `nuxt-isolated` gives
+  each its own.** Sharing one runs huella-legal's 78 eligible files in about 7s, and took its Nuxt
+  specs from 84s to 31s. A spec that calls `vi.mock`, `mockNuxtImport` or `mockComponent` goes to
+  `nuxt-isolated`, because a module mock outlives its file in a shared environment. The preset sorts specs by reading them, so there is no list to keep.
+- **Anything else a spec changes globally, it puts back in `afterEach`.** In the shared environment
+  the next file inherits fake timers, stubbed globals or a DOM the previous one left behind, and
+  breaks without naming the cause. Fake timers left on stalled every `router.replace` in the next
+  file for five seconds. [`autoUnmount.ts`](./src/vitest/setup/autoUnmount.ts) unmounts every
+  wrapper after each test, since components left mounted re-render on every later reactive change,
+  such as huella-legal's per-test i18n reset. So a spec that empties `document.body` by hand breaks
+  the unmount of anything it teleported there.
 - **Coverage is set on the root config**, because Vitest ignores a coverage block on a project.
 - **`@nuxt/test-utils` is resolved from the app, not from here**, so the config half runs the same
   copy the app's specs import from `@nuxt/test-utils/runtime`. The app installs it along with
-  `@vue/test-utils` and `happy-dom`.
+  `@vue/test-utils` and `happy-dom`. `@vue/test-utils` is also an optional peer here, for
+  `autoUnmount.ts`, and pnpm links both to one copy, which the flag that setup file sets depends on.
 - **The test boot builds into `node_modules/.cache/nuxt-vitest`, never the app's `.nuxt`.** Nx
   loads every `vitest.config.ts` to build its project graph, so this boot runs before any task,
   including `build`. Booting into `.nuxt` left it half-written, with no `tsconfig.*.json`, and

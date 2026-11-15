@@ -1,3 +1,4 @@
+import { globSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -6,6 +7,7 @@ import type { CoverageOptions } from "vitest/node";
 import createNodeConfig from "./node.ts";
 
 const stubs = fileURLToPath(new URL("./setup/stubs.ts", import.meta.url));
+const autoUnmount = fileURLToPath(new URL("./setup/autoUnmount.ts", import.meta.url));
 
 export interface NuxtConfigOptions {
     /** The app root, usually `import.meta.dirname`. */
@@ -19,10 +21,35 @@ export interface NuxtConfigOptions {
     thresholds?: CoverageOptions["thresholds"];
 }
 
-const NODE_DIRS = ["shared", "server", "modules", "tools"];
-
 // Nuxt auto-registers `<rootDir>/layers/*`, and each layer repeats the app's own directory layout
+const inAppAndLayers = (...globs: string[]) => globs.flatMap((glob) => [glob, `layers/*/${glob}`]);
+
+const NODE_SPECS = inAppAndLayers(
+    ...["shared", "server", "modules", "tools"].map((dir) => `${dir}/**/*.spec.ts`),
+);
+const NUXT_SPECS = inAppAndLayers("app/**/*.spec.ts");
 const LAYER_SOURCES = ["layers/*/{app,server,shared,modules}/**/*.ts", "layers/*/app/**/*.vue"];
+
+const MOCKS_A_MODULE = /\b(?:vi\.mock|mockNuxtImport|mockComponent)\(/;
+
+const findMockingSpecs = (root: string) =>
+    globSync(NUXT_SPECS, { cwd: root }).filter((path) =>
+        MOCKS_A_MODULE.test(readFileSync(join(root, path), "utf8")),
+    );
+
+const withEnv = async <T>(vars: Record<string, string>, run: () => Promise<T>): Promise<T> => {
+    const previous = Object.fromEntries(Object.keys(vars).map((key) => [key, process.env[key]]));
+    Object.assign(process.env, vars);
+
+    try {
+        return await run();
+    } finally {
+        for (const [key, value] of Object.entries(previous)) {
+            if (value === undefined) delete process.env[key];
+            else process.env[key] = value;
+        }
+    }
+};
 
 // Resolved from the app, so this runs the same copy its specs import `@nuxt/test-utils/runtime` from
 const defineNuxtProject = async (root: string, test: object) => {
@@ -33,18 +60,10 @@ const defineNuxtProject = async (root: string, test: object) => {
 
     // With jiti's module cache on, a TypeScript Nuxt module that installs @nuxtjs/i18n throws Node's
     // ERR_INTERNAL_ASSERTION as an unhandled rejection, which kills Vitest and Nx's plugin worker
-    const jitiModuleCache = process.env.JITI_MODULE_CACHE;
-    process.env.JITI_MODULE_CACHE = "0";
-
-    try {
-        return await defineVitestProject({ root, test });
-    } finally {
-        if (jitiModuleCache === undefined) delete process.env.JITI_MODULE_CACHE;
-        else process.env.JITI_MODULE_CACHE = jitiModuleCache;
-    }
+    return withEnv({ JITI_MODULE_CACHE: "0" }, () => defineVitestProject({ root, test }));
 };
 
-/** A `node` project for `server/`, `shared/`, `modules/` and `tools/`, and a `nuxt` project for `app/`, in the root and every layer. */
+/** A `node` project for `server/`, `shared/`, `modules/` and `tools/`, and `nuxt` and `nuxt-isolated` projects for `app/`, in the root and every layer. */
 const createNuxtConfig = async ({
     root,
     nodeSpecs = [],
@@ -54,13 +73,12 @@ const createNuxtConfig = async ({
 }: NuxtConfigOptions) => {
     const nodeConfig = createNodeConfig();
     const { globalSetup, coverage, ...nodeTest } = nodeConfig.test ?? {};
+    const mockingSpecs = findMockingSpecs(root);
 
-    const nuxtProject = await defineNuxtProject(root, {
-        name: "nuxt",
+    const nuxtBase = await defineNuxtProject(root, {
         fileParallelism: false,
-        include: ["app/**/*.spec.ts", "layers/*/app/**/*.spec.ts"],
-        exclude: nodeSpecs,
-        setupFiles: [nodeTest.setupFiles ?? [], setupFiles].flat(),
+        sequence: { groupOrder: 1 },
+        setupFiles: [nodeTest.setupFiles ?? [], autoUnmount, setupFiles].flat(),
         environmentOptions: {
             nuxt: {
                 rootDir: root,
@@ -75,6 +93,32 @@ const createNuxtConfig = async ({
             },
         },
     });
+    const nuxtProject = (test: object) => ({ ...nuxtBase, test: { ...nuxtBase.test, ...test } });
+
+    const projects = [
+        {
+            ...nodeConfig,
+            test: {
+                ...nodeTest,
+                name: "node",
+                setupFiles: [nodeTest.setupFiles ?? [], stubs].flat(),
+                include: [...NODE_SPECS, ...nodeSpecs],
+            },
+        },
+        nuxtProject({
+            name: "nuxt",
+            isolate: false,
+            include: NUXT_SPECS,
+            exclude: [...nodeSpecs, ...mockingSpecs],
+        }),
+        mockingSpecs.length > 0 &&
+            nuxtProject({
+                name: "nuxt-isolated",
+                isolate: true,
+                include: mockingSpecs,
+                exclude: nodeSpecs,
+            }),
+    ];
 
     return defineConfig({
         test: {
@@ -86,21 +130,7 @@ const createNuxtConfig = async ({
                 exclude: [...(coverage?.exclude ?? []), ...coverageExclude],
                 thresholds,
             },
-            projects: [
-                {
-                    ...nodeConfig,
-                    test: {
-                        ...nodeTest,
-                        name: "node",
-                        setupFiles: [nodeTest.setupFiles ?? [], stubs].flat(),
-                        include: NODE_DIRS.flatMap((dir) => [
-                            `${dir}/**/*.spec.ts`,
-                            `layers/*/${dir}/**/*.spec.ts`,
-                        ]).concat(nodeSpecs),
-                    },
-                },
-                nuxtProject,
-            ],
+            projects: projects.filter((project) => project !== false),
         },
     });
 };

@@ -40,7 +40,6 @@ beforeEach(() => {
 
 afterEach(() => {
     vi.unstubAllGlobals();
-    document.body.innerHTML = "";
 });
 
 describe("site header", () => {
