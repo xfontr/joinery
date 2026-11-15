@@ -14,8 +14,8 @@ describe("toPlainText", () => {
         expect(toPlainText("<em>Uno</em> &lt;b&gt;")).toBe("Uno <b>");
     });
 
-    it("leaves an unknown or out-of-range reference as written rather than guessing", () => {
-        expect(toPlainText("&bogus; &#1114112;")).toBe("&bogus; &#1114112;");
+    it("decodes a bad reference the way a browser would render it", () => {
+        expect(toPlainText("&bogus; &#1114112;")).toBe("&bogus; \uFFFD");
     });
 
     it("collapses whitespace a paragraph break leaves behind", () => {

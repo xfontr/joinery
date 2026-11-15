@@ -1,3 +1,4 @@
+import { escapeText } from "entities";
 import { http, HttpResponse, type HttpHandler } from "msw";
 import { API_PATH, TAXONOMIES } from "#core/adapters/providers/wordpress/WordpressConfigs";
 import type {
@@ -48,10 +49,10 @@ const toWordpressTerm = (term: Term): WordpressTerm => {
 
     return {
         id: Number(term.id),
-        name: term.name,
+        name: escapeText(term.name),
         slug: term.slug,
         taxonomy,
-        description: term.description,
+        description: term.description && escapeText(term.description),
         yoast_head_json: toYoast(term.seo),
     };
 };
@@ -59,20 +60,18 @@ const toWordpressTerm = (term: Term): WordpressTerm => {
 // The provider names an avatar after its author, so an avatar's `alt` doesn't survive the trip
 const toWordpressUser = (author: Author): WordpressUser => ({
     id: Number(author.id),
-    name: author.name,
+    name: escapeText(author.name),
     slug: author.slug,
-    description: author.bio,
+    description: author.bio && escapeText(author.bio),
     simple_local_avatar: author.avatar
         ? { media_id: Number(author.avatar.id), full: author.avatar.url }
         : false,
 });
 
-// WordPress only ever renders HTML, so a block document has nothing to stand in for it
-
 const toWordpressEntry = (entry: Entry): WordpressEntry => ({
     id: Number(entry.id),
     slug: entry.slug,
-    title: { rendered: entry.title },
+    title: { rendered: escapeText(entry.title) },
     content: { rendered: entry.body.value },
     excerpt: entry.excerpt && { rendered: entry.excerpt.value },
     date_gmt: entry.publishedAt?.replace(/Z$/, ""),

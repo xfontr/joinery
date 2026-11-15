@@ -16,11 +16,6 @@ const MOVED: [from: string, to: string][] = [
     ["/comments/feed/", "/feed/"],
     ["/sitemap_index.xml", "/sitemap.xml"],
     ["/post-sitemap.xml", "/sitemap.xml"],
-    ["/empieza-aqui/", "/sobre/"],
-    ["/recursos/", "/publicaciones/"],
-    ["/recursos/conecta/", "/contacto/"],
-    ["/consulta-legal-gratis/", "/contacto/"],
-    ["/suscripcion/", "/"],
     [`/?s=${SOUGHT}`, `/buscar/?query=${SOUGHT}`],
 ];
 

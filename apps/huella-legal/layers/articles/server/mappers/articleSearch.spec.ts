@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { toArticleSearch, toSuggestedSubjects } from "./articleSearch";
 import { toArticleSummary, toCategory } from "./articleSummary";
 
-const CIVIL = fakeTerm({ name: "Derecho &amp; civil" });
+const CIVIL = fakeTerm({ name: "Derecho & civil" });
 const PENAL = fakeTerm();
 const LABOUR = fakeTerm();
 
@@ -12,7 +12,7 @@ const summaries = (count: number, term: typeof CIVIL) =>
 
 describe("toArticleSearch", () => {
     it("maps every match into a summary, so no raw entry reaches the browser", () => {
-        const entry = fakeEntry({ title: "La &#8220;culpa&#8221;" });
+        const entry = fakeEntry({ title: "La “culpa”" });
 
         const search = toArticleSearch("culpa", {
             items: [entry],

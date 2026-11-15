@@ -55,12 +55,22 @@ const BARE_PAGE: Entry = {
 
 const GENERATED = fakeEntry({ slug: "generated" });
 
+const SITE_URL = "https://site.test";
+
+// Characters WordPress escapes on the way out, so a fake that skipped escaping would pass this
+const ESCAPED: Entry = fakeEntry({
+    slug: "jornada",
+    title: "Ley 1/2026 & <Reglamento>",
+    terms: [{ ...CIVIL, name: "Civil & Mercantil", description: "Contratos & <obligaciones>" }],
+});
+
 const server = setupServer(
     ...wordpressHandlers(BASE_URL, {
         posts: [...POSTS, GENERATED],
         pages: [BARE_PAGE],
         categories: [CIVIL],
     }),
+    ...wordpressHandlers(SITE_URL, { posts: [ESCAPED] }),
 );
 
 // The real provider on the real client, built the way the Nuxt reader builds it, so the fake is held
@@ -103,6 +113,15 @@ describe("the fake WordPress", () => {
 
     it("leaves out what an entry doesn't have instead of inventing it", async () => {
         await expect((await provider()).getEntry("pages", "about")).resolves.toEqual(BARE_PAGE);
+    });
+
+    it("round-trips a title and a term name WordPress would escape", async () => {
+        const site = await createProvider(
+            { name: "wordpress", baseURL: SITE_URL },
+            new OfetchHttpClient(ofetch.create({ baseURL: SITE_URL })),
+        );
+
+        await expect(site.getEntry("posts", "jornada")).resolves.toEqual(ESCAPED);
     });
 
     it("serves terms under the taxonomy the provider maps back to their resource", async () => {

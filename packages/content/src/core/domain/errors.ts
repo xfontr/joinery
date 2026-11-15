@@ -17,7 +17,7 @@ export class UpstreamError extends ContentError {
     constructor(
         public readonly upstreamStatus: number | undefined,
         cause?: unknown,
-        /** The vendor's error body, for a provider to recognise its own error codes in. */
+        // Not `data`, which h3's createError would hand to the client
         public readonly body?: unknown,
     ) {
         super(

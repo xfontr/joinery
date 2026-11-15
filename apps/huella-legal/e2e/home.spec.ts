@@ -8,7 +8,7 @@ const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 const TWO_COLUMNS = { from: 768, to: 1024 };
 
 const NEWEST = [...POSTS].sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""));
-const titles = NEWEST.map(({ title }) => title.replace("&amp;", "&"));
+const titles = NEWEST.map(({ title }) => title);
 
 const THESES = NEWEST.filter(({ terms }) =>
     terms.some(({ slug }) => slug === "trabajos-de-fin-de-grado"),
@@ -66,9 +66,7 @@ test("shows the newest theses and leads to the rest", async ({ page }) => {
     const band = page.getByRole("region", { name: "Trabajos de fin de grado y de máster" });
 
     await expect(band.getByRole("listitem")).toHaveCount(3);
-    await expect(band.getByRole("listitem").first()).toContainText(
-        THESES[0]!.title.replace("&amp;", "&"),
-    );
+    await expect(band.getByRole("listitem").first()).toContainText(THESES[0]!.title);
 
     await band.getByRole("link", { name: "Ver los trabajos" }).click();
 
