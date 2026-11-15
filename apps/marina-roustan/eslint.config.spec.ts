@@ -22,7 +22,7 @@ const restrictedClasses = async (classes: string): Promise<string[]> => {
 };
 
 // The first lint loads the Tailwind entry CSS, which took 6.6 s in CI against a 5 s test timeout.
-beforeAll(() => restrictedClasses(""), 30_000);
+beforeAll(() => restrictedClasses("bg-default"), 30_000);
 
 describe("eslint config", () => {
     it.each([
