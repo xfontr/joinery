@@ -5,5 +5,6 @@ export default defineAppConfig({
         publish: { name: "publish" },
         publishThesis: { name: "publish", hash: "#tesis" },
         publishGuide: { name: "article", params: { slug: "guia-de-publicaciones" } },
+        collaboratorPortal: "/wp-admin/profile.php",
     } as const satisfies Record<string, RouteLocationRaw>,
 });

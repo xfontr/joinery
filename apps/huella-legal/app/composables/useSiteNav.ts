@@ -30,13 +30,23 @@ const COLUMNS = [
     },
     {
         key: "participate",
-        links: ["publish", "publishThesis", "publishGuide", "newsletter", "contact"],
+        links: [
+            "publish",
+            "publishThesis",
+            "publishGuide",
+            "collaboratorPortal",
+            "newsletter",
+            "contact",
+        ],
     },
     { key: "legal", links: ["legalNotice", "privacy", "cookies"] },
 ] as const satisfies readonly { key: string; links: readonly NavKey[] }[];
 
 // The calculator stays off every other page's network, even when a pointer crosses its footer link
 const UNPREFETCHED: ReadonlySet<NavKey> = new Set(["interestCalculator"]);
+
+// The legacy layer forwards these to WordPress, so the client router must leave them to the server
+const EXTERNAL: ReadonlySet<NavKey> = new Set(["collaboratorPortal"]);
 
 const SOCIAL = [
     { key: "instagram", icon: "i-lucide-instagram" },
@@ -110,6 +120,7 @@ export const useSiteNav = (cookiePreferences: CookiePreferences) => {
                     label: t(`app.footer.links.${link}`),
                     to: nav[link],
                     ...(UNPREFETCHED.has(link) && { prefetch: false }),
+                    ...(EXTERNAL.has(link) && { external: true }),
                 })),
                 ...(key === "legal" && cookiePreferences.enabled
                     ? [

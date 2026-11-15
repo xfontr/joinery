@@ -26,7 +26,7 @@ const navAt = async (route: string) => {
             setup: () => {
                 nav = useSiteNav(cookies);
                 const router = useRouter();
-                href = (to) => router.resolve(to).href;
+                href = (to) => (typeof to === "string" ? to : router.resolve(to).href);
                 return () => null;
             },
         }),
@@ -111,6 +111,7 @@ describe("useSiteNav", () => {
             "/publicar/",
             "/publicar/#tesis",
             "/guia-de-publicaciones/",
+            "/wp-admin/profile.php",
             "/#newsletter",
             "/contacto/",
             "/aviso-legal/",
@@ -126,6 +127,15 @@ describe("useSiteNav", () => {
         expect(
             links.filter(({ prefetch }) => prefetch === false).map(({ to }) => nav.href(to!)),
         ).toEqual(["/calculo-intereses/"]);
+    });
+
+    it("leaves the collaborator portal to a full page load, since only the server forwards it to WordPress", async () => {
+        const nav = await navAt("/");
+        const links = nav.columns.value.flatMap(({ children }) => children ?? []);
+
+        expect(links.filter(({ external }) => external).map(({ to }) => nav.href(to!))).toEqual([
+            "/wp-admin/profile.php",
+        ]);
     });
 
     it("offers no cookie settings when no tracker is configured, since there is nothing to consent to", async () => {

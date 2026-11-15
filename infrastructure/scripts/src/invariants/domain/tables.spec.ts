@@ -21,12 +21,14 @@ const boundaries = {
 const README = `
 ## 🗂 Workspace layout
 
+<!-- docs:map:layout -->
 \`\`\`
 apps/
     huella-legal/     @monorepo/huella-legal
 packages/
     ui/               @monorepo/ui
 \`\`\`
+<!-- /docs:map:layout -->
 
 ## 🧱 Architecture & boundaries
 
@@ -51,6 +53,10 @@ describe("tagsInReadmeTable", () => {
 describe("projectsInLayoutBlock", () => {
     it("reads the directories out of the layout block, not the package names beside them", () => {
         expect(projectsInLayoutBlock(README)).toEqual(["huella-legal", "ui"]);
+    });
+
+    it("finds the block by its docs:map markers, not by a fence right below the heading", () => {
+        expect(projectsInLayoutBlock(README.replace("<!-- docs:map:layout -->", ""))).toEqual([]);
     });
 });
 
