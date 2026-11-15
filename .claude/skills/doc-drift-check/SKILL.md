@@ -41,8 +41,7 @@ looks like.
 | An env var | `.env.example` — name must exist there, and nowhere does the README show a real value |
 | A CLI flag or option | The arg-parsing source, not another doc |
 | A config key / shape | The type or schema that defines it |
-| The Nx tag table | [`boundaries.ts`](../../../packages/configs/src/eslint/lib/boundaries.ts) — check both directions, not just the direction the hook fires from (it only fires when `boundaries.ts` itself is edited in-session; a README hand-edit that falls out of sync goes uncaught) |
-| The workspace-layout block in the root README | The actual `packages/` / `apps/` / `infrastructure/` directories |
+| The Nx tag table and the workspace-layout block | Nothing — `pnpm docs:map --check` renders both from source and fails on a mismatch; check the prose around them instead |
 
 Anything outside this table — decision reports under `docs/decisions/`, dated audits under
 `docs/audits/` — is a point-in-time snapshot, not a living doc. Drift doesn't apply to them; leave

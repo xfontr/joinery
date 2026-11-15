@@ -14,10 +14,10 @@ file=$(jq -r '.tool_input.file_path // empty' 2>/dev/null)
 root="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 rel=${file#"$root"/}
 
-# The tag table is written twice and the readable copy is the one that gets forgotten
+# The readable tag table is rendered from this file, and an unrendered change only fails in CI
 if [ "$rel" = "packages/configs/src/eslint/lib/boundaries.ts" ]; then
-    echo "boundaries.ts is the enforced copy of the Nx tag table. The readable copy in README.md" >&2
-    echo "must say the same thing — update the '🧱 Architecture & boundaries' table before moving on." >&2
+    echo "boundaries.ts is the enforced copy of the Nx tag table. Run \`pnpm docs:map\` to" >&2
+    echo "re-render the readable copy in README.md before moving on." >&2
     exit 2
 fi
 
@@ -62,7 +62,7 @@ case "$rel" in
             echo "  1. nx.tags in this package.json (one type: tag, one scope: tag)" >&2
             echo "  2. depConstraints in packages/configs/src/eslint/lib/boundaries.ts, plus the tag" >&2
             echo "     added to every consumer's onlyDependOnLibsWithTags" >&2
-            echo "  3. the tag table and the workspace-layout block in README.md" >&2
+            echo "  3. a description here, then \`pnpm docs:map\` to render README.md's tables and layout" >&2
             exit 2
         fi
 

@@ -202,8 +202,8 @@ Node types even in a package that otherwise doesn't.
   `sort()` orders strings by UTF-16 code unit, so `"Área"` lands after `"Zona"`; name the comparison,
   usually `localeCompare`
 - `@nx/enforce-module-boundaries` — the layering rules. [`lib/boundaries.ts`](./src/eslint/lib/boundaries.ts)
-  is the enforced copy; the readable one is the tag table in the
-  [root README](../../README.md#-architecture--boundaries). Change both, or they drift
+  is the enforced copy; the tag table in the
+  [root README](../../README.md#-architecture--boundaries) is rendered from it by `pnpm docs:map`
 - `no-restricted-imports` under `**/src/core/**`, from
   [`lib/coreIsolation.ts`](./src/eslint/lib/coreIsolation.ts) — the framework-agnostic half of a
   package may not import `@nuxt/*`, `@nuxtjs/*`, `nitropack`, `h3` or `#nuxt/*`. That invariant is
