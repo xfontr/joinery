@@ -18,3 +18,8 @@ What the snapshot and the commits can't record. The format and when to write are
 - 2026-11-15 16:28 · note · `scope-signoff` settled from the project page with no ticket, the settle control's first real use
 - 2026-11-15 16:34 · estimate · #448 · 18 SP, about 1 h 55 min from pick to merge through /ship-issue in a second session; the PR was open 57 min of that
 - 2026-11-15 16:42 · friction · #465 · Filing the next wave in a loop filed the `design-approval` owner ticket, though the owner settles decisions from the page; it was closed as not planned
+- 2026-11-15 18:17 · estimate · #460 · The lab took three rounds where the map expects one; the first two were rejected outright as copies of the live site, with decorative shapes and content the lab invented
+- 2026-11-15 18:17 · map · #460 · No block asks up front whether a rebuild is a straight copy or a full redesign; the lab assumed "similar to the live site", which cost the two rejected rounds
+- 2026-11-15 18:17 · map · #447 · `design-tokens` and `brand-extraction` come before `design-lab`, so tokens taken from the live site anchored every lab direction to it; the lab should pick the direction and the tokens follow
+- 2026-11-15 18:17 · map · #447 · `brand-extraction` was over-built: a whole extraction script for a few colours and a font, from a site with no design system to learn from
+- 2026-11-15 18:27 · rule · #460 · Marina's portrait stays off the first screen; the hero is type-led and she appears after the fold

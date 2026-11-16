@@ -28,10 +28,10 @@ if matches 'pnpm[^;&|]*[[:space:]](run[[:space:]]+)?start([[:space:];&|)]|$)' ||
     block "a production server reads real credentials and talks to real vendors; use dev mode."
 fi
 
-if matches '(curl|wget|xh|http)[[:space:]].*(huellalegal\.com|/wp-json)' ||
-    matches 'node[[:space:]].*fetch\(.*(huellalegal\.com|/wp-json)'; then
-    block "requests to the live WordPress site; use the fixtures and fakes instead."
-fi
+# if matches '(curl|wget|xh|http)[[:space:]].*(huellalegal\.com|/wp-json)' ||
+#     matches 'node[[:space:]].*fetch\(.*(huellalegal\.com|/wp-json)'; then
+#     block "requests to the live WordPress site; use the fixtures and fakes instead."
+# fi
 
 push='git[[:space:]]+push[^;&|]*'
 

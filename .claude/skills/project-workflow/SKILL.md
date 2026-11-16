@@ -130,9 +130,12 @@ anything started or closed stays.
 When the project has a `<id>.diary.md`, append one line in the
 [diary's shape](../../../docs/workflows/README.md#-diary), with the time from `date`, on these
 events only: the user says they start or stop, a ticket closes (an `estimate` line), or the map, an
-estimate, a rule or a command turns out wrong. Every correction or complaint the user makes about
-the workflow, the tooling or the agent's output is one of those, logged as it happens. Never log
-routine success, and never grade your own work in it. Write the fact and the issue number, and leave the verdict to the user.
+estimate, a rule or a command turns out wrong. A correction from the user is logged as it happens,
+but only for what it shows about the process: a gap in the map or the planning, a rule that misled,
+work that took more rounds or longer than expected, a bug and its fix. The user's decisions
+themselves, such as which design direction they prefer or what to keep, never go in: they mean
+nothing out of context and are stale within a day. Never log routine success, and never grade your
+own work in it. Write the fact and the issue number, and leave the verdict to the user.
 
 ## 🎨 The design stage of a website rebuild
 

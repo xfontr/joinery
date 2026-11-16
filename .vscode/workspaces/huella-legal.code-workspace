@@ -1,0 +1,17 @@
+{
+    "folders": [
+        { "name": "huella-legal", "path": "../../apps/huella-legal" },
+        { "name": "packages", "path": "../../packages" },
+        { "name": "docs", "path": "../../docs" }
+    ],
+    "settings": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "always"
+        },
+        "eslint.workingDirectories": [{ "mode": "auto" }],
+        "prettier.enable": false
+    },
+    "extensions": {
+        "recommendations": ["dbaeumer.vscode-eslint", "Vue.volar"]
+    }
+}

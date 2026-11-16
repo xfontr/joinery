@@ -18,6 +18,16 @@ export default defineNuxtConfig({
         typeCheck: "build",
     },
 
+    $production: {
+        hooks: {
+            "pages:extend": (pages) => {
+                for (let index = pages.length - 1; index >= 0; index--) {
+                    if (pages[index]?.path.startsWith("/lab")) pages.splice(index, 1);
+                }
+            },
+        },
+    },
+
     runtimeConfig: {
         public: {
             site: {

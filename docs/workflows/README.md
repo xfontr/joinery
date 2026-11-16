@@ -305,6 +305,10 @@ the file:
 Lines state what happened, not whether it was good. Judging a rule waits until the diary is read
 whole, after the project.
 
+The diary is not a decision log. Which design direction won or what the owner chose to keep means
+nothing out of context and is stale within a day; a decision earns a line only through what it
+reveals about the process, such as a missing block or a round of work the map didn't expect.
+
 ## 🧭 Deliberately deferred
 
 | Later need | What changes |
