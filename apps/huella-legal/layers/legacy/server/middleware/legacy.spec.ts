@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
 
 const nitro = vi.hoisted(() => ({
     wordpress: "https://cms.revista.test",
     redirect: vi.fn((_event: unknown, location: string, status: number) => ({ location, status })),
 }));
 
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 vi.stubGlobal("getRequestURL", (event: { url: string }) => new URL(event.url));
 vi.stubGlobal("sendRedirect", nitro.redirect);
 vi.stubGlobal("useRuntimeConfig", () => ({ content: { vendor: { baseURL: nitro.wordpress } } }));

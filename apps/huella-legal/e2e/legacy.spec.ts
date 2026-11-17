@@ -1,4 +1,4 @@
-import { expect, test } from "@monorepo/configs/playwright/test";
+import { expect, test } from "@monorepo/configs/playwright/utils/test";
 import { AUTHOR, SOUGHT, SUBJECT, TAG } from "./fakes.ts";
 
 const THESES = "/publicar-mi-articulo/publicar-tfm-tfg-derecho/";
@@ -20,32 +20,40 @@ const MOVED: [from: string, to: string][] = [
 ];
 
 for (const [from, to] of MOVED) {
-    test(`moves ${from} permanently to ${to}, which answers`, async ({ request, baseURL }) => {
-        const response = await request.get(from, { maxRedirects: 0 });
+    test(
+        `moves ${from} permanently to ${to}, which answers`,
+        { tag: "@any-width" },
+        async ({ request, baseURL }) => {
+            const response = await request.get(from, { maxRedirects: 0 });
 
-        expect(response.status()).toBe(301);
-        expect(new URL(response.headers().location ?? "", baseURL).href).toBe(
-            new URL(to, baseURL).href,
-        );
-        expect((await request.get(to)).status()).toBe(200);
-    });
+            expect(response.status()).toBe(301);
+            expect(new URL(response.headers().location ?? "", baseURL).href).toBe(
+                new URL(to, baseURL).href,
+            );
+            expect((await request.get(to)).status()).toBe(200);
+        },
+    );
 }
 
-test("moves the theses list to its tag, whatever WordPress has tagged", async ({
-    request,
-    baseURL,
-}) => {
-    const response = await request.get(`${THESES}trabajos-de-fin-de-grado-y-master-publicados/`, {
-        maxRedirects: 0,
-    });
+test(
+    "moves the theses list to its tag, whatever WordPress has tagged",
+    { tag: "@any-width" },
+    async ({ request, baseURL }) => {
+        const response = await request.get(
+            `${THESES}trabajos-de-fin-de-grado-y-master-publicados/`,
+            {
+                maxRedirects: 0,
+            },
+        );
 
-    expect(response.status()).toBe(301);
-    expect(new URL(response.headers().location ?? "", baseURL).pathname).toBe(
-        "/etiquetas/trabajos-de-fin-de-grado/",
-    );
-});
+        expect(response.status()).toBe(301);
+        expect(new URL(response.headers().location ?? "", baseURL).pathname).toBe(
+            "/etiquetas/trabajos-de-fin-de-grado/",
+        );
+    },
+);
 
-test("sends an old upload to WordPress's own host", async ({ request }) => {
+test("sends an old upload to WordPress's own host", { tag: "@any-width" }, async ({ request }) => {
     const path = "/wp-content/uploads/2021/03/foto.jpg";
     const response = await request.get(path, { maxRedirects: 0 });
 

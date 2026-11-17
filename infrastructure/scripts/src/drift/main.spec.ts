@@ -4,10 +4,6 @@ import { CancelledError } from "../shared/errors.ts";
 const prompts = vi.hoisted(() => ({ confirm: vi.fn() }));
 const cache = vi.hoisted(() => ({ readCache: vi.fn(), writeCache: vi.fn() }));
 const gh = vi.hoisted(() => ({ createIssue: vi.fn() }));
-const io = vi.hoisted(() => ({
-    isInteractive: vi.fn(),
-    out: { warn: vi.fn(), info: vi.fn(), begin: vi.fn(), end: vi.fn() },
-}));
 const git = vi.hoisted(() => ({
     changedFiles: vi.fn(),
     diffNameStatus: vi.fn(),
@@ -27,7 +23,7 @@ const size = vi.hoisted(() => ({ changeSize: vi.fn(), lastMdCommitMs: vi.fn() })
 vi.mock("@clack/prompts", () => prompts);
 vi.mock("../shared/adapters/cache.ts", () => cache);
 vi.mock("../shared/adapters/gh.ts", () => gh);
-vi.mock("../shared/adapters/io.ts", () => io);
+vi.mock("../shared/adapters/io.ts");
 vi.mock("../shared/adapters/prompts.ts", () => ({
     orExit: (value: unknown, message: string) => {
         if (typeof value === "symbol") throw new CancelledError(message);
@@ -39,6 +35,9 @@ vi.mock("./domain/detect.ts", () => detect);
 vi.mock("./domain/size.ts", () => size);
 
 import { main } from "./main.ts";
+import * as ioModule from "../shared/adapters/io.ts";
+
+const io = vi.mocked(ioModule, true);
 
 const originalBase = process.env.DOCS_DRIFT_BASE;
 const originalHead = process.env.DOCS_DRIFT_HEAD;

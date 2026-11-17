@@ -5,9 +5,10 @@ them in two arrays: `shared`, which [`node.ts`](../node.ts) and [`vue.ts`](../vu
 and `vueOnly`, which only `vue.ts` adds. A rule belongs in this folder when it
 applies to **every** project the package touches; a rule for one flavour goes in the factory that
 composes it instead — see the [package README](../../../README.md#-what-the-eslint-factories-bundle).
-`routeMeta.ts`, `tailwind.ts`, `layerBoundaries.ts` and `pureDomain.ts` are composed by no factory: a
-project opts in by appending `eslint.routeMeta`, `eslint.tailwind(entryPoint)`,
-`eslint.layerBoundaries({ cores, kit })` or `eslint.pureDomain` after its factory.
+`routeMeta.ts`, `tailwind.ts`, `i18nKeys.ts`, `layerBoundaries.ts` and `pureDomain.ts` are composed by
+no factory: a project opts in by appending `eslint.routeMeta`, `eslint.tailwind(entryPoint)`,
+`eslint.i18nKeys(localeGlob)`, `eslint.layerBoundaries({ cores, kit })` or `eslint.pureDomain`
+after its factory.
 
 A rule no plugin ships lives in [`../rules`](../rules) as a `monorepo/<name>` rule with a
 `RuleTester` spec beside it, and a file here switches it on. Every file registers the same plugin
@@ -42,13 +43,14 @@ different objects under one name meet on a file.
 | [`format.ts`](./format.ts) | `format/prettier` with the Prettier options inline: `format` for scripts, `formatVue` for `**/*.vue` (Vue configs only), which also turns off every `vue/*` rule of type `layout` |
 | [`console.ts`](./console.ts) | `noConsole`: `no-console` at `error` for everything but `**/*.spec.ts`, where the Vitest console guard takes over |
 | [`unsafeCode.ts`](./unsafeCode.ts) | `unsafeCode`: core `no-eval`, `no-implied-eval`, `no-new-func`, `no-script-url` and a `no-restricted-properties` ban on the raw-HTML sinks, everywhere but specs. `unsafeCodeVue`: `vue/no-v-html` under `**/*.vue` (Vue configs only) |
-| [`e2eFixture.ts`](./e2eFixture.ts) | `no-restricted-imports` of `test` from `@playwright/test` in `**/e2e/**/*.spec.ts`, so every Playwright spec goes through `@monorepo/configs/playwright/test` and its console guard |
+| [`e2eFixture.ts`](./e2eFixture.ts) | `eslint-plugin-playwright`'s `flat/recommended` and a `no-restricted-imports` of `test` from `@playwright/test` in `**/e2e/**/*.spec.ts`, so every Playwright spec goes through `@monorepo/configs/playwright/utils/test` and its console guard. A shared step named `expect…` counts as an assertion |
 | [`disableReasons.ts`](./disableReasons.ts) | `monorepo/disable-needs-reason` and `reportUnusedDisableDirectives: "error"`: `disableReasons` for scripts and `disableReasonsVue` for `**/*.vue` (Vue configs only). Every `eslint-disable` names its rules and ends in `-- <why>`, a block disable is closed, and a disable that hides nothing fails |
 | [`defaultExports.ts`](./defaultExports.ts) | `monorepo/named-default-export`: `defaultExports` for scripts and `defaultExportsVue` for `**/*.vue` (Vue configs only). A default-exported function or class has a name; calls and literals are left alone |
 | [`routeMeta.ts`](./routeMeta.ts) | `monorepo/require-route-meta` under `server/api/` and `server/routes/`: a top-level `defineRouteMeta` whose `openAPI` object literal has `tags` and `summary`, placed after the `export default` handler. Opt-in, for a Nitro app with `experimental.openAPI` on |
 | [`layerBoundaries.ts`](./layerBoundaries.ts) | `monorepo/layer-boundaries` under `layers/` and the `kit` paths: the kit uses only itself, a core only itself and the kit, a feature also the cores and never another feature, and no layer anything else outside `layers/`, written or auto-imported. A feature's `app/pages/` may still render another feature's components. Every layer not named in `cores` is a feature. Opt-in, for a Nuxt app split into layers |
 | [`tailwind.ts`](./tailwind.ts) | `eslint-plugin-better-tailwindcss`'s `recommended-error` rules under `**/*.vue` and `**/*.ts`, minus `enforce-consistent-line-wrapping`, which fights Prettier. Opt-in: a project with Tailwind spreads `eslint.tailwind(entryPoint)`, naming its CSS entry point |
-| [`vitest.ts`](./vitest.ts) | `@vitest/eslint-plugin`'s `recommended` rules, globals and `typecheck: true`, scoped to `**/*.spec.ts` |
+| [`i18nKeys.ts`](./i18nKeys.ts) | `@intlify/vue-i18n/no-missing-keys` under `**/*.vue` and `**/*.ts` outside specs, stories and `e2e/`: every static `t()`/`$t()` key exists in the locale files the app names. Opt-in: an app with `@nuxtjs/i18n` spreads `eslint.i18nKeys(localeGlob)` |
+| [`vitest.ts`](./vitest.ts) | `@vitest/eslint-plugin`'s `recommended` rules, globals and `typecheck: true`, scoped to `**/*.spec.ts`, plus `vitest/no-restricted-matchers` banning `toHaveBeenNthCalledWith` and snapshots, and `monorepo/no-implementation-details`: a spec reads what a component renders, never `wrapper.vm` (bar `vm.$emit`) |
 
 ## 🚫 What doesn't belong here
 

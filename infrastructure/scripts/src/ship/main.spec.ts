@@ -13,20 +13,14 @@ const git = vi.hoisted(() => ({
     pullMaster: vi.fn(),
     push: vi.fn(),
 }));
-const io = vi.hoisted(() => ({
-    out: {
-        begin: vi.fn(),
-        end: vi.fn(),
-        info: vi.fn(),
-        note: vi.fn(),
-        spinner: vi.fn(() => ({ start: vi.fn(), stop: vi.fn() })),
-    },
-}));
 vi.mock("./adapters/gh.ts", () => gh);
 vi.mock("./adapters/git.ts", () => git);
-vi.mock("../shared/adapters/io.ts", () => io);
+vi.mock("../shared/adapters/io.ts");
 
 import { main } from "./main.ts";
+import * as ioModule from "../shared/adapters/io.ts";
+
+const io = vi.mocked(ioModule, true);
 
 const originalExitCode = process.exitCode;
 
@@ -86,4 +80,8 @@ describe("ship main", () => {
         expect(gh.waitForMerge).not.toHaveBeenCalled();
         expect(git.checkoutMaster).not.toHaveBeenCalled();
     });
+});
+
+beforeEach(() => {
+    io.out.spinner.mockReturnValue({ start: vi.fn(), stop: vi.fn(), message: vi.fn() });
 });

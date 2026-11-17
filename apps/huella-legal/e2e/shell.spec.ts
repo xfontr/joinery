@@ -1,15 +1,14 @@
-import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "@playwright/test";
-import { expect, NOT_FOUND_DOCUMENT, test } from "@monorepo/configs/playwright/test";
+import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { expect, NOT_FOUND_DOCUMENT, test } from "@monorepo/configs/playwright/utils/test";
+import { t } from "./copy.ts";
 import { SUBJECT } from "./fakes.ts";
-
-const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 
 // The header switches to the slideover below Tailwind's `lg`
 const DESKTOP = 1024;
 
 const openMenu = async (page: Page) => {
-    const menu = page.getByRole("dialog", { name: "Menú" });
+    const menu = page.getByRole("dialog", { name: t("app.header.menu.title") });
 
     await expect(async () => {
         if (!(await menu.isVisible()))
@@ -24,7 +23,7 @@ test("the skip link is the first stop and moves focus into the main landmark", a
 
     await page.keyboard.press("Tab");
 
-    const skip = page.getByRole("link", { name: "Saltar al contenido" });
+    const skip = page.getByRole("link", { name: t("app.skipLink") });
 
     await expect(skip).toBeFocused();
     // toBeVisible passes for a link the header paints over, so check it is the topmost element too
@@ -60,8 +59,8 @@ test("the header reaches every section, inline on desktop and through the menu b
     if (!wide) await openMenu(page);
 
     const nav = wide
-        ? page.getByRole("banner").getByRole("navigation", { name: "Principal" })
-        : page.getByRole("dialog").getByRole("navigation", { name: "Principal" });
+        ? page.getByRole("banner").getByRole("navigation", { name: t("app.header.nav.label") })
+        : page.getByRole("dialog").getByRole("navigation", { name: t("app.header.nav.label") });
 
     await expect(nav.getByRole("link")).toHaveText(
         wide
@@ -96,7 +95,7 @@ test(
         await openDropdown(page, "Publicaciones");
 
         await expect(
-            page.getByRole("list", { name: "Destacado y lo último" }).getByRole("link"),
+            page.getByRole("list", { name: t("navPublicationsPanel.latest") }).getByRole("link"),
         ).toHaveCount(3);
     },
 );
@@ -110,7 +109,7 @@ test(
 
         await expect(
             page
-                .getByRole("list", { name: "Las áreas con más publicaciones" })
+                .getByRole("list", { name: t("navSubjectsPanel.title") })
                 .getByRole("link", { name: new RegExp(`^${SUBJECT.name}\\s`) }),
         ).toHaveAttribute("href", `/areas/${SUBJECT.slug}/`);
         await expect(page.getByRole("link", { name: "Todas las áreas" }).first()).toBeVisible();
@@ -120,11 +119,9 @@ test(
 test("an open header dropdown has no WCAG AA violations", { tag: "@desktop" }, async ({ page }) => {
     await page.goto("/");
     await openDropdown(page, "Publicaciones");
-    await expect(page.getByRole("list", { name: "Destacado y lo último" })).toBeVisible();
+    await expect(page.getByRole("list", { name: t("navPublicationsPanel.latest") })).toBeVisible();
 
-    const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
-    expect(violations).toEqual([]);
+    await expectNoAxeViolations(page);
 });
 
 test(
@@ -139,7 +136,9 @@ test(
             .click();
         await expect(page).toHaveURL(new RegExp(`/areas/${SUBJECT.slug}/$`));
 
-        const nav = page.getByRole("banner").getByRole("navigation", { name: "Principal" });
+        const nav = page
+            .getByRole("banner")
+            .getByRole("navigation", { name: t("app.header.nav.label") });
 
         await expect(nav.getByRole("link", { name: "Áreas" })).toHaveAttribute(
             "aria-current",
@@ -171,9 +170,7 @@ test.describe("the not-found page", () => {
     test("the not-found page has no WCAG AA violations", async ({ page }) => {
         await page.goto("/no-existe/");
 
-        const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
-        expect(violations).toEqual([]);
+        await expectNoAxeViolations(page);
     });
 });
 
@@ -194,7 +191,7 @@ test(
         await page.getByRole("button", { name: "Abrir menú" }).click();
         release();
 
-        await expect(page.getByRole("dialog", { name: "Menú" })).toBeVisible();
+        await expect(page.getByRole("dialog", { name: t("app.header.menu.title") })).toBeVisible();
     },
 );
 
@@ -202,7 +199,5 @@ test("the open mobile menu has no WCAG AA violations", { tag: "@mobile" }, async
     await page.goto("/");
     await openMenu(page);
 
-    const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
-    expect(violations).toEqual([]);
+    await expectNoAxeViolations(page);
 });

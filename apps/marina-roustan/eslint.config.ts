@@ -3,6 +3,8 @@ import { eslint } from "@monorepo/configs";
 export default [
     ...eslint.createNuxtConfig(),
     eslint.tailwind("layers/design/app/assets/main.css"),
+    // Throwaway screenshot scripts for the design lab, which never ships
+    { ignores: [".bench-shots.mjs", ".lab-*.mjs"] },
     {
         files: ["**/*.vue", "**/*.ts"],
         rules: {

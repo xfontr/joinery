@@ -1,35 +1,22 @@
-import { mountSuspended, mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { ref } from "vue";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
+import { mountSuspended } from "@nuxt/test-utils/runtime";
+import type { VueWrapper } from "@vue/test-utils";
+import { describe, expect, it } from "vitest";
+import type { ScriptUsage } from "#layers/snapshot/shared/types/ScriptUsage.ts";
+import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
+import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import Page from "./telemetry.vue";
 
-const state = vi.hoisted(() => ({ snapshot: null as { value: unknown } | null }));
-mockNuxtImport("useSnapshot", () => () => ({ data: state.snapshot }));
-
+// Each panel has its own spec; here only the page's own totals are under test
 const global = {
     stubs: {
-        UDashboardPanel: {
-            template: "<section><slot name='header' /><slot name='body' /></section>",
-        },
-        UDashboardNavbar: { template: "<header><slot name='right' /></header>" },
-        UDashboardSidebarCollapse: true,
-        SnapshotAge: true,
-        StatTile: {
-            props: { label: String, value: [String, Number] },
-            template: "<div class='tile'>{{ label }} {{ value }}</div>",
-        },
-        UCard: { template: "<article><slot name='header' /><slot /></article>" },
-        UAlert: {
-            props: { title: String, description: String },
-            template: "<div class='empty'>{{ title }} {{ description }}</div>",
-        },
         TelemetryScriptActivity: true,
         TelemetryUsageTriage: true,
         TelemetryLintUsage: true,
     },
 };
 
-const tally = (overrides: Record<string, unknown> = {}) => ({
+const tally = (overrides: Partial<ScriptUsage> = {}): ScriptUsage => ({
     runs: 10,
     recent: 10,
     failures: 1,
@@ -46,45 +33,60 @@ const tally = (overrides: Record<string, unknown> = {}) => ({
     ...overrides,
 });
 
-const artifact = (scripts: Record<string, unknown>, known = Object.keys(scripts)) => ({
-    manifest: null,
-    usage: {
-        generatedAt: "2026-11-09T00:00:00.000Z",
-        windowDays: 90,
-        lint: { since: null, rules: {} },
-        known,
-        scripts,
-    },
+const serve = (usage: UsageArtifact | null) => {
+    serveEndpoint("/api/snapshot/usage", (): SnapshotResponse => ({
+        manifest: null,
+        usage,
+    }));
+};
+
+const usage = (
+    scripts: Record<string, ScriptUsage>,
+    known = Object.keys(scripts),
+): UsageArtifact => ({
+    generatedAt: "2026-11-09T00:00:00.000Z",
+    windowDays: 90,
+    lint: { since: null, rules: {} },
+    known,
+    scripts,
 });
 
-beforeEach(() => {
-    state.snapshot = ref(null);
-});
+const tiles = (wrapper: VueWrapper) =>
+    Object.fromEntries(
+        wrapper
+            .findAllComponents({ name: "StatTile" })
+            .map((tile) => [tile.props("label"), String(tile.props("value"))]),
+    );
 
 describe("telemetry page", () => {
     it("says nothing has been folded yet instead of showing an empty matrix as a result", async () => {
+        serve(null);
         const wrapper = await mountSuspended(Page, { global });
 
-        expect(wrapper.find(".empty").text()).toContain("No runs committed yet");
+        expect(wrapper.text()).toContain("No runs committed yet");
+        expect(tiles(wrapper)).toEqual({});
     });
 
     it("totals the window's runs, agent and failure shares, and counts a script with none as idle", async () => {
-        state.snapshot!.value = artifact(
-            {
-                drift: tally(),
-                map: tally({
-                    runs: 500,
-                    days: { "2026-11-08": { runs: 30, agent: 0, failures: 1 } },
-                }),
-            },
-            ["drift", "map", "ship"],
+        serve(
+            usage(
+                {
+                    drift: tally(),
+                    map: tally({
+                        runs: 500,
+                        days: { "2026-11-08": { runs: 30, agent: 0, failures: 1 } },
+                    }),
+                },
+                ["drift", "map", "ship"],
+            ),
         );
-
         const wrapper = await mountSuspended(Page, { global });
 
-        expect(wrapper.text()).toContain("Runs 40");
-        expect(wrapper.text()).toContain("Run by an agent 10%");
-        expect(wrapper.text()).toContain("Failed 5%");
-        expect(wrapper.text()).toContain("Idle scripts 1/3");
+        expect(tiles(wrapper)).toMatchObject({
+            Runs: "40",
+            "Run by an agent": "10%",
+            Failed: "5%",
+            "Idle scripts": "1/3",
+        });
     });
 });

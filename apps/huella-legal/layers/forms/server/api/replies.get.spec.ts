@@ -1,12 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
 import type { ReplyPace } from "../../shared/types/ReplyPace";
 
 const nitro = vi.hoisted(() => ({ until: "" }));
 
-vi.stubGlobal("createError", (input: Record<string, unknown>) =>
-    Object.assign(new Error("http"), input),
-);
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 vi.stubGlobal("useRuntimeConfig", () => ({ forms: { slowRepliesUntil: nitro.until } }));
 
 const handler = (await import("./replies.get")).default as unknown as (event: unknown) => ReplyPace;

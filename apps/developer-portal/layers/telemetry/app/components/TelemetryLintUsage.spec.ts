@@ -3,18 +3,6 @@ import { describe, expect, it } from "vitest";
 import type { LintRuleUsage } from "#layers/snapshot/shared/types/LintRuleUsage.ts";
 import TelemetryLintUsage from "./TelemetryLintUsage.vue";
 
-const global = {
-    stubs: {
-        UCard: {
-            template: "<article><slot name='header' /><slot /><slot name='footer' /></article>",
-        },
-        UAlert: {
-            props: { title: String, description: String },
-            template: "<div class='alert'>{{ title }} {{ description }}</div>",
-        },
-    },
-};
-
 const rule = (overrides: Partial<LintRuleUsage> = {}): LintRuleUsage => ({
     enabled: true,
     hits: 0,
@@ -27,15 +15,9 @@ const rule = (overrides: Partial<LintRuleUsage> = {}): LintRuleUsage => ({
 });
 
 const mount = (rules: Record<string, LintRuleUsage>, since: string | null = "2026-11-01") =>
-    mountSuspended(TelemetryLintUsage, { props: { lint: { since, rules } }, global });
+    mountSuspended(TelemetryLintUsage, { props: { lint: { since, rules } } });
 
 describe("TelemetryLintUsage", () => {
-    it("says the counts only cover agent edits, so a quiet rule isn't read as unused by people", async () => {
-        const wrapper = await mount({});
-
-        expect(wrapper.find(".alert").text()).toContain("agent edits only");
-    });
-
     it("tables a rule that fired or is disabled, busiest first, and leaves silent ones out", async () => {
         const wrapper = await mount({
             silent: rule(),

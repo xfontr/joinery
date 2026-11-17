@@ -8,6 +8,7 @@ import {
     layerBoundaries,
     pureDomain,
     routeMeta,
+    i18nKeys,
     tailwind,
 } from "./index.ts";
 
@@ -156,6 +157,26 @@ describe("eslint factories", () => {
 
         expect(severity(rules?.["better-tailwindcss/no-unknown-classes"])).toBe(2);
         expect(severity(rules?.["better-tailwindcss/enforce-consistent-line-wrapping"])).toBe(0);
+    });
+
+    it("holds every spec to observable behaviour: no call order, snapshots or instance reads", async () => {
+        const rules = await resolve(createNuxtConfig(), "app/components/Thing.spec.ts");
+        const source = await resolve(createNuxtConfig(), "app/components/Thing.ts");
+
+        expect(severity(rules?.["monorepo/no-implementation-details"])).toBe(2);
+        expect(JSON.stringify(rules?.["vitest/no-restricted-matchers"])).toContain(
+            "toHaveBeenNthCalledWith",
+        );
+        expect(source?.["monorepo/no-implementation-details"]).toBeUndefined();
+    });
+
+    it("checks i18n keys in app code but never in specs, whose messages are placeholders", async () => {
+        const config = [...createNuxtConfig(), i18nKeys("i18n/locales/*.json")];
+        const app = await resolve(config, "app/App.vue");
+        const spec = await resolve(config, "app/App.spec.ts");
+
+        expect(severity(app?.["@intlify/vue-i18n/no-missing-keys"])).toBe(2);
+        expect(spec?.["@intlify/vue-i18n/no-missing-keys"]).toBeUndefined();
     });
 
     it("scopes layer boundaries to layers/ and leaves the tools/ ban in place there", async () => {

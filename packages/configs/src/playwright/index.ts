@@ -1,7 +1,7 @@
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { PlaywrightTestConfig } from "@playwright/test";
-import { SERVER_CONSOLE_ENV } from "./server.ts";
+import { SERVER_CONSOLE_ENV } from "./setup/server.ts";
 
 export interface PlaywrightOptions {
     port: number;
@@ -29,13 +29,18 @@ export const createConfig = ({
         testDir: "e2e",
         outputDir: ".playwright",
         forbidOnly: !!process.env.CI,
+        fullyParallel: true,
         reporter: "list",
-        globalTeardown: fileURLToPath(new URL("./teardown.ts", import.meta.url)),
+        globalTeardown: fileURLToPath(new URL("./setup/teardown.ts", import.meta.url)),
         use: { baseURL },
-        projects: widths.map((width) => ({
+        projects: widths.map((width, index) => ({
             name: `${width}px`,
             use: { browserName: "chromium", viewport: { width, height: 900 } },
-            grepInvert: width >= desktopFrom ? /@mobile/ : /@desktop/,
+            grepInvert: new RegExp(
+                [width >= desktopFrom ? "@mobile" : "@desktop", index > 0 && "@any-width"]
+                    .filter(Boolean)
+                    .join("|"),
+            ),
         })),
         webServer: {
             command,

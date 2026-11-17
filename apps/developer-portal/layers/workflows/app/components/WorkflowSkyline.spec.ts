@@ -35,7 +35,7 @@ describe("WorkflowSkyline", () => {
             props: { stages, selected: "build", highlight: "kit" },
         });
 
-        expect(wrapper.find("[aria-label^='Kit']").classes()).toContain("is-highlighted");
-        expect(wrapper.find("[aria-label^='Cutover']").classes()).not.toContain("is-highlighted");
+        expect(wrapper.find("[aria-label^='Kit']").attributes("aria-pressed")).toBe("true");
+        expect(wrapper.find("[aria-label^='Cutover']").attributes("aria-pressed")).toBe("false");
     });
 });

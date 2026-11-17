@@ -1,37 +1,46 @@
-import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { defineComponent } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useWiki } from "./useWiki.ts";
 
-const query = vi.hoisted(() => vi.fn());
-const chain = vi.hoisted(() => ({ select: vi.fn(), all: vi.fn() }));
-mockNuxtImport("queryCollection", () => query);
-const Harness = defineComponent({
-    setup: () => {
-        clearNuxtData("wiki");
-        return useWiki();
-    },
-    template: "<div />",
+// An in-memory docs collection that records which fields a query asked for
+const docs = vi.hoisted(() => ({
+    entries: [] as { path: string; title: string }[],
+    selected: [] as string[],
+}));
+
+mockNuxtImport("queryCollection", () => () => {
+    const query = {
+        select: (...fields: string[]) => {
+            docs.selected = fields;
+            return query;
+        },
+        all: () => Promise.resolve(docs.entries),
+    };
+    return query;
 });
 
+const use = async () =>
+    (
+        await withSetup(() => {
+            clearNuxtData("wiki");
+            return useWiki();
+        })
+    ).value;
+
 beforeEach(() => {
-    vi.clearAllMocks();
-    chain.select.mockReturnValue(chain);
-    chain.all.mockResolvedValue([
+    docs.selected = [];
+    docs.entries = [
         { path: "README.md", title: "README" },
         { path: "docs/README.md", title: "Docs" },
-    ]);
-    query.mockReturnValue(chain);
+    ];
 });
 
 describe("useWiki", () => {
-    it("selects only navigation fields and builds the shared wiki tree", async () => {
-        const wrapper = await mountSuspended(Harness);
+    it("builds the wiki tree from the docs collection", async () => {
+        const { data } = await use();
 
-        expect(query).toHaveBeenCalledWith("docs");
-        expect(chain.select).toHaveBeenCalledWith("path", "title");
-        expect(wrapper.vm.data).toEqual(
+        expect(data.value).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({ id: "workspace" }),
                 expect.objectContaining({ id: "docs" }),
@@ -39,11 +48,17 @@ describe("useWiki", () => {
         );
     });
 
-    it("starts with an empty navigation array and the shared wiki key", async () => {
-        chain.all.mockResolvedValue([]);
-        const wrapper = await mountSuspended(Harness);
+    // Every page's payload carries the tree, so a page body in it would ship the whole wiki
+    it("reads only the path and title of each page", async () => {
+        await use();
 
-        expect(wrapper.vm.data).toEqual([]);
-        expect(wrapper.vm).toHaveProperty("status");
+        expect(docs.selected).toEqual(["path", "title"]);
+    });
+
+    it("builds an empty tree from an empty collection", async () => {
+        docs.entries = [];
+        const { data } = await use();
+
+        expect(data.value).toEqual([]);
     });
 });

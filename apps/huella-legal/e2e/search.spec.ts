@@ -1,10 +1,9 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect, NOT_FOUND_DOCUMENT, test } from "@monorepo/configs/playwright/test";
+import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { expect, NOT_FOUND_DOCUMENT, test } from "@monorepo/configs/playwright/utils/test";
+import { t } from "./copy.ts";
 import type { Page } from "@playwright/test";
 import { MAX_SEARCH_LENGTH } from "@monorepo/content";
 import { SOUGHT } from "./fakes.ts";
-
-const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 
 const MISSING = "kardashov";
 
@@ -18,7 +17,7 @@ test("a search lists every post that matches, under its count and query", async 
     const response = await page.goto(`/buscar/?query=${SOUGHT}`);
 
     expect(response?.status()).toBe(200);
-    await expect(page.getByRole("searchbox", { name: "Buscar" })).toHaveValue(SOUGHT);
+    await expect(page.getByRole("searchbox", { name: t("searchForm.label") })).toHaveValue(SOUGHT);
     await expect(page.getByRole("heading", { level: 2 })).toHaveText(
         `2 resultados para «${SOUGHT}»`,
     );
@@ -38,7 +37,7 @@ test("a search with no match says so and offers subjects to browse instead", asy
 test("the page with no query invites a search instead of listing anything", async ({ page }) => {
     await page.goto("/buscar/");
 
-    await expect(page.getByRole("searchbox", { name: "Buscar" })).toHaveValue("");
+    await expect(page.getByRole("searchbox", { name: t("searchForm.label") })).toHaveValue("");
     await expect(page.getByText("Escribe una o varias palabras")).toBeVisible();
     await expect(page.getByRole("main").getByRole("article")).toHaveCount(0);
 });
@@ -48,7 +47,7 @@ test("submitting the form puts the query in the URL, so a search can be shared",
 }) => {
     await page.goto("/buscar/");
 
-    const searchbox = page.getByRole("searchbox", { name: "Buscar" });
+    const searchbox = page.getByRole("searchbox", { name: t("searchForm.label") });
 
     // Hydration empties anything typed before it, so the runner retries
     await expect(async () => {
@@ -67,11 +66,14 @@ interface Animatable {
 const openSearch = async (page: Page) => {
     await page.goto("/");
 
-    const dialog = page.getByRole("dialog", { name: "Buscar en Huella Legal" });
+    const dialog = page.getByRole("dialog", { name: t("searchPalette.label") });
 
     // Before hydration the button is still a link to /buscar/, so the runner retries
     await expect(async () => {
-        await page.getByRole("banner").getByRole("link", { name: "Buscar" }).click();
+        await page
+            .getByRole("banner")
+            .getByRole("link", { name: t("searchDialog.open") })
+            .click();
         await expect(dialog).toBeVisible({ timeout: 1000 });
     }).toPass();
 
@@ -104,7 +106,7 @@ test("Enter right after typing opens the results page for the whole query", asyn
 test("the open search dialog has no WCAG AA violations", async ({ page }) => {
     await page.goto("/");
 
-    const dialog = page.getByRole("dialog", { name: "Buscar en Huella Legal" });
+    const dialog = page.getByRole("dialog", { name: t("searchPalette.label") });
 
     await expect(async () => {
         await page.keyboard.press("/");
@@ -121,22 +123,18 @@ test("the open search dialog has no WCAG AA violations", async ({ page }) => {
         ),
     );
 
-    const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
-    expect(violations).toEqual([]);
+    await expectNoAxeViolations(page);
 });
 
 for (const { name, path } of STATES) {
     test(`the ${name} state has no WCAG AA violations`, async ({ page }, testInfo) => {
         await page.goto(path);
 
-        const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
         await testInfo.attach(`buscar-${name}-${testInfo.project.name}`, {
             body: await page.screenshot({ fullPage: true }),
             contentType: "image/png",
         });
-        expect(violations).toEqual([]);
+        await expectNoAxeViolations(page);
     });
 }
 

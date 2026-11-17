@@ -1,10 +1,9 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@monorepo/configs/playwright/test";
+import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { expect, test } from "@monorepo/configs/playwright/utils/test";
+import { t } from "./copy.ts";
 import type { Page } from "@playwright/test";
 import { answerWith, expectEmptyFormRefused } from "./forms.ts";
 import { TURNSTILE_SCRIPT, TURNSTILE_SCRIPT_PATTERN } from "./vendors.ts";
-
-const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 
 const PATH = "/publicar/";
 
@@ -15,16 +14,18 @@ const ENDPOINT = "/api/submissions";
 const send = async (page: Page, settled: () => Promise<void>) => {
     // CI's runner can type before hydration, which a server-rendered form then drops on submit
     await expect(async () => {
-        await page.getByRole("textbox", { name: "Nombre y apellidos" }).fill("Lucía Pérez");
-        await page.getByRole("textbox", { name: "Correo electrónico" }).fill("lucia@ejemplo.test");
-        await page.getByRole("textbox", { name: "Resumen" }).fill(SUMMARY);
+        await page.getByRole("textbox", { name: t("publishForm.name.label") }).fill("Lucía Pérez");
+        await page
+            .getByRole("textbox", { name: t("publishForm.email.label") })
+            .fill("lucia@ejemplo.test");
+        await page.getByRole("textbox", { name: t("publishForm.summary.label") }).fill(SUMMARY);
         await page.locator("input[type=file]").setInputFiles({
             name: "borrador.docx",
             mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             buffer: Buffer.from([0x50, 0x4b, 0x03, 0x04]),
         });
         await page.getByRole("checkbox").check();
-        await page.getByRole("button", { name: "Enviar propuesta" }).click();
+        await page.getByRole("button", { name: t("publishForm.submit") }).click();
 
         await settled();
     }).toPass();
@@ -65,7 +66,7 @@ test("sends a proposal with its draft and confirms it in place of the form", asy
     });
     await page.goto(PATH);
 
-    const confirmation = page.getByRole("heading", { name: "Propuesta enviada" });
+    const confirmation = page.getByRole("heading", { name: t("publishForm.success.title") });
 
     await send(page, () => expect(confirmation).toBeVisible({ timeout: 2000 }));
 
@@ -113,11 +114,11 @@ test.describe("a refused send", () => {
             expect(alert).toContainText("No hemos podido enviar tu propuesta", { timeout: 2000 }),
         );
 
-        await expect(page.getByRole("textbox", { name: "Resumen" })).toHaveValue(SUMMARY);
+        await expect(
+            page.getByRole("textbox", { name: t("publishForm.summary.label") }),
+        ).toHaveValue(SUMMARY);
 
-        const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
-        expect(violations).toEqual([]);
+        await expectNoAxeViolations(page);
     });
 });
 
@@ -126,11 +127,11 @@ test("the footer's thesis link lands on the thesis card", async ({ page }) => {
 
     await page
         .getByRole("contentinfo")
-        .getByRole("link", { name: "Publicar un TFG o TFM" })
+        .getByRole("link", { name: t("app.footer.links.publishThesis") })
         .click();
 
     await expect(page).toHaveURL(/\/publicar\/#tesis$/);
-    await expect(page.getByRole("heading", { name: "¿Es un TFG o un TFM?" })).toBeInViewport();
+    await expect(page.getByRole("heading", { name: t("publish.thesis.title") })).toBeInViewport();
 });
 
 test("the page fits the viewport without scrolling sideways", async ({ page }) => {
@@ -146,11 +147,9 @@ test("the page fits the viewport without scrolling sideways", async ({ page }) =
 test("the publish page has no WCAG AA violations", async ({ page }, testInfo) => {
     await page.goto(PATH);
 
-    const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
     await testInfo.attach(`publicar-${testInfo.project.name}`, {
         body: await page.screenshot({ fullPage: true }),
         contentType: "image/png",
     });
-    expect(violations).toEqual([]);
+    await expectNoAxeViolations(page);
 });

@@ -1,6 +1,6 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
+import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent } from "vue";
 import { useRouter, type RouteLocationRaw } from "vue-router";
 import { useSiteNav } from "./useSiteNav";
 
@@ -18,22 +18,21 @@ mockNuxtImport("useRuntimeConfig", (original) => () => {
 });
 
 const navAt = async (route: string) => {
-    let nav!: ReturnType<typeof useSiteNav>;
-    let href!: (to: RouteLocationRaw) => string;
+    const { value } = await withSetup(
+        () => {
+            const nav = useSiteNav(cookies);
+            const router = useRouter();
 
-    await mountSuspended(
-        defineComponent({
-            setup: () => {
-                nav = useSiteNav(cookies);
-                const router = useRouter();
-                href = (to) => (typeof to === "string" ? to : router.resolve(to).href);
-                return () => null;
-            },
-        }),
+            return {
+                nav,
+                href: (to: RouteLocationRaw) =>
+                    typeof to === "string" ? to : router.resolve(to).href,
+            };
+        },
         { route },
     );
 
-    return Object.assign(nav, { href });
+    return Object.assign(value.nav, { href: value.href });
 };
 
 const currentOf = (nav: ReturnType<typeof useSiteNav>) =>

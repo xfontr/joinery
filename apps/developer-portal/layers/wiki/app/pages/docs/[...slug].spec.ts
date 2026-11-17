@@ -1,107 +1,124 @@
-import { mountSuspended, mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { reactive, ref } from "vue";
+import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
+import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import Page from "./[...slug].vue";
 
-const state = vi.hoisted(() => ({
-    route: null as { params: { slug: string[] } } | null,
-    sections: null as unknown,
-    snapshot: null as unknown,
-    page: null as { value: unknown } | null,
+// An in-memory docs collection, answering useWiki's listing and the page's own lookup
+const docs = vi.hoisted(() => ({
+    entries: [] as { path: string; title: string; body?: unknown }[],
 }));
-mockNuxtImport("useRoute", () => () => state.route);
-mockNuxtImport("useWiki", () => () => ({ data: state.sections }));
-mockNuxtImport("useSnapshot", () => () => ({ data: state.snapshot }));
-mockNuxtImport("useAsyncData", () => () => ({ data: state.page }));
+
+mockNuxtImport("queryCollection", () => () => {
+    const query = {
+        select: () => query,
+        all: () => Promise.resolve(docs.entries),
+        path: (path: string) => ({
+            first: () => Promise.resolve(docs.entries.find((entry) => entry.path === path) ?? null),
+        }),
+    };
+    return query;
+});
+
+// Only a server render can set a status; the prerender crawler is what reads it
 const setStatus = vi.hoisted(() => vi.fn());
 mockNuxtImport("setResponseStatus", () => setStatus);
 
 const global = {
     stubs: {
-        UDashboardPanel: {
-            template: "<section><slot name='header' /><slot name='body' /></section>",
-        },
-        UDashboardNavbar: { template: "<header><slot name='right' /></header>" },
-        UDashboardSidebarCollapse: true,
-        WikiNav: true,
-        UBreadcrumb: {
-            props: { items: Array },
-            template: "<nav>{{ items?.map(item => item.label).join(' / ') }}</nav>",
-        },
-        UAlert: {
-            props: { title: String, description: String },
-            template: "<div class='alert'>{{ title }} {{ description }}</div>",
-        },
-        UPageBody: { template: "<div><slot /></div>" },
         ContentRenderer: { props: { value: Object }, template: "<div>{{ value?.title }}</div>" },
-        USeparator: true,
-        UContentToc: { template: "<aside>toc</aside>" },
-        NuxtLink: { props: { to: String }, template: "<a :href='to'><slot /></a>" },
     },
 };
 
+const page = (path: string, overrides: Partial<DocPage> = {}): DocPage => ({
+    path,
+    kind: "doc",
+    title: path,
+    words: 10,
+    updatedAt: "2026-09-20",
+    decisionStatus: null,
+    decisionOutcome: null,
+    decisionSupersededBy: null,
+    audit: null,
+    brokenLinks: [],
+    ...overrides,
+});
+
+const serve = (pages: DocPage[]) => {
+    serveEndpoint("/api/snapshot/docs", (): SnapshotResponse => ({
+        manifest: null,
+        docs: { generatedAt: "2026-11-01T00:00:00Z", pages, brokenLinkCount: 0 },
+    }));
+};
+
+const FIRST_HOUR = "/docs/docs/guides/first-hour";
+
 beforeEach(() => {
-    state.route = reactive({ params: { slug: ["docs", "guides", "first-hour"] } });
-    state.sections = ref([
-        {
-            id: "docs",
-            label: "Docs",
-            icon: "",
-            groups: [
-                {
-                    key: "guides",
-                    label: "Guides",
-                    entries: [
-                        { path: "/docs/guides/first-hour", label: "First hour", kind: "doc" },
-                        { path: "/docs/guides/next", label: "Next", kind: "doc" },
-                    ],
-                },
-            ],
-        },
-    ]);
-    state.snapshot = ref({
-        docs: {
-            pages: [
-                {
-                    path: "docs/guides/first-hour.md",
-                    words: 10,
-                    updatedAt: "2026-09-20",
-                    brokenLinks: [{ href: "./missing" }],
-                },
-            ],
-        },
-    });
-    state.page = ref({ title: "First hour", body: { toc: { links: [{ id: "intro" }] } } });
     setStatus.mockClear();
+    docs.entries = [
+        {
+            path: "/docs/guides/first-hour",
+            title: "First hour",
+            body: { toc: { links: [{ id: "intro", depth: 2, text: "Intro" }] } },
+        },
+        { path: "/docs/guides/next", title: "Next" },
+    ];
+    serve([
+        page("docs/guides/first-hour.md", {
+            brokenLinks: [{ href: "./missing", resolved: "docs/guides/missing.md" }],
+        }),
+    ]);
 });
 
 describe("doc detail page", () => {
     it("answers a missing page with a 404 so the prerender crawler fails on a dead link", async () => {
-        state.page = ref(null);
-        await mountSuspended(Page, { global });
+        await mountSuspended(Page, { global, route: "/docs/docs/guides/nope" });
+
         expect(setStatus).toHaveBeenCalledWith(404);
     });
 
     it("leaves a found page on 200", async () => {
-        await mountSuspended(Page, { global });
+        await mountSuspended(Page, { global, route: FIRST_HOUR });
+
         expect(setStatus).not.toHaveBeenCalled();
     });
 
-    it("renders breadcrumbs, broken links, table of contents and in-group neighbours", async () => {
-        const wrapper = await mountSuspended(Page, { global });
-        expect(wrapper.text()).toContain("Docs");
+    it("warns about the page's broken links, naming each one", async () => {
+        const wrapper = await mountSuspended(Page, { global, route: FIRST_HOUR });
+
         expect(wrapper.text()).toContain("This page links to something that is not there");
-        expect(wrapper.text()).toContain("toc");
+        expect(wrapper.text()).toContain("./missing");
+    });
+
+    it("links the next page in the same group", async () => {
+        const wrapper = await mountSuspended(Page, { global, route: FIRST_HOUR });
+
         expect(wrapper.find("a[href='/docs/docs/guides/next']").exists()).toBe(true);
     });
 
-    it("renders not found and tracks a changed route parameter", async () => {
-        state.page = ref(null);
-        const wrapper = await mountSuspended(Page, { global });
+    it("hands the page's headings to the table of contents", async () => {
+        const wrapper = await mountSuspended(Page, { global, route: FIRST_HOUR });
+
+        expect(wrapper.findComponent({ name: "UContentToc" }).props("links")).toEqual([
+            { id: "intro", depth: 2, text: "Intro" },
+        ]);
+    });
+
+    it("says there is no such page instead of rendering an empty one", async () => {
+        const wrapper = await mountSuspended(Page, { global, route: "/docs/docs/guides/nope" });
+
         expect(wrapper.text()).toContain("No such page");
-        state.route!.params.slug = ["docs", "guides", "next"];
-        state.page!.value = { title: "Next" };
-        await wrapper.vm.$nextTick();
-        expect(wrapper.text()).toContain("Next");
+    });
+
+    it("loads the new page when the route changes under it", async () => {
+        const wrapper = await mountSuspended(Page, { global, route: FIRST_HOUR });
+
+        await useRouter().push("/docs/docs/guides/next");
+        await flushPromises();
+
+        expect(wrapper.text()).toContain("docs/guides/next.md");
+        expect(wrapper.find("a[href='/docs/docs/guides/first-hour']").exists()).toBe(true);
     });
 });

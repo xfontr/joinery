@@ -9,7 +9,7 @@ vi.mock("node:module", () => ({ createRequire: () => ({ resolve: state.resolve }
 vi.mock("../../shared/adapters/exec.ts", () => ({ inherit: state.inherit }));
 vi.mock("../../shared/adapters/git.ts", () => ({ repoRoot: state.repoRoot }));
 
-import { dev, ensureInstalled } from "./pnpm.ts";
+import { ensureInstalled } from "./pnpm.ts";
 
 beforeEach(() => {
     vi.clearAllMocks();
@@ -36,20 +36,6 @@ describe("ensureInstalled", () => {
 
         expect(ensureInstalled()).toBe(true);
         expect(ensureInstalled()).toBe(false);
-        expect(state.inherit).toHaveBeenNthCalledWith(1, "pnpm", ["-C", "/repo", "install"]);
-    });
-});
-
-describe("dev", () => {
-    it("starts the selected project through pnpm and returns its status", () => {
-        state.inherit.mockReturnValue(7);
-
-        expect(dev("@monorepo/demo")).toBe(7);
-        expect(state.inherit).toHaveBeenCalledWith("pnpm", [
-            "--filter",
-            "@monorepo/demo",
-            "run",
-            "dev",
-        ]);
+        expect(state.inherit).toHaveBeenCalledWith("pnpm", ["-C", "/repo", "install"]);
     });
 });

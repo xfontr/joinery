@@ -1,225 +1,281 @@
-import { mountSuspended, mockNuxtImport } from "@nuxt/test-utils/runtime";
+import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { ref } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { IssuesRead } from "#layers/github/shared/issues.ts";
+import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
+import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
+import type { Snapshot } from "#layers/workflows/shared/types/Snapshot.ts";
+import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import Page from "./index.vue";
 
-const state = vi.hoisted(() => ({
-    snapshots: {} as Record<string, { value: unknown }>,
-    issues: null as { value: unknown } | null,
-    readmes: [] as unknown[],
-    workflows: { templates: [], projects: [] as unknown[], problems: [] },
-    asyncData: vi.fn(),
-    query: vi.fn(),
+// An in-memory docs collection, answering the README query the page sends
+const docs = vi.hoisted(() => ({
+    readmes: [] as { path: string; title: string; description: string }[],
 }));
-mockNuxtImport("useSnapshot", () => (name: string) => ({ data: state.snapshots[name] }));
-mockNuxtImport("useIssues", () => () => ({ data: state.issues }));
-mockNuxtImport("useAsyncData", () => state.asyncData);
-mockNuxtImport("queryCollection", () => state.query);
-mockNuxtImport("useWorkflows", () => () => ({ data: ref(state.workflows) }));
 
-const Panel = { template: "<section><slot name='header' /><slot name='body' /></section>" };
-const Card = { template: "<article><slot name='header' /><slot /></article>" };
-const Alert = {
-    props: { title: String, description: String },
-    template: "<div class='alert'>{{ title }} {{ description }}<slot /></div>",
-};
-const Tile = {
-    props: { label: String, value: [String, Number], hint: String },
-    template: "<div class='tile'>{{ label }} {{ value }} {{ hint }}</div>",
-};
-const Button = { props: { to: String, label: String }, template: "<a :href='to'>{{ label }}</a>" };
-const Issue = { props: { issue: Object }, template: "<div class='issue'>{{ issue.title }}</div>" };
-const Snapshot = {
-    props: { manifest: Object },
-    template: "<div class='age'>{{ manifest?.commit }}</div>",
-};
+// GitHub is read straight from the browser, so the github layer's composable is the boundary
+const github = vi.hoisted(() => ({ read: null as unknown }));
 
+mockNuxtImport("queryCollection", () => () => {
+    const query = { select: () => query, all: () => Promise.resolve(docs.readmes) };
+    return query;
+});
+
+mockNuxtImport("useIssues", () => () => ({ data: github.read }));
+
+// Each row has its own spec; here only which issues the page picks
 const global = {
     stubs: {
-        UDashboardPanel: Panel,
-        UDashboardNavbar: {
-            props: { title: String },
-            template: "<header>{{ title }}<slot name='right' /></header>",
-        },
-        UDashboardSidebarCollapse: true,
-        UCard: Card,
-        UAlert: Alert,
-        StatTile: Tile,
-        UButton: Button,
-        HealthIssueRow: Issue,
-        SnapshotAge: Snapshot,
-        UIcon: true,
-        WorkflowCard: {
-            props: { project: Object },
-            template: '<a :href="`/workflows/${project.project.id}`" />',
-        },
-        UBadge: { props: { label: String }, template: "<span>{{ label }}</span>" },
-        NuxtLink: Button,
+        HealthIssueRow: { props: { issue: Object }, template: "<div>{{ issue.title }}</div>" },
     },
 };
 
-beforeEach(() => {
-    vi.clearAllMocks();
-    const query = { select: vi.fn(), all: vi.fn().mockImplementation(() => state.readmes) };
-    query.select.mockReturnValue(query);
-    state.query.mockReturnValue(query);
-    state.asyncData.mockImplementation((_key: string, handler: () => unknown) => ({
-        data: ref(handler()),
-    }));
-    state.readmes = [];
-    state.workflows = { templates: [], projects: [], problems: [] };
-    state.snapshots = {
-        projects: ref({ projects: { projects: [] } }),
-        coverage: ref({ coverage: { totals: { lines: 82 } } }),
-        docs: ref({ docs: { pages: [], brokenLinkCount: 0 } }),
-        deps: ref({
-            deps: {
-                vulnerabilities: { info: 0, low: 0, moderate: 0, high: 0, critical: 0 },
-                advisories: [],
+type Artifacts = Omit<SnapshotResponse, "manifest">;
+
+const app = (name: string): ProjectNode => ({
+    name: `@monorepo/${name}`,
+    root: `apps/${name}`,
+    tags: [],
+    dependsOn: [],
+    dependedOnBy: [],
+});
+
+const TEMPLATE = {
+    id: "website-rebuild",
+    title: "Website",
+    stages: [{ id: "build", title: "Build" }],
+    capabilities: [{ id: "page", stage: "build", title: "Page" }],
+};
+
+const workflowProject = (id: string) => ({
+    file: `projects/${id}.json`,
+    ok: true as const,
+    value: { id, title: id, template: "website-rebuild", milestone: id, switches: {} },
+});
+
+const doneSnapshot = (id: string) => ({
+    file: `snapshots/${id}.json`,
+    ok: true as const,
+    value: {
+        syncedAt: "2026-11-01T00:00:00Z",
+        milestone: id,
+        issues: [
+            {
+                number: 1,
+                title: "Page",
+                url: "",
+                state: "closed",
+                reason: "completed",
+                caps: ["page"],
+                createdAt: "2026-10-01",
+                closedAt: "2026-11-01",
+                activity: [],
+                blockedBy: [],
+                branch: false,
+                pr: false,
+                owner: false,
+                complexity: null,
             },
-        }),
-        metrics: ref({ metrics: { invariantFindings: [] } }),
-        usage: ref(null),
-    };
-    state.issues = ref({ issues: [], error: null, fetchedAt: "" });
+        ],
+        noMilestone: [],
+    } satisfies Snapshot,
+});
+
+const serve = (artifacts: Artifacts, workflows = assembleWorkflows([], [], {})) => {
+    for (const artifact of ["projects", "coverage", "docs", "deps", "metrics", "usage"] as const) {
+        serveEndpoint(`/api/snapshot/${artifact}`, (): SnapshotResponse => ({
+            manifest: null,
+            [artifact]: artifacts[artifact] ?? null,
+        }));
+    }
+    serveEndpoint("/api/workflows", () => workflows);
+};
+
+const open = async () => {
+    const wrapper = await mountSuspended(Page, { global });
+    await flushPromises();
+    return wrapper;
+};
+
+const tiles = (wrapper: VueWrapper) =>
+    Object.fromEntries(
+        wrapper
+            .findAllComponents({ name: "StatTile" })
+            .map((tile) => [tile.props("label"), tile.props()]),
+    );
+
+const hrefs = (wrapper: VueWrapper) => wrapper.findAll("a").map((a) => a.attributes("href"));
+
+const projects = (nodes: ProjectNode[]): Artifacts => ({
+    projects: { generatedAt: "2026-11-01T00:00:00Z", projects: nodes, retired: [] },
+});
+
+beforeEach(() => {
+    docs.readmes = [];
+    github.read = ref<IssuesRead>({ fetchedAt: "2026-11-01", error: null, issues: [] });
 });
 
 describe("overview page", () => {
-    it("loads repository metadata, features applications, and links newcomer routes", async () => {
-        state.readmes = [
-            {
-                path: "/readme",
-                title: "Repository overview",
-                description: "What this repository contains.",
-            },
-            {
-                path: "/apps/huella-legal/readme",
-                title: "Huella Legal",
-                description: "The legal app.",
-            },
+    it("introduces the repository from its README and links the newcomer routes", async () => {
+        docs.readmes = [
+            { path: "/readme", title: "Repository overview", description: "What it holds." },
         ];
-        state.snapshots.projects!.value = {
-            projects: {
-                projects: [
-                    {
-                        name: "@monorepo/huella-legal",
-                        root: "apps/huella-legal",
-                        tags: [],
-                        dependsOn: [],
-                        dependedOnBy: [],
-                    },
-                    {
-                        name: "@monorepo/ui",
-                        root: "packages/ui",
-                        tags: [],
-                        dependsOn: [],
-                        dependedOnBy: [],
-                    },
-                ],
-            },
-        };
-        const wrapper = await mountSuspended(Page, { global });
+        serve({});
+        const wrapper = await open();
 
-        expect(state.query).toHaveBeenCalledWith("docs");
         expect(wrapper.text()).toContain("Repository overview");
-        expect(wrapper.text()).toContain("What this repository contains.");
+        expect(wrapper.text()).toContain("What it holds.");
+        expect(hrefs(wrapper)).toEqual(
+            expect.arrayContaining(["/projects", "/graph", "/docs/docs/guides/first-hour"]),
+        );
+    });
+
+    it("features applications, titled by their README, and never a package", async () => {
+        docs.readmes = [
+            { path: "/apps/huella-legal/readme", title: "Huella Legal", description: "Law." },
+        ];
+        serve(
+            projects([
+                app("huella-legal"),
+                { ...app("ui"), name: "@monorepo/ui", root: "packages/ui" },
+            ]),
+        );
+        const wrapper = await open();
+
         expect(wrapper.text()).toContain("Huella Legal");
+        expect(hrefs(wrapper)).toContain("/docs/apps/huella-legal/readme");
         expect(wrapper.text()).not.toContain("@monorepo/ui");
-        expect(wrapper.find("a[href='/projects']").exists()).toBe(true);
-        expect(wrapper.find("a[href='/graph']").exists()).toBe(true);
-        expect(wrapper.find("a[href='/docs/docs/guides/first-hour']").exists()).toBe(true);
-        expect(wrapper.find("a[href='/docs/apps/huella-legal/readme']").exists()).toBe(true);
-    });
-
-    it("uses honest repository and project fallbacks when README metadata is absent", async () => {
-        state.snapshots.projects!.value = {
-            projects: {
-                projects: [
-                    {
-                        name: "@monorepo/huella-legal",
-                        root: "apps/huella-legal",
-                        tags: [],
-                        dependsOn: [],
-                        dependedOnBy: [],
-                    },
-                ],
-            },
-        };
-        const wrapper = await mountSuspended(Page, { global });
-
-        expect(wrapper.text()).toContain("Monorepo");
-        expect(wrapper.text()).toContain("The repository summary is not available yet.");
-        expect(wrapper.text()).toContain("No project description is available yet.");
-    });
-
-    it("uses absent markers for missing collected sections instead of inventing values", async () => {
-        state.snapshots.coverage!.value = {};
-        state.snapshots.docs!.value = {};
-        state.snapshots.deps!.value = {};
-        const wrapper = await mountSuspended(Page, { global });
-
-        expect(wrapper.text()).toContain("—");
-        expect(wrapper.text()).toContain("not collected");
-    });
-
-    it("feeds collected artifacts into overview tiles and surfaces findings and live issue failures", async () => {
-        state.snapshots.docs!.value = {
-            docs: {
-                pages: [{ path: "docs/a.md", brokenLinks: [{ href: "./missing" }] }],
-                brokenLinkCount: 1,
-            },
-        };
-        state.snapshots.metrics!.value = {
-            metrics: { invariantFindings: [{ id: "drift", title: "Drift", detail: "Fix it" }] },
-        };
-        state.issues!.value = {
-            issues: [{ number: 4, title: "Open issue" }],
-            error: "GitHub offline",
-            fetchedAt: "",
-        };
-        const wrapper = await mountSuspended(Page, { global });
-
-        expect(wrapper.text()).toContain("82%");
-        expect(wrapper.text()).toContain("Drift");
-        expect(wrapper.text()).toContain("GitHub could not be read");
-        expect(wrapper.text()).toContain("Open issue");
-        expect(wrapper.find("a[href='/docs/docs/a']").exists()).toBe(true);
     });
 
     it("features at most two applications", async () => {
-        const app = (name: string) => ({
-            name: `@monorepo/${name}`,
-            root: `apps/${name}`,
-            tags: [],
-            dependsOn: [],
-            dependedOnBy: [],
-        });
-        state.snapshots.projects!.value = {
-            projects: { projects: [app("one"), app("two"), app("three")] },
-        };
-        const wrapper = await mountSuspended(Page, { global });
+        serve(projects([app("one"), app("two"), app("three")]));
+        const wrapper = await open();
 
         expect(wrapper.text()).toContain("@monorepo/two");
         expect(wrapper.text()).not.toContain("@monorepo/three");
     });
 
-    it("lists only unfinished workflows and always offers a new one", async () => {
-        const workflow = (id: string, percent: number) => ({
-            project: { id, title: `Project ${id}` },
-            template: { title: "Website" },
-            counts: { "waiting-on-you": 1, ready: 2 },
-            progress: { done: 1, total: 4, percent },
-        });
-        state.workflows.projects = [workflow("live", 25), workflow("shipped", 100)];
-        const wrapper = await mountSuspended(Page, { global });
+    it("says the summaries are missing instead of inventing them", async () => {
+        serve(projects([app("huella-legal")]));
+        const wrapper = await open();
 
-        expect(wrapper.find("a[href='/workflows/live']").exists()).toBe(true);
-        expect(wrapper.find("a[href='/workflows/shipped']").exists()).toBe(false);
-        expect(wrapper.find("a[href='/workflows/new']").exists()).toBe(true);
+        expect(wrapper.text()).toContain("The repository summary is not available yet.");
+        expect(wrapper.text()).toContain("No project description is available yet.");
+    });
+
+    it("shows a dash on every tile whose artifact was never collected", async () => {
+        serve({});
+        const wrapper = await open();
+
+        expect(tiles(wrapper)).toMatchObject({
+            Docs: { value: "—" },
+            "Line coverage": { value: "—" },
+            Vulnerabilities: { value: "—" },
+        });
+    });
+
+    it("feeds the collected coverage and the live issue count into their tiles", async () => {
+        github.read = ref<IssuesRead>({
+            fetchedAt: "2026-11-01",
+            error: null,
+            issues: [
+                {
+                    number: 4,
+                    title: "Open issue",
+                    body: "",
+                    url: "",
+                    labels: [],
+                    assignees: [],
+                    createdAt: "2026-11-01",
+                    updatedAt: "2026-11-01",
+                },
+            ],
+        });
+        serve({
+            coverage: {
+                generatedAt: "2026-11-01T00:00:00Z",
+                totals: { lines: 82, statements: 0, functions: 0, branches: 0 },
+                report: false,
+                projects: [],
+            },
+        });
+        const wrapper = await open();
+
+        expect(tiles(wrapper)["Line coverage"]).toMatchObject({ value: "82%" });
+        expect(tiles(wrapper)["Open issues"]).toMatchObject({ value: 1 });
+        expect(wrapper.text()).toContain("Open issue");
+    });
+
+    it("blanks the issue count and says why when GitHub cannot be read", async () => {
+        github.read = ref<IssuesRead>({ fetchedAt: "", error: "offline", issues: [] });
+        serve({});
+        const wrapper = await open();
+
+        expect(tiles(wrapper)["Open issues"]).toMatchObject({
+            value: "—",
+            hint: "GitHub could not be read",
+        });
+    });
+
+    it("links each page with a broken link and lists invariant findings for attention", async () => {
+        serve({
+            docs: {
+                generatedAt: "2026-11-01T00:00:00Z",
+                pages: [
+                    {
+                        path: "docs/a.md",
+                        kind: "doc",
+                        title: "A",
+                        words: 1,
+                        updatedAt: null,
+                        decisionStatus: null,
+                        decisionOutcome: null,
+                        decisionSupersededBy: null,
+                        audit: null,
+                        brokenLinks: [{ href: "./missing", resolved: "docs/missing.md" }],
+                    },
+                ],
+                brokenLinkCount: 1,
+            },
+            metrics: {
+                generatedAt: "2026-11-01T00:00:00Z",
+                commit: "abc",
+                branch: "master",
+                projects: [],
+                invariantFindings: [
+                    { id: "drift", title: "Drift", detail: "Fix it", evidence: [] },
+                ],
+                conventionalCommitRate: null,
+                commitsSinceLastRelease: null,
+            },
+        });
+        const wrapper = await open();
+
+        expect(hrefs(wrapper)).toContain("/docs/docs/a");
+        expect(wrapper.text()).toContain("Drift");
+    });
+
+    it("lists only unfinished workflows and always offers a new one", async () => {
+        serve(
+            {},
+            assembleWorkflows(
+                [{ file: "templates/website-rebuild.json", ok: true, value: TEMPLATE }],
+                [workflowProject("live"), workflowProject("shipped")],
+                { shipped: doneSnapshot("shipped") },
+            ),
+        );
+        const wrapper = await open();
+
+        expect(hrefs(wrapper)).toContain("/workflows/live");
+        expect(hrefs(wrapper)).not.toContain("/workflows/shipped");
+        expect(hrefs(wrapper)).toContain("/workflows/new");
     });
 
     it("still offers a new project when none is in progress", async () => {
-        const wrapper = await mountSuspended(Page, { global });
+        serve({});
+        const wrapper = await open();
 
         expect(wrapper.find("a[href='/workflows/new']").attributes("aria-label")).toBe(
             "New project",

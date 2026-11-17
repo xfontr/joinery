@@ -1,52 +1,51 @@
-import { mount } from "@vue/test-utils";
-import { defineComponent, ref } from "vue";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { serveEndpoint, withSetup } from "@monorepo/configs/vitest/utils/nuxt";
+import { flushPromises } from "@vue/test-utils";
+import { describe, expect, it } from "vitest";
+import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
+import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import { useDecisionReports } from "./useDecisionReports.ts";
 
-const state = vi.hoisted(() => ({ snapshot: null as { value: unknown } | null }));
-vi.mock("#layers/snapshot/app/composables/useSnapshot.ts", () => ({
-    useSnapshot: () => ({ data: state.snapshot }),
-}));
-state.snapshot = ref(null);
+const DECISION: DocPage = {
+    path: "docs/decisions/0007-use-a-cache.md",
+    kind: "decision",
+    title: "🧭 Use a cache",
+    words: 20,
+    updatedAt: "2026-09-20",
+    decisionStatus: "implemented",
+    decisionOutcome: "accepted",
+    decisionSupersededBy: null,
+    audit: null,
+    brokenLinks: [],
+};
 
-const Harness = defineComponent({
-    setup: () => ({ reports: useDecisionReports() }),
-    template: "<div />",
-});
+const serve = (docs: SnapshotResponse["docs"]) => {
+    serveEndpoint("/api/snapshot/docs", (): SnapshotResponse => ({
+        manifest: null,
+        docs,
+    }));
+};
 
-beforeEach(() => {
-    state.snapshot!.value = null;
-});
+const use = async () => (await withSetup(() => useDecisionReports())).value;
 
 describe("useDecisionReports", () => {
-    it("returns no reports while the docs snapshot is absent", () => {
-        const wrapper = mount(Harness);
+    it("returns no reports while the docs snapshot is absent", async () => {
+        serve(null);
+        const reports = await use();
+        await flushPromises();
 
-        expect(wrapper.vm.reports).toEqual([]);
+        expect(reports.value).toEqual([]);
     });
 
-    it("derives decision reports from pages and reacts when the snapshot changes", async () => {
-        const wrapper = mount(Harness);
-        state.snapshot!.value = {
-            docs: {
-                pages: [
-                    {
-                        path: "docs/decisions/0007-use-a-cache.md",
-                        kind: "decision",
-                        title: "🧭 Use a cache",
-                        words: 20,
-                        updatedAt: "2026-09-20",
-                        decisionStatus: "implemented",
-                        decisionOutcome: "accepted",
-                        decisionSupersededBy: null,
-                        brokenLinks: [],
-                    },
-                ] as never[],
-            },
-        };
-        await wrapper.vm.$nextTick();
+    it("derives a report from each decision page once the snapshot arrives", async () => {
+        serve({
+            generatedAt: "2026-11-01T00:00:00Z",
+            pages: [DECISION, { ...DECISION, path: "docs/guides/x.md", kind: "doc" }],
+            brokenLinkCount: 0,
+        });
+        const reports = await use();
+        await flushPromises();
 
-        expect(wrapper.vm.reports).toEqual([
+        expect(reports.value).toEqual([
             expect.objectContaining({ id: "0007-use-a-cache", title: "Use a cache" }),
         ]);
     });

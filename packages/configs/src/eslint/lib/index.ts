@@ -23,6 +23,7 @@ import configFiles from "./configFiles.ts";
 import pureDomain from "./pureDomain.ts";
 import routeMeta from "./routeMeta.ts";
 import tailwind from "./tailwind.ts";
+import i18nKeys from "./i18nKeys.ts";
 import regexp from "./regexp.ts";
 import awaitInLoop from "./awaitInLoop.ts";
 import ternaries from "./ternaries.ts";
@@ -73,6 +74,7 @@ export {
     baseIgnores,
     routeMeta,
     tailwind,
+    i18nKeys,
     layerBoundaries,
     pureDomain,
 };

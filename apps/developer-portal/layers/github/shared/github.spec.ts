@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { repoApiUrl } from "./github.ts";
+import { messageOf, repoApiUrl } from "./github.ts";
 
 describe("repoApiUrl", () => {
     it("turns a repository URL into the requested REST resource", () => {
@@ -24,5 +24,19 @@ describe("repoApiUrl", () => {
         expect(repoApiUrl("https://github.example/xfontr/monorepo", "deployments")).toContain(
             "/deployments",
         );
+    });
+});
+
+describe("messageOf", () => {
+    it("prefers GitHub's own API message and caps it at three hundred characters", () => {
+        expect(messageOf({ data: { message: "x".repeat(400) } }, "fallback")).toHaveLength(300);
+    });
+
+    it("falls back to the error's message when GitHub sent none", () => {
+        expect(messageOf(new Error("ordinary failure"), "fallback")).toBe("ordinary failure");
+    });
+
+    it("uses the fallback for a rejection that carries no message at all", () => {
+        expect(messageOf("unknown failure", "fallback")).toBe("fallback");
     });
 });

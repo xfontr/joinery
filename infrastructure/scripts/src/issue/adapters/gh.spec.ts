@@ -10,15 +10,7 @@ const ghApi = vi.hoisted(() => ({ gh: vi.fn() }));
 vi.mock("../../shared/adapters/cache.ts", () => cache);
 vi.mock("../../shared/adapters/gh.ts", () => ghApi);
 
-import {
-    assignToMe,
-    developBranch,
-    isOnline,
-    listIssues,
-    listLabels,
-    listProjects,
-    moveToInProgress,
-} from "./gh.ts";
+import { isOnline, listIssues, listLabels, listProjects } from "./gh.ts";
 
 beforeEach(() => {
     vi.resetAllMocks();
@@ -109,50 +101,5 @@ describe("issue lookup and mutations", () => {
             { number: 4, title: "Cached", url: "url", labels: [] },
         ]);
         expect(ghApi.gh).not.toHaveBeenCalled();
-    });
-
-    it("uses exact gh arguments for assignment, development and board movement", () => {
-        ghApi.gh.mockReturnValue("owner");
-
-        assignToMe(42);
-        developBranch(42, "feature/roadmap/42-fix");
-        moveToInProgress(
-            { title: "Roadmap", number: 7, url: "project" },
-            { number: 42, title: "Fix", url: "issue", labels: [] },
-        );
-
-        expect(ghApi.gh).toHaveBeenNthCalledWith(1, "issue", "edit", "42", "--add-assignee", "@me");
-        expect(ghApi.gh).toHaveBeenNthCalledWith(
-            2,
-            "issue",
-            "develop",
-            "42",
-            "--name",
-            "feature/roadmap/42-fix",
-            "--checkout",
-        );
-        expect(ghApi.gh).toHaveBeenNthCalledWith(
-            3,
-            "repo",
-            "view",
-            "--json",
-            "owner",
-            "--jq",
-            ".owner.login",
-        );
-        expect(ghApi.gh).toHaveBeenNthCalledWith(
-            4,
-            "project",
-            "item-edit",
-            "7",
-            "--owner",
-            "owner",
-            "--url",
-            "issue",
-            "--field",
-            "Status",
-            "--value",
-            "In Progress",
-        );
     });
 });

@@ -1,7 +1,8 @@
+import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
 import { fakeAuthor } from "@monorepo/content/testing";
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent, ref, type Ref } from "vue";
+import { ref, type Ref } from "vue";
 import { useScholarlyMeta } from "./useScholarlyMeta";
 
 const ARTICLE: Article = {
@@ -36,16 +37,7 @@ mockNuxtImport("useSchemaOrg", () => (input: Ref<Record<string, unknown>[]>) => 
     nuxt.schema = input;
 });
 
-const setUp = (article: Article | undefined) =>
-    mountSuspended(
-        defineComponent({
-            setup: () => {
-                useScholarlyMeta(ref(article));
-
-                return () => null;
-            },
-        }),
-    );
+const setUp = (article: Article | undefined) => withSetup(() => useScholarlyMeta(ref(article)));
 
 const meta = () => nuxt.head.meta?.() ?? [];
 

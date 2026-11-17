@@ -20,23 +20,10 @@ const gh = vi.hoisted(() => ({
     viewThread: vi.fn(),
 }));
 const git = vi.hoisted(() => ({ branchForIssue: vi.fn(), checkout: vi.fn() }));
-const io = vi.hoisted(() => ({
-    requireTerminal: vi.fn(),
-    out: {
-        begin: vi.fn(),
-        end: vi.fn(),
-        info: vi.fn(),
-        note: vi.fn(),
-        warn: vi.fn(),
-        success: vi.fn(),
-        error: vi.fn(),
-        spinner: vi.fn(() => ({ start: vi.fn(), stop: vi.fn(), message: vi.fn() })),
-    },
-}));
 vi.mock("@clack/prompts", () => prompts);
 vi.mock("./adapters/gh.ts", () => gh);
 vi.mock("./adapters/git.ts", () => git);
-vi.mock("../shared/adapters/io.ts", () => io);
+vi.mock("../shared/adapters/io.ts");
 vi.mock("../shared/adapters/prompts.ts", () => ({
     orExit: (value: unknown, message: string) => {
         if (value === state.cancel) throw new CancelledError(message);
@@ -45,6 +32,9 @@ vi.mock("../shared/adapters/prompts.ts", () => ({
 }));
 
 import { pick } from "./pick.ts";
+import * as ioModule from "../shared/adapters/io.ts";
+
+const io = vi.mocked(ioModule, true);
 
 const PROJECT = { title: "Roadmap", number: 7, url: "project" };
 const OTHER = { title: "Archive", number: 8, url: "archive" };
@@ -105,8 +95,7 @@ describe("issue pick", () => {
 
         await pick();
 
-        expect(gh.listProjects).toHaveBeenNthCalledWith(1);
-        expect(gh.listProjects).toHaveBeenNthCalledWith(2, true);
+        expect(gh.listProjects).toHaveBeenCalledWith(true);
         expect(gh.listIssues).toHaveBeenCalledWith("Roadmap", true);
         expect(io.out.warn).toHaveBeenCalledWith(expect.stringContaining("cached"));
     });
@@ -121,8 +110,7 @@ describe("issue pick", () => {
 
         await pick();
 
-        expect(gh.listIssues).toHaveBeenNthCalledWith(1, "Roadmap", false);
-        expect(gh.listIssues).toHaveBeenNthCalledWith(2, "Roadmap", true);
+        expect(gh.listIssues).toHaveBeenCalledWith("Roadmap", true);
         const issuePrompt = prompts.autocomplete.mock.calls[0]?.[0] as {
             filter: (search: string, option: { value: unknown }) => boolean;
         };
@@ -370,4 +358,8 @@ describe("issue pick <number>", () => {
         await expect(pick()).rejects.toThrow("No terminal");
         expect(prompts.select).not.toHaveBeenCalled();
     });
+});
+
+beforeEach(() => {
+    io.out.spinner.mockReturnValue({ start: vi.fn(), stop: vi.fn(), message: vi.fn() });
 });

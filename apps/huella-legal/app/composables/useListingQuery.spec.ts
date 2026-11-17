@@ -1,24 +1,18 @@
-import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
 import { describe, expect, it, vi } from "vitest";
-import { defineComponent } from "vue";
-import { useRouter, type Router } from "vue-router";
+import { useRouter } from "vue-router";
 import { useListingQuery } from "./useListingQuery";
 
 const queryAt = async (route: string) => {
-    let query!: ReturnType<typeof useListingQuery>;
-    let router!: Router;
+    const { value } = await withSetup(
+        () => {
+            const router = useRouter();
 
-    await mountSuspended(
-        defineComponent({
-            setup: () => {
-                router = useRouter();
-                query = useListingQuery({ page: "1", sort: "newest" });
-
-                return () => null;
-            },
-        }),
+            return { router, query: useListingQuery({ page: "1", sort: "newest" }) };
+        },
         { route },
     );
+    const { query, router } = value;
 
     return {
         ...query,

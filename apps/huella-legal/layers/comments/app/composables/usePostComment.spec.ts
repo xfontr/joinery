@@ -1,6 +1,6 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
+import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent } from "vue";
 import { usePostComment } from "./usePostComment";
 
 const FIELDS = {
@@ -31,21 +31,7 @@ const rejected = (statusCode: number, data?: unknown) =>
         data: { error: true, statusCode, statusMessage: "Refused", data },
     });
 
-const setUp = async () => {
-    let controller: ReturnType<typeof usePostComment> | undefined;
-
-    await mountSuspended(
-        defineComponent({
-            setup: () => {
-                controller = usePostComment();
-
-                return () => null;
-            },
-        }),
-    );
-
-    return controller!;
-};
+const setUp = async () => (await withSetup(() => usePostComment())).value;
 
 beforeEach(() => {
     vi.clearAllMocks();

@@ -1,6 +1,7 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
+import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent, type Ref, ref } from "vue";
+import { type Ref, ref } from "vue";
 import { useInterestRateOptions } from "./useInterestRateOptions";
 
 const i18n = vi.hoisted(() => ({ locale: undefined as unknown as Ref<string> }));
@@ -11,21 +12,8 @@ mockNuxtImport("useI18n", () => () => ({
     locale: i18n.locale,
 }));
 
-const optionsFor = async (rates: Parameters<typeof useInterestRateOptions>[0]) => {
-    let options!: ReturnType<typeof useInterestRateOptions>;
-
-    await mountSuspended(
-        defineComponent({
-            setup: () => {
-                options = useInterestRateOptions(rates);
-
-                return () => null;
-            },
-        }),
-    );
-
-    return options;
-};
+const optionsFor = async (rates: Parameters<typeof useInterestRateOptions>[0]) =>
+    (await withSetup(() => useInterestRateOptions(rates))).value;
 
 describe("useInterestRateOptions", () => {
     beforeEach(() => {

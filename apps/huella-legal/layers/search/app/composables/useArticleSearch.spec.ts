@@ -1,7 +1,8 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
+import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent, ref, type Ref } from "vue";
-import { useRouter, type RouteLocationRaw, type Router } from "vue-router";
+import { ref, type Ref } from "vue";
+import { useRouter, type RouteLocationRaw } from "vue-router";
 import { useArticleSearch } from "./useArticleSearch";
 
 const SEARCH: ArticleSearch = {
@@ -42,32 +43,19 @@ mockNuxtImport(
 mockNuxtImport("showError", () => errors.show);
 
 const searchAt = async (route: string) => {
-    let search!: Awaited<ReturnType<typeof useArticleSearch>>;
-    let router!: Router;
-    let failure: unknown;
+    const { value } = await withSetup(
+        async () => {
+            // Before the await, which ends the component's injection context
+            const router = useRouter();
 
-    await mountSuspended(
-        defineComponent({
-            setup: async () => {
-                // Before the await, which ends the component's injection context
-                router = useRouter();
-                search = await useArticleSearch().catch((error: unknown) => {
-                    failure = error;
-
-                    return search;
-                });
-
-                return () => null;
-            },
-        }),
+            return { search: await useArticleSearch(), router };
+        },
         { route },
     );
 
-    if (failure) throw failure;
-
-    return Object.assign(search, {
-        router,
-        href: (to: RouteLocationRaw) => router.resolve(to).href,
+    return Object.assign(value.search, {
+        router: value.router,
+        href: (to: RouteLocationRaw) => value.router.resolve(to).href,
     });
 };
 

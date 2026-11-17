@@ -1,12 +1,13 @@
 import { fakeEntry } from "@monorepo/content/testing";
 import { describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
 import type { ArticleSummary } from "../../shared/types/ArticleSummary";
 import type { Home } from "../../shared/types/Home";
 import { toArticleSummary } from "../mappers/articleSummary";
 
 const nitro = vi.hoisted(() => ({ index: [] as ArticleSummary[] }));
 
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 
 vi.mock("../services/articleIndex", () => ({
     getArticleIndex: () => Promise.resolve(nitro.index),

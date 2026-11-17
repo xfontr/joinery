@@ -1,10 +1,9 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@monorepo/configs/playwright/test";
+import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { expect, test } from "@monorepo/configs/playwright/utils/test";
+import { t } from "./copy.ts";
 import type { Page } from "@playwright/test";
 import { ARTICLE, COMMENTER, REPLIER } from "./fakes.ts";
 import { TURNSTILE_SCRIPT, TURNSTILE_SCRIPT_PATTERN } from "./vendors.ts";
-
-const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 
 const PATH = `/${ARTICLE.slug}/`;
 
@@ -16,11 +15,15 @@ const write = async (page: Page, settled: () => Promise<void>) => {
 
     // CI's runner can type before hydration, which a server-rendered form then drops on submit
     await expect(async () => {
-        await form.getByRole("textbox", { name: "Comentario" }).fill("Muy buen artículo.");
-        await form.getByRole("textbox", { name: "Nombre" }).fill("Lucía Pérez");
-        await form.getByRole("textbox", { name: "Correo electrónico" }).fill("lucia@ejemplo.test");
+        await form
+            .getByRole("textbox", { name: t("commentForm.content.label") })
+            .fill("Muy buen artículo.");
+        await form.getByRole("textbox", { name: t("commentForm.name.label") }).fill("Lucía Pérez");
+        await form
+            .getByRole("textbox", { name: t("commentForm.email.label") })
+            .fill("lucia@ejemplo.test");
         await form.getByRole("checkbox").check();
-        await form.getByRole("button", { name: "Enviar comentario" }).click();
+        await form.getByRole("button", { name: t("commentForm.submit") }).click();
 
         await settled();
     }).toPass();
@@ -62,7 +65,7 @@ test("a reply is held for moderation and confirmed in place of the form", async 
         .click();
     await expect(page.getByText(`Respondes a ${COMMENTER}`)).toBeVisible();
 
-    const confirmation = page.getByRole("heading", { name: "Comentario enviado" });
+    const confirmation = page.getByRole("heading", { name: t("commentForm.success.title") });
 
     await write(page, () => expect(confirmation).toBeVisible({ timeout: 2000 }));
 
@@ -86,7 +89,9 @@ test.describe("a refused comment", () => {
         );
 
         await expect(
-            page.locator("#comentarios").getByRole("textbox", { name: "Comentario" }),
+            page
+                .locator("#comentarios")
+                .getByRole("textbox", { name: t("commentForm.content.label") }),
         ).toHaveValue("Muy buen artículo.");
     });
 });
@@ -98,10 +103,12 @@ test(
         await page.goto(PATH);
 
         await expect(async () => {
-            await page.getByRole("button", { name: "Enviar comentario" }).scrollIntoViewIfNeeded();
+            await page
+                .getByRole("button", { name: t("commentForm.submit") })
+                .scrollIntoViewIfNeeded();
 
             const rail = await page
-                .getByRole("navigation", { name: "En este artículo" })
+                .getByRole("navigation", { name: t("articleToc.title") })
                 .boundingBox();
             const thread = await section(page).boundingBox();
 
@@ -114,10 +121,5 @@ test("the comments section has no WCAG AA violations", async ({ page }) => {
     await page.goto(PATH);
     await expect(section(page).getByRole("article")).toHaveCount(2);
 
-    const { violations } = await new AxeBuilder({ page })
-        .include("#comentarios")
-        .withTags(WCAG_AA)
-        .analyze();
-
-    expect(violations).toEqual([]);
+    await expectNoAxeViolations(page, { include: "#comentarios" });
 });

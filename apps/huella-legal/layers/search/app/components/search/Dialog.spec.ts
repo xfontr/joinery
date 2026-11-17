@@ -42,12 +42,12 @@ describe("search dialog", () => {
 
     it("opens in place instead of following the link once the page is live", async () => {
         const wrapper = await mountDialog();
-        const before = wrapper.vm.$router.currentRoute.value.fullPath;
+        const before = useRouter().currentRoute.value.fullPath;
 
         await wrapper.find("a").trigger("click");
 
         expect((await dialog()).getAttribute("aria-labelledby")).not.toBeNull();
-        expect(wrapper.vm.$router.currentRoute.value.fullPath).toBe(before);
+        expect(useRouter().currentRoute.value.fullPath).toBe(before);
     });
 
     it("opens from the / shortcut, the key readers bring from other sites", async () => {
@@ -63,7 +63,7 @@ describe("search dialog", () => {
         await wrapper.find("a").trigger("click");
         await dialog();
 
-        await wrapper.vm.$router.push("/buscar/?query=dolo");
+        await useRouter().push("/buscar/?query=dolo");
 
         await vi.waitFor(() => expect(document.body.querySelector("[role='dialog']")).toBeNull());
     });

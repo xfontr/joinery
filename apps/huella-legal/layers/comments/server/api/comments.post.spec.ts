@@ -1,5 +1,6 @@
-import * as v from "valibot";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { httpError, stubNitro } from "@monorepo/configs/vitest/utils/nitro";
+import { assertForm } from "../../../forms/server/utils/assertForm";
 
 const nitro = vi.hoisted(() => ({
     body: vi.fn(),
@@ -7,24 +8,10 @@ const nitro = vi.hoisted(() => ({
     createComment: vi.fn(),
 }));
 
-const httpError = (input: Record<string, unknown>) => Object.assign(new Error("http"), input);
-
-// The `forms` layer's `assertForm`, which reaches this layer only as a Nitro auto-import
-vi.stubGlobal("assertForm", (schema: v.GenericSchema, input: unknown) => {
-    const result = v.safeParse(schema, input);
-
-    if (result.success) return result.output;
-
-    throw httpError({
-        statusCode: 422,
-        data: result.issues.map((issue) => ({
-            name: v.getDotPath(issue),
-            message: issue.message,
-        })),
-    });
-});
+// The `forms` layer's `assertForm` reaches this layer only as a Nitro auto-import
+vi.stubGlobal("assertForm", assertForm);
 vi.stubGlobal("assertChallenge", nitro.assertChallenge);
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 vi.stubGlobal("readBody", nitro.body);
 
 vi.mock("../adapters/wordpress", () => ({ createComment: nitro.createComment }));

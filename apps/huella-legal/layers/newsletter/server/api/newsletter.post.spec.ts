@@ -1,18 +1,19 @@
-import * as v from "valibot";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
+import { assertForm } from "../../../forms/server/utils/assertForm";
 
 const nitro = vi.hoisted(() => ({
     body: vi.fn(),
     assertChallenge: vi.fn(),
-    assertForm: vi.fn(),
     addSubscriber: vi.fn(),
 }));
 
 vi.mock("../adapters/kit", () => ({ addSubscriber: nitro.addSubscriber }));
 
+// The `forms` layer's `assertForm` reaches this layer only as a Nitro auto-import
+vi.stubGlobal("assertForm", assertForm);
 vi.stubGlobal("assertChallenge", nitro.assertChallenge);
-vi.stubGlobal("assertForm", nitro.assertForm);
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 vi.stubGlobal("readBody", nitro.body);
 
 const handler = (await import("./newsletter.post")).default as unknown as (
@@ -23,9 +24,6 @@ beforeEach(() => {
     vi.clearAllMocks();
     nitro.body.mockResolvedValue({ email: " lucia@ejemplo.es ", honeypot: "", token: "tok" });
     nitro.assertChallenge.mockResolvedValue(undefined);
-    nitro.assertForm.mockImplementation((schema: v.GenericSchema, input: unknown) =>
-        v.parse(schema, input),
-    );
     nitro.addSubscriber.mockResolvedValue(undefined);
 });
 
@@ -53,15 +51,20 @@ describe("POST /api/newsletter", () => {
     ])("leaves %s as the bare issue code for the client to word", async (_, email, issue) => {
         nitro.body.mockResolvedValue({ email, honeypot: "", token: "tok" });
 
-        await expect(handler({})).rejects.toMatchObject({ issues: [{ message: issue }] });
+        await expect(handler({})).rejects.toMatchObject({
+            statusCode: 422,
+            data: [{ name: "email", message: issue }],
+        });
         expect(nitro.addSubscriber).not.toHaveBeenCalled();
     });
 
     it("treats an empty body as a missing address, not a crash", async () => {
         nitro.body.mockResolvedValue(undefined);
 
-        await expect(handler({})).rejects.toThrow();
-        expect(nitro.assertForm).toHaveBeenCalledWith(expect.anything(), {});
+        await expect(handler({})).rejects.toMatchObject({
+            statusCode: 422,
+            data: [{ name: "email" }],
+        });
     });
 
     it("keeps the challenge's status, so a failed token is a 403 and nothing is sent", async () => {
@@ -70,7 +73,6 @@ describe("POST /api/newsletter", () => {
         );
 
         await expect(handler({})).rejects.toMatchObject({ statusCode: 403 });
-        expect(nitro.assertForm).not.toHaveBeenCalled();
         expect(nitro.addSubscriber).not.toHaveBeenCalled();
     });
 });

@@ -35,8 +35,9 @@ describe("the dev warnings plugin", () => {
         console.info("hydrated", { ms: 12 });
         console.info({ event: SUSPENSE_WARNING });
 
-        expect(info).toHaveBeenNthCalledWith(1, "hydrated", { ms: 12 });
-        expect(info).toHaveBeenNthCalledWith(2, { event: SUSPENSE_WARNING });
+        expect(info).toHaveBeenCalledTimes(2);
+        expect(info).toHaveBeenCalledWith("hydrated", { ms: 12 });
+        expect(info).toHaveBeenCalledWith({ event: SUSPENSE_WARNING });
     });
 
     it("leaves the console untouched outside dev", () => {

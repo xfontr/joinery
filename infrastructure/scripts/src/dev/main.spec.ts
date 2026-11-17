@@ -3,24 +3,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const prompts = vi.hoisted(() => ({ autocomplete: vi.fn() }));
 const nx = vi.hoisted(() => ({ projectsWithDev: vi.fn() }));
 const pnpm = vi.hoisted(() => ({ dev: vi.fn() }));
-const io = vi.hoisted(() => ({
-    isInteractive: vi.fn(),
-    out: {
-        begin: vi.fn(),
-        end: vi.fn(),
-        warn: vi.fn(),
-        spinner: vi.fn(() => ({ start: vi.fn(), stop: vi.fn(), message: vi.fn() })),
-    },
-}));
 const promptAdapter = vi.hoisted(() => ({ orExit: vi.fn((value: unknown) => value) }));
 
 vi.mock("@clack/prompts", () => prompts);
 vi.mock("./adapters/nx.ts", () => nx);
 vi.mock("./adapters/pnpm.ts", () => pnpm);
-vi.mock("../shared/adapters/io.ts", () => io);
+vi.mock("../shared/adapters/io.ts");
 vi.mock("../shared/adapters/prompts.ts", () => promptAdapter);
 
 import { main } from "./main.ts";
+import * as ioModule from "../shared/adapters/io.ts";
+
+const io = vi.mocked(ioModule, true);
 
 const originalExitCode = process.exitCode;
 
@@ -88,4 +82,8 @@ describe("dev main", () => {
 
         expect(process.exitCode).toBeUndefined();
     });
+});
+
+beforeEach(() => {
+    io.out.spinner.mockReturnValue({ start: vi.fn(), stop: vi.fn(), message: vi.fn() });
 });

@@ -1,6 +1,6 @@
-import { mountSuspended, registerEndpoint } from "@nuxt/test-utils/runtime";
+import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
+import { registerEndpoint } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent } from "vue";
 import { useCachedFetch } from "./useCachedFetch";
 
 const endpoint = vi.hoisted(() => ({ hits: 0 }));
@@ -12,20 +12,15 @@ registerEndpoint("/api/cached-fetch-spec", () => {
 });
 
 const mountReader = async (page?: number) => {
-    let request!: ReturnType<typeof useCachedFetch>;
+    const { value, wrapper } = await withSetup(async () => {
+        const request = useCachedFetch("/api/cached-fetch-spec", { query: { page } });
+        // Awaited for the read, and wrapped so the caller keeps the request rather than its result
+        await request;
 
-    const wrapper = await mountSuspended(
-        defineComponent({
-            setup: async () => {
-                request = useCachedFetch("/api/cached-fetch-spec", { query: { page } });
-                await request;
+        return { request };
+    });
 
-                return () => null;
-            },
-        }),
-    );
-
-    return { request, unmount: () => wrapper.unmount() };
+    return { request: value.request, unmount: () => wrapper.unmount() };
 };
 
 beforeEach(() => {

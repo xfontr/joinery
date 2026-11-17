@@ -1,9 +1,8 @@
-import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "@playwright/test";
-import { expect, test } from "@monorepo/configs/playwright/test";
+import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { expect, test } from "@monorepo/configs/playwright/utils/test";
+import { t } from "./copy.ts";
 import { FORMULA, GUIDE_HEADING } from "./fakes.ts";
-
-const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 
 const PATH = "/calculo-intereses/";
 
@@ -31,8 +30,8 @@ const fillYear = async (page: Page) => {
 };
 
 const fillAdvanced = async (page: Page, month: string) => {
-    const from = panel(page).getByRole("group", { name: "Fecha inicial" });
-    const to = panel(page).getByRole("group", { name: "Fecha final" });
+    const from = panel(page).getByRole("group", { name: t("interestCalculator.from.label") });
+    const to = panel(page).getByRole("group", { name: t("interestCalculator.to.label") });
 
     await from.getByLabel("Día").fill("7");
     await from.getByLabel("Mes").fill(month);
@@ -43,9 +42,13 @@ const fillAdvanced = async (page: Page, month: string) => {
     await panel(page).getByLabel("Importe").fill("300");
 };
 
-const calculate = (page: Page) => panel(page).getByRole("button", { name: "Calcular" }).click();
+const calculate = (page: Page) =>
+    panel(page)
+        .getByRole("button", { name: t("interestCalculator.submit") })
+        .click();
 
-const advanced = (page: Page) => page.getByRole("tab", { name: "Avanzada" }).click();
+const advanced = (page: Page) =>
+    page.getByRole("tab", { name: t("interestCalculator.tabs.advanced") }).click();
 
 test("the calculator page answers 200 with its heading inside the shell", async ({ page }) => {
     const response = await open(page);
@@ -107,7 +110,9 @@ test("takes separate day, month and year fields and a custom rate in the advance
     await advanced(page);
 
     await fillAdvanced(page, "3");
-    await panel(page).getByRole("radio", { name: "Personalizado" }).check();
+    await panel(page)
+        .getByRole("radio", { name: t("interestCalculator.rate.options.custom") })
+        .check();
     await panel(page).getByLabel("Tipo personalizado").fill("4");
     await calculate(page);
 
@@ -121,7 +126,9 @@ test("adds calculations to a table that totals them and survives a reload", asyn
 
     const add = async () => {
         await calculate(page);
-        await panel(page).getByRole("button", { name: "Añadir a la tabla" }).click();
+        await panel(page)
+            .getByRole("button", { name: t("interestCalculator.result.add") })
+            .click();
         await expect(page.getByText("Añadido a la tabla de cálculos.")).toBeFocused();
     };
 
@@ -134,7 +141,7 @@ test("adds calculations to a table that totals them and survives a reload", asyn
     }
     await add();
 
-    const table = page.getByRole("table", { name: "Tabla de cálculos" });
+    const table = page.getByRole("table", { name: t("interestCalculator.history.title") });
 
     await expect(table.locator("tbody tr")).toHaveCount(2);
     await expect(table.locator("tfoot")).toContainText(/19,50\s€/);
@@ -160,16 +167,20 @@ test("announces a failed submit in an alert that links to each invalid field", a
     const alert = panel(page).getByRole("alert");
 
     await expect(alert).toContainText("Revisa 3 campos antes de enviar");
-    await expect(alert.getByRole("link", { name: "Importe" })).toBeVisible();
+    await expect(
+        alert.getByRole("link", { name: t("interestCalculator.principal.label") }),
+    ).toBeVisible();
     await expect(alert).toContainText("Importe: Escribe un importe mayor que cero");
 
     await panel(page).getByLabel("Importe").fill("1000");
 
     await expect(alert).toContainText("Revisa 2 campos antes de enviar");
-    await expect(alert.getByRole("link", { name: "Importe" })).toHaveCount(0);
+    await expect(
+        alert.getByRole("link", { name: t("interestCalculator.principal.label") }),
+    ).toHaveCount(0);
     await expect(panel(page).getByRole("status")).not.toContainText("Intereses");
 
-    await alert.getByRole("link", { name: "Fecha inicial" }).click();
+    await alert.getByRole("link", { name: t("interestCalculator.from.label") }).click();
     await expect(panel(page).getByLabel("Fecha inicial")).toBeFocused();
 
     await fillYear(page);
@@ -186,7 +197,10 @@ test("refuses a day that doesn't exist in the advanced tab", async ({ page }) =>
     await advanced(page);
 
     await fillAdvanced(page, "2");
-    await panel(page).getByRole("group", { name: "Fecha inicial" }).getByLabel("Día").fill("31");
+    await panel(page)
+        .getByRole("group", { name: t("interestCalculator.from.label") })
+        .getByLabel("Día")
+        .fill("31");
     await calculate(page);
 
     await expect(panel(page).getByRole("alert")).toContainText(
@@ -198,7 +212,9 @@ test("the page fits the viewport without scrolling sideways, table included", as
     await open(page);
     await fillYear(page);
     await calculate(page);
-    await panel(page).getByRole("button", { name: "Añadir a la tabla" }).click();
+    await panel(page)
+        .getByRole("button", { name: t("interestCalculator.result.add") })
+        .click();
 
     const overflow = await page
         .locator("html")
@@ -212,25 +228,26 @@ test("the calculator has no WCAG AA violations empty, with errors and with a tab
 }) => {
     await open(page);
 
-    const scan = async () =>
-        (await new AxeBuilder({ page }).withTags(WCAG_AA).analyze()).violations;
-
-    expect(await scan()).toEqual([]);
+    await expectNoAxeViolations(page);
 
     await calculate(page);
     await expect(panel(page).getByRole("alert")).toBeVisible();
 
-    expect(await scan()).toEqual([]);
+    await expectNoAxeViolations(page);
 
     await advanced(page);
     await fillAdvanced(page, "3");
-    await panel(page).getByRole("radio", { name: "Personalizado" }).check();
+    await panel(page)
+        .getByRole("radio", { name: t("interestCalculator.rate.options.custom") })
+        .check();
     await panel(page).getByLabel("Tipo personalizado").fill("4");
     await calculate(page);
-    await panel(page).getByRole("button", { name: "Añadir a la tabla" }).click();
+    await panel(page)
+        .getByRole("button", { name: t("interestCalculator.result.add") })
+        .click();
     await expect(page.getByRole("table")).toBeVisible();
 
-    expect(await scan()).toEqual([]);
+    await expectNoAxeViolations(page);
 });
 
 test("records the page with a result at this width for review", async ({ page }, testInfo) => {
@@ -238,7 +255,9 @@ test("records the page with a result at this width for review", async ({ page },
     await fillYear(page);
     await calculate(page);
     await expect(panel(page).getByRole("status")).toContainText(/32,50\s€/);
-    await panel(page).getByRole("button", { name: "Añadir a la tabla" }).click();
+    await panel(page)
+        .getByRole("button", { name: t("interestCalculator.result.add") })
+        .click();
 
     await testInfo.attach(`calculo-intereses-${testInfo.project.name}`, {
         body: await page.screenshot({ fullPage: true }),

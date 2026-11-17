@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
 
 const nitro = vi.hoisted(() => ({ fetch: vi.fn(), raw: vi.fn() }));
 
@@ -6,9 +7,7 @@ vi.stubGlobal("useRuntimeConfig", () => ({
     content: { vendor: { name: "wordpress", baseURL: "https://cms.test" } },
 }));
 vi.stubGlobal("$fetch", Object.assign(nitro.fetch, { raw: nitro.raw }));
-vi.stubGlobal("createError", (input: Record<string, unknown>) =>
-    Object.assign(new Error("http"), input),
-);
+stubNitro();
 
 const { isOpenForComments, listCommentedPosts, listComments } = await import("./wordpress");
 

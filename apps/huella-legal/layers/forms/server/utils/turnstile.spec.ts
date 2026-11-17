@@ -1,11 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
 
 const nitro = vi.hoisted(() => ({ verify: vi.fn() }));
 
 vi.stubGlobal("verifyTurnstileToken", nitro.verify);
-vi.stubGlobal("createError", (input: Record<string, unknown>) =>
-    Object.assign(new Error("http"), input),
-);
+stubNitro();
 
 const { assertChallenge } = await import("./turnstile");
 

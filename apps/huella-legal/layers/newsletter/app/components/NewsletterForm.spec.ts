@@ -1,8 +1,9 @@
+import { slotStub } from "@monorepo/configs/vitest/utils/nuxt";
 import type { FormError } from "@nuxt/ui";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent, ref } from "vue";
+import { ref } from "vue";
 import type { FormPostStatus } from "#layers/forms/app/composables/useFormPost";
 import NewsletterForm from "./NewsletterForm.vue";
 
@@ -34,12 +35,7 @@ const newsletter = vi.hoisted(() => ({
 const challenge = vi.hoisted(() => vi.fn());
 
 // The real challenge mounts Cloudflare's widget, so only its slot contract with the form is kept
-const FormChallenge = defineComponent({
-    setup:
-        (_, { slots }) =>
-        () =>
-            slots.default?.({ challenge }),
-});
+const FormChallenge = slotStub({ challenge });
 
 vi.mock("../composables/useNewsletter", () => ({ useNewsletter: () => newsletter }));
 
@@ -118,8 +114,10 @@ describe("newsletter form", () => {
 
         await submit(wrapper, "lucia@");
         await submit(wrapper, "");
+        vi.useFakeTimers();
         await wrapper.find("input[type=email]").setValue("l");
-        await new Promise((resolve) => setTimeout(resolve, 400));
+        await vi.runAllTimersAsync();
+        vi.useRealTimers();
         await flushPromises();
 
         expect(wrapper.find("[data-slot=error]").exists()).toBe(false);

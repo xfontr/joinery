@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
 
 const nitro = vi.hoisted(() => ({
     fetch: vi.fn(),
@@ -7,9 +8,7 @@ const nitro = vi.hoisted(() => ({
 
 vi.stubGlobal("useRuntimeConfig", () => ({ newsletter: nitro.newsletter }));
 vi.stubGlobal("$fetch", nitro.fetch);
-vi.stubGlobal("createError", (input: Record<string, unknown>) =>
-    Object.assign(new Error("http"), input),
-);
+stubNitro();
 
 const { addSubscriber } = await import("./kit");
 
