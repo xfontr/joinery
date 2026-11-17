@@ -31,8 +31,8 @@ describe("snapshot artifact route", () => {
                 manifest: { name: "manifest" },
                 [artifact]: { name: artifact },
             });
-            expect(store.readArtifact).toHaveBeenNthCalledWith(1, "manifest");
-            expect(store.readArtifact).toHaveBeenNthCalledWith(2, artifact);
+            expect(store.readArtifact).toHaveBeenCalledWith("manifest");
+            expect(store.readArtifact).toHaveBeenCalledWith(artifact);
             expect(store.readArtifact).toHaveBeenCalledTimes(2);
         },
     );

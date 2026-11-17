@@ -1,80 +1,81 @@
-import { mountSuspended, mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { ref } from "vue";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
+import { mountSuspended } from "@nuxt/test-utils/runtime";
+import type { VueWrapper } from "@vue/test-utils";
+import { describe, expect, it } from "vitest";
+import type { CoverageArtifact } from "#layers/snapshot/shared/types/CoverageArtifact.ts";
+import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import Page from "./coverage.vue";
 
-const state = vi.hoisted(() => ({ snapshot: null as { value: unknown } | null }));
-mockNuxtImport("useSnapshot", () => () => ({ data: state.snapshot }));
+const COVERAGE = {
+    generatedAt: "2026-11-01T00:00:00Z",
+    totals: { lines: 80, statements: 81, functions: 82, branches: 83 },
+    report: false,
+    projects: [
+        {
+            name: "tested",
+            root: "packages/tested",
+            collected: true,
+            files: 3,
+            lines: { total: 100, covered: 91, pct: 91 },
+            statements: { total: 100, covered: 90, pct: 90 },
+            functions: { total: 100, covered: 89, pct: 89 },
+            branches: { total: 100, covered: 88, pct: 88 },
+        },
+        { name: "missing", root: "packages/missing", collected: false, files: 0 },
+    ],
+} satisfies CoverageArtifact;
 
-const global = {
-    stubs: {
-        UDashboardPanel: {
-            template: "<section><slot name='header' /><slot name='body' /></section>",
-        },
-        UDashboardNavbar: { template: "<header><slot name='right' /></header>" },
-        UDashboardSidebarCollapse: true,
-        SnapshotAge: true,
-        StatTile: {
-            props: { label: String, value: [String, Number] },
-            template: "<div class='tile'>{{ label }} {{ value }}</div>",
-        },
-        UCard: { template: "<article><slot name='header' /><slot /></article>" },
-        UAlert: {
-            props: { title: String, description: String },
-            template: "<div>{{ title }} {{ description }}</div>",
-        },
-        UButton: { props: { to: String }, template: "<a :href='to'><slot />Open full</a>" },
-        UIcon: true,
-    },
+const serve = (coverage: CoverageArtifact) => {
+    serveEndpoint("/api/snapshot/coverage", (): SnapshotResponse => ({
+        manifest: null,
+        coverage,
+    }));
 };
 
-beforeEach(() => {
-    state.snapshot = ref(null);
-});
+const row = (wrapper: VueWrapper, project: string) =>
+    wrapper
+        .findAll("tbody tr")
+        .find((tr) => tr.find("td").text() === project)!
+        .findAll("td")
+        .map((td) => td.text());
 
 describe("coverage page", () => {
-    it("renders all weighted totals and distinguishes collected from uncollected projects", async () => {
-        state.snapshot!.value = {
-            coverage: {
-                totals: { lines: 80, statements: 81, functions: 82, branches: 83 },
-                projects: [
-                    {
-                        name: "tested",
-                        collected: true,
-                        files: 3,
-                        lines: { pct: 91 },
-                        statements: { pct: 90 },
-                        functions: { pct: 89 },
-                        branches: { pct: 88 },
-                    },
-                    { name: "missing", collected: false, files: 0 },
-                ],
-            },
-            manifest: {},
-        };
-        const wrapper = await mountSuspended(Page, { global });
+    it("shows each collected project's four metrics and its file count", async () => {
+        serve(COVERAGE);
+        const wrapper = await mountSuspended(Page);
 
-        expect(wrapper.text()).toContain("80%");
-        expect(wrapper.text()).toContain("83%");
-        expect(wrapper.text()).toContain("91%");
-        expect(wrapper.text()).toContain("3");
-        expect(wrapper.text()).toContain("not collected");
+        expect(row(wrapper, "tested")).toEqual(["tested", "91%", "90%", "89%", "88%", "3"]);
     });
 
-    it("shows the collection instruction without a report and embeds the base-aware report when present", async () => {
-        state.snapshot!.value = {
-            coverage: { totals: null, projects: [], report: false },
-            manifest: {},
-        };
-        let wrapper = await mountSuspended(Page, { global });
-        expect(wrapper.text()).toContain("No HTML report copied in");
+    // Absent is its own state: a 0% or a blank would read as a measured result
+    it("marks a project with no report uncollected instead of giving it a percentage", async () => {
+        serve(COVERAGE);
+        const wrapper = await mountSuspended(Page);
 
-        state.snapshot!.value = {
-            coverage: { totals: null, projects: [], report: true },
-            manifest: {},
-        };
-        wrapper = await mountSuspended(Page, { global });
+        expect(row(wrapper, "missing")).toEqual(["missing", "not collected", "—"]);
+    });
+
+    it("leaves out the totals when nothing was collected", async () => {
+        serve({ ...COVERAGE, totals: null });
+        const wrapper = await mountSuspended(Page);
+
+        expect(wrapper.text()).not.toContain("80%");
+    });
+
+    it("embeds the copied report and links to it, under the app's base path", async () => {
+        serve({ ...COVERAGE, report: true });
+        const wrapper = await mountSuspended(Page);
+
         expect(wrapper.find("iframe").attributes("src")).toContain("/embed/coverage/index.html");
-        expect(wrapper.find("a").attributes("href")).toContain("/embed/coverage/index.html");
+        expect(wrapper.find("a[target=_blank]").attributes("href")).toBe(
+            wrapper.find("iframe").attributes("src"),
+        );
+    });
+
+    it("shows no report frame until the collector has copied one in", async () => {
+        serve(COVERAGE);
+        const wrapper = await mountSuspended(Page);
+
+        expect(wrapper.find("iframe").exists()).toBe(false);
     });
 });

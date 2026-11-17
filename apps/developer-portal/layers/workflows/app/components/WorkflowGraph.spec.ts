@@ -1,5 +1,6 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
+import { nextTick } from "vue";
 import { describe, expect, it } from "vitest";
 import { projectView, readProject, readTemplate } from "#layers/workflows/shared/workflows.ts";
 import WorkflowGraph from "./WorkflowGraph.vue";
@@ -114,7 +115,7 @@ describe("WorkflowGraph", () => {
         // happy-dom's WheelEvent drops modifier keys from its init dictionary.
         Object.defineProperty(pinch, "ctrlKey", { value: true });
         viewport.element.dispatchEvent(pinch);
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(plain.defaultPrevented).toBe(false);
         expect(pinch.defaultPrevented).toBe(true);

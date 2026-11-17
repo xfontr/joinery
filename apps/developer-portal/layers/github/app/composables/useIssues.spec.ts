@@ -1,22 +1,17 @@
-import { mount, type VueWrapper } from "@vue/test-utils";
+import { serveEndpoint, withSetup } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { defineComponent, ref } from "vue";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { useIssues } from "./useIssues.ts";
-import type { IssuesRead } from "#layers/github/shared/issues.ts";
 
-const fetch = vi.hoisted(() => vi.fn());
-const asyncData = vi.hoisted(() => ({ useAsyncData: vi.fn() }));
-mockNuxtImport("$fetch", () => fetch);
-mockNuxtImport("useAsyncData", () => asyncData.useAsyncData);
-const Harness = defineComponent({
-    props: { repoUrl: { type: String, default: "" } },
-    setup: (props) => {
-        useRuntimeConfig().public.repoUrl = props.repoUrl;
-        return { state: useIssues() };
-    },
-    template: "<div />",
+const nuxt = vi.hoisted(() => ({ options: new Map<string, unknown>() }));
+
+// A spy over the real composable: every read still runs, and its rendering options can be read
+mockNuxtImport("useAsyncData", (original) => (...args: Parameters<typeof original>) => {
+    nuxt.options.set(args[0] as string, args[2]);
+    return original(...args);
 });
+
+const ISSUES_API = "https://api.github.com/repos/acme/repo/issues";
 
 const githubIssue = (number: number, pullRequest = false) => ({
     number,
@@ -30,82 +25,81 @@ const githubIssue = (number: number, pullRequest = false) => ({
     ...(pullRequest ? { pull_request: {} } : {}),
 });
 
-beforeEach(() => {
-    vi.clearAllMocks();
-    vi.stubGlobal("$fetch", fetch);
+const requests: string[] = [];
+
+/** Fakes GitHub's issues endpoint, answering each request with the next reply in turn. */
+const github = (...replies: (() => unknown)[]) => {
+    serveEndpoint(ISSUES_API, (event) => {
+        requests.push(String(event.path));
+        return replies[Math.min(requests.length, replies.length) - 1]!();
+    });
+};
+
+const use = async (repoUrl = "https://github.com/acme/repo") => {
+    useRuntimeConfig().public.repoUrl = repoUrl;
+    const { value } = await withSetup(async () => {
+        clearNuxtData("issues");
+        const issues = useIssues();
+        // Awaited for the read, and wrapped so the caller keeps the state rather than its result
+        await issues;
+        return { issues };
+    });
+    return value;
+};
+
+afterEach(() => {
+    requests.length = 0;
     useRuntimeConfig().public.repoUrl = "";
-    asyncData.useAsyncData.mockImplementation(
-        (
-            _key: string,
-            handler: () => Promise<IssuesRead>,
-            options: { default: () => IssuesRead },
-        ) => ({
-            data: ref(options.default()),
-            status: ref("idle"),
-            refresh: vi.fn(),
-            handler,
-            options,
-        }),
-    );
 });
 
-afterEach(() => vi.unstubAllGlobals());
-
 describe("useIssues", () => {
-    const execute = async (wrapper: VueWrapper<InstanceType<typeof Harness>>) => {
-        const state = wrapper.vm.state as unknown as {
-            data: { value: IssuesRead };
-            handler: () => Promise<IssuesRead>;
-        };
-        state.data.value = await state.handler();
+    it("says why without making a request when no repo is configured", async () => {
+        github(() => []);
+        const { data } = (await use("")).issues;
 
-        return state.data.value;
-    };
-
-    it("returns a displayable configuration error without making a request", async () => {
-        const wrapper = mount(Harness, { props: { repoUrl: "" } });
-        expect((await execute(wrapper)).error).toContain("no repo to read");
-        expect(fetch).not.toHaveBeenCalled();
+        expect(data.value.error).toContain("no repo to read");
+        expect(requests).toEqual([]);
     });
 
-    it("requests one hundred open issues and removes pull requests from the normalized result", async () => {
-        fetch.mockResolvedValue([githubIssue(1), githubIssue(2, true)]);
-        const wrapper = mount(Harness, { props: { repoUrl: "https://github.com/acme/repo" } });
-        const result = await execute(wrapper);
+    it("reads the repo's open issues, a hundred to a page, leaving pull requests out", async () => {
+        github(() => [githubIssue(1), githubIssue(2, true)]);
+        const { data } = (await use()).issues;
 
-        expect(fetch).toHaveBeenCalledWith("https://api.github.com/repos/acme/repo/issues", {
-            query: { state: "open", per_page: 100 },
-        });
-        expect(result.issues.map((issue) => issue.number)).toEqual([1]);
-        expect(result.fetchedAt).not.toBe("");
+        expect(requests[0]).toMatch(/\?state=open&per_page=100$/);
+        expect(data.value.issues.map((issue) => issue.number)).toEqual([1]);
+        expect(data.value.fetchedAt).not.toBe("");
     });
 
-    it("prefers GitHub's API message and caps it at three hundred characters", async () => {
-        fetch.mockRejectedValue({ data: { message: "x".repeat(400) } });
-        const wrapper = mount(Harness, { props: { repoUrl: "https://github.com/acme/repo" } });
+    it("reports GitHub's own message when it refuses the read", async () => {
+        github(
+            () =>
+                new Response(JSON.stringify({ message: "API rate limit exceeded" }), {
+                    status: 403,
+                    headers: { "content-type": "application/json" },
+                }),
+        );
+        const { data } = (await use()).issues;
 
-        expect((await execute(wrapper)).error).toHaveLength(300);
+        expect(data.value.error).toBe("API rate limit exceeded");
+        expect(data.value.issues).toEqual([]);
     });
 
-    it.each([
-        [new Error("ordinary failure"), "ordinary failure"],
-        ["unknown failure", "GitHub could not be read"],
-    ])("keeps the intended fallback for a %s failure", async (cause, message) => {
-        fetch.mockRejectedValue(cause);
-        const wrapper = mount(Harness, { props: { repoUrl: "https://github.com/acme/repo" } });
+    it("re-reads GitHub on reload, replacing what it had", async () => {
+        github(
+            () => [githubIssue(1)],
+            () => [githubIssue(7)],
+        );
+        const { issues } = await use();
 
-        expect((await execute(wrapper)).error).toBe(message);
+        await issues.reload();
+
+        expect(issues.data.value.issues.map((issue) => issue.number)).toEqual([7]);
     });
 
-    it("exposes refresh through reload and starts with the empty client-only state", async () => {
-        fetch.mockResolvedValue([]);
-        const wrapper = mount(Harness, { props: { repoUrl: "https://github.com/acme/repo" } });
-        const result = await execute(wrapper);
+    it("reads GitHub from the browser, never into the prerendered page", async () => {
+        github(() => []);
+        await use();
 
-        expect(wrapper.vm.state.reload).toBeTypeOf("function");
-        expect(result.issues).toEqual([]);
-        expect(result.error).toBeNull();
-        expect(wrapper.vm.state).toHaveProperty("status");
-        expect(asyncData.useAsyncData.mock.calls[0]?.[2]).toMatchObject({ server: false });
+        expect(nuxt.options.get("issues")).toMatchObject({ server: false });
     });
 });

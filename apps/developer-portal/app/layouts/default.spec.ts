@@ -1,77 +1,73 @@
-import { mountSuspended, mockNuxtImport } from "@nuxt/test-utils/runtime";
+import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { ref } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { IssuesRead } from "#layers/github/shared/issues.ts";
 import Layout from "./default.vue";
 
-const state = vi.hoisted(() => ({
-    issues: null as unknown,
-    badges: null as unknown,
-    menus: {} as Record<string, unknown>,
-    sections: null as unknown,
-    execute: vi.fn(),
-}));
-mockNuxtImport("useIssues", () => () => ({ data: state.issues }));
-mockNuxtImport("useFetch", () => (url: string) => ({
-    data: url === "/api/badges" ? state.badges : ref(state.menus[url] ?? []),
-}));
-mockNuxtImport("useAsyncData", () => () => ({
-    data: state.sections,
-    status: ref("idle"),
-    execute: state.execute,
-}));
+// GitHub is read straight from the browser, so the github layer's composable is the boundary
+const github = vi.hoisted(() => ({ read: null as unknown }));
+mockNuxtImport("useIssues", () => () => ({ data: github.read }));
 
-const Search = {
-    name: "UDashboardSearch",
-    props: { groups: Array },
-    emits: ["update:open"],
-    template:
-        "<div class='search'><a v-for='item in groups?.[0]?.items' :href='item.to'>{{ item.label }}</a></div>",
+// Search reads the docs collection, so a call here means the search data was built
+const search = vi.hoisted(() => vi.fn(() => Promise.resolve([])));
+mockNuxtImport("queryCollectionSearchSections", () => search);
+
+const MENUS = ["/api/decisions/menu", "/api/audits/menu", "/api/workflows/menu"];
+
+const serve = ({ advisories = 0, decisions = [] as { label: string; to: string }[] } = {}) => {
+    serveEndpoint("/api/badges", () => ({ advisories }));
+    for (const menu of MENUS)
+        serveEndpoint(menu, () => (menu === "/api/decisions/menu" ? decisions : []));
 };
-const global = {
-    stubs: {
-        UDashboardGroup: { template: "<main><slot /></main>" },
-        UDashboardSidebar: {
-            template:
-                "<aside><slot name='default' :collapsed='false' /><slot name='footer' :collapsed='false' /></aside>",
-        },
-        UDashboardSearchButton: { template: "<button aria-label='search'>search</button>" },
-        UNavigationMenu: {
-            props: { items: Array, modelValue: Array },
-            template:
-                "<nav :data-open='modelValue?.join()'><template v-for='item in items'><a :href='item.to' @click.prevent='item.onClick?.()'>{{ item.label }} {{ item.badge }}</a><a v-for='child in item.children' class='child' :href='child.to'>{{ child.label }}</a></template></nav>",
-        },
-        UDashboardSearch: Search,
-        NuxtLink: { props: { to: String }, template: "<a :href='to'><slot /></a>" },
-        UIcon: true,
-        UColorModeButton: true,
-        UButton: {
-            inheritAttrs: false,
-            props: { to: String },
-            template: "<a :href='to' v-bind='$attrs'><slot /></a>",
-        },
-    },
+
+const open = async () => {
+    const wrapper = await mountSuspended(Layout);
+    await flushPromises();
+    return wrapper;
 };
+
+const menus = (wrapper: VueWrapper) => wrapper.findAllComponents({ name: "UNavigationMenu" });
+
+/** Every entry the sidebar offers, as label and destination, in order. */
+const entries = (wrapper: VueWrapper) =>
+    menus(wrapper).flatMap((menu) =>
+        (menu.props("items") as { label: string; to: string }[]).map(({ label, to }) => [
+            label,
+            to,
+        ]),
+    );
+
+const item = (wrapper: VueWrapper, label: string) =>
+    menus(wrapper)
+        .flatMap(
+            (menu) =>
+                menu.props("items") as { label: string; badge?: string; children?: unknown[] }[],
+        )
+        .find((found) => found.label === label)!;
+
+const openSubmenus = (wrapper: VueWrapper) =>
+    menus(wrapper).flatMap((menu) => menu.props("modelValue") as string[]);
+
+const click = async (wrapper: VueWrapper, href: string) => {
+    await wrapper.find(`nav a[href='${href}']`).trigger("click");
+    await flushPromises();
+};
+
+const DECISION = { label: "0036 Drop the UI kit", to: "/decisions/0036-ui" };
 
 beforeEach(() => {
-    state.issues = ref({ issues: [], error: null });
-    state.badges = ref({ advisories: 0 });
-    state.menus = {};
-    state.sections = ref([]);
-    state.execute.mockClear();
+    github.read = ref<IssuesRead>({ fetchedAt: "", error: null, issues: [] });
+    search.mockClear();
 });
 
 describe("default layout", () => {
-    it("groups navigation by purpose and points renamed entries to their routes", async () => {
-        const wrapper = await mountSuspended(Layout, { global });
-        expect(wrapper.text()).toContain("Overview");
-        expect(wrapper.text()).toContain("Dependencies");
-        expect(wrapper.text()).toContain("Explore");
-        expect(wrapper.text()).toContain("Build");
-        expect(wrapper.text()).toContain("Engineering health");
-        expect(wrapper.text()).not.toContain("undefined");
-        expect(
-            wrapper.findAll("nav a").map((link) => [link.text().trim(), link.attributes("href")]),
-        ).toEqual([
+    it("lists every entry under its group, in order, pointing at its route", async () => {
+        serve();
+        const wrapper = await open();
+
+        expect(entries(wrapper)).toEqual([
             ["Overview", "/"],
             ["Projects", "/projects"],
             ["What's new", "/changelog"],
@@ -88,52 +84,77 @@ describe("default layout", () => {
     });
 
     it("unfolds an entry into the rows its menu route answers, and leaves an empty one a plain link", async () => {
-        state.menus = {
-            "/api/decisions/menu": [{ label: "0036 Drop the UI kit", to: "/decisions/0036-ui" }],
-        };
-        const wrapper = await mountSuspended(Layout, { global });
-        expect(
-            wrapper.findAll("nav a.child").map((link) => [link.text(), link.attributes("href")]),
-        ).toEqual([["0036 Drop the UI kit", "/decisions/0036-ui"]]);
+        serve({ decisions: [DECISION] });
+        const wrapper = await open();
+
+        expect(item(wrapper, "Decisions").children).toEqual([DECISION]);
+        expect(item(wrapper, "Audits").children).toBeUndefined();
     });
 
     it("opens a submenu when its entry is clicked, not only from the arrow beside it", async () => {
-        state.menus = {
-            "/api/decisions/menu": [{ label: "0036 Drop the UI kit", to: "/decisions/0036-ui" }],
-        };
-        const wrapper = await mountSuspended(Layout, { global });
-        const decisions = wrapper.findAll("nav a").find((link) => link.text() === "Decisions")!;
+        serve({ decisions: [DECISION] });
+        const wrapper = await open();
 
-        await decisions.trigger("click");
+        await click(wrapper, "/decisions");
 
-        expect(decisions.element.closest("nav")?.getAttribute("data-open")).toBe("decisions");
+        expect(openSubmenus(wrapper)).toEqual(["decisions"]);
     });
 
     it("folds the open submenu back when another entry is clicked, so only one stays open", async () => {
-        state.menus = {
-            "/api/decisions/menu": [{ label: "0036 Drop the UI kit", to: "/decisions/0036-ui" }],
-        };
-        const wrapper = await mountSuspended(Layout, { global });
-        const entry = (label: string) =>
-            wrapper.findAll("nav a").find((link) => link.text().trim() === label)!;
+        serve({ decisions: [DECISION] });
+        const wrapper = await open();
 
-        await entry("Decisions").trigger("click");
-        await entry("Coverage").trigger("click");
+        await click(wrapper, "/decisions");
+        await click(wrapper, "/coverage");
 
-        expect(wrapper.findAll("nav[data-open='decisions']")).toHaveLength(0);
+        expect(openSubmenus(wrapper)).toEqual([]);
     });
 
-    it("renders non-zero badges, uses the repository source link, and defers search data", async () => {
-        state.issues = ref({ issues: [{ number: 1 }], error: null });
-        state.badges = ref({ advisories: 3 });
-        const wrapper = await mountSuspended(Layout, { global });
-        expect(wrapper.text()).toContain("3");
-        expect(wrapper.text()).toContain("1");
-        expect(state.execute).not.toHaveBeenCalled();
-        expect(wrapper.find("a[aria-label='View source on GitHub']").attributes("target")).toBe(
-            "_blank",
-        );
-        await wrapper.findComponent(Search).vm.$emit("update:open", true);
-        expect(state.execute).toHaveBeenCalledOnce();
+    it("badges the open issues and the advisories, and nothing at zero", async () => {
+        github.read = ref<IssuesRead>({
+            fetchedAt: "",
+            error: null,
+            issues: [
+                {
+                    number: 1,
+                    title: "One",
+                    body: "",
+                    url: "",
+                    labels: [],
+                    assignees: [],
+                    createdAt: "",
+                    updatedAt: "",
+                },
+            ],
+        });
+        serve({ advisories: 3 });
+        const wrapper = await open();
+
+        expect(item(wrapper, "Work in progress").badge).toBe("1");
+        expect(item(wrapper, "Dependencies").badge).toBe("3");
+        expect(item(wrapper, "Coverage").badge).toBeUndefined();
+    });
+
+    it("links the repository's source, in a new tab", async () => {
+        serve();
+        useRuntimeConfig().public.repoUrl = "https://github.com/acme/repo";
+        const wrapper = await open();
+        useRuntimeConfig().public.repoUrl = "";
+        const source = wrapper.find("a[aria-label='View source on GitHub']");
+
+        expect(source.attributes("href")).toBe("https://github.com/acme/repo");
+        expect(source.attributes("target")).toBe("_blank");
+    });
+
+    it("builds the search data only once search is first opened", async () => {
+        serve();
+        const wrapper = await open();
+
+        expect(search).not.toHaveBeenCalled();
+
+        await wrapper.findComponent({ name: "UDashboardSearch" }).setValue(true, "open");
+        await flushPromises();
+
+        expect(search).toHaveBeenCalledOnce();
     });
 });

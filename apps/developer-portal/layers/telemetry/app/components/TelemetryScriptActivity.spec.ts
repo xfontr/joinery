@@ -6,7 +6,6 @@ import TelemetryScriptActivity from "./TelemetryScriptActivity.vue";
 
 const global = {
     stubs: {
-        UCard: { template: "<article><slot name='header' /><slot /></article>" },
         TelemetryDayStrip: true,
         TelemetryCallerSplit: true,
     },
