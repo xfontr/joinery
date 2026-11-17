@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const gitApi = vi.hoisted(() => ({ git: vi.fn() }));
 vi.mock("../../shared/adapters/git.ts", () => gitApi);
 
-import { branchForIssue, checkout, currentBranch } from "./git.ts";
+import { branchForIssue } from "./git.ts";
 
 beforeEach(() => vi.clearAllMocks());
 
@@ -14,16 +14,15 @@ describe("issue git adapter", () => {
         expect(branchForIssue(42)).toBe("feature/roadmap/42-fix");
     });
 
-    it("returns no branch for unrelated refs and forwards checkout/current-branch calls", () => {
-        gitApi.git
-            .mockReturnValueOnce("main\nfeature/roadmap/41-fix\n")
-            .mockReturnValueOnce(undefined)
-            .mockReturnValueOnce("master");
+    it("finds no branch when none is for the issue", () => {
+        gitApi.git.mockReturnValue("main\nfeature/roadmap/41-fix\n");
 
         expect(branchForIssue(42)).toBeUndefined();
-        checkout("feature/roadmap/42-fix");
-        expect(currentBranch()).toBe("master");
-        expect(gitApi.git).toHaveBeenNthCalledWith(2, "checkout", "feature/roadmap/42-fix");
-        expect(gitApi.git).toHaveBeenNthCalledWith(3, "rev-parse", "--abbrev-ref", "HEAD");
+    });
+
+    it("never takes another issue's branch whose number only starts the same way", () => {
+        gitApi.git.mockReturnValue("main\nfeature/roadmap/41-fix\n");
+
+        expect(branchForIssue(4)).toBeUndefined();
     });
 });

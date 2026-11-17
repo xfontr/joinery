@@ -28,14 +28,16 @@ const domain = vi.hoisted(() => ({
     skills: vi.fn(),
     render: vi.fn(),
 }));
-const io = vi.hoisted(() => ({ out: { success: vi.fn() } }));
 vi.mock("./adapters/files.ts", () => ({ ...files, MAP_PATH: "docs/FEATURES.md" }));
 vi.mock("./domain/capabilities.ts", () => domain);
 vi.mock("./domain/render.ts", () => domain);
 vi.mock("./domain/readme.ts", () => readme);
-vi.mock("../shared/adapters/io.ts", () => io);
+vi.mock("../shared/adapters/io.ts");
 
 import { main } from "./main.ts";
+import * as ioModule from "../shared/adapters/io.ts";
+
+const io = vi.mocked(ioModule, true);
 
 beforeEach(() => {
     vi.clearAllMocks();

@@ -4,13 +4,15 @@ import type { Check } from "./domain/checks.ts";
 const gh = vi.hoisted(() => ({ prTitle: vi.fn(), prChecks: vi.fn(), failedLog: vi.fn() }));
 const files = vi.hoisted(() => ({ saveLog: vi.fn() }));
 const sonar = vi.hoisted(() => ({ openIssues: vi.fn() }));
-const io = vi.hoisted(() => ({ out: { info: vi.fn(), error: vi.fn() } }));
 vi.mock("./adapters/gh.ts", () => gh);
 vi.mock("./adapters/files.ts", () => files);
 vi.mock("./adapters/sonar.ts", () => sonar);
-vi.mock("../shared/adapters/io.ts", () => io);
+vi.mock("../shared/adapters/io.ts");
 
 import { main } from "./main.ts";
+import * as ioModule from "../shared/adapters/io.ts";
+
+const io = vi.mocked(ioModule, true);
 
 const check = (overrides: Partial<Check>): Check => ({
     name: "checks",

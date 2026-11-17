@@ -4,16 +4,18 @@ const projects = vi.hoisted(() => ({ projectsWithCoverage: vi.fn() }));
 const files = vi.hoisted(() => ({ loadReport: vi.fn(), writeHtmlReport: vi.fn() }));
 const domain = vi.hoisted(() => ({ toReports: vi.fn(), mergeReports: vi.fn() }));
 const git = vi.hoisted(() => ({ at: vi.fn((path: string) => `/repo/${path}`) }));
-const io = vi.hoisted(() => ({ out: { success: vi.fn() } }));
 
 vi.mock("./adapters/nx.ts", () => projects);
 vi.mock("./adapters/files.ts", () => files);
 vi.mock("./domain/discover.ts", () => domain);
 vi.mock("./domain/merge.ts", () => domain);
 vi.mock("../shared/adapters/git.ts", () => git);
-vi.mock("../shared/adapters/io.ts", () => io);
+vi.mock("../shared/adapters/io.ts");
 
 import { main } from "./main.ts";
+import * as ioModule from "../shared/adapters/io.ts";
+
+const io = vi.mocked(ioModule, true);
 
 beforeEach(() => {
     vi.clearAllMocks();
