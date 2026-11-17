@@ -51,7 +51,7 @@ describe("remarkDocLinks", () => {
                     children: [
                         {
                             type: "link",
-                            url: "/docs/docs/readme",
+                            url: "/wiki/docs/readme",
                             children: [{ type: "text", value: "docs" }],
                         },
                     ],
@@ -73,8 +73,8 @@ describe("remarkDocLinks", () => {
         transform(tree, sourcePath);
 
         expect(tree.children).toEqual([
-            { type: "link", url: "/docs/docs/readme", children: [] },
-            { type: "link", url: "/docs/docs/readme", children: [] },
+            { type: "link", url: "/wiki/docs/readme", children: [] },
+            { type: "link", url: "/wiki/docs/readme", children: [] },
             { type: "link", url: "repo:nx.json", children: [] },
         ]);
     });
@@ -164,7 +164,25 @@ describe("remarkDocLinks", () => {
             { type: "link", url: "repo:nx.json", children: [{ type: "text", value: "config" }] },
             { type: "text", value: "first" },
             { type: "text", value: "second" },
-            { type: "link", url: "/docs/readme", children: [{ type: "text", value: "readme" }] },
+            { type: "link", url: "/wiki/readme", children: [{ type: "text", value: "readme" }] },
         ]);
+    });
+
+    it("rewrites a relative image to its served path, so the wiki shows what GitHub shows", () => {
+        const tree = {
+            type: "root",
+            children: [
+                {
+                    type: "paragraph",
+                    children: [{ type: "image", url: "./images/rauno-me.webp" }],
+                },
+            ],
+        };
+
+        transform(tree, resolve(WORKSPACE_ROOT, "docs/benchmarks/rauno-me.md"));
+
+        expect(tree.children[0]?.children[0]?.url).toBe(
+            "/doc-assets/docs/benchmarks/images/rauno-me.webp",
+        );
     });
 });

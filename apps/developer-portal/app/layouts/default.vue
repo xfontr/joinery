@@ -205,7 +205,7 @@ const searchGroups = computed(() => [
         items: sections.value.map((section) => ({
             label: section.title,
             suffix: section.content,
-            to: `/docs${section.id}`,
+            to: `/wiki${section.id}`,
             icon: "i-lucide-file-text",
         })),
     },

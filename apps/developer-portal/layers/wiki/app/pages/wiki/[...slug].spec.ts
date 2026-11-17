@@ -53,7 +53,7 @@ const serve = (pages: DocPage[]) => {
     }));
 };
 
-const FIRST_HOUR = "/docs/docs/guides/first-hour";
+const FIRST_HOUR = "/wiki/docs/guides/first-hour";
 
 beforeEach(() => {
     setStatus.mockClear();
@@ -74,7 +74,7 @@ beforeEach(() => {
 
 describe("doc detail page", () => {
     it("answers a missing page with a 404 so the prerender crawler fails on a dead link", async () => {
-        await mountSuspended(Page, { global, route: "/docs/docs/guides/nope" });
+        await mountSuspended(Page, { global, route: "/wiki/docs/guides/nope" });
 
         expect(setStatus).toHaveBeenCalledWith(404);
     });
@@ -95,7 +95,7 @@ describe("doc detail page", () => {
     it("links the next page in the same group", async () => {
         const wrapper = await mountSuspended(Page, { global, route: FIRST_HOUR });
 
-        expect(wrapper.find("a[href='/docs/docs/guides/next']").exists()).toBe(true);
+        expect(wrapper.find("a[href='/wiki/docs/guides/next']").exists()).toBe(true);
     });
 
     it("hands the page's headings to the table of contents", async () => {
@@ -107,7 +107,7 @@ describe("doc detail page", () => {
     });
 
     it("says there is no such page instead of rendering an empty one", async () => {
-        const wrapper = await mountSuspended(Page, { global, route: "/docs/docs/guides/nope" });
+        const wrapper = await mountSuspended(Page, { global, route: "/wiki/docs/guides/nope" });
 
         expect(wrapper.text()).toContain("No such page");
     });
@@ -115,10 +115,10 @@ describe("doc detail page", () => {
     it("loads the new page when the route changes under it", async () => {
         const wrapper = await mountSuspended(Page, { global, route: FIRST_HOUR });
 
-        await useRouter().push("/docs/docs/guides/next");
+        await useRouter().push("/wiki/docs/guides/next");
         await flushPromises();
 
         expect(wrapper.text()).toContain("docs/guides/next.md");
-        expect(wrapper.find("a[href='/docs/docs/guides/first-hour']").exists()).toBe(true);
+        expect(wrapper.find("a[href='/wiki/docs/guides/first-hour']").exists()).toBe(true);
     });
 });

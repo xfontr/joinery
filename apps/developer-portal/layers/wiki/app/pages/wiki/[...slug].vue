@@ -15,12 +15,13 @@
         </template>
 
         <template #body>
-            <div class="flex items-start gap-6">
-                <aside class="sticky top-0 hidden w-60 shrink-0 lg:block">
+            <!-- Each column scrolls on its own, so an unfolded nav never waits on the page beside it. -->
+            <div class="flex min-h-0 flex-1 gap-6">
+                <aside class="hidden w-60 shrink-0 overflow-y-auto lg:block">
                     <WikiNav :sections :current="path" />
                 </aside>
 
-                <div class="flex min-w-0 flex-1 flex-col gap-4">
+                <div class="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto">
                     <UBreadcrumb :items="crumbs" />
 
                     <UAlert
@@ -52,7 +53,7 @@
                         <div class="grid gap-3 sm:grid-cols-2">
                             <NuxtLink
                                 v-if="around.previous"
-                                :to="`/docs${around.previous.path}`"
+                                :to="`/wiki${around.previous.path}`"
                                 class="flex items-center gap-2 rounded-lg border border-default p-3 transition-colors hover:bg-elevated/50"
                             >
                                 <UIcon name="i-lucide-arrow-left" class="size-4 text-dimmed" />
@@ -68,7 +69,7 @@
 
                             <NuxtLink
                                 v-if="around.next"
-                                :to="`/docs${around.next.path}`"
+                                :to="`/wiki${around.next.path}`"
                                 class="flex items-center justify-end gap-2 rounded-lg border border-default p-3 transition-colors hover:bg-elevated/50 sm:col-start-2"
                             >
                                 <div class="min-w-0 text-right">
@@ -87,7 +88,7 @@
 
                 <aside
                     v-if="page?.body?.toc?.links?.length"
-                    class="sticky top-0 hidden w-56 shrink-0 xl:block"
+                    class="hidden w-56 shrink-0 overflow-y-auto xl:block"
                 >
                     <UContentToc :links="page.body.toc.links" highlight class="bg-transparent" />
                 </aside>
@@ -121,7 +122,7 @@ if (!page.value) setResponseStatus(404);
 const here = computed(() => locate(sections.value, path.value));
 
 const crumbs = computed<BreadcrumbItem[]>(() => [
-    { label: "Wiki", to: "/docs", icon: "i-lucide-library" },
+    { label: "Wiki", to: "/wiki", icon: "i-lucide-library" },
     ...(here.value
         ? [
               { label: here.value.section.label, icon: here.value.section.icon },

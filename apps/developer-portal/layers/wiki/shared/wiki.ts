@@ -6,13 +6,18 @@ import { stripLeadingEmoji, toTitleCase } from "#layers/docs/shared/docPages.ts"
 export interface WikiPage {
     path: string;
     title?: string;
+    /** A benchmark's frontmatter `kind` and `verdict`; other docs leave them unset. */
+    kind?: string;
+    verdict?: string;
 }
 
 export interface WikiEntry {
-    /** The collection path, e.g. `/packages/ui/readme`. The route prefixes it with `/docs`. */
+    /** The collection path, e.g. `/packages/ui/readme`. The route prefixes it with `/wiki`. */
     path: string;
     label: string;
     kind: DocKind;
+    /** A short tag shown beside the label and sorted on, such as a benchmark's kind. */
+    detail?: string;
 }
 
 export interface WikiGroup {
@@ -83,16 +88,21 @@ const SECTIONS = {
 } as const satisfies Record<SectionId, { label: string; icon: string; blurb: string }>;
 
 /** Ordered where the order carries meaning; anything new falls through to alphabetical. */
-const DOCS_GROUPS = ["concepts", "guides", "decisions", "audits"];
+const DOCS_GROUPS = ["concepts", "guides", "decisions", "audits", "workflows", "benchmarks"];
 
 const GROUP_LABELS: Record<string, string> = {
     concepts: "Concepts",
     guides: "Guides",
     decisions: "Decisions",
     audits: "Audits",
+    workflows: "Workflows",
+    benchmarks: "Benchmarks",
     skills: "Skills",
     agents: "Subagents",
 };
+
+/** The verdict that tags a benchmark in place of its kind, and sorts it last. */
+const AVOID = "avoid";
 
 const segmentsOf = (path: string): string[] => path.split("/").filter(Boolean);
 
@@ -111,7 +121,7 @@ interface Placed {
     entry: WikiEntry;
 }
 
-/** Generic labels for README/CLAUDE.md — the group name already says the project; the real title is still the page's own heading. */
+/** A generic label for a README — the group name already says the project; the real title is still the page's own heading. */
 const labelWithin = (root: string, path: string, title: string): string => {
     const raw = segmentsOf(path.slice(root.length));
     // `src` is where the code lives, not a taxonomy a reader navigates by — a nested README's own directory names it.
@@ -120,11 +130,13 @@ const labelWithin = (root: string, path: string, title: string): string => {
     const directory = rest.slice(0, -1).join("/");
 
     if (file === "skill") return stripLeadingEmoji(title);
-    if (file === "agents") return "Agent notes";
     if (file === "readme") return directory === "" ? "Overview" : directory;
 
     return stripLeadingEmoji(title);
 };
+
+const detailOf = (page: WikiPage): string | undefined =>
+    page.verdict === AVOID ? AVOID : page.kind?.replaceAll("-", " ");
 
 const place = (page: WikiPage): Placed => {
     const { path } = page;
@@ -150,8 +162,9 @@ const place = (page: WikiPage): Placed => {
         return {
             section: "docs",
             group,
-            groupLabel: GROUP_LABELS[group] ?? "The tree itself",
-            entry: { path, label: labelWithin(root, path, title), kind },
+            groupLabel:
+                group === "docs" ? "Start here" : (GROUP_LABELS[group] ?? toTitleCase(group)),
+            entry: { path, label: labelWithin(root, path, title), kind, detail: detailOf(page) },
         };
     }
 
@@ -178,12 +191,12 @@ const place = (page: WikiPage): Placed => {
     };
 };
 
-/** Overview, then the agent notes, then everything else by label — the order you would read them. */
+/** Overview first and what to avoid last — the order you would read them. */
 const rankEntry = (entry: WikiEntry): number => {
     if (entry.label === "Overview") return 0;
-    if (entry.label === "Agent notes") return 1;
+    if (entry.detail === AVOID) return 2;
 
-    return 2;
+    return 1;
 };
 
 const rankGroup = (section: SectionId, key: string): number => {
@@ -215,7 +228,12 @@ export const buildWiki = (pages: WikiPage[]): WikiSection[] => {
                 entries: mine
                     .filter((item) => item.group === key)
                     .map((item) => item.entry)
-                    .sort((a, b) => rankEntry(a) - rankEntry(b) || a.label.localeCompare(b.label)),
+                    .sort(
+                        (a, b) =>
+                            rankEntry(a) - rankEntry(b) ||
+                            (a.detail ?? "").localeCompare(b.detail ?? "") ||
+                            a.label.localeCompare(b.label),
+                    ),
             }))
             .sort(
                 (a, b) => rankGroup(id, a.key) - rankGroup(id, b.key) || a.key.localeCompare(b.key),

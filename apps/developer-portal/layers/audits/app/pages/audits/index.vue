@@ -7,7 +7,7 @@
                 </template>
                 <template #right>
                     <UButton
-                        to="/docs/docs/audits/readme"
+                        to="/wiki/docs/audits/readme"
                         label="How an audit is written"
                         icon="i-lucide-ruler"
                         color="neutral"

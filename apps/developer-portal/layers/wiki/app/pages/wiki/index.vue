@@ -12,12 +12,13 @@
         </template>
 
         <template #body>
-            <div class="flex items-start gap-6">
-                <aside class="sticky top-0 hidden w-60 shrink-0 lg:block">
+            <!-- Each column scrolls on its own, so an unfolded nav never waits on the page beside it. -->
+            <div class="flex min-h-0 flex-1 gap-6">
+                <aside class="hidden w-60 shrink-0 overflow-y-auto lg:block">
                     <WikiNav :sections />
                 </aside>
 
-                <div class="flex min-w-0 flex-1 flex-col gap-6">
+                <div class="flex min-w-0 flex-1 flex-col gap-6 overflow-y-auto">
                     <div>
                         <h1 class="text-xl font-semibold">The workspace, as it is written</h1>
                         <p class="mt-1 max-w-2xl text-sm text-muted">
@@ -65,7 +66,7 @@
                                 <NuxtLink
                                     v-for="page in broken"
                                     :key="page.path"
-                                    :to="`/docs${toCollectionPath(page.path)}`"
+                                    :to="`/wiki${toCollectionPath(page.path)}`"
                                     class="truncate font-mono text-xs hover:underline"
                                 >
                                     {{ page.path }} →
@@ -99,7 +100,7 @@
                             <NuxtLink
                                 v-for="page in recent"
                                 :key="page.path"
-                                :to="`/docs${toCollectionPath(page.path)}`"
+                                :to="`/wiki${toCollectionPath(page.path)}`"
                                 class="flex items-center gap-3 px-4 py-2 transition-colors hover:bg-elevated/50"
                             >
                                 <UIcon
@@ -142,7 +143,7 @@ const START_GROUPS = [
         label: "Explore",
         items: [
             {
-                to: "/docs/readme",
+                to: "/wiki/readme",
                 label: "Repository overview",
                 hint: "What this monorepo contains",
                 icon: "i-lucide-map",
@@ -159,7 +160,7 @@ const START_GROUPS = [
         label: "Understand",
         items: [
             {
-                to: "/docs/docs/concepts/boundaries",
+                to: "/wiki/docs/concepts/boundaries",
                 label: "Architecture and boundaries",
                 hint: "How projects are allowed to depend",
                 icon: "i-lucide-git-branch",
@@ -176,7 +177,7 @@ const START_GROUPS = [
         label: "Contribute",
         items: [
             {
-                to: "/docs/docs/guides/first-hour",
+                to: "/wiki/docs/guides/first-hour",
                 label: "First hour",
                 hint: "An ordered way into the repository",
                 icon: "i-lucide-play",
@@ -199,7 +200,7 @@ const startGroups = computed(() =>
         ...group,
         items: group.items.filter(
             (entry) =>
-                !entry.to.startsWith("/docs/") || known.value.has(entry.to.slice("/docs".length)),
+                !entry.to.startsWith("/wiki/") || known.value.has(entry.to.slice("/wiki".length)),
         ),
     })).filter((group) => group.items.length > 0),
 );

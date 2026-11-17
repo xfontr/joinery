@@ -3,7 +3,6 @@ import { buildWiki, locate } from "./wiki.ts";
 
 const PAGES = [
     { path: "/readme", title: "Monorepo" },
-    { path: "/agents", title: "🤖 Working in this repo" },
     { path: "/docs/readme", title: "🗂 Docs" },
     { path: "/docs/features", title: "🗺 Features" },
     { path: "/docs/guides/first-hour", title: "🌱 First hour in this repo" },
@@ -16,7 +15,6 @@ const PAGES = [
         title: "🧭 Making the repo's feature surface discoverable",
     },
     { path: "/packages/ui/readme", title: "📦 @monorepo/ui" },
-    { path: "/packages/ui/agents", title: "🤖 @monorepo/ui" },
     { path: "/packages/ui/changelog", title: "CHANGELOG" },
     { path: "/.claude/skills/ui-new-component/skill", title: "Adding a UI component" },
     { path: "/packages/content/src/nuxt/readme", title: "🟢 @monorepo/content/nuxt" },
@@ -50,7 +48,7 @@ describe("buildWiki", () => {
     });
 
     it("labels a project's own README 'Overview', because the group already carries the package name", () => {
-        expect(labelsIn("packages", "ui")).toEqual(["Overview", "Agent notes"]);
+        expect(labelsIn("packages", "ui")).toEqual(["Overview"]);
     });
 
     it("keeps every root-scoped skill in the shared agent setup", () => {
@@ -105,6 +103,47 @@ describe("buildWiki", () => {
 
     it("keeps the decisions rubric, which is a doc about how a report is written rather than a report", () => {
         expect(labelsIn("docs", "decisions")).toEqual(["Overview"]);
+    });
+});
+
+describe("buildWiki docs groups", () => {
+    const BENCHMARKS = [
+        { path: "/docs/readme", title: "🗂 Docs" },
+        { path: "/docs/workflows/readme", title: "🧭 Workflows" },
+        { path: "/docs/zines/readme", title: "📰 Zines" },
+        { path: "/docs/benchmarks/readme", title: "🔖 Benchmarks" },
+        { path: "/docs/benchmarks/rauno-me", title: "🔖 rauno.me", kind: "portfolio" },
+        {
+            path: "/docs/benchmarks/autopilot",
+            title: "🔖 Autopilot",
+            kind: "product",
+            verdict: "avoid",
+        },
+        { path: "/docs/benchmarks/carbon", title: "🔖 Carbon", kind: "design-system" },
+        { path: "/docs/benchmarks/primer", title: "🔖 Primer", kind: "design-system" },
+    ];
+
+    const docsGroups = () => buildWiki(BENCHMARKS).find((section) => section.id === "docs")?.groups;
+
+    it("names every docs subfolder after itself, so no two groups share one generic label", () => {
+        expect(docsGroups()?.map((group) => group.label)).toEqual([
+            "Start here",
+            "Workflows",
+            "Benchmarks",
+            "Zines",
+        ]);
+    });
+
+    it("orders benchmarks by kind and tags each with it, with the example to avoid last", () => {
+        const entries = docsGroups()?.find((group) => group.key === "benchmarks")?.entries;
+
+        expect(entries?.map((entry) => [entry.label, entry.detail])).toEqual([
+            ["Overview", undefined],
+            ["Carbon", "design system"],
+            ["Primer", "design system"],
+            ["rauno.me", "portfolio"],
+            ["Autopilot", "avoid"],
+        ]);
     });
 });
 

@@ -60,9 +60,9 @@ describe("docs index page", () => {
 
         expect(hrefs(wrapper)).toEqual(
             expect.arrayContaining([
-                "/docs/readme",
-                "/docs/docs/concepts/boundaries",
-                "/docs/docs/guides/first-hour",
+                "/wiki/readme",
+                "/wiki/docs/concepts/boundaries",
+                "/wiki/docs/guides/first-hour",
                 "/projects",
                 "/graph",
             ]),
@@ -78,7 +78,7 @@ describe("docs index page", () => {
         ]);
         const wrapper = await mountSuspended(Page, { global });
 
-        expect(hrefs(wrapper)).toContain("/docs/docs/missing");
+        expect(hrefs(wrapper)).toContain("/wiki/docs/missing");
     });
 
     it("hands the nav the wiki built from the docs collection", async () => {

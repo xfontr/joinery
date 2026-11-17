@@ -61,7 +61,7 @@
                                 </p>
                             </NuxtLink>
                             <NuxtLink
-                                to="/docs/docs/guides/first-hour"
+                                to="/wiki/docs/guides/first-hour"
                                 class="rounded-lg border border-default bg-default p-4 transition-colors hover:bg-elevated/50"
                             >
                                 <UIcon name="i-lucide-play" class="size-5 text-primary" />
@@ -128,7 +128,7 @@
                                         project.root
                                     }}</span>
                                     <UButton
-                                        :to="`/docs/${project.root}/readme`"
+                                        :to="`/wiki/${project.root}/readme`"
                                         label="Read more"
                                         icon="i-lucide-book-open"
                                         size="xs"
@@ -184,7 +184,7 @@
                         "
                         :tone="(docs?.brokenLinkCount ?? 0) > 0 ? 'warn' : 'neutral'"
                         icon="i-lucide-book-open"
-                        to="/docs"
+                        to="/wiki"
                     />
                 </template>
 
@@ -275,7 +275,7 @@
                         <NuxtLink
                             v-for="page in broken"
                             :key="page.path"
-                            :to="`/docs${toCollectionPath(page.path)}`"
+                            :to="`/wiki${toCollectionPath(page.path)}`"
                             class="flex items-center gap-3 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-elevated/50"
                         >
                             <UIcon name="i-lucide-link-2-off" class="size-4 shrink-0 text-dimmed" />

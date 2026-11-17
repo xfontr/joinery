@@ -1,6 +1,11 @@
 import { existsSync } from "node:fs";
 import { relative, resolve } from "node:path";
-import { isPlaceholder, REPO_SCHEME, resolveDocLink } from "#layers/docs/shared/docLinks.ts";
+import {
+    isPlaceholder,
+    REPO_SCHEME,
+    resolveDocImage,
+    resolveDocLink,
+} from "#layers/docs/shared/docLinks.ts";
 import { WORKSPACE_ROOT } from "./paths.ts";
 
 interface MarkdownNode {
@@ -39,8 +44,18 @@ const eachLink = (
     }
 };
 
+const eachImage = (parent: MarkdownNode, apply: (image: MarkdownNode) => void): void => {
+    for (const child of parent.children ?? []) {
+        if (child.type === "image") apply(child);
+        else eachImage(child, apply);
+    }
+};
+
 /** The `.md` is appended rather than required, because a link may omit it and `checkLink` accepts that. */
 const isPage = (repoPath: string): boolean => {
+    // `content.config.ts` leaves every CLAUDE.md out of the collection, so none has a page.
+    if (/(?:^|\/)CLAUDE(?:\.md)?$/i.test(repoPath)) return false;
+
     const absolute = resolve(WORKSPACE_ROOT, repoPath);
 
     return /\.mdx?$/i.test(repoPath) ? existsSync(absolute) : existsSync(`${absolute}.md`);
@@ -79,6 +94,10 @@ export default function remarkDocLinks() {
             link.url = url;
 
             return null;
+        });
+
+        eachImage(tree, (image) => {
+            image.url = resolveDocImage(image.url ?? "", from) ?? image.url;
         });
     };
 }

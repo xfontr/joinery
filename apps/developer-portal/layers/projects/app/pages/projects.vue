@@ -82,7 +82,7 @@
                                     target="_blank"
                                 />
                                 <UButton
-                                    :to="`/docs/${project.root.toLowerCase()}/readme`"
+                                    :to="`/wiki/${project.root.toLowerCase()}/readme`"
                                     label="Docs"
                                     icon="i-lucide-book-open"
                                     size="xs"

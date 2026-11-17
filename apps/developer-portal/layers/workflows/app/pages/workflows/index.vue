@@ -7,7 +7,7 @@
                 </template>
                 <template #right>
                     <UButton
-                        to="/docs/docs/workflows/readme"
+                        to="/wiki/docs/workflows/readme"
                         label="How workflows work"
                         icon="i-lucide-ruler"
                         color="neutral"

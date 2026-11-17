@@ -4,6 +4,9 @@ import { buildWiki } from "#layers/wiki/shared/wiki.ts";
 export const useWiki = () =>
     useAsyncData(
         "wiki",
-        async () => buildWiki(await queryCollection("docs").select("path", "title").all()),
+        async () =>
+            buildWiki(
+                await queryCollection("docs").select("path", "title", "kind", "verdict").all(),
+            ),
         { default: () => [] },
     );

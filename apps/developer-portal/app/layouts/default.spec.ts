@@ -71,7 +71,7 @@ describe("default layout", () => {
             ["Overview", "/"],
             ["Projects", "/projects"],
             ["What's new", "/changelog"],
-            ["Documentation", "/docs"],
+            ["Documentation", "/wiki"],
             ["Architecture", "/graph"],
             ["Decisions", "/decisions"],
             ["Audits", "/audits"],
