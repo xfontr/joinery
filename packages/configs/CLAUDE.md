@@ -24,10 +24,11 @@ affected set that `pnpm lint` and CI run is already the whole workspace. Don't r
   Nothing here may import another `@monorepo/*` package.
 - The nuxt ESLint config is deliberately **not** type-checked — Nuxt's generated files make a
   type-aware pass more trouble than it's worth. Don't "fix" that by turning it on.
-- **`vitest/nuxt.ts` must never import `@nuxt/test-utils` at runtime from here.** It's resolved
-  from the app, so the app's own copy is the one that runs, which is why it's an optional peer.
-- **`@playwright/test` stays a `catalog:` entry everywhere.** `playwright/test.ts` imports it at
-  runtime, and a second resolved copy fails every spec with "Requiring @playwright/test second
+- **The `vitest/nuxt.ts` preset must never import `@nuxt/test-utils` at runtime from here.** It's
+  resolved from the app, so the app's own copy is the one that runs, which is why it's an optional
+  peer.
+- **`@playwright/test` stays a `catalog:` entry everywhere.** `playwright/utils/test.ts` imports it
+  at runtime, and a second resolved copy fails every spec with "Requiring @playwright/test second
   time". `createConfig` itself imports only the types.
 - Don't remove the `JITI_MODULE_CACHE=0` window in `vitest/nuxt.ts`: without it, one Nuxt app's
   config kills Nx's plugin worker and every `nx` command in the workspace with it.

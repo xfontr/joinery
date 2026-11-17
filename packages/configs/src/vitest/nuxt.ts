@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { defineConfig } from "vitest/config";
 import type { CoverageOptions } from "vitest/node";
-import createNodeConfig from "./node.ts";
+import createNodeConfig, { gated } from "./node.ts";
 
 const stubs = fileURLToPath(new URL("./setup/stubs.ts", import.meta.url));
 const autoUnmount = fileURLToPath(new URL("./setup/autoUnmount.ts", import.meta.url));
@@ -115,6 +115,9 @@ const createNuxtConfig = async ({
             nuxtProject({
                 name: "nuxt-isolated",
                 isolate: true,
+                fileParallelism: true,
+                // Vitest rejects two projects with different worker counts in one group
+                sequence: { groupOrder: 2 },
                 include: mockingSpecs,
                 exclude: nodeSpecs,
             }),
@@ -128,7 +131,7 @@ const createNuxtConfig = async ({
                 ...coverage,
                 include: [...(coverage?.include ?? []), ...LAYER_SOURCES],
                 exclude: [...(coverage?.exclude ?? []), ...coverageExclude],
-                thresholds,
+                thresholds: gated(thresholds),
             },
             projects: projects.filter((project) => project !== false),
         },

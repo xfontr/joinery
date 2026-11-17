@@ -62,7 +62,6 @@
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.13.0",
     "@monorepo/configs": "workspace:*",
     "@nuxt/test-utils": "^4.3.2",
     "@playwright/test": "catalog:",

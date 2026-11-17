@@ -11,6 +11,19 @@ compiler option added here does not reach it.
 Shipped as raw TypeScript, and tagged `type:config`: it depends on nothing in the workspace, and
 everything is allowed to depend on it.
 
+## 🗂️ Layout
+
+One folder per tool under `src/` — `eslint`, `vitest`, `playwright`, `tsconfig` — and every tool
+folder sorts its files the same way:
+
+| Where | What it is | Who imports it |
+| --- | --- | --- |
+| The tool folder's root | A preset | A project's config file |
+| `setup/` | Wiring a preset hooks in itself | Nobody — the preset passes its path to the tool |
+| `utils/` | A test helper | Spec files, as `@monorepo/configs/<tool>/utils/<name>` |
+
+ESLint's `lib/` and `rules/` are the parts its presets compose, and it has no `setup/` or `utils/`.
+
 ## 🚀 Usage
 
 **ESLint** — `eslint.config.ts`:
@@ -76,15 +89,30 @@ towards coverage. The options are only what differs per app:
 | `nodeSpecs` | Specs that need no Nuxt runtime but sit outside the `node` globs, such as one under `app/` or at the app root; they move to the `node` project |
 | `setupFiles` | Setup files for the two Nuxt projects only, after the console guard. They run after the Nuxt entry registers its boot but before it runs |
 | `coverageExclude` | Paths kept out of the denominator |
-| `thresholds` | Vitest's coverage thresholds. They only bite on a `--coverage` run |
+| `thresholds` | Vitest's coverage thresholds, also taken by `createNodeConfig({ thresholds })`. They bite on a `--coverage` run, which PR CI makes for every affected project, and never with `COVERAGE_THRESHOLDS=off`, which the portal deploy sets so one project's dip can't stop it |
 
 - **The `node` project stubs the Nitro globals no spec controls**, today only `defineRouteMeta`, in
   [`stubs.ts`](./src/vitest/setup/stubs.ts). A spec still stubs the ones whose behaviour it asserts
   on, such as `readBody`.
+- **An app spec reaches Nuxt through
+  [`vitest/utils/nuxt`](./src/vitest/utils/nuxt.ts)**: `withSetup(use, options?)` runs a composable in a
+  mounted component's `setup` and resolves to `{ value, wrapper }`, `serveEndpoint(url, handler)`
+  answers a route until the test ends, and `slotStub(props)` stands in for a child that only hands
+  its default slot props on. Whichever copy of `@nuxt/test-utils` it resolves, the endpoints live on
+  `window` and the mount uses the one `vue` and `@vue/test-utils`, so it runs in every app.
+- **A server spec stubs the rest with `stubNitro()`** from `@monorepo/configs/vitest/utils/nitro`,
+  before the dynamic `import()` of the file under test: `defineEventHandler` hands the handler
+  back and `createError` is h3's own, from the `h3@1` this package pins to match Nitro 2. The same
+  function is exported as `httpError`, for a spec whose mock rejects with one.
 - **`nuxt` runs its specs in one shared environment (`isolate: false`), and `nuxt-isolated` gives
   each its own.** Sharing one runs huella-legal's 78 eligible files in about 7s, and took its Nuxt
   specs from 84s to 31s. A spec that calls `vi.mock`, `mockNuxtImport` or `mockComponent` goes to
   `nuxt-isolated`, because a module mock outlives its file in a shared environment. The preset sorts specs by reading them, so there is no list to keep.
+- **`nuxt` runs one file at a time and `nuxt-isolated` runs files in parallel**, in a later
+  `sequence.groupOrder`, since Vitest rejects two worker counts in one group. Parallel files took
+  huella-legal's 37 isolated specs from 25s to about 6s. Under that load, a mocked module that two
+  `import()` calls reach at once can resolve to the real one for the second, so a spec never lets
+  a dynamic import from one test run into the next; `vi.dynamicImportSettled()` drains it.
 - **Anything else a spec changes globally, it puts back in `afterEach`.** In the shared environment
   the next file inherits fake timers, stubbed globals or a DOM the previous one left behind, and
   breaks without naming the cause. Fake timers left on stalled every `router.replace` in the next
@@ -121,7 +149,9 @@ export default playwright.createConfig({
 
 Chromium at 390, 768 and 1280 px, one project per width. A test tagged `@desktop` runs only from
 `desktopFrom` (1024 px, Tailwind's `lg`) and one tagged `@mobile` only below it, so a test for a
-layout one width range doesn't have is never collected there rather than skipped at runtime. Specs
+layout one width range doesn't have is never collected there rather than skipped at runtime. One
+tagged `@any-width` runs only at the first width: tag a test that uses only `request`, or reads
+only `<head>`, headers or redirects. Tests run fully parallel, so none may depend on another. Specs
 live in `e2e/` and output in `.playwright/`. There are no screenshot baselines, for the reason
 [Huella Legal's README](../../apps/huella-legal/README.md#-e2e) gives. `@playwright/test` is a
 `catalog:` entry, pinned to the version in CI's image tag, so the app and this package resolve the
@@ -131,10 +161,17 @@ The preset also owns the console half of [`0032`](../../docs/decisions/0032-cons
 
 | Piece | The app's side |
 | --- | --- |
-| [`test.ts`](./src/playwright/test.ts) | Specs import `test`, `expect` and `NOT_FOUND_DOCUMENT` from `@monorepo/configs/playwright/test`. A test fails on any browser console message or page error its `allowedConsole` patterns don't match. `page.goto` and `page.reload` return only once Nuxt has hydrated the page, so a spec never clicks or types into server-rendered markup nothing listens to yet |
-| [`server.ts`](./src/playwright/server.ts) | The `node --import` preload calls `recordServerConsole()` from `@monorepo/configs/playwright/server`, a subpath so the Nitro process never loads the ESLint and Vitest halves of the barrel |
-| [`teardown.ts`](./src/playwright/teardown.ts) | Nothing: `createConfig` sets it as `globalTeardown` and passes the log path in `E2E_SERVER_CONSOLE`. It fails the run on anything the server logged, and on a missing log, which means the preload never called the recorder |
-| [`e2eFixture.ts`](./src/eslint/lib/e2eFixture.ts) | Nothing: both ESLint presets forbid importing `test` from `@playwright/test` in `e2e/**/*.spec.ts` |
+| [`test.ts`](./src/playwright/utils/test.ts) | Specs import `test`, `expect` and `NOT_FOUND_DOCUMENT` from `@monorepo/configs/playwright/utils/test`. A test fails on any browser console message or page error its `allowedConsole` patterns don't match. `page.goto` and `page.reload` return only once Nuxt has hydrated the page, so a spec never clicks or types into server-rendered markup nothing listens to yet |
+| [`server.ts`](./src/playwright/setup/server.ts) | The `node --import` preload calls `recordServerConsole()` from `@monorepo/configs/playwright/setup/server`, a subpath so the Nitro process never loads the ESLint and Vitest halves of the barrel |
+| [`teardown.ts`](./src/playwright/setup/teardown.ts) | Nothing: `createConfig` sets it as `globalTeardown` and passes the log path in `E2E_SERVER_CONSOLE`. It fails the run on anything the server logged, and on a missing log, which means the preload never called the recorder |
+| [`e2eFixture.ts`](./src/eslint/lib/e2eFixture.ts) | Nothing: both ESLint presets forbid importing `test` from `@playwright/test` in `e2e/**/*.spec.ts`, and lint it with `eslint-plugin-playwright`'s recommended rules |
+
+Two helpers keep e2e specs off what changes without behaviour changing:
+
+| Subpath | What it gives a spec |
+| --- | --- |
+| [`playwright/utils/a11y`](./src/playwright/utils/a11y.ts) | `expectNoAxeViolations(page, { include? })`, the WCAG 2.1 AA scan every page spec ends with, so the tag list lives in one place |
+| [`playwright/utils/i18n`](./src/playwright/utils/i18n.ts) | `createT(messages)`, the app's copy by key through vue-i18n itself, throwing on a missing key, so a spec names a control by its key and survives a reword; and `rawKeysIn(text, messages)`, the dotted paths printed in a namespace the messages own, which is what vue-i18n renders for a key it lacks, one built from a variable included |
 
 **TypeScript** — `tsconfig.json`:
 
@@ -272,6 +309,16 @@ Node types even in a package that otherwise doesn't.
   `#layers/<name>/…`, and so are auto-imports, placed through the maps `nuxi prepare` writes into
   `.nuxt/`. The one exception is a feature's `app/pages/`, which may render another feature's
   components, since a page composes a screen. Both apps opt in
+- `@intlify/vue-i18n/no-missing-keys`, from [`lib/i18nKeys.ts`](./src/eslint/lib/i18nKeys.ts) — in
+  no factory; an app with `@nuxtjs/i18n` opts in with `eslint.i18nKeys("i18n/locales/*.json")`,
+  naming its locale files. A `t()`, `$t()` or `<i18n-t>` key missing from them fails lint, since
+  specs merge their own placeholder messages and would pass with it. Specs, stories and `e2e/` are
+  exempt. A key built from a template literal is invisible to it. `apps/huella-legal` opts in
+- `vitest/no-restricted-matchers` and `monorepo/no-implementation-details`, from
+  [`lib/vitest.ts`](./src/eslint/lib/vitest.ts), in every factory's `**/*.spec.ts`. A spec asserts
+  outcomes, not which call came when (`toHaveBeenNthCalledWith`), not a snapshot, and not a
+  component's instance: no `wrapper.vm` but `vm.$emit`. A refactor that changes no behaviour must
+  leave every spec green
 - `monorepo/disable-needs-reason` and `reportUnusedDisableDirectives: "error"`, from
   [`lib/disableReasons.ts`](./src/eslint/lib/disableReasons.ts) — every `eslint-disable` names the
   rules it silences and ends in `-- <why>`, a block `eslint-disable` is closed with `eslint-enable`,
