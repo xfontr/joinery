@@ -1,3 +1,3 @@
-import { recordServerConsole } from "@monorepo/configs/playwright/server";
+import { recordServerConsole } from "@monorepo/configs/playwright/setup/server";
 
 recordServerConsole();

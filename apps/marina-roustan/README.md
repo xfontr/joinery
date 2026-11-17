@@ -74,7 +74,7 @@ of the coverage denominator, because pages are Playwright's, and lists `eslint.c
 Playwright runs the built `.output/` server on port 4320 with [`e2e/server.ts`](./e2e/server.ts)
 preloaded through `node --import`. The app reads no upstream yet, so the preload only calls
 `recordServerConsole()`: the preset's teardown fails the run on anything the server logged, and on a
-server that never recorded at all. Specs import `test` from `@monorepo/configs/playwright/test`,
+server that never recorded at all. Specs import `test` from `@monorepo/configs/playwright/utils/test`,
 which fails a test on any browser console output; a 404 test allows its own with
 `test.use({ allowedConsole: [NOT_FOUND_DOCUMENT] })`. Each page's spec runs an axe scan against
 WCAG 2.1 AA, once per width.
