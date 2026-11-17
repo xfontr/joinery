@@ -1,4 +1,4 @@
-import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { axeViolations } from "@monorepo/configs/playwright/utils/a11y";
 import { expect, test } from "@monorepo/configs/playwright/utils/test";
 import { t } from "./copy.ts";
 import { ARTICLE, SUBJECT } from "./fakes.ts";
@@ -30,7 +30,7 @@ test("subscribes from the band under an article and asks the reader to confirm",
 
     await expect(confirmation).toBeFocused();
 
-    await expectNoAxeViolations(page);
+    expect(await axeViolations(page)).toEqual([]);
 });
 
 test("tells a reader back from Kit's confirmation link that they are on the list", async ({
@@ -46,7 +46,7 @@ test("tells a reader back from Kit's confirmation link that they are on the list
         "/publicaciones/",
     );
 
-    await expectNoAxeViolations(page);
+    expect(await axeViolations(page)).toEqual([]);
 });
 
 test("refuses an address with no domain without sending it", async ({ page }) => {

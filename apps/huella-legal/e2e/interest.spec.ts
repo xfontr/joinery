@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { axeViolations } from "@monorepo/configs/playwright/utils/a11y";
 import { expect, test } from "@monorepo/configs/playwright/utils/test";
 import { t } from "./copy.ts";
 import { FORMULA, GUIDE_HEADING } from "./fakes.ts";
@@ -228,12 +228,12 @@ test("the calculator has no WCAG AA violations empty, with errors and with a tab
 }) => {
     await open(page);
 
-    await expectNoAxeViolations(page);
+    expect(await axeViolations(page)).toEqual([]);
 
     await calculate(page);
     await expect(panel(page).getByRole("alert")).toBeVisible();
 
-    await expectNoAxeViolations(page);
+    expect(await axeViolations(page)).toEqual([]);
 
     await advanced(page);
     await fillAdvanced(page, "3");
@@ -247,7 +247,7 @@ test("the calculator has no WCAG AA violations empty, with errors and with a tab
         .click();
     await expect(page.getByRole("table")).toBeVisible();
 
-    await expectNoAxeViolations(page);
+    expect(await axeViolations(page)).toEqual([]);
 });
 
 test("records the page with a result at this width for review", async ({ page }, testInfo) => {

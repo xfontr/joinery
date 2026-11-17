@@ -29,7 +29,7 @@ describe("interest calculator result", () => {
         const wrapper = await mountSuspended(InterestCalculatorResult, {
             props: { result: { days: 365, interestCents: 3250, totalCents: 103_250 } },
         });
-        const status = wrapper.find("[role=status]").text();
+        const status = wrapper.find("output").text();
 
         expect(status).toContain("365");
         expect(status).toContain("32,50");
@@ -39,7 +39,7 @@ describe("interest calculator result", () => {
     it("keeps the live region mounted while empty, so the first result is announced", async () => {
         const wrapper = await mountSuspended(InterestCalculatorResult);
 
-        expect(wrapper.find("[role=status]").text()).toBe("empty");
+        expect(wrapper.find("output").text()).toBe("empty");
     });
 
     it("offers to add a result to the table, and nothing to add while empty", async () => {

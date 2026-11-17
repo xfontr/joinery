@@ -1,4 +1,4 @@
-import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { axeViolations } from "@monorepo/configs/playwright/utils/a11y";
 import { expect, test } from "@monorepo/configs/playwright/utils/test";
 import { t } from "./copy.ts";
 import { ARTICLE, POSTS, REFERENCE, SECTIONS } from "./fakes.ts";
@@ -93,5 +93,5 @@ test("opens a related post in place, with its own title", async ({ page }) => {
 test("the article page has no WCAG AA violations", async ({ page }) => {
     await page.goto(PATH);
 
-    await expectNoAxeViolations(page);
+    expect(await axeViolations(page)).toEqual([]);
 });

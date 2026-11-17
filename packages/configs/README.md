@@ -79,7 +79,7 @@ export default playwright.createConfig({ port, command, env });
   `page.goto` waits for hydration.
 - The server preload calls `recordServerConsole()` from `@monorepo/configs/playwright/setup/server`,
   and teardown fails the run on anything the server logged.
-- Helpers: [`utils/a11y`](./src/playwright/utils/a11y.ts) (`expectNoAxeViolations`) and
+- Helpers: [`utils/a11y`](./src/playwright/utils/a11y.ts) (`axeViolations`, asserted with `toEqual([])`) and
   [`utils/i18n`](./src/playwright/utils/i18n.ts) (`createT`, `rawKeysIn`).
 - `@playwright/test` must stay a `catalog:` entry; a second resolved copy fails every spec.
 

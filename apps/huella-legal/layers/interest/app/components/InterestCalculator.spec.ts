@@ -105,8 +105,7 @@ const addButton = (wrapper: VueWrapper, index: number) =>
         .findAll("button")
         .find((button) => button.text() === "add");
 
-const result = (wrapper: VueWrapper, index: number) =>
-    panel(wrapper, index).find("[role=status]").text();
+const result = (wrapper: VueWrapper, index: number) => panel(wrapper, index).find("output").text();
 
 afterEach(() => {
     localStorage.clear();

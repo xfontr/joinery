@@ -1,4 +1,4 @@
-import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { axeViolations } from "@monorepo/configs/playwright/utils/a11y";
 import { expect, test } from "@monorepo/configs/playwright/utils/test";
 import { t } from "./copy.ts";
 import type { Page } from "@playwright/test";
@@ -118,7 +118,7 @@ test.describe("a refused send", () => {
             page.getByRole("textbox", { name: t("publishForm.summary.label") }),
         ).toHaveValue(SUMMARY);
 
-        await expectNoAxeViolations(page);
+        expect(await axeViolations(page)).toEqual([]);
     });
 });
 
@@ -151,5 +151,5 @@ test("the publish page has no WCAG AA violations", async ({ page }, testInfo) =>
         body: await page.screenshot({ fullPage: true }),
         contentType: "image/png",
     });
-    await expectNoAxeViolations(page);
+    expect(await axeViolations(page)).toEqual([]);
 });

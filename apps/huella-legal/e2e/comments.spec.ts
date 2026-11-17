@@ -1,4 +1,4 @@
-import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { axeViolations } from "@monorepo/configs/playwright/utils/a11y";
 import { expect, test } from "@monorepo/configs/playwright/utils/test";
 import { t } from "./copy.ts";
 import type { Page } from "@playwright/test";
@@ -121,5 +121,5 @@ test("the comments section has no WCAG AA violations", async ({ page }) => {
     await page.goto(PATH);
     await expect(section(page).getByRole("article")).toHaveCount(2);
 
-    await expectNoAxeViolations(page, { include: "#comentarios" });
+    expect(await axeViolations(page, { include: "#comentarios" })).toEqual([]);
 });

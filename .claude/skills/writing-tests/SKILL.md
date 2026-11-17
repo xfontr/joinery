@@ -122,7 +122,7 @@ reaching for a module mock there means the injection was skipped.
 | Need | Use |
 | --- | --- |
 | Name a control | `getByRole("button", { name: t("newsletterForm.submit") })`, with `t` from the app's `e2e/copy.ts` — it throws on a missing key, so the spec survives a reword but not a lost key |
-| WCAG 2.1 AA | `await expectNoAxeViolations(page)` from `@monorepo/configs/playwright/utils/a11y` |
+| WCAG 2.1 AA | `expect(await axeViolations(page)).toEqual([])` from `@monorepo/configs/playwright/utils/a11y` |
 | No bare message keys | `rawKeysIn(text, MESSAGES)` from `@monorepo/configs/playwright/utils/i18n`; huella-legal's `smoke.spec.ts` walks the main routes with it |
 
 ## The two specs that pin invariants rather than behaviour

@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { axeViolations } from "@monorepo/configs/playwright/utils/a11y";
 import { expect, NOT_FOUND_DOCUMENT, test } from "@monorepo/configs/playwright/utils/test";
 import { t } from "./copy.ts";
 import { SUBJECT } from "./fakes.ts";
@@ -121,7 +121,7 @@ test("an open header dropdown has no WCAG AA violations", { tag: "@desktop" }, a
     await openDropdown(page, "Publicaciones");
     await expect(page.getByRole("list", { name: t("navPublicationsPanel.latest") })).toBeVisible();
 
-    await expectNoAxeViolations(page);
+    expect(await axeViolations(page)).toEqual([]);
 });
 
 test(
@@ -170,7 +170,7 @@ test.describe("the not-found page", () => {
     test("the not-found page has no WCAG AA violations", async ({ page }) => {
         await page.goto("/no-existe/");
 
-        await expectNoAxeViolations(page);
+        expect(await axeViolations(page)).toEqual([]);
     });
 });
 
@@ -199,5 +199,5 @@ test("the open mobile menu has no WCAG AA violations", { tag: "@mobile" }, async
     await page.goto("/");
     await openMenu(page);
 
-    await expectNoAxeViolations(page);
+    expect(await axeViolations(page)).toEqual([]);
 });
