@@ -1,17 +1,41 @@
 {
-    "syncedAt": "2026-11-17T13:01:09.340Z",
+    "syncedAt": "2026-11-17T14:33:13.529Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
             "number": 472,
             "title": "Benchmark reference sites",
             "url": "https://github.com/xfontr/monorepo/issues/472",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "benchmark"
             ],
             "createdAt": "2026-11-17T12:57:53Z",
+            "closedAt": "2026-11-17T14:27:13Z",
+            "activity": [
+                "2026-11-17",
+                "2026-11-17",
+                "2026-11-17",
+                "2026-11-17",
+                "2026-11-17"
+            ],
+            "blockedBy": [],
+            "branch": false,
+            "pr": true,
+            "owner": false,
+            "complexity": 5
+        },
+        {
+            "number": 474,
+            "title": "Visitor view structure",
+            "url": "https://github.com/xfontr/monorepo/issues/474",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "visitor-structure"
+            ],
+            "createdAt": "2026-11-17T14:31:47Z",
             "closedAt": null,
             "activity": [],
             "blockedBy": [],

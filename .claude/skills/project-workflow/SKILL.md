@@ -35,8 +35,8 @@ hundred.
    Put features only this project has under `extras`, each with its `dependsOn`. Set
    `ticketSize` unless it is `block`.
    Written by hand, open `data/workflows/projects/<id>.diary.md` beside it, copying
-   [`marina-roustan.diary.md`](../../../data/workflows/projects/marina-roustan.diary.md)'s header,
-   with a first `note` line naming the template; the wizard does this itself.
+   [`marina-roustan.diary.md`](../../../data/workflows/projects/marina-roustan.diary.md)'s header
+   and no lines; the wizard does this itself.
 3. GitHub side: `pnpm workflow:setup <id>` prints the milestone and labels it would create. Show
    the user, and only on their go run it with `--yes`, since it writes to GitHub. Run it again after
    a feature is switched on, for the new blocks' `cap:` labels.
@@ -130,13 +130,17 @@ anything started or closed stays.
 
 ## 7. Keeping the diary
 
-Every project has a `<id>.diary.md`; append one line in the
-[diary's shape](../../../docs/workflows/README.md#-diary), with the time from `date`, on these
-events: the user says they start or stop, a ticket closes (an `estimate` line), the map, an
-estimate, a rule or a command turns out wrong, or one plainly works — a `worked` line. Every
-correction or complaint the user makes about the workflow, the tooling or the agent's output is
-logged as it happens, and so is anything they say went well. Write the fact, the evidence and the
-issue number, never praise for your own work, and leave the verdict to the user.
+Every project has a `<id>.diary.md`. Append one line in the
+[diary's shape](../../../docs/workflows/README.md#-diary), dated from `date +%F`, when:
+
+- a ticket closes (an `estimate` line);
+- the user corrects or complains about the workflow, the tooling or your output, or says something
+  went well, logged as it happens;
+- the map, a ticket's text, a rule or a command turns out wrong, or plainly works.
+
+Before appending, ask: does this line say something worked or went wrong? If not, don't write it.
+What the work found (measurements, the decision, a green `pnpm check`) belongs in the decision report
+or the commit. Never praise your own work.
 
 ## 🎨 The design stage of a website rebuild
 
