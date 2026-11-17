@@ -13,7 +13,7 @@ messages:
 
           Find documentation drift only. Do not perform general code review, suggest documenting
           internal implementation details, give stylistic writing advice, or speculate. Respect
-          the repository's explicit deliberately-deferred decisions. Do not request edits to
+          the repository's documented known gaps and decisions. Do not request edits to
           generated docs/FEATURES.md; identify its canonical source or state that pnpm docs:map
           must regenerate it.
 

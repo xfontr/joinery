@@ -1,7 +1,7 @@
 # 🌐 @monorepo/translations
 
-A repository-hosted translation service that serves versioned JSON locale files over HTTP. It gives
-apps a vendor-free TMS endpoint for local development and deployment.
+A small Hono server that serves the JSON locale files in this folder over HTTP: the `internal`
+vendor of [`@monorepo/i18n`](../../packages/i18n/README.md). No app uses it today.
 
 ```
 infrastructure/translations/
@@ -10,15 +10,7 @@ infrastructure/translations/
   docker/                            ← image + compose for running it, locally or deployed
 ```
 
-The first of the services under `infrastructure/` — see the
-[root README](../../README.md#-workspace-layout) for what belongs there.
-
-## 🔌 Who uses it
-
-It backs the `internal` vendor in [`@monorepo/i18n`](../../packages/i18n). Any app
-can point at it by naming that vendor and setting `baseURL`; it takes no API key.
-
-No app uses it today. `projects/example/` is a stand-in that the specs read.
+`projects/example/` is a stand-in the specs read. No API key.
 
 ## 📡 Endpoints
 
@@ -31,28 +23,14 @@ No app uses it today. `projects/example/` is a stand-in that the specs read.
 curl http://localhost:4000/es-ES/example
 ```
 
-`:locale` and `:project` are the JSON file and its directory, so the route above
-serves `projects/example/es-ES.json`. Adding a locale means adding a file
-here — nothing in this service registers it, but the app has to declare it too; see
-[`docs/guides/adding-a-locale.md`](../../docs/guides/adding-a-locale.md).
-
-Responses are CORS-open (`Access-Control-Allow-Origin: *`). Unknown locales
-return `404`; unsafe `:project`/`:locale` path segments return `400`; a locale
-file that exists but fails to read (bad JSON, permissions) returns `500`.
+The route above serves `projects/example/es-ES.json`. CORS is open. Unknown locale `404`, unsafe
+path segment `400`, unreadable file `500`. A new locale is a new file here plus a declaration in the
+app — see [adding a locale](../../docs/guides/adding-a-locale.md).
 
 ## 🐳 Run in Docker (recommended)
 
-The image is the deployable artifact: multi-stage, production dependencies only,
-non-root, `restart: unless-stopped`. The same build runs locally, where you start
-it once and forget it — it comes back after a crash or a reboot. "Production
-dependencies only" is `pnpm --filter=@monorepo/translations deploy --legacy
---prod --frozen-lockfile /out` in the [`Dockerfile`](./docker/Dockerfile) —
-`deploy` writes a self-contained `node_modules` for just this package,
-`--legacy` because the workspace isn't set up as `deploy`'s non-legacy mode
-expects. The build context itself is trimmed by
-[`Dockerfile.dockerignore`](./docker/Dockerfile.dockerignore) (no `.git`,
-`node_modules`, build outputs, or markdown). Run from this package
-(`pnpm --filter @monorepo/translations <script>`, or `cd` here):
+The [image](./docker/Dockerfile) is the deployable artifact: production dependencies only, non-root,
+`restart: unless-stopped`. From this folder:
 
 ```bash
 pnpm docker:up      # build + start in the background
@@ -60,17 +38,10 @@ pnpm docker:logs    # tail
 pnpm docker:down    # stop and remove
 ```
 
-**Editing `projects/**/*.json` needs no restart and no rebuild.** That directory is
-bind-mounted read-only and `readLocale()` re-reads from disk on every request, so a
-saved edit is served by the very next request.
-
-Editing anything under `server/` *does* need `pnpm docker:up` again, because the
-image bakes the source — that script always rebuilds. If you're actively working on
-the server, don't use Docker at all; run it directly instead.
+Editing `projects/**/*.json` is live (bind-mounted, re-read per request). Editing `server/` needs
+`pnpm docker:up` again, which rebuilds.
 
 ## 💻 Run directly
-
-What you want while working on the server, and what the tests use:
 
 ```bash
 pnpm dev     # node --watch
@@ -78,15 +49,9 @@ pnpm serve   # no watch
 # defaults to http://localhost:4000 — override with PORT
 ```
 
-Note this collides with the container: if `pnpm docker:up` is running, port 4000 is
-already taken and you'll get `EADDRINUSE`. Run one or the other, not both.
+Not alongside the container: both want port 4000.
 
 ## ✅ Checks
 
-`pnpm test`, `pnpm lint` and `pnpm typecheck`, same as everywhere else. The server
-is Hono, so the tests call `app.request()` directly and never bind a port — they
-run fine with the container up.
-
-Tagged `type:infra`, so it may only depend on `@monorepo/configs`. Like `apps/*`, it
-sits outside `packages/*` and therefore outside `nx release` — it is deployed, not
-published, so it has no consumer that needs a version to resolve against.
+Specs call `app.request()` and never bind a port. Tagged `type:infra`: depends only on
+`@monorepo/configs`, and isn't versioned by `nx release`.

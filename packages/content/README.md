@@ -1,141 +1,73 @@
 # 📦 @monorepo/content
 
-A vendor-neutral content client for entries and taxonomies, with a framework-agnostic core and an
-optional Nuxt module that gives server code a cached reader.
-
-Three entry points, kept apart by the `exports` map:
+A vendor-neutral client for CMS entries and taxonomies: a framework-agnostic core plus an optional
+Nuxt module that gives server code a cached reader. WordPress is the only vendor today.
 
 | Import | Contains | Depends on |
 | --- | --- | --- |
-| `@monorepo/content` | domain, ports, adapters, vendor registry, cache key | `ofetch`, `ohash`, `entities` |
-| `@monorepo/content/nuxt` | the Nuxt module and its runtime files — see [`src/nuxt/README.md`](./src/nuxt/README.md) | `@nuxt/kit`, `h3`, `nitropack` |
-| `@monorepo/content/testing` | `faker` (Spanish locale), `fakeAsset`, `fakeAuthor`, `fakeEntry`, `fakeTerm` and `wordpressHandlers(baseURL, content)`, MSW handlers faking a WordPress upstream for e2e | `msw`, `@faker-js/faker` |
+| `@monorepo/content` | Domain, ports, adapters, vendor registry, cache key | `ofetch`, `ohash`, `entities` |
+| `@monorepo/content/nuxt` | The Nuxt module — see [`src/nuxt/README.md`](./src/nuxt/README.md) | `@nuxt/kit`, `h3`, `nitropack` |
+| `@monorepo/content/testing` | Seeded fakes and MSW WordPress handlers — see [🧪 Fake vendors](#-fake-vendors) | `msw`, `@faker-js/faker` |
 
-A React, Vue or plain Node consumer resolves the first and can never reach the second, so
-nothing framework-specific leaks. That is enforced by module resolution, not discipline.
-
-Everything the other two entry points need is an **optional peer dependency**, so resolving the
-first installs none of it. If a non-Nuxt consumer ever ships to production, split the Nuxt half
-into its own package — the optional-peer trick only holds while every consumer lives in this
-workspace.
+The second and third entries' dependencies are optional peers, so a plain consumer of the core
+installs none of them.
 
 ## 🗂 Structure
 
 ```
-src/
-├── index.ts                                  # the public API — the only surface consumers import
-├── core/
-│   ├── domain/
-│   │   ├── content.ts                        # Entry, Term, Page, the resources, the query ceilings
-│   │   ├── errors.ts                         # what can go wrong, with an HTTP status attached
-│   │   └── vendor.ts                         # vendor config shape
-│   ├── ports/
-│   │   ├── HttpClient.ts                     # driven port: the transport
-│   │   └── ContentProvider.ts                # driven port: a vendor, and its config checks
-│   ├── adapters/
-│   │   ├── clients/
-│   │   │   └── OfetchHttpClient.ts           # HttpClient over an injected ofetch instance
-│   │   └── providers/
-│   │       └── wordpress/                    # one directory per vendor, named for its registry key
-│   │           ├── WordpressProvider.ts      # the `wordpress` vendor (WP REST API v2)
-│   │           ├── WordpressConfigs.ts       # API path, the vendor's own page ceiling, taxonomies
-│   │           ├── WordpressHelpers.ts       # query mapping, payload mapping, `x-wp-total` parsing
-│   │           └── WordpressTypes.ts         # the WP REST shapes
-│   ├── contentKey.ts                         # which upstream document a request resolves to
-│   └── registry.ts                           # vendor name → provider, and the config type
-├── nuxt/                                     # the Nuxt module (separate entry point)
-└── testing/                                  # fake vendors for consumers' e2e (separate entry point)
+src/core/domain/      Entry, Term, Page, errors, vendor config — imports nothing
+src/core/ports/       HttpClient and ContentProvider
+src/core/adapters/    OfetchHttpClient, and one folder per vendor under providers/
+src/core/registry.ts  vendor name → provider, and the config type
+src/core/contentKey.ts  the cache key
+src/nuxt/             the Nuxt module
+src/testing/          fakes for consumers' specs and e2e
 ```
 
-Nothing under `core/` imports the Nuxt or Nitro runtime — lint enforces the [list in
-`@monorepo/configs`](../configs/README.md#-what-the-eslint-factories-bundle) — and `core/domain/`
-imports nothing at all. That is the invariant worth keeping: the day it breaks, the core stops being
-portable and the ports stop being worth their indirection.
+Nothing under `core/` may import Nuxt or Nitro; lint enforces it.
 
 ## 📄 The domain
 
-A vendor's shapes never leave its adapter. What consumers see is:
-
 ```ts
-type Entry  = { id, slug, title, excerpt?, body, publishedAt?, updatedAt?, image?, terms, authors, seo?, fields? }
-type Term   = { id, resource, slug, name, description?, seo? }
-type Author = { id, slug, name, bio?, avatar? }
-type SEO    = { title?, description?, noindex? }
-type Page<T> = { items: T[], page, perPage, total, totalPages }
+interface Entry  { id, slug, title, excerpt?, body, wordCount?, publishedAt?, updatedAt?, image?, terms, authors, seo?, fields? }
+interface Term   { id, resource, slug, name, description?, seo? }
+interface Author { id, slug, name, bio?, avatar? }
+interface Page<T> { items, page, perPage, total, totalPages }
 ```
-
-Four resources, in two families, because a taxonomy is not a document:
 
 | Family | Resources | Read with |
 | --- | --- | --- |
-| entries | `posts`, `pages` | `listEntries`, `getEntry` |
-| terms | `categories`, `tags` | `listTerms`, `getTerm` |
+| Entries | `posts`, `pages` | `listEntries`, `getEntry` |
+| Terms | `categories`, `tags` | `listTerms`, `getTerm` |
 
-`isEntryResource` / `isTermResource` are exported to sort a string from a URL into one of them.
-Both unions are derived from the runtime arrays, so the list and the type cannot drift apart.
-
-`body` and `excerpt` are `RichText` — `{ format: "html", value }`, the vendor's HTML. **Every
-other string is plain text**: `title`, a term's `name` and `description`, an author's `name` and
-`bio`. WordPress renders those entity-escaped too, so its provider strips their tags and decodes
-their entities with [`entities`](https://github.com/fb55/entities), and `string` means text a consumer can print as is.
-
-`seo` holds only the text an SEO plugin stores: title, description and `noindex`. Its URLs point at
-the CMS host, so the consuming app builds canonicals against its own routes. For WordPress, `seo`
-comes from Yoast and an author's `avatar` from Simple Local Avatars. Each is left unset when its
-plugin isn't installed. `listEntries` also filters by `author`, an author id.
-
-`wordCount` is the number of words in `body`, counted by the provider, so a listing can show a
-reading time without parsing HTML.
-
-`fields` holds the vendor's custom fields by key, unvalidated, so the consumer narrows each value it
-reads. For WordPress they come from ACF, for a field group with *Show in REST API* on.
-
-Ids are strings, always, even where the vendor numbers them.
+- `body` and `excerpt` are HTML (`{ format: "html", value }`). **Every other string is plain text**,
+  already decoded.
+- `seo` comes from Yoast, `avatar` from Simple Local Avatars, `fields` from ACF — each unset when the
+  plugin isn't installed. `fields` is unvalidated.
+- Ids are always strings.
+- `MAX_PAGE`, `MAX_PER_PAGE` and `MAX_SEARCH_LENGTH` bound any query forwarded from a request, so the
+  cache key space stays finite.
 
 ## 🏷 Vendors
 
-A vendor is one entry in [`core/registry.ts`](./src/core/registry.ts). The registry is the
-single source of truth: it drives both the runtime lookup and the config type, so config and
-code cannot drift.
-
-```ts
-const providers = {
-    wordpress: () => import("./adapters/providers/wordpress/WordpressProvider"),
-};
-```
-
-`VendorConfig` is derived from it, in the same shape as
-[`@monorepo/i18n`'s](../i18n/README.md#-vendors). `baseURL` is shared by every vendor, and each
-vendor's `options` field is read off its provider class, so a vendor that needs options makes them
-**required** in config, and a vendor that needs none **forbids** them:
+A vendor is one entry in [`core/registry.ts`](./src/core/registry.ts), which drives both the runtime
+lookup and the config type. `baseURL` holds whatever picks the document; `options` holds credentials
+only, and is required when the provider declares it, forbidden when it doesn't:
 
 ```ts
 { name: "wordpress", baseURL }                       // options not allowed
 { name: "contentful", baseURL, options: { token } }  // a vendor with credentials
 ```
 
-Whatever picks the document goes in `baseURL`, and `options` carries credentials and nothing else.
-A Contentful space and environment, or a Sanity project and dataset, are path or host segments of
-the vendor's API, so they belong in `baseURL`
-(`https://cdn.contentful.com/spaces/<space>/environments/<env>`). That split is what lets the
-[cache key](#-framework-agnostic-use) leave `options` out.
+Adding a vendor (the `content-new-vendor` skill walks it):
 
-Adding a vendor:
-
-1. Write `core/adapters/providers/<name>/<Name>Provider.ts` extending `ContentProvider`, or
-   `ContentProvider<YourOptions>` if it takes credentials, overriding `listEntries` and `listTerms`
-   with that vendor's URL contract. One directory per vendor, named for its registry key, and directory, file, class and
-   key all carry the same name — `wordpress` → `wordpress/WordpressProvider.ts` →
-   `class WordpressProvider`. Constants, mapping helpers and the vendor's own response types move
-   into siblings in that directory as soon as the provider stops fitting in one file, which keeps
-   the shapes that must not leave the adapter from being importable from anywhere else;
-   [`wordpress/`](./src/core/adapters/providers/wordpress) is the worked example.
-2. If it takes `options`, override `configProblems()` to say when they are unusable — see
-   [validation](#-validation).
+1. Write `core/adapters/providers/<name>/<Name>Provider.ts` extending `ContentProvider` (or
+   `ContentProvider<YourOptions>`), overriding `listEntries` and `listTerms`. Directory, file, class
+   and registry key share the name. Helpers and wire types go in siblings —
+   [`wordpress/`](./src/core/adapters/providers/wordpress) is the example.
+2. If it takes `options`, override `configProblems()` — see [validation](#-validation).
 3. Add one line to `providers`.
-4. Override `getEntry` / `getTerm` **only** if the vendor has a native single-document
-   endpoint. Otherwise the inherited one-item list already serves them.
-5. Nothing else. Config typing, lazy loading and the Nuxt reader follow automatically.
+4. Override `getEntry` / `getTerm` only if the vendor has a single-document endpoint.
 
 The import is lazy, so a deployment ships only the vendor it configured.
 
@@ -146,197 +78,83 @@ interface HttpClient {
     get<T>(url: string, options?: RequestOptions): Promise<HttpResponse<T>>
 }
 
-abstract class ContentProvider<T extends object = object> implements Vendor<T> {
-    abstract listEntries(resource: EntryResource, query?: EntryQuery): Promise<Page<Entry>>
-    abstract listTerms(resource: TermResource, query?: Query): Promise<Page<Term>>
-    protected configProblems(): string[]      // [] unless the vendor has options to check
-
-    getEntry(resource, slug): Promise<Entry>   // a one-item list, unless overridden
+abstract class ContentProvider<T extends object = object> {
+    abstract listEntries(resource, query?): Promise<Page<Entry>>
+    abstract listTerms(resource, query?): Promise<Page<Term>>
+    protected configProblems(): string[]
+    getEntry(resource, slug): Promise<Entry>   // a one-item list unless overridden
     getTerm(resource, slug): Promise<Term>
 }
 ```
 
-A provider knows its vendor's URL contract but delegates all I/O to an injected `HttpClient`,
-so it binds to no transport. Composition happens at the edge — the consumer builds the client
-and injects it.
-
-Two things the port deliberately carries:
-
-- **`url` is relative.** The consumer builds the client with `ofetch.create({ baseURL })` from the
-  same config it hands `createProvider`, and the provider passes the path its API contract defines.
-  ofetch keeps the path of a subdirectory install (`https://example.com/blog`) when it joins them.
-- **`HttpResponse` exposes headers.** Vendors report pagination there — a body alone cannot
-  build a `Page`.
-
-And one thing it deliberately hides: a failed request surfaces as an `UpstreamError`, never as
-a transport-specific one. Without that, the domain cannot tell "upstream said no" from "the
-network is down", and the status it answers with would depend on which HTTP library is
-installed. A body declared as anything but JSON counts as failed too, even with a 200: a host's
-bot filter answers REST routes with an HTML challenge page, and a provider handed that string
-breaks on it with an error that names nothing. Its `cause` carries the URL, the content type and
-the first 300 characters of the body instead.
-
-There is no service layer on top of the provider port, deliberately: a class forwarding one
-call to one collaborator would add a name and a file without adding behaviour. Callers talk to
-the port directly. Wrap it in a service the day something real needs to live there.
+- A provider knows its vendor's URLs but does no I/O itself; the consumer injects the client.
+- `url` is relative to the client's `baseURL`. `HttpResponse` exposes headers, since vendors
+  paginate there.
+- Every failed request becomes an `UpstreamError`, including a `200` that isn't JSON (a bot filter's
+  HTML challenge page).
 
 ## ✅ Validation
 
-The registry types the config at compile time, but deploy-time values arrive from env vars, and
-`process.env.WHATEVER ?? ""` typechecks fine. So a provider validates itself **in its
-constructor**: it cannot exist misconfigured, the same way it cannot exist without a transport.
-Every construction path is covered, not just `createProvider`.
+A provider validates its config in its constructor, so it can't exist misconfigured. `baseURL` must
+be an absolute URL; `configProblems()` checks the vendor's `options`. All problems are reported at
+once in one `MisconfiguredVendorError` (a `500`).
 
-Two halves, because only one of them is knowable in the core:
-
-| Checked | Where | Rule |
-| --- | --- | --- |
-| `baseURL` | `ContentProvider` | parses as an absolute URL, so a missing scheme (`wp.example.com`) is caught rather than silently becoming a relative fetch |
-| `options` | the provider, via `configProblems()` | whatever that vendor's credentials need. `wordpress` has none and overrides nothing |
-
-`configProblems()` returns problems rather than throwing, so one `MisconfiguredVendorError` lists **all** of
-them at once: fixing a deployment one restart per missing variable is the thing worth avoiding.
-
-Because it is a `ContentError`, it needs no wiring at the edge: it reports as a `500` naming
-what is unset, instead of the vendor being blamed with a `502` for config that never arrived.
-
-> `configProblems()` is called from the base constructor, so an override may only read
-> `options` — a subclass's own field initialisers have not run yet. The type system cannot
-> enforce that; `core/ports/ContentProvider.spec.ts` pins it so the next vendor meets it in a
-> test rather than in production.
+`configProblems()` runs from the base constructor, so an override may only read `options` — a
+subclass's own fields aren't initialised yet.
 
 ## 🧩 Framework-agnostic use
 
 ```ts
-import { ofetch } from "ofetch";
-import { createProvider, OfetchHttpClient } from "@monorepo/content";
-
-const baseURL = process.env.CONTENT_VENDOR_BASE_URL!;
-
 const http = new OfetchHttpClient(ofetch.create({ baseURL }));
 const provider = await createProvider({ name: "wordpress", baseURL }, http);
-
 const page = await provider.listEntries("posts", { perPage: 6 });
-const entry = await provider.getEntry("posts", "hello-world");
 ```
 
-The transport is a constructor argument, so a provider cannot exist without one. Build it from
-the config you already hold — never from the provider you are about to create. On a transport that is not ofetch, write the ten-line
-`HttpClient` for it in your own app — that interface is the only thing the core needs.
-
-Caching itself is **not** in the core — the Nuxt integration caches inside `useContent`, and any
-other consumer supplies its own. What *is* in the core is `contentKey(vendor, resource, query)`:
-the identity of the upstream document, covering every input that picks it.
-
-```ts
-contentKey({ name: "wordpress", baseURL: "https://wp.test/" }, "posts", { page: 2, perPage: 6 })
-// "wordpress_posts_<hash>", word characters only
-```
-
-Four decisions in there:
-
-- **The vendor config is hashed whole, bar `options`**, not listed field by field. A field added
-  to `Vendor` can't be forgotten here, and `baseURL` being one of them is what stops two
-  deployments of one vendor sharing an entry. `options` stays out because it carries credentials,
-  and credentials are not identity: two tokens for one space fetch the same document, so rotating
-  one keeps the cache, and a secret never reaches a storage path.
-- **The query axes are sorted and encoded before being hashed**, so two callers spelling one query
-  differently share an entry, and a crafted value cannot forge an axis it did not ask for.
-- **The key is word characters only**, because Nitro's storage layer cuts a key at `?` and splits it
-  at `/`, `\` and `:` — [the Nuxt module](./src/nuxt/README.md#-caching) has the detail. Hashing the query half
-  also bounds the length, which a driver turning it into a filename cares about. The cost is that
-  the query half is no longer readable in a cache listing; the vendor and the resource still are.
-
-The ceilings in the domain — `MAX_PAGE`, `MAX_PER_PAGE`, `MAX_SEARCH_LENGTH` — are contract
-limits, distinct from any vendor's own. They exist so the key space of a query forwarded from a
-request is finite and a crafted one cannot mint an unbounded number of cache entries. Apply them before you build a
-key, not after.
+The core doesn't cache. It provides `contentKey(vendor, resource, query)`, the identity of an
+upstream document: the vendor config minus `options` (credentials aren't identity), plus the sorted
+query, hashed to word characters only because Nitro's storage splits keys on `/`, `:` and `?`.
 
 ## 🧪 Fake vendors
 
-`@monorepo/content/testing` exports MSW handlers that answer like a vendor, for a consumer's e2e
-run. The consumer brings domain values and the handlers speak the wire format, so a vendor's shapes
-still never leave this package:
-
 ```ts
-import { wordpressHandlers } from "@monorepo/content/testing";
+import { fakeEntry, fakeTerm, wordpressHandlers } from "@monorepo/content/testing";
 
-setupServer(...wordpressHandlers(baseURL, { posts: entries, categories: terms })).listen();
+const entry = fakeEntry({ terms: [fakeTerm({ slug: "derecho-penal" })] });
+setupServer(...wordpressHandlers(baseURL, { posts: [entry] })).listen();
 ```
 
-| Export | Serves | Contract it keeps |
-| --- | --- | --- |
-| `wordpressHandlers(baseURL, content)` | `GET <baseURL>/wp-json/wp/v2/:resource` for each resource given | `?slug=`, `?categories=` and `?tags=` by term id, `?search=` on every word across title, excerpt and body, `page` and `per_page`, `x-wp-total`/`x-wp-totalpages`, WordPress's `400` for a page past the end, a `404` for a resource with no content. Titles, names, bios and term descriptions go out entity-escaped, as WordPress sends them |
-
-[`wordpress.spec.ts`](./src/testing/wordpress.spec.ts) runs the real `WordpressProvider` on the
-real client against the handlers, and asserts every `Entry` field comes back unchanged, so a fake
-that drifts from the provider fails here rather than in someone's e2e. The author filter isn't
-faked: nothing consumes it yet.
-
-The same entry exports seeded `@faker-js/faker` factories for the domain types, so a spec
-states only the fields it asserts on and the rest is filled in:
-
-```ts
-const entry = fakeEntry({ title: "La &#8220;prueba&#8221;", terms: [fakeTerm({ slug: "derecho-penal" })] });
-```
-
-| Export | Builds |
+| Export | Gives |
 | --- | --- |
-| `fakeEntry(overrides)` | An `Entry` with a category, an invented Spanish author and four paragraphs |
-| `fakeTerm(overrides)` | A category `Term`; pass `resource: "tags"` for a tag |
-| `fakeAuthor(overrides)` | An `Author` with an invented Spanish name |
-| `fakeAsset(overrides)` | An `Asset` whose URL is an inline image, so no page fetches a real host |
-| `faker` | The seeded `fakerES` instance itself, for any other value a spec or an e2e data file needs |
+| `wordpressHandlers(baseURL, content)` | MSW handlers for `/wp-json/wp/v2/:resource`: slug, term, search and paging filters, WordPress's headers and error codes |
+| `fakeEntry`, `fakeTerm`, `fakeAuthor`, `fakeAsset` | Domain values; pass only the fields a spec asserts on |
+| `faker` | The seeded Spanish `faker` instance, for any other value |
 
-They use `fakerES` with a fixed seed and reference date, so every run builds the same values and a
-failure reproduces. The order of calls decides the values, so adding a call moves every
-value generated after it. Draw other values from the exported `faker` rather than a consumer's own
-import, which is a separate, unseeded instance whenever the two resolve to different copies. Slugs come out the way WordPress writes them. `msw` and `@faker-js/faker`
-are optional peers, like the Nuxt entry's dependencies.
+The faker is seeded, so values are stable — but adding a call shifts every value after it. Use the
+exported `faker`, not your own import. [`wordpress.spec.ts`](./src/testing/wordpress.spec.ts) runs
+the real provider against the handlers so the fake can't drift.
 
 ## ⚠️ Errors
 
-All of them extend `ContentError`, so one `instanceof` catches anything the package raises.
+All extend `ContentError` and carry their own `statusCode`. `statusMessage` never includes the
+vendor's URL; the real failure is on `cause`, and logging it is the app's job.
 
-| Error | `statusCode` | Raised when |
+| Error | Status | Raised when |
 | --- | --- | --- |
-| `MalformedQueryError` | 400 | a query parameter is unparseable or out of range — the message says what was expected |
-| `UndefinedResourceError` | 404 | the request names a resource, or a taxonomy, the domain does not have — the message lists the ones it does |
-| `NotFoundError` | 404 | the vendor answered, with nothing under that slug |
-| `PageNotFoundError` | 404 | a list asked for a page past its last one. WordPress answers that with a `400` coded `rest_post_invalid_page_number`, which its provider reads off `UpstreamError.body` |
-| `UpstreamError` | 400 / 404 / 502 | the transport failed, or the vendor answered with something other than JSON. A 400 or 404 relays the answer to the request that was actually made; **everything else is a 502**, because an upstream 401 or 403 means *our* credentials are wrong and must never invite the client to retry with different ones |
-| `ContentUnavailableError` | 502 | the vendor failed for that resource in a way nothing else diagnosed (original error in `cause`) |
-| `UndefinedVendorError` | 500 | config names a vendor the registry doesn't have — the message lists the registered names |
-| `MisconfiguredVendorError` | 500 | the vendor exists but its config cannot work — `problems` lists every reason |
+| `MalformedQueryError` | 400 | A query parameter is unparseable or out of range |
+| `UndefinedResourceError` | 404 | The resource or taxonomy doesn't exist |
+| `NotFoundError` | 404 | Nothing under that slug |
+| `PageNotFoundError` | 404 | A page past the last one |
+| `UpstreamError` | 400 / 404 / 502 | The vendor failed. Only 400 and 404 are relayed; an upstream 401/403 means our credentials are wrong, so it's a 502 |
+| `ContentUnavailableError` | 502 | Any other read failure, including a mapping bug |
+| `UndefinedVendorError` | 500 | Config names an unregistered vendor |
+| `MisconfiguredVendorError` | 500 | The vendor's config can't work; `problems` lists why |
 
-Each error carries its own `statusCode` / `statusMessage`, so adding one never means editing a
-mapping somewhere else — the Nuxt reader just hands it to `createError`. A non-HTTP consumer ignores
-both and reads `message`.
+## 🧭 Known gaps
 
-`statusMessage` reaches the client, so none of these repeat the vendor's URL or the transport's
-message. The real failure stays on `cause`, and since `createError` hands h3 an error it treats as
-handled, Nitro never logs it: logging it is the app's job.
-
-The Nuxt reader treats a failure it can't diagnose in two ways. If the provider can't even be
-built — a broken registry entry, say — the error propagates as itself, so the app reports an
-unhandled 500 with its own stack. If a read fails, it becomes a `ContentUnavailableError`, even
-when the fault is the adapter's own mapping. A vendor answering in a shape the adapter doesn't
-expect looks identical from here, so the client gets a 502 either way, and the original error
-waits on `cause`.
-
-## 🧭 Deliberately deferred
-
-Sized for a small monorepo. When it grows:
-
-| Later need | What changes |
+| Gap | Note |
 | --- | --- |
-| A timeout, or a retry policy | `OfetchHttpClient` passes only headers and query, so a slow vendor holds an SSR request open until the platform kills it — and SWR cannot help, because it only serves stale content after a successful fill. ofetch supports both natively: default them in the client, or widen `RequestOptions` if a provider needs to tune them per call |
-| A list that doesn't carry every body | A list still fetches and caches each entry's full `body`, about 53 KB a WordPress post, when a listing reads only `wordCount`. WordPress has no word-count field, so a `_fields` projection that drops `content` also drops the count. Expose one from WordPress (an ACF field filled on save), then project lists to it |
-| Draft previews | Every read is cached and anonymous, and every post is a prerendered file since [0033](../../docs/decisions/0033-huella-legal-hybrid-prerender.md). A preview needs an uncached read authenticated with an application password from env, and a runtime route the app opts into per request |
-| Untrusted authors in the CMS | nothing sanitises the HTML in `body`. That is fine while the CMS is first-party, and a documented assumption rather than an oversight — a vendor whose authors are not trusted needs sanitising where it is rendered |
-| A vendor with more than one document family | `Resource` is two closed unions. A vendor with custom post types needs them opened up, and `TAXONOMIES` in the WordPress adapter is where the mapping between its names and ours already lives |
-| A vendor that actually serves locales | Nothing here has a locale axis — not `Query`, not the cache key, not the Nuxt reader. Adding one is a single change across all three, and it has to be: a key that gains an axis *after* entries exist serves the wrong language until every one of them expires. A Polylang- or WPML-aware provider maps it to that plugin's `lang` parameter, and the Nuxt reader's `query.ts` should bound the tag — a BCP-47 pattern allows arbitrarily long subtag chains |
-| A query axis one vendor serves and another can't | There is no error for it, because there is no such axis today. Add one — a 400 naming the vendor and the parameter — rather than letting a provider drop the axis: a dropped one is cached under the value that was asked for, which is worse than refusing |
-| Structured content | `RichText` is HTML only, because no vendor emits anything else. A Contentful or Sanity provider widens it to a union with a `markdown` or `blocks` member, and every consumer then handles the new member, which is the breaking change it is |
-| Tracing the upstream call | nothing here emits a span, and it cannot: the boundary rules let `type:integration` depend on `type:config` only, and the Nuxt reader builds its own transport. Instrument at the Nitro level from the consuming app, or make the client injectable — but only when there is something to swap |
-| A third vendor package, or an app adapter that wants this plumbing | `@monorepo/content` and `@monorepo/i18n` keep matching copies of their vendor plumbing on purpose: the boundaries forbid either importing the other, and while there are two consumers a second copy of one contract costs less than a package. When a third appears (a newsletter's Mailchimp client, say), extract a vendor kit with its own boundaries tag that the integration packages may depend on: the base error with `UpstreamError`, `UndefinedVendorError` and `MisconfiguredVendorError`, the `HttpClient` port and its ofetch adapter, a `createRegistry(providers)` factory, `assertConfigured`, the h3 error mapping and the key escaping. Each package keeps its domain and its named errors. [D2](../../docs/audits/2026-10-21-monorepo.md#-duplication) lists the copies |
+| No timeout or retry | A slow vendor holds an SSR request open. ofetch supports both |
+| Lists fetch every body | ~53 KB per post when a listing needs only `wordCount` |
+| No sanitising of `body` | Fine while the CMS is first-party |
+| No locale axis | Adding one later must touch the query, the cache key and the Nuxt reader together |
+| Vendor plumbing duplicated with `@monorepo/i18n` | Deliberate until a third consumer ([D2](../../docs/audits/2026-10-21-monorepo.md)) |

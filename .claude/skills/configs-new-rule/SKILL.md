@@ -55,7 +55,7 @@ ask them, not a reason to remove the rule.
 
 ## Finish
 
-- Add a row to `lib/README.md` and a bullet to the package README's factory list. Say what the rule
-  enforces and why, not the selector.
+- Add a row to `lib/README.md`, saying what the rule enforces and why, not the selector. An opt-in
+  export also gets a row in the package README's opt-in table.
 - Run `pnpm check` with a long timeout and fix what the rule finds across the workspace. A configs
   change makes every project affected.

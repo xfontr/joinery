@@ -10,7 +10,7 @@ decision: accepted
 
 The header has to serve three jobs: reading, finding the next good read, and persuading legal
 professionals to publish. It rendered four flat links through `UNavigationMenu`, and
-[`/sobre/`](../../apps/huella-legal/layers/archive/app/pages/sobre.vue) was reachable only from the
+[`/sobre/`](../../apps/huella-legal/layers/archive/app/pages/about.vue) was reachable only from the
 footer, so a would-be author couldn't easily find out what the journal is. huellalegal.com has the
 same gap: its "Sobre" item links to `/colaboradores/`.
 

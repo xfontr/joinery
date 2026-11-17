@@ -1,9 +1,7 @@
 # 📏 Naming and folder conventions
 
-One convention per kind of file, so a contributor moving between projects can predict where
-something lives and what it is called before opening the tree. Each row says where the rule comes
-from and what breaks without it. A rule only one project follows stays in that project's README and
-is linked from here, under the [ownership rule](./README.md) every concept doc follows.
+Where each kind of file lives and what it's called, across projects. A rule only one project follows
+stays in that project's README.
 
 ## 🎯 Target names
 
@@ -17,11 +15,8 @@ names over them, and everything that runs a project calls only the stable names.
 | `test` | `vitest . --watch=false` | `pnpm test`, CI, pre-push |
 | `build` | Whatever the project actually deploys: `nx nuxt:build`, or `nx build-static` in [`developer-portal`](../../apps/developer-portal/CLAUDE.md) | `pnpm build`, CI |
 
-The two names never collide because the [`nx.json`](../../nx.json) `plugins` block sets every
-inferred target's name, and `targetDefaults` hangs caching and the `nuxt-prepare` edge on the stable
-names alone. A project whose build is not the plugin's picks it in its own script, so
-nothing upstream needs to know which one it is. Dropping the aliases would mean renaming every
-`targetDefaults` key, CI job, hook and `pnpm check` call to a target that differs per project.
+[`nx.json`](../../nx.json) names every inferred target and hangs caching on the stable names, so
+hooks, CI and `pnpm check` never need to know which tool a project uses.
 
 ## 📦 Package manifests
 
@@ -43,9 +38,3 @@ nothing upstream needs to know which one it is. Dropping the aliases would mean 
 
 `infrastructure/scripts` is not a Nuxt app and keeps each type beside the function that produces
 it, per [0004](../decisions/0004-scripts-architecture.md).
-
-## 🧭 Deliberately deferred
-
-| Later need | What changes |
-| --- | --- |
-| Nothing enforces the component, page or route-type rules | A `monorepo/*` lint rule through the [`configs-new-rule`](../../.claude/skills/configs-new-rule/SKILL.md) skill, once a second violation shows the rules are drifting |

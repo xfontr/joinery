@@ -1,8 +1,7 @@
 # 🌳 worktree
 
-Gets a linked git worktree ready for its first `lint`, `test` or `dev`: it copies the env files git
-ignores and runs the install CI runs. Wherever the worktree came from, a fresh one has neither, and
-Claude Code creates them under `.claude/worktrees/` for every isolated agent.
+Gets a linked git worktree (such as Claude Code's `.claude/worktrees/`) ready for its first `lint`,
+`test` or `dev`: copies the git-ignored env files and runs CI's install.
 
 ```sh
 pnpm worktree:prepare .claude/worktrees/agent-a1     # relative to where you typed it
@@ -31,17 +30,5 @@ domain/worktree.ts     the porcelain parser and which paths count as env files
 | Copy `.env` and `.env.*` from the main checkout | They're git-ignored, so a worktree starts without them. `.env.example` is tracked, so it's never listed; an existing file is never overwritten |
 | `pnpm install --frozen-lockfile --ignore-scripts` | The same install every CI workflow runs. The pnpm store is shared, so it takes seconds |
 
-There's no `nuxi prepare`. The `nuxt-prepare` edge in [`nx.json`](../../../../nx.json) and the
-Vitest presets' `prepareNuxt.mjs` already generate `.nuxt` before `lint`, `typecheck` and `test`,
-and a fresh worktree lints `@monorepo/huella-legal` cleanly without it.
-
-Git hooks need nothing either. `core.hooksPath` sits in the shared `.git/config` as an absolute
-path to the main checkout's `.husky/_`, so a worktree runs the main checkout's copy of the hooks.
-
-## 🧭 Deliberately deferred
-
-| Later need | What changes |
-| --- | --- |
-| Creating the worktree too | `issue:pick <n> --worktree` would run `git worktree add` then this. Deferred while Claude Code's own `EnterWorktree` is the usual creator |
-| Preparing every unprepared worktree at once | A loop over the listing that the no-argument form prints. Left out because Claude Code keeps finished agent worktrees around, and installing into all of them is rarely wanted |
-| Running automatically | A Claude Code hook on worktree creation, if one exists for the version in use. Until then it's one command |
+No `nuxi prepare` is needed (Nx and the Vitest presets handle `.nuxt`), and hooks already work
+through the shared `core.hooksPath`.

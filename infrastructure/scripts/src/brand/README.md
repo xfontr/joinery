@@ -14,11 +14,9 @@ pnpm brand:contrast apps/marina-roustan/layers/design/app/assets/main.css
 | `brand:extract <url>…` | The brand table (Paper, Ink, Primary, Accent, Type, Tone), a 50–950 ramp for each of the four colours, the type scale per tag, the control radii and the twelve most-painted colours | No URL, a URL that isn't http(s), or no page answered 2xx |
 | `brand:contrast <path>` | A `Role \| Token \| Surface \| Ratio` table, ready for the app's `DESIGN.md` | No path, no `--ui-text-*` or `--ui-bg-*` role, a role that points at an undefined variable or a cycle, or any pair below 4.5:1 |
 
-`extract` needs Chromium and the network: run `pnpm exec playwright install chromium` from
-`infrastructure/scripts` once. It only ever reads public pages, one headless load each at
-1280 × 800, and nothing in `dev`, e2e or CI runs it. Tone is always `—`: it is judged by a person
-looking at the site, not measured. `contrast` reads one stylesheet and touches no network, so a
-token change can re-run it as often as it likes.
+`extract` needs Chromium (`pnpm exec playwright install chromium`, once) and loads each page at
+1280 × 800. Tone is always `—`: a person judges it. `contrast` is offline. Every pair is held to
+4.5:1, light theme only.
 
 ## 🗂 Structure
 
@@ -45,11 +43,3 @@ domain/contrast.ts    resolving var() chains, pairing roles, WCAG ratios
 The ramp borrows the lightness of Tailwind's `neutral` steps and tapers the anchor's chroma toward
 50 and 950, so a generated palette steps like Tailwind's own and the live colour survives unchanged
 at its step ([`ramp.ts`](./domain/ramp.ts)).
-
-## 🧭 Deliberately deferred
-
-| Later need | What changes |
-| --- | --- |
-| More than one width | `VIEWPORT` in [`browser.ts`](./adapters/browser.ts) is 1280 px only; a mobile-first site whose small-screen type differs would need one pass per width and a type table per width |
-| Dark mode | Only the light roles are paired. A dark theme needs a second `:root` block read under its selector and a second table |
-| Large-text thresholds | Every pair is held to 4.5:1. Headings at 24 px and over could pass at 3:1, which needs the role's size, and the stylesheet doesn't say it |

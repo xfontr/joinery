@@ -1,74 +1,32 @@
 # 📚 drift
 
-A cheap, non-AI proxy for "did this change make some project's docs wrong": if a range changes a
-project's docs recently, or changes very little, it stays quiet; otherwise it warns and offers to
-file an issue. It only ever nudges — nothing here fails or blocks anything.
+A cheap, non-AI nudge: for each project a branch touches, warn when its docs may be stale and offer
+to file an issue. It never fails or blocks, and no hook runs it.
 
 ```sh
-pnpm docs:drift                                        # against merge-base(HEAD, master)..HEAD
-DOCS_DRIFT_BASE=<sha> DOCS_DRIFT_HEAD=<sha> pnpm docs:drift   # against an explicit range
+pnpm docs:drift                                              # merge-base(HEAD, master)..HEAD
+DOCS_DRIFT_BASE=<sha> DOCS_DRIFT_HEAD=<sha> pnpm docs:drift  # any range
 ```
-
-It is a manual command: no hook or workflow calls it. The explicit range is for asking about
-something other than the current branch, such as a single commit or an already-pushed range.
 
 ## 🗂 Structure
 
 ```
-index.ts            hands main to run()
-main.ts             the range, the per-project loop, the prompt and gh issue create
-adapters/git.ts     merge-base, changed files, a project's diff stats and diff text, last markdown commit
-domain/detect.ts    the warn/don't-warn decision — the only real logic here
+main.ts             the range, the per-project loop, the prompt, the issue
+adapters/git.ts     changed files, diff stats and text, last markdown commit
+domain/detect.ts    the warn decision and its thresholds
 ```
 
-`createIssue`, the file cache, `orExit`, the output surface and `git` itself come from
-[`../shared/`](../shared/README.md), which is also where the repo root gets resolved — `git.ts` here
-only asks the questions this script needs.
+## 🚦 When it warns
 
-## 🚦 Why a project gets warned
+Either condition is enough, for a project the range touches:
 
-Only projects the current range actually touches are considered at all — `git diff --name-only`
-grouped by the first two path segments (`packages/<name>`, `apps/<name>`,
-`infrastructure/<name>`), per the `new-package` skill's layout. Within that set, either condition
-is enough on its own:
-
-| Condition | Threshold | Why |
-| --- | --- | --- |
-| Docs are stale | No markdown file under the project has been touched in ≥4 months (`STALE_DOCS_MS` in [`detect.ts`](./domain/detect.ts)) | A small change landing on docs nobody's looked at in a while is still worth a glance |
-| The change is big | ≥200 changed lines, ≥8 changed files, or any rename (`BIG_CHANGE_LINES`/`BIG_CHANGE_FILES` in [`detect.ts`](./domain/detect.ts)) | A big change with same-week docs is still worth a look — size alone is signal regardless of doc age |
-
-Both are proxies, not a semantic check — a 200-line refactor with no behavior change warns the same
-as a 200-line rewrite that actually invalidates the README. See
-[0002](../../../../docs/decisions/0002-docs-drift-detection.md) for where that ceiling sits and
-what's deferred past it.
-
-## 🔁 Not re-warning for the same diff
-
-Each project's fingerprint — a hash of `git diff base..head -- <root>`'s full text — is stored under
-the `drift-fingerprints` cache key via `../shared/adapters/cache.ts`'s `readCache`/`writeCache`, the same file
-cache `issue/` uses for projects and labels. It's written only once the warning is answered, yes or
-no, or when the change needs no warning at all. A Ctrl+C at the prompt, or a non-interactive run that
-could only print a pointer, leaves it unrecorded, so the next run asks again. A second run with
-nothing new for a project reads the same fingerprint and skips it entirely. The trade-off is the same one
-`issue/README.md` already names for its own cache: `node_modules/.cache` is per-clone and a fresh
-`pnpm install` clears it for free, so a clean clone can re-warn once for changes that already got a
-"no" on another machine.
-
-## 📋 Filing the issue
-
-No project picker, no label, no description — `title: "Address documentation drift for <Name>"`,
-`body: ""`, and a hardcoded `project: "Monorepo"` (see `PROJECT` in [`main.ts`](./main.ts)). This
-is deliberately narrower than [`pnpm issue:add`](../issue/README.md#-pnpm-issueadd): the issue exists
-to put the project back in front of a human, not to pre-judge what changed, so whoever picks it up
-reads the diff themselves.
-
-`<Name>` is the project root's last path segment, kebab-case turned to Title Case — `apps/huella-legal`
-becomes `Huella Legal` (`displayName` in [`detect.ts`](./domain/detect.ts)).
-
-## 🧭 Deliberately deferred
-
-| Later need | What changes |
+| Condition | Threshold (in [`detect.ts`](./domain/detect.ts)) |
 | --- | --- |
-| Duplicate issues across machines or after a cache wipe | No check against already-open issues before filing — `createIssue` just files. Worth it once this becomes a two-person repo; a solo one notices a duplicate immediately |
-| Tuning the thresholds from real noise | `STALE_DOCS_MS`, `BIG_CHANGE_LINES`, `BIG_CHANGE_FILES` are constants in `detect.ts`, picked without data. Move them once a few months of real warnings say they're wrong in either direction |
-| Running in CI | Deliberately not — filing an issue and prompting for confirmation both need a human on the other end, which CI doesn't have |
+| Docs are stale | No markdown under the project touched in 4 months |
+| The change is big | ≥ 200 lines, ≥ 8 files, or any rename |
+
+Both are proxies ([0002](../../../../docs/decisions/0002-docs-drift-detection.md)). An answered
+warning is remembered by a hash of the project's diff, so the same diff never asks twice on this
+clone.
+
+Filing creates `Address documentation drift for <Name>` on the `Monorepo` board, with an empty body.

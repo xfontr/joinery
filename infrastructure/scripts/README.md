@@ -1,37 +1,16 @@
 # 🤖 @monorepo/scripts
 
-The repository's command-line toolbox for local development, issue workflows, documentation checks
-and release-adjacent automation.
+The repo's CLI toolbox: dev startup, issue workflows, doc checks and repo gates. Nothing imports
+it; every script is run by hand, a hook or CI.
 
 ⚠️ This is a mostly vibe-coded app, with low human intervention. Why: it's purely a DX tool. I do not
 have the resources to properly build and maintain this, so I went for the quick and easy shortcut.
 
-Nothing imports this package — every script here is a CLI you run by hand or a hook runs for you,
-which is why it lives in `infrastructure/` rather than `packages/`.
-
-One folder per script under `src/`, each with its own README. This one only covers what they share.
+One folder per script under `src/`, each with its own README. This one covers what they share.
 
 ## 🗂 Structure
 
-```
-src/
-  dev/              pnpm dev — pick a project to start, installing the workspace first if it's a fresh clone
-  issue/            pnpm issue:add | issue:pick | issue:brief — file an issue, branch off one, or read one whole
-  ship/             pnpm issue:ship — push, open or reuse the PR, arm auto-merge, watch checks
-  ci-failures/      pnpm ci:failures — a PR's failed checks, cut down to their error lines
-  env-sync/         pnpm env:sync — lay every .env out like its .env.example, never losing a value
-  worktree/         pnpm worktree:prepare — copy env files into a linked worktree and install it
-  workflow/         pnpm workflow:setup | workflow:sync | workflow:next | workflow:file | workflow:drop — set up, snapshot, list, file, drop
-  brand/            pnpm brand:extract | brand:contrast — read a live site's brand, check its tokens' contrast
-  drift/            pnpm docs:drift — warn when a project's docs may be stale, offer to file an issue
-  map/              pnpm docs:map — render docs/FEATURES.md, the index of everything this repo can do
-  invariants/       pnpm invariants:check — the repo rules every author is held to, run by hooks and CI
-  usage/            pnpm usage:flush — move recorded script runs into data/telemetry/, the committed logs
-  coverage-report/  pnpm test:coverage (root) — merge every project's coverage-final.json into one report
-  shared/           whatever more than one script needs, laid out the same way
-```
-
-Every one of them has the same four things inside, which is the whole layout rule:
+Every script folder has the same four things:
 
 ```
 index.ts     the entry point. Hands its commands to run() and does nothing else
@@ -50,11 +29,11 @@ domain/      pure functions and their types. No fs, no subprocess, no clack, no 
 | [`ci-failures`](./src/ci-failures/README.md) | `pnpm ci:failures` | Reporting a PR's failed checks, each Actions job cut to its error lines |
 | [`worktree`](./src/worktree/README.md) | `pnpm worktree:prepare` | Copying env files into a linked worktree and installing it the way CI does |
 | [`env-sync`](./src/env-sync/README.md) | `pnpm env:sync` | Keeping each `.env` in its `.env.example`'s order and comments, creating missing ones |
-| [`workflow`](./src/workflow/README.md) | `pnpm workflow:setup`, `workflow:sync`, `workflow:next`, `workflow:file`, `workflow:drop` | Creating a new project's milestone and labels, snapshotting a workflow project's milestone issues with their blocked-by links and tagged commits, listing what is ready to take, filing a block of the map as linked tickets, and closing the untouched ones of an abandoned project |
-| [`brand`](./src/brand/README.md) | `pnpm brand:extract`, `brand:contrast` | Reading a live site's colours, type and radii from computed styles, and printing a token file's contrast table, failing below 4.5:1 |
+| [`workflow`](./src/workflow/README.md) | `pnpm workflow:setup`, `workflow:sync`, `workflow:next`, `workflow:file`, `workflow:drop` | Managing a [workflow project](../../docs/workflows/README.md): set up, snapshot, list what's ready, file tickets, drop |
+| [`brand`](./src/brand/README.md) | `pnpm brand:extract`, `brand:contrast` | Reading a live site's brand, and checking a token file's contrast |
 | [`drift`](./src/drift/README.md) | `pnpm docs:drift` | Warning when a changed project's docs look stale, and offering to file it |
 | [`map`](./src/map/README.md) | `pnpm docs:map` | Rendering the feature index, and asserting in CI that it's current |
-| [`invariants`](./src/invariants/README.md) | `pnpm invariants:check` | Failing on a lifecycle script, a package build step, a hand-moved version or a broken package contract, and warning when the README's tag table or layout drifts |
+| [`invariants`](./src/invariants/README.md) | `pnpm invariants:check` | The repo rules every author is held to, run by hooks and CI |
 | [`usage`](./src/usage/README.md) | `pnpm usage:flush` | Moving the runs every script records into the committed log; the pre-commit hook runs it |
 | [`coverage-report`](./src/coverage-report/README.md) | `pnpm test:coverage` (root) | Merging every project's coverage into one browsable HTML report |
 
@@ -67,12 +46,7 @@ follow for every script:
   [`io.ts`](./src/shared/adapters/io.ts) before the first one, with a hint naming the arguments
   that make the prompt unnecessary. `pnpm issue:pick` with no number fails that way at once; with a
   number it asks nothing.
-- **A command that reports a failure exits 1.** `ci:failures` calls `fail` after printing, so the
-  tool result shows red before anyone reads the digest.
-
-`ci:failures` and `issue:brief` exist for agents, which is why each prints a digest rather than the
-raw output. `pnpm check` needed no script: it's one root `package.json` line asking Nx for
-`--outputStyle=static-failures-only`, the style Nx swaps for `summary` when it detects an agent.
+- **A command that reports a failure exits 1.**
 
 ## 🧱 Which way imports go
 
@@ -81,36 +55,21 @@ script's folder. One scoped exception: a command may import another command *in 
 which is what keeps `add.ts` calling `pick.ts` legal — the alternative puts that prompt in the
 dispatcher. `shared/` is reachable from anywhere and reaches nothing.
 
-Two things that follow from it and are worth saying out loud:
+- An adapter is named after the boundary it wraps, so `git.ts` in several folders isn't duplication.
+- Every side effect lives in `adapters/`.
 
-- **An adapter is named after the boundary it wraps**, which is why `git.ts` exists in `issue/`, in
-  `drift/` **and** in `shared/` and none of them is a duplicate. The shared one is `git` itself plus
-  the repo root; each script's is the handful of questions that script asks. The two script-level
-  ones share one line of code and no exports — folding them together produces an eight-export
-  module where every caller uses half of it.
-- **`adapters/` is where every side effect in this package lives.** "Does this touch the network"
-  is answerable from a directory listing, and a `domain/` file that reaches for `node:fs` is in the
-  wrong folder rather than merely doing something questionable.
-
-The `domain/` half is lint:
-[`eslint.pureDomain`](../../packages/configs/src/eslint/lib/pureDomain.ts) fails a `domain/` file
-that imports `fs`, a subprocess, `process`, `@clack/prompts` or an `adapters/` file. The rest of the
-direction is still convention. See
-[`0004-scripts-architecture.md`](../../docs/decisions/0004-scripts-architecture.md) for what was
-weighed on the way here, including the flat layout this replaced.
+[`eslint.pureDomain`](../../packages/configs/src/eslint/lib/pureDomain.ts) enforces the `domain/`
+half; the rest is convention. [0004](../../docs/decisions/0004-scripts-architecture.md) has the
+reasoning.
 
 ## 🚀 Adding a script
 
-A new script is a folder under `src/` shaped like the block above — `index.ts`, a `main.ts`,
-`adapters/`, `domain/` and a `README.md` — plus a line in this package's `scripts` and a row in the
-table above. Create `adapters/` and `domain/` even if one of them starts with a single file: the
-point is that the listing answers "what runs, what talks to the outside, what's pure" before you
-open anything. There is no barrel, and scripts don't import each other. A folder may expose more
-than one command when they genuinely share code, the way `issue/` does — `add` and `pick` share the
-project options, the cancel handling and the `gh` wrapper — in which case `index.ts` passes a record
-and `run` dispatches on the first argument. Two unrelated scripts get two folders.
+The `scripts-new-script` skill has the steps. The rules:
 
-Every entry point is the same five lines, which is the point of `run`:
+- A folder under `src/` with `index.ts`, `main.ts`, `adapters/`, `domain/` and a `README.md`, a line
+  in this package's `scripts` (`pnpm --silent cli src/<name>/index.ts`) and a row in the table above.
+- Every `index.ts` is the same five lines; only [`dev/index.ts`](./src/dev/index.ts) differs, since
+  it runs before `pnpm install`:
 
 ```ts
 #!/usr/bin/env node
@@ -120,60 +79,19 @@ import { main } from "./main.ts";
 await run(main);
 ```
 
-[`dev/index.ts`](./src/dev/index.ts) is the one exception, and the only one this package should ever
-have: it runs on a clone with no `node_modules`, where a static import of `shared/cli.ts` reaches
-`@clack/prompts` and kills the process before it can say so — so it installs first and imports the
-rest dynamically. Anything that doesn't run before `pnpm install` gets the five lines.
-
-`run` parses argv once, and it fixes what an exit code means for all of them: a `CancelledError` exits
-0, an `ExpectedError` prints its message alone on stderr and exits 1, and anything else is a bug and
-gets its stack. Never call `process.exit` — `run` sets `process.exitCode`, because a write to a pipe
-is asynchronous and exiting on the next line can truncate it.
-
-When a second folder needs something an existing one already has, that piece moves into
-[`shared/`](./src/shared/README.md), which has its own README describing what's in it and what
-belongs there. It has no `index.ts` and isn't a script, which is why it's absent from the table
-above.
-
-Entry points run straight with `node`, no build step and no `tsx`/`ts-node`: this repo's Node
-engines range already strips types. Node's stripping does no resolution rewriting, so **internal
-imports use the explicit `.ts` extension** — `./gh.ts`, not `./gh`.
-
-Every script line, here and in the root `package.json`, runs its entry through this package's `cli`
-script, `pnpm --silent cli src/<name>/index.ts`. `cli` is the one place the Node flags live:
-`--disable-warning=ExperimentalWarning` keeps Node 23's type-stripping warning out of every
-output, and a flag added later reaches every script at once. The entry path stays `argv[1]`, which
-is what usage recording names the script after.
-
-## ✅ Tests
-
-`test` still passes with `--passWithNoTests`, because most of what's here is prompts and `gh`
-invocations — a spec can only assert those against a mock of itself. The rule is that real logic — a
-parser, a diff, a mapping or a formatting decision — goes in its own file and gets a spec beside it,
-per [`writing-tests`](../../.claude/skills/writing-tests/SKILL.md). Keep orchestration and external
-calls out of that boundary; test the pure decision rather than a mock of `gh`, Git or a prompt.
-
-Note that the folder is `coverage-report/`, not `coverage/`: `**/coverage` is in
-[`baseIgnores`](../../packages/configs/src/eslint/lib/ignores.ts), so a folder by that name is
-invisible to ESLint. It went unlinted long enough to drift to `interface` and semicolon delimiters
-while the rest of the package used `type`. `**/types` is on that list too, which is one reason the
-pure layer here is `domain/` and not `types/` — a directory by that name would be unlinted
-everywhere in the workspace.
+- `run` owns exit codes: `CancelledError` exits 0, `ExpectedError` prints its message and exits 1,
+  anything else prints a stack. Never call `process.exit`.
+- Code two scripts need moves to [`shared/`](./src/shared/README.md). Scripts never import each other.
+- Entries run on plain `node` with type stripping, so internal imports use the `.ts` extension.
+- Real logic (parsers, diffs, formatting) goes in its own file with a spec; prompts and `gh` calls
+  aren't unit-tested.
+- Don't name a folder `coverage/` or `types/`: both are in ESLint's
+  [`baseIgnores`](../../packages/configs/src/eslint/lib/ignores.ts) and would go unlinted.
 
 ## 🔑 Requirements
 
-`gh` installed and authenticated (`gh auth status`) for `issue/`, `ship/` and `drift/`. They shell
-out to it rather than calling the GitHub API, so they inherit whatever account is already logged in
-instead of needing a token. `map/` needs neither, which is why it's the one that runs in CI. `ship/`
-additionally needs the repo's *Allow auto-merge* setting on — without it, `gh pr merge --auto` fails
-and the branch is left pushed with a PR open but nothing armed to merge it.
-
-`brand:extract` needs Playwright's Chromium (`pnpm exec playwright install chromium`) and the
-network, since it loads the live pages it reads.
-
-## 🧭 Deliberately deferred
-
-| Later need | What changes |
+| Script | Needs |
 | --- | --- |
-| A script that isn't a one-shot CLI (a watcher, a server) | It doesn't belong here — `infrastructure/` gets its own project for it, the way [`translations`](../translations/README.md) has one |
-| Running one of the `gh` scripts in CI | [`ci.yml`](../../.github/workflows/ci.yml) already runs `docs:map --check`, which touches only git and the filesystem. Anything calling `gh` needs `GH_TOKEN` in the job env — `--ignore-scripts` is not the obstacle, since none of these is a lifecycle hook |
+| `issue/`, `ship/`, `drift/`, `workflow/`, `ci-failures/` | `gh` installed and logged in |
+| `ship/` | The repo's *Allow auto-merge* setting on |
+| `brand:extract` | Playwright's Chromium and the network |

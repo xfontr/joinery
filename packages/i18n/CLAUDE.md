@@ -1,6 +1,6 @@
 # 🤖 @monorepo/i18n
 
-See [README.md](./README.md) — it documents the vendors, the ports and the tradeoffs in full. Use the
+See [README.md](./README.md) for the vendors, the ports and the errors. Use the
 `i18n-new-vendor` skill when adding a TMS.
 
 The invariants worth losing a build over:
@@ -18,8 +18,8 @@ The invariants worth losing a build over:
   document belongs in `baseURL` or `project`.
 - Problems are returned as strings and collected, never thrown one at a time. Fixing a deployment one
   restart per missing env var is the thing being avoided.
-- Validation is hand-written on purpose. Adding a schema library to a package with two dependencies
-  costs more than it closes — the README argues it out; read that before reaching for zod.
+- Validation is hand-written on purpose: it checks a few strings whose shape the types already
+  guarantee. A schema library earns its place only once TMS responses get validated.
 - URLs are relative here: the consumer builds the client with `ofetch.create({ baseURL })`.
 - A transport failure leaves the client as an `UpstreamError` and nothing else, and every upstream
   status becomes a 502 — the locale is checked against the declared list before the request, so
