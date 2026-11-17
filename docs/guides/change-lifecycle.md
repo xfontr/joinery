@@ -52,13 +52,13 @@ the PR, arms auto-merge and waits for checks.
 | --- | --- | --- |
 | `docs:map --check`, `invariants:check` | Whole workspace | Yes, pre-commit |
 | `lint`, `typecheck`, `test:coverage`, `build` | Affected | Lint, typecheck and test (without coverage) at pre-push |
-| `test:e2e` | Affected | No |
+| `test:e2e` | Affected, in parallel with `checks` and not required | No |
 | Dependency review | The PR's diff | `pnpm audit`, roughly |
 
 So coverage thresholds and builds fail only in CI — and huella-legal typechecks during its build.
 
-The `master` ruleset requires a PR with no review. Required checks: `checks`, `e2e`
-and `dependency-review` from CI, `huella-legal` from the Netlify workflow, plus SonarCloud.
+The `master` ruleset requires a PR with no review. Required checks: `checks` and
+`dependency-review` from CI, `huella-legal` from the Netlify workflow, plus SonarCloud.
 
 ## 7. Release
 
