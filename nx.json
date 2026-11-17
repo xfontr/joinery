@@ -91,7 +91,8 @@
         "test:coverage": {
             "inputs": [
                 "default",
-                "^production"
+                "^production",
+                { "env": "COVERAGE_THRESHOLDS" }
             ],
             "outputs": [
                 "{projectRoot}/coverage"

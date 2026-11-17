@@ -34,9 +34,11 @@ jobs:
             - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
               id: pages
 
-            # The collector reads coverage that only a whole-workspace run writes.
+            # The collector reads coverage that only a whole-workspace run writes. Thresholds gate PRs,
+            # so one project's dip never stops the portal from deploying.
             - run: pnpm test:coverage
               env:
+                  COVERAGE_THRESHOLDS: "off"
                   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
             - run: pnpm exec nx collect @monorepo/developer-portal

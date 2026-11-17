@@ -13,6 +13,7 @@ storybook-static
 
 # Playwright
 .playwright
+test-results
 
 # Node dependencies
 node_modules
