@@ -1,6 +1,6 @@
 <template>
     <section :aria-label="$t('interestCalculator.result.label')">
-        <div role="status">
+        <output class="block">
             <dl
                 v-if="result && amounts"
                 class="flex flex-col gap-4 border-t-2 border-inverted pt-4"
@@ -29,7 +29,7 @@
             <p v-else class="max-w-measure font-serif text-standfirst text-pretty text-toned">
                 {{ $t("interestCalculator.result.empty") }}
             </p>
-        </div>
+        </output>
         <p
             v-if="result && added"
             ref="confirmation"

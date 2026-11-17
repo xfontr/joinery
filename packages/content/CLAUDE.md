@@ -1,6 +1,6 @@
 # 🤖 @monorepo/content
 
-See [README.md](./README.md) — it documents the domain, the ports and the tradeoffs in full. Use the
+See [README.md](./README.md) for the domain, the ports and the errors. Use the
 `content-new-vendor` skill when adding a CMS.
 
 The invariants worth losing a build over:

@@ -40,7 +40,6 @@ jobs:
                   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
     e2e:
-        needs: checks
         runs-on: ubuntu-latest
         # Ships the browsers, and its tag must equal @playwright/test's exact version in the catalog
         container:

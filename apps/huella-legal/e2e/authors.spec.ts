@@ -1,4 +1,4 @@
-import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { axeViolations } from "@monorepo/configs/playwright/utils/a11y";
 import { expect, test } from "@monorepo/configs/playwright/utils/test";
 import { t } from "./copy.ts";
 import type { Page } from "@playwright/test";
@@ -65,7 +65,7 @@ test("the directory shows the twelve most published first and reveals the rest o
         () => expect(cards(page)).toHaveCount(AUTHOR_COUNT, { timeout: 500 }),
     );
     await expect(directory(page).getByRole("link", { name: RANKED[12]!.name })).toBeFocused();
-    await expectNoAxeViolations(page);
+    expect(await axeViolations(page)).toEqual([]);
 });
 
 test("the filter narrows the directory by name, accents and case aside", async ({ page }) => {
@@ -87,7 +87,7 @@ test("a name nobody has shows the no-match state, and its reset brings everyone 
             }),
     );
     await expect(cards(page)).toHaveCount(0);
-    await expectNoAxeViolations(page);
+    expect(await axeViolations(page)).toEqual([]);
     await testInfo.attach(`colaboradores-sin-resultados-${testInfo.project.name}`, {
         body: await page.screenshot({ fullPage: true }),
         contentType: "image/png",
@@ -116,5 +116,5 @@ test("the authors page has no WCAG AA violations", async ({ page }, testInfo) =>
         body: await page.screenshot({ fullPage: true }),
         contentType: "image/png",
     });
-    await expectNoAxeViolations(page);
+    expect(await axeViolations(page)).toEqual([]);
 });

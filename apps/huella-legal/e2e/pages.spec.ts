@@ -1,4 +1,4 @@
-import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { axeViolations } from "@monorepo/configs/playwright/utils/a11y";
 import { expect, test } from "@monorepo/configs/playwright/utils/test";
 import { t } from "./copy.ts";
 import type { Page } from "@playwright/test";
@@ -111,7 +111,7 @@ test("titles the page exactly as an article", async ({ page }) => {
 test("the legal notice has no WCAG AA violations", async ({ page }, testInfo) => {
     await page.goto(PATH);
 
-    await expectNoAxeViolations(page);
+    expect(await axeViolations(page)).toEqual([]);
 
     const path = testInfo.outputPath(`legal-notice-${testInfo.project.name}.png`);
 

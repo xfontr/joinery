@@ -42,11 +42,11 @@ const runFixture = async (body: string) => {
     return { ok: spec!.ok, error: spec!.tests[0]!.results[0]!.error?.message ?? "" };
 };
 
-describe.concurrent("expectNoAxeViolations", () => {
+describe.concurrent("axeViolations", () => {
     const A11Y = fileURLToPath(new URL("./a11y.ts", import.meta.url));
     const scan = (html: string) =>
         runFixture(
-            `import { expectNoAxeViolations } from ${JSON.stringify(A11Y)};\ntest("scans", async ({ page }) => { await page.setContent(${JSON.stringify(html)}); await expectNoAxeViolations(page); });`,
+            `import { expect } from ${JSON.stringify(FIXTURE)};\nimport { axeViolations } from ${JSON.stringify(A11Y)};\ntest("scans", async ({ page }) => { await page.setContent(${JSON.stringify(html)}); expect(await axeViolations(page)).toEqual([]); });`,
         );
 
     it("fails a page with a WCAG AA violation", async () => {

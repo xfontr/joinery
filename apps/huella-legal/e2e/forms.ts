@@ -1,4 +1,4 @@
-import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { axeViolations } from "@monorepo/configs/playwright/utils/a11y";
 import { expect } from "@monorepo/configs/playwright/utils/test";
 import type { Page } from "@playwright/test";
 
@@ -39,5 +39,5 @@ export const expectEmptyFormRefused = async (
     await expect(summary.getByRole("link")).toHaveText(fields);
     expect(sent).toBe(false);
 
-    await expectNoAxeViolations(page);
+    expect(await axeViolations(page)).toEqual([]);
 };

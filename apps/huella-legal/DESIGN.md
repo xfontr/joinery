@@ -1,13 +1,7 @@
 # 🎨 Huella Legal design
 
-The redesign of [huellalegal.com](https://www.huellalegal.com/) was designed directly in code, as
-dev-only pages reviewed in a browser at 390, 768 and 1280 px, and those pages have since been
-replaced by the production components. There is no design file: the running site *is* the design,
-and this document keeps the tokens and decisions behind it.
-
-An earlier Penpot attempt was abandoned: the MCP link was too unreliable to maintain a component
-library, and its boards were never reviewed against real rendering. Its token values survived and
-are the ones below.
+The site was designed directly in code, reviewed at 390, 768 and 1280 px. There is no design file:
+the running site is the design, and this page keeps the tokens and decisions behind it.
 
 ## 🧩 What stays recognizably Huella
 
@@ -20,17 +14,8 @@ are the ones below.
 | Type | Georgia for everything read, Montserrat for everything used to navigate |
 | Tone | An academic journal, not a law firm: numbered issues, ISSN, hairline rules, no gradients |
 
-## 🚀 Development
-
-| Command | What it does |
-| --- | --- |
-| `pnpm exec nx serve @monorepo/huella-legal` | Dev server |
-| `pnpm exec nx build @monorepo/huella-legal` | Production build |
-
-Tailwind's incremental scan in the dev server sometimes misses classes in a newly created file. If a
-fresh page renders with a collapsed grid, touch
-[`main.css`](./layers/design/app/assets/main.css) to force a rescan, or restart the server, before debugging
-the markup.
+> Tailwind's incremental scan sometimes misses classes in a new file. If a fresh page renders with
+> a collapsed grid, touch [`main.css`](./layers/design/app/assets/main.css) or restart the dev server.
 
 ## 🗂 Structure
 
@@ -78,7 +63,7 @@ arbitrary `text-`, `leading-` or `tracking-` value.
 
 | Utility | What it does | Why |
 | --- | --- | --- |
-| `surface-inverted` | Re-points the text, border, elevated and secondary roles for content on a slate-900 fill, so the footer, the theses band, the about quote and the TFG tile use the same classes as paper | Without it every slate component picked its own steps, and the kickers had drifted to two different teals. It sets no colour itself, since Tailwind's order between a custom utility and `bg-*`/`text-*` isn't something a class list controls |
+| `surface-inverted` | Re-points the text, border and secondary roles for content on a slate-900 fill, so slate surfaces use the same classes as paper | Sets no colour itself, since a class list can't control Tailwind's order against `bg-*`/`text-*` |
 | `underline-title` | A serif title link's hover underline: `--ui-border-accented`, 0.2em below | Slate-300 on paper and slate-500 on slate, through `surface-inverted` |
 
 `text-kicker` is a typography utility that also sets the muted colour. Inside a Nuxt UI slot that
@@ -87,12 +72,12 @@ the variant's `text-xs`, so those slots spell the kicker out with `tracking-kick
 
 ### Where the design departs from the Penpot tokens
 
-The Penpot P5 sheet is deleted, so its deviations are recorded here.
+An abandoned Penpot sheet (P5) supplied the original tokens. These are the deviations.
 
 | Token | P5 value | Value | Why |
 | --- | --- | --- | --- |
 | Control / card radius | 8 px / 12 px | 4 px (`--ui-radius`) / 2–4 px | Rounded cards read as an app, not a journal; hairline rules carry the structure instead |
-| Focus offset | 4 px | 2 px (the base `:focus-visible` rule in `main.css`, restated for buttons in `theme/button.ts` because Nuxt UI's own is a 3 px ring at 25 % with no offset) | Keeps the ring attached to tight inline links; still a 2 px ring, visible on paper and slate |
+| Focus offset | 4 px | 2 px, in `main.css` and restated in `theme/button.ts` | Keeps the ring attached to tight inline links |
 | Heading colour | `slate-800` | `slate-900` | More separation from body copy at regular weight |
 | Kickers | No automatic uppercase | Uppercase, 0.12em tracking | CSS uppercase keeps Spanish accents; approved at Gate A |
 | Canvas | `ivory-100` | `ivory-100` | Unchanged |
@@ -107,13 +92,11 @@ The Penpot P5 sheet is deleted, so its deviations are recorded here.
 | C | Is the whole site ready at 390 / 768 / 1280? | Approved 29 Sep 2026 |
 | D | Which benchmark proposals make it in? | Approved 30 Sep 2026: the D set, A wherever D has no page |
 
-## 🧭 Deliberately deferred
+## 🧭 Not designed yet
 
-| Later need | What changes |
+| Area | State |
 | --- | --- |
-| Interest calculator | A tool, not editorial design; it keeps the current page until it gets its own design pass |
-| Comments | Built from Nuxt UI parts without a design pass, in the back matter's style; every comment is held for moderation |
-| Mid-article newsletter | The current site interrupts articles with repeated sign-up blocks; the redesign keeps one band after the article. Add an inline block only if sign-ups drop |
-| WordPress block mapping | `.hl-prose` uses `hl-law`, `hl-note` and `hl-num` for quoted legislation, editor notes and section numerals; production maps them to Gutenberg block classes or custom blocks |
-| Real imagery | Cards fall back to a `§` tile where an image goes; licensed classical legal imagery is chosen per article in the CMS |
-| Dark theme | `ui.colorMode` is off; adding one means a second set of `--ui-*` roles and a new contrast pass |
+| Interest calculator, comments | Built from Nuxt UI parts without a design pass |
+| `hl-law`, `hl-note`, `hl-num` | Need mapping to Gutenberg block classes |
+| Article imagery | Cards fall back to a `§` tile |
+| Dark theme | `ui.colorMode` is off; needs a second set of `--ui-*` roles and a contrast pass |

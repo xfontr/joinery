@@ -1,31 +1,11 @@
 # 🧠 Concepts
 
-The models that span projects — the *why*, with no procedure in it. One file per subject, named
-for the subject rather than numbered: there's no order to read these in, unlike
-[`docs/decisions/`](../decisions/README.md).
-
-A subject belongs here under the [ownership rule](../README.md) the rest of `docs/` follows: no
-single project owns it. Boundaries, versioning and the agent setup all span every project in the
-tree, so no README can hold them without becoming the accidental owner of something that isn't its
-own. That's the whole test before adding a file here — if a project's own README could hold this and
-just doesn't yet, the fix is to write it there, not here.
-
-## 🗂 Structure
+Models that span projects — the *why*, no procedure. If one project could own the subject, it goes
+in that project's README instead.
 
 | File | Explains |
 | --- | --- |
-| [`boundaries.md`](./boundaries.md) | Why the Nx tag system is layered the way it is |
+| [`boundaries.md`](./boundaries.md) | Why the Nx tags are layered the way they are |
 | [`versioning.md`](./versioning.md) | How a version gets derived from a commit |
-| [`agent-setup.md`](./agent-setup.md) | The agent setup as one inspectable system |
-| [`conventions.md`](./conventions.md) | Where each kind of file lives and what it is called, across projects |
-
-Procedure lives in [`docs/guides/`](../guides/README.md) instead — a concept doc explains a
-constraint, a guide walks a task. A file that starts accumulating numbered steps has drifted into
-the wrong folder.
-
-## 🧭 Deliberately deferred
-
-| Later need | What changes |
-| --- | --- |
-| A concept doc that mostly restates one project's README | Delete it and link to that README instead — restating is the drift class [0002](../decisions/0002-docs-drift-detection.md) exists to catch, and this tree is not exempt from it |
-| A subject that one project mostly owns but not entirely | Revisit the ownership rule per [decision 0001](../decisions/0001-feature-discoverability.md#consequences) rather than inventing a tie-breaker here — the decision is explicit that a per-document exception is how this tree starts absorbing prose that belongs next to the code |
+| [`agent-setup.md`](./agent-setup.md) | The Claude Code setup: `CLAUDE.md`, hooks, skills, the ship-issue pipeline |
+| [`conventions.md`](./conventions.md) | Where each kind of file lives and what it's called |

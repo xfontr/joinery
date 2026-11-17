@@ -142,9 +142,10 @@ the traps in it.
   the next version.
 - Pre-push runs lint, test and typecheck **in the working tree**, not the pushed commits, so an
   uncommitted fix can pass a push whose commits are red. Only the `TODO`/`FIXME` scan is range-based.
-- CI runs those three **plus `build`**, `pnpm docs:map --check` and `pnpm invariants:check`, so a
-  green push is not yet a green pipeline — `apps/huella-legal` typechecks on build, which is where
-  most of that difference shows up. Both checks also run in pre-commit.
+- CI runs lint, typecheck, **`test:coverage`** (so thresholds bite), **`build`** and `test:e2e`, plus
+  `pnpm docs:map --check` and `pnpm invariants:check`, so a green push is not yet a green pipeline —
+  `apps/huella-legal` typechecks on build, which is where most of that difference shows up. Both
+  checks also run in pre-commit.
 - A fresh clone gets no hooks until `pnpm quick-start` runs, because lifecycle scripts are banned
   and `husky` has no `prepare` script to install itself.
 
@@ -160,8 +161,8 @@ re-render; CI's `docs:map --check` fails a hand edit between the markers, the wa
 A Nuxt app's `tsconfig.json` is `files: []` plus references into `.nuxt/`, so anything that opens it
 fails while that directory is missing. Two mechanisms cover it. In [`nx.json`](./nx.json), `lint`,
 `typecheck`, `test` and `build` depend on a `nuxt-prepare` target that only exists where a project
-defines that script — currently `apps/developer-portal`, `apps/huella-legal` and
-`apps/marina-roustan`. Everything else is covered by
+defines that script — currently every app: `developer-portal`, `huella-legal`, `marina-roustan`
+and `wp-editor`. Everything else is covered by
 [`prepareNuxt.mjs`](./packages/configs/src/vitest/setup/prepareNuxt.mjs), which every Vitest preset carries
 and which runs `nuxi prepare` when a project has a `nuxt.config.ts` and no `.nuxt`: `test:coverage`,
 the per-spec targets `@nx/vitest` generates, and a bare `pnpm vitest`. A new Nuxt app needs the

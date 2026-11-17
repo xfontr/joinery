@@ -1,66 +1,40 @@
 # 🧭 Decisions
 
-Where a decision's answer goes once it's answered. One file per decision, named `<NNNN>-<slug>.md` —
-`0042-example-slug.md` would be the forty-second decision recorded here.
+The answer to an architectural question, once it's answered. One file per decision,
+`<NNNN>-<slug>.md`. The issue holds the question; the file holds the answer.
 
-A decision report is neither a design doc nor meeting minutes: it exists so the result of the
-investigation survives after the issue closes and the thread that led to it is forgotten. Write one
-when a spike (or any real architectural fork) gets resolved, not when the investigation starts —
-the issue holds the question, the file holds the answer. An issue comment can't do this job: it's
-unsearchable outside `gh`, unreviewed, and gone from context the moment the issue itself is closed
-and forgotten.
-
-A report has to hold something a later reader needs and can't get back from the code: a fork that
-was really open, or findings a later ticket builds on. One spike ticket gets one report, however
-many blocks or questions it covers. A choice that was already made, or that copies an existing
-precedent unchanged, such as Huella Legal's host or contact form for another site, gets a line in a
-report, never a report of its own. When nothing was really open, the answer goes in the PR and no
-file is written.
+Write one only when a fork was really open, or a later ticket builds on what was found. One spike
+gets one report. A choice that copies existing precedent gets a line in a report, or just the PR.
+The `decision-report` skill writes them.
 
 ## 🗂 Structure
 
-Copy [`TEMPLATE.md`](./TEMPLATE.md). A frontmatter block, then five sections, all of them short:
+Copy [`TEMPLATE.md`](./TEMPLATE.md): frontmatter, then five short sections.
 
 | Section | Answers |
 | --- | --- |
-| Context | What was in tension — reuse the spike issue's own framing, don't re-derive it |
-| Result | The outcome, stated as a fact that was found, not a recommendation |
+| Context | What was in tension, in the spike issue's own framing |
+| Result | The outcome, as a fact found, not a recommendation |
 | Options considered | Table: option, why it lost |
-| Consequences | What this unlocks, what it forecloses, what would have to change to revisit it |
-| Confirmation | How compliance with the decision is verified — a command, a check, a test that would fail if it stopped being true |
+| Consequences | What it unlocks, what it forecloses, what would reopen it |
+| Confirmation | A command, check or test that fails if the decision stops holding |
 
-A report still on `status: to-implement` carries a second reader — whoever does the work, usually an
-agent with none of the session that produced the report. Three of the five sections owe it something
-concrete while that status holds: file paths and lines in Result, the order and the tripwires in
-Consequences, a runnable check per claim in Confirmation. The `decision-report` skill has the
-obligations and names [`0018`](./0018-developer-portal-duplicated-facts.md) as the calibration.
+While `status: to-implement`, the report must let someone with no context do the work: file paths
+and lines in Result, order and tripwires in Consequences, a runnable check per claim in
+Confirmation. [`0018`](./0018-developer-portal-duplicated-facts.md) is the calibration.
 
 ## 🔢 Numbering
 
-**The number is consecutive, not the issue's.** The next report takes the next free `NNNN`,
-zero-padded to four digits, and the issue that raised the question goes in the `issue:` frontmatter
-field instead. That way the number is unique by construction, and a directory listing reads in the
-order the decisions were actually made — which is what you want when one report builds on another.
+**The number is consecutive, not the issue's**: the next free `NNNN`, zero-padded to four digits.
+The issue goes in the `issue:` field. Two reports may share an issue.
 
-Numbering by issue was the earlier convention and it failed twice over: two reports filed off one
-issue collided on the same prefix, and the sequence sorted by when a GitHub issue happened to be
-opened rather than by when anything was decided.
-
-**The five sections are a record of what was found, not a living document** — with two narrow
-exceptions, both about the container rather than the finding. A **labelled, whole-corpus template
-migration** (every filed report moved to a new template shape in one dated change, this file's own
-history is the example) may touch every section, because nothing about any individual finding
-changes. A **citation repair** — a relative link gone stale because the file it pointed at moved or
-was renamed elsewhere in the repo — may be fixed in place. Neither licenses rewriting one report's
-prose in isolation to say something different than what was originally found — the silent in-place rewrite of `0009` that
-[`0011`](./0011-docs-system-enforcement.md) records is the case this rule exists for.
+**The five sections are a record, never edited afterwards.** Two exceptions: a labelled template
+migration of every report at once, and repairing a link whose target moved
+([0011](./0011-docs-system-enforcement.md) has why).
 
 ## 🚦 Status and decision
 
-Everything above the H1 is frontmatter, and it carries the one thing in the file expected to change
-after the report is written — every section is a record of what was found, the frontmatter is what
-happened since. It splits into **two axes on purpose**, because they answer different questions and
-a single field can't hold both without one of them going unasked:
+The frontmatter is the only part that changes after filing:
 
 ```
 ---
@@ -75,41 +49,17 @@ decision: accepted
 | `status` | Has the work landed? | `to-implement` — the decision is made, the work isn't in the repo yet · `implemented` — it is · `wont-implement` — decided against, deliberately, not a report waiting on follow-up |
 | `decision` | Does the decision still hold? | `accepted` — the default · `superseded` — a later report overturned it; see [🔁 Superseding a decision](#-superseding-a-decision) |
 
-Whoever lands the follow-up work flips `status` in the same PR, the way `CHANGELOG.md` gets touched
-by the change it describes rather than by a separate bookkeeping pass. A decision whose status never
-moves off `to-implement` is either still waiting or forgotten, and there is no third option this
-field can express — that ambiguity is deliberate, the same read a stale changelog gets.
+Whoever lands the follow-up work flips `status` in the same PR. Nothing is commented on the issue;
+the PR references it.
 
-[`apps/developer-portal`](../../apps/developer-portal/README.md) parses both fields the same way it already
-parses `## 🧭 Deliberately deferred`, and its Decisions section is built out of them: `status` is a
-count, a filter, a sort and a pill on the report itself, and `decision` is a filter plus a pill that
-shows only when it reads `superseded` — so this is the one part of a decision report with a reader
-other than a human on GitHub. `nx collect` reports a malformed filename, an unknown value, a reused
-number or a dangling `supersededBy:` as a `decision-shape-mismatch` on the portal's Overview. It
-doesn't block anything — [`0025`](./0025-check-docs-removal.md) records why no docs check gates CI.
-
-## 🔗 Linking back
-
-The decision report is the artifact; the `issue:` field is the link. Nothing gets commented on the
-issue — the PR that lands the report references it, and that trail is enough. A comment would be a
-second copy of the answer, free to drift from the file and notifying watchers to say so.
-
-Two reports may share an `issue:` — [`0011`](./0011-docs-system-enforcement.md) and
-[`0012`](./0012-review-rubric-validity.md) both came off #106, which raised two questions. Their
-filenames don't collide, because the filename number is theirs alone.
+The [developer portal](../../apps/developer-portal/README.md) builds its Decisions page from these
+fields and flags a bad filename, unknown value, reused number or dangling `supersededBy:` on its
+Overview. It blocks nothing ([0025](./0025-check-docs-removal.md)).
 
 ## 🔁 Superseding a decision
 
-A report that reverses another gets a **new file** — never edit the old one's sections, which stays
-a record of what was actually found at the time. Two frontmatter fields carry the reversal instead:
+A reversal is a **new report**. The old one's sections stay as they were:
 
 1. The new report is filed as usual, `decision: accepted`.
 2. The old report's frontmatter — and only its frontmatter — changes: `decision: superseded` and
    `supersededBy: <new-file>.md`.
-
-## 🧭 Deliberately deferred
-
-| Later need | What changes |
-| --- | --- |
-| Full MADR — `Decision Drivers`, `Considered Options`, `Pros and Cons of the Options` | This repo's four content sections plus `Confirmation` already carry what MADR's eight do; `Options considered` as a table of losers is the deliberate alternative to a pro/con essay per option, which is what a "Pros and Cons" section invites |
-| A `decision-shape-mismatch` rule that a `to-implement` report names a `path:line` | The skill carries it, and [`0018`](./0018-developer-portal-duplicated-facts.md) is the calibration a reader can diff against. A checker is [`0015`](./0015-nuxt-prepare-wiring.md)'s trade — 150 lines guarding something whose absence a reader spots in one screen |

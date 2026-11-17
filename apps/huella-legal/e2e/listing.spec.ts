@@ -1,4 +1,4 @@
-import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { axeViolations } from "@monorepo/configs/playwright/utils/a11y";
 import { expect, NOT_FOUND_DOCUMENT, test } from "@monorepo/configs/playwright/utils/test";
 import { t } from "./copy.ts";
 import type { Page } from "@playwright/test";
@@ -29,7 +29,7 @@ for (const { name, path, title } of LISTINGS) {
     test(`the ${name} listing has no WCAG AA violations`, async ({ page }) => {
         await page.goto(path);
 
-        await expectNoAxeViolations(page);
+        expect(await axeViolations(page)).toEqual([]);
     });
 }
 

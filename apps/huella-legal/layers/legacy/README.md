@@ -1,9 +1,7 @@
 # 🔀 legacy
 
-The WordPress theme served `www` before this app did, and the app took over the same domain. Posts
-and most pages kept their URLs, but some WordPress archives were renamed, and an indexed or linked
-URL that 404s costs readers and rankings. This layer sends every one of those to its new home, per
-[0028](../../../../docs/decisions/0028-huella-legal-urls-and-cutover.md), and does nothing else.
+301s from the old WordPress URLs that the app renamed, so indexed and linked URLs keep working, per
+[0028](../../../../docs/decisions/0028-huella-legal-urls-and-cutover.md). It does nothing else.
 
 ## 🗂 Structure
 
@@ -24,16 +22,13 @@ URL that 404s costs readers and rankings. This layer sends every one of those to
 | `/?s=<term>` | `/buscar/?query=<term>` | [`legacy.ts`](./server/middleware/legacy.ts): a route rule can't match a query |
 | `/wp-content/…`, `/wp-admin/…`, `/wp-login.php`, `/wp-json/…` | The same path on `content.vendor.baseURL` | `legacy.ts`: the WordPress host is runtime config |
 
-Every redirect is a 301. Netlify serves the rules from `_redirects` before Nitro runs, so a
-`nuxi preview` exercises only Nitro's copy of them; `e2e/legacy.spec.ts` walks one URL per family
-against that copy.
+Netlify serves the rules from `_redirects` before Nitro runs, so `nuxi preview` and
+`e2e/legacy.spec.ts` only exercise Nitro's copy.
 
 ## 🚚 The cutover
 
-The `/wp-*` forward does nothing while `content.vendor.baseURL` is the request's own host, so once
-WordPress has its own hostname and `NUXT_CONTENT_VENDOR_BASE_URL` points at it, the forward sends
-wp-admin, the login and uploads there. The switch itself is DNS and WordPress settings, in the
-order 0028's step table gives.
+The `/wp-*` forward only does something once WordPress has its own hostname. The switch itself is
+DNS and WordPress settings, in the order 0028 gives.
 
 To check the deployed rules once, on a preview and then on production:
 
@@ -42,10 +37,10 @@ NITRO_PRESET=netlify pnpm exec nuxt build && grep -vE '\s301$' dist/_redirects  
 curl -so /dev/null -w '%{http_code} %{redirect_url}\n' https://<host>/Categoria/<slug>/
 ```
 
-## 🧭 Deliberately deferred
+## 🧭 Known gaps
 
-| Later need | What changes |
+| Gap | Note |
 | --- | --- |
-| Body links straight to the new homes | Old post bodies link to `www` by absolute URL and still resolve, images included, through one 301. Rewriting them to root-relative, and uploads to the WordPress host, is 0028's change 6 in the body pipeline |
-| `/?p=<id>` | It renders the home page. Mapping it needs a query map of every post ID, for a URL only WordPress's `shortlink` emitted |
-| Dropping the layer | Once Search Console shows no traffic to the old families, delete the directory, after moving the `/wp-admin/…` forward elsewhere: the footer's collaborator portal link relies on it |
+| Old post bodies link to `www` by absolute URL | They resolve through one 301 |
+| `/?p=<id>` renders the home page | Would need a map of every post ID |
+| Deleting the layer | Once Search Console shows no traffic to old URLs — but move the `/wp-admin/` forward first; the footer relies on it |

@@ -69,8 +69,8 @@ provider passes the path its API defines (`/wp-json/wp/v2/posts`). All I/O goes 
 injected `HttpClient`; a provider that imports `ofetch` directly has bound itself to a transport.
 
 If the vendor needs a resource family the domain doesn't have, that is a change to
-`core/domain/content.ts` and a conversation about `Resource` being two closed unions — see the
-README's deferred table before opening it up.
+`core/domain/content.ts` and a conversation about `Resource` being two closed unions; raise it with
+the user before opening it up.
 
 ## No service layer
 

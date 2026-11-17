@@ -19,7 +19,7 @@ src/<name>/index.ts      five lines, copied verbatim from any other script
 src/<name>/main.ts       the command
 src/<name>/adapters/     one file per boundary out
 src/<name>/domain/       the pure part
-src/<name>/README.md     what it's for, a 🗂 Structure block, 🧭 Deliberately deferred
+src/<name>/README.md     what it's for, its commands, a 🗂 Structure block
 ```
 
 plus a line in [`package.json`](../../../infrastructure/scripts/package.json)'s `scripts` shaped

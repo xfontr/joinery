@@ -1,4 +1,4 @@
-import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { axeViolations } from "@monorepo/configs/playwright/utils/a11y";
 import { expect, NOT_FOUND_DOCUMENT, test } from "@monorepo/configs/playwright/utils/test";
 import { t } from "./copy.ts";
 import type { Page } from "@playwright/test";
@@ -123,7 +123,7 @@ test("the open search dialog has no WCAG AA violations", async ({ page }) => {
         ),
     );
 
-    await expectNoAxeViolations(page);
+    expect(await axeViolations(page)).toEqual([]);
 });
 
 for (const { name, path } of STATES) {
@@ -134,7 +134,7 @@ for (const { name, path } of STATES) {
             body: await page.screenshot({ fullPage: true }),
             contentType: "image/png",
         });
-        await expectNoAxeViolations(page);
+        expect(await axeViolations(page)).toEqual([]);
     });
 }
 

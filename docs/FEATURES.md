@@ -37,8 +37,8 @@ and are documented once in the [root README](../README.md#-getting-started).
 | `pnpm env:sync` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm workflow:setup` | [`package.json`](../package.json) | [`docs/workflows/README.md`](../docs/workflows/README.md) |
 | `pnpm workflow:sync` | [`package.json`](../package.json) | [`README.md`](../README.md) |
-| `pnpm workflow:next` | [`package.json`](../package.json) | [`README.md`](../README.md) |
-| `pnpm workflow:file` | [`package.json`](../package.json) | [`README.md`](../README.md) |
+| `pnpm workflow:next` | [`package.json`](../package.json) | [`docs/workflows/README.md`](../docs/workflows/README.md) |
+| `pnpm workflow:file` | [`package.json`](../package.json) | [`docs/workflows/README.md`](../docs/workflows/README.md) |
 | `pnpm workflow:drop` | [`package.json`](../package.json) | [`docs/workflows/README.md`](../docs/workflows/README.md) |
 | `pnpm brand:extract` | [`package.json`](../package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
 | `pnpm brand:contrast` | [`package.json`](../package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |

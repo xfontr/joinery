@@ -23,9 +23,9 @@ See [README.md](./README.md) for what each page reads, the snapshot and the depl
   [`conventions.md`](../../docs/concepts/conventions.md).
 - **No value is chosen outside the `design` layer.** The [README](./README.md#-design-system) lists
   the tokens and classes; a new size or colour is a token there, not a bracketed class.
-- **`tools/lib/invariants.ts` mirrors [`check-invariants.sh`](../../.claude/hooks/check-invariants.sh).**
-  Changing a rule in one means changing the other, and
-  [`invariants.spec.ts`](./tools/lib/invariants.spec.ts) is what keeps the two honest.
+- **`tools/lib/invariants.ts` reads `pnpm invariants:check --json`** and adds the audit, decision
+  and workflow shape checks. A repo rule belongs in the
+  [invariants gate](../../infrastructure/scripts/src/invariants/README.md), not here.
 - **`build` delegates to `build-static`.** CI builds the prerendered artifact that deploys; don't
   point `build` back at the SSR build, which verifies a mode nothing runs.
 - Tagged `type:app`. It depends on `@monorepo/configs` only today, and nothing may depend on it.
