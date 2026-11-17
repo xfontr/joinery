@@ -56,6 +56,7 @@ export {
     pageProblems,
     projectSlug,
     projectYaml,
+    diaryHeader,
     type NewPage,
     type NewProject,
 } from "./projectFile.ts";

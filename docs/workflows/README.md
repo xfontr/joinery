@@ -216,14 +216,16 @@ shows when work happened, not how long it took.
 
 ## 📓 Diary
 
-A project testing the workflow keeps `projects/<id>.diary.md`: only what the snapshot and commits
-can't record — hours spent, and where the map, an estimate or a rule was wrong. One line per entry,
-appended, in this shape:
+Every project keeps `projects/<id>.diary.md`: only what the snapshot and commits can't record —
+hours spent, what worked and what didn't, so the next template keeps the first and fixes the
+second. The portal's new-project wizard opens it, and the portal's workflow checks flag a project
+file with no diary beside it. One line per entry, appended, in this shape:
 
 ```markdown
 - 2026-11-15 14:10 · start
 - 2026-11-15 15:02 · friction · #446 · workflow:file refused X because Y; did Z by hand
 - 2026-11-15 18:40 · estimate · #447 · 10 SP, took 25 min: tokens copied from Huella almost as-is
+- 2026-11-15 19:05 · worked · #448 · The reuse plan named apps/huella-legal/layers/design; copied as-is
 ```
 
 | Type | When |
@@ -233,6 +235,7 @@ appended, in this shape:
 | `map` | A block nobody drew, a missing or wrong `dependsOn`, a block that didn't apply |
 | `rule` | A rule blocked something, or saved a redo |
 | `friction` | A command failed or confused, or something was done by hand |
+| `worked` | A block, a `reuse` plan, a command or the map did its job with nothing to fix: a ticket an agent finished from its text alone, a precedent copied unchanged, a dry run that matched what was filed |
 | `note` | Anything else worth keeping |
 
-Lines state what happened, not whether it was good.
+Lines state what happened and the evidence for it, not praise or blame.

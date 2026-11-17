@@ -34,6 +34,9 @@ hundred.
    portal's new-project wizard, behind the plus card on the Workflows page, writes this same file, if the user would rather click through it.
    Put features only this project has under `extras`, each with its `dependsOn`. Set
    `ticketSize` unless it is `block`.
+   Written by hand, open `data/workflows/projects/<id>.diary.md` beside it, copying
+   [`marina-roustan.diary.md`](../../../data/workflows/projects/marina-roustan.diary.md)'s header,
+   with a first `note` line naming the template; the wizard does this itself.
 3. GitHub side: `pnpm workflow:setup <id>` prints the milestone and labels it would create. Show
    the user, and only on their go run it with `--yes`, since it writes to GitHub. Run it again after
    a feature is switched on, for the new blocks' `cap:` labels.
@@ -127,12 +130,13 @@ anything started or closed stays.
 
 ## 7. Keeping the diary
 
-When the project has a `<id>.diary.md`, append one line in the
+Every project has a `<id>.diary.md`; append one line in the
 [diary's shape](../../../docs/workflows/README.md#-diary), with the time from `date`, on these
-events only: the user says they start or stop, a ticket closes (an `estimate` line), or the map, an
-estimate, a rule or a command turns out wrong. Every correction or complaint the user makes about
-the workflow, the tooling or the agent's output is one of those, logged as it happens. Never log
-routine success, and never grade your own work in it. Write the fact and the issue number, and leave the verdict to the user.
+events: the user says they start or stop, a ticket closes (an `estimate` line), the map, an
+estimate, a rule or a command turns out wrong, or one plainly works — a `worked` line. Every
+correction or complaint the user makes about the workflow, the tooling or the agent's output is
+logged as it happens, and so is anything they say went well. Write the fact, the evidence and the
+issue number, never praise for your own work, and leave the verdict to the user.
 
 ## 🎨 The design stage of a website rebuild
 
