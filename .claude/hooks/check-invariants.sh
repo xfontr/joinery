@@ -36,6 +36,27 @@ case "$rel" in
     *) ;;
 esac
 
+# The types must match the diary table in docs/workflows/README.md.
+# A catch-all type lets neutral lines back in.
+case "$rel" in
+    data/workflows/projects/*.diary.md)
+        bad=$(grep -n '^- ' "$file" | grep -vE \
+            -e '^[0-9]+:- [0-9]{4}-[0-9]{2}-[0-9]{2} · (estimate|worked|friction|map|rule) · .+')
+        if [ -n "$bad" ]; then
+            echo "$rel has lines outside the diary shape:" >&2
+            echo "$bad" >&2
+            echo "Shape: - YYYY-MM-DD · type · text, no time." >&2
+            echo "Types: estimate, worked, friction, map, rule." >&2
+            echo "Keep-test: a line says something in the workflow worked or went wrong." >&2
+            echo "A line that reads as neither is deleted, not retyped." >&2
+            echo "What the work found goes in the decision report or the commit." >&2
+            echo "See docs/workflows/README.md#-diary." >&2
+            exit 2
+        fi
+        ;;
+    *) ;;
+esac
+
 # The bans themselves live in one gate that pre-commit and CI also run.
 case "$rel" in
     package.json|packages/*/package.json|apps/*/package.json|infrastructure/*/package.json)

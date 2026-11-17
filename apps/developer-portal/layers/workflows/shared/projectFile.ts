@@ -87,7 +87,7 @@ export const diaryHeader = (title: string): string =>
     [
         `# 📓 ${title} diary`,
         "",
-        "What the snapshot and the commits can't record. The format and when to write are in",
+        "What in the workflow worked and what went wrong. The format and when to write are in",
         "[the workflows README](../../../docs/workflows/README.md#-diary).",
         "",
         "",

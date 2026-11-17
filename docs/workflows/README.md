@@ -19,7 +19,7 @@ data/workflows/
   templates/<id>.yaml              the blocks, what each needs, its lessons and reuse plan
   projects/<id>.yaml               which template, which milestone, switches, ticket size, settled blocks, extras
   projects/<id>.snapshot.json      written by `pnpm workflow:sync`, never by hand
-  projects/<id>.diary.md           dated lines on what the snapshot and commits can't record
+  projects/<id>.diary.md           dated lines on what in the workflow worked and what went wrong
 ```
 
 | Noun | Is | Lives in |
@@ -216,26 +216,29 @@ shows when work happened, not how long it took.
 
 ## 📓 Diary
 
-Every project keeps `projects/<id>.diary.md`: only what the snapshot and commits can't record —
-hours spent, what worked and what didn't, so the next template keeps the first and fixes the
-second. The portal's new-project wizard opens it, and the portal's workflow checks flag a project
-file with no diary beside it. One line per entry, appended, in this shape:
+Every project keeps `projects/<id>.diary.md`: a log of what in the workflow went right and what
+went wrong, so the next template keeps the first and fixes the second. "The workflow" is the
+template, the map, a command, a ticket's text or the agent. The portal's new-project wizard opens
+it, and the portal's workflow checks flag a project file with no diary beside it.
+
+**Keep-test: a line says something worked or something went wrong.** A line that reads as neither
+isn't written, however true. What the work found (measurements, a decision) goes in the decision
+report or the commit, not here. One line per entry, appended, in this shape:
 
 ```markdown
-- 2026-11-15 14:10 · start
-- 2026-11-15 15:02 · friction · #446 · workflow:file refused X because Y; did Z by hand
-- 2026-11-15 18:40 · estimate · #447 · 10 SP, took 25 min: tokens copied from Huella almost as-is
-- 2026-11-15 19:05 · worked · #448 · The reuse plan named apps/huella-legal/layers/design; copied as-is
+- 2026-11-15 · friction · #446 · workflow:file refused X because Y; did Z by hand
+- 2026-11-15 · estimate · #447 · 10 SP, took 25 min: tokens copied from Huella almost as-is
+- 2026-11-15 · worked · #448 · The reuse plan named apps/huella-legal/layers/design; copied as-is
 ```
 
-| Type | When |
-| --- | --- |
-| `start` / `stop` | The owner sits down or stops. Nothing else measures the hours |
-| `estimate` | A ticket closes: its points against what it actually took. The close time is in the snapshot already |
-| `map` | A block nobody drew, a missing or wrong `dependsOn`, a block that didn't apply |
-| `rule` | A rule blocked something, or saved a redo |
-| `friction` | A command failed or confused, or something was done by hand |
-| `worked` | A block, a `reuse` plan, a command or the map did its job with nothing to fix: a ticket an agent finished from its text alone, a precedent copied unchanged, a dry run that matched what was filed |
-| `note` | Anything else worth keeping |
+| Type | Means | When |
+| --- | --- | --- |
+| `estimate` | Points against time | A ticket closes: its points against what it actually took |
+| `worked` | Went right | A block, a `reuse` plan, a command, a ticket's text or the map did its job with nothing to fix |
+| `friction` | Went wrong | A command failed or confused, something was done by hand, or the owner corrected the agent |
+| `map` | Went wrong | A block nobody drew, a missing or wrong `dependsOn`, a block or criterion that didn't apply |
+| `rule` | Either, and the line says which | A rule blocked something it shouldn't have, or saved a redo |
 
-Lines state what happened and the evidence for it, not praise or blame.
+One clause for what happened, one for the evidence. Say which way it went; never praise your own
+work. [`check-invariants.sh`](../../.claude/hooks/check-invariants.sh) rejects any other type when
+Claude edits a diary.

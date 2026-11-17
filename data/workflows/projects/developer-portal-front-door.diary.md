@@ -17,4 +17,4 @@ What in the workflow worked and what went wrong. The format and when to write ar
 - 2026-11-17 · friction · #474 · After filing, the agent stopped to summarise instead of starting the spike the brief asked for; the owner had to tell it to start
 - 2026-11-17 · worked · #474 · The dev-only `/lab` wiring copied from marina-roustan's cf9dd791 held: `build-static` shipped no `/lab` route
 - 2026-11-17 · map · #474 · The filed criterion "each section reading only `layers/snapshot`" was wrong: sections 1 and 2 read `visitor-copy` and `project-showcase`
-- 2026-11-17 16:37 · note · #474 · The `/lab` door and toggle pages are a measurement mock with stock styling and placeholder screenshots, not a design; `design-lab` replaces them
+- 2026-11-17 · friction · #474 · `workflow:next` failed after the spike: `milestoneIssues` asked GitHub for project fields and the token has no `read:project` scope; it had run at the start of the session
