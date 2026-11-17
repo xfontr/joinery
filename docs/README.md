@@ -11,4 +11,5 @@ portal renders these files too, so links must work on GitHub and there.
 | [`guides/`](./guides/README.md) | Cross-project step-by-step tasks |
 | [`decisions/`](./decisions/README.md) | Architectural decisions, one per spike |
 | [`audits/`](./audits/README.md) | Dated findings lists for one project, worked down one by one |
+| [`benchmarks/`](./benchmarks/README.md) | Sites analysed as design references, one file per site |
 | [`workflows/`](./workflows/README.md) | The rules for multi-ticket projects tracked on the portal |

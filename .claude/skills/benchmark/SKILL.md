@@ -27,6 +27,14 @@ references of its own.**
 
 ## 2. Source from where the bar is set
 
+**Start from the library.** [`docs/benchmarks/`](../../../docs/benchmarks/README.md) holds every
+site already analysed. Filter its frontmatter by the page types from step 1, then by `kind`,
+`traits` and `used-for`, and list what fits. An entry older than six months gets its site
+re-checked before it counts. Entries with `verdict: avoid` show what to avoid, not what to use.
+
+**Then source fresh sites** for the page types the library covers thinly, and at least four new
+ones every run regardless, so every design doesn't grow from the same few sites.
+
 Never pick references from memory, from well-known developer blogs, or from whatever a web search
 ranks first. Start from galleries where a jury or a curator has already filtered for quality, and
 match the gallery to the page type.
@@ -42,8 +50,8 @@ match the gallery to the page type.
 - **Shortlist by fit, not fame:** it's live and loads without a click or sound; it matches a page
   type from step 1; a reader gets its point without waiting on an intro; it isn't a gimmick the
   project could never use.
-- **Show the shortlist to the user before analysing anything**, as links with one 1280 px
-  screenshot each. The user sets the taste bar; deep analysis of a site they'd reject is wasted.
+- **Show the shortlist to the user before analysing anything**, library picks and new ones apart,
+  as links with one 1280 px screenshot each. The user sets the taste bar; deep analysis of a site they'd reject is wasted.
 - Some galleries and sites refuse automated browsers or show only a WebGL intro. Wait longer once,
   then record them as excluded with the reason, never as analysed.
 
@@ -60,12 +68,23 @@ A first-screen screenshot hides most of what makes a site good. For each shortli
 
 Keep the captures in the scratchpad. Third-party screenshots are not committed.
 
-## 4. Analyse every site on the same dimensions
+## 4. Review every site
 
-One analysis per site, every dimension filled from the captures. Each cell states a fact with its
-evidence — a measured value, a page, a pixel width — not an adjective.
+**A review is a critique, not an inventory.** "Centred title, rounded panels, 9 sizes" is what
+anyone sees on the screen, and it's worthless. Say what the site is trying to do, whether it works
+and why, where it breaks with what its field usually does, what's affectation, and what another
+site could take from it. A measured value earns its place as evidence for one of those points.
 
-| Dimension | Answer |
+Each review is a library entry: a short essay written to `docs/benchmarks/` from
+[`TEMPLATE.md`](../../../docs/benchmarks/TEMPLATE.md), or an update to the site's existing entry,
+and add this project to its `used-for`. Judge the site on its own terms, not by what this project
+wants from it; that's step 5. A site the user rejects outright isn't written up, unless it's a
+clear example of what to avoid, with `verdict: avoid`. Save the first-screen capture at 1280 px
+to `docs/benchmarks/images/` as WebP.
+
+Look at every one of these before writing, but write about the ones that matter for this site:
+
+| Look at | |
 | --- | --- |
 | First 30 seconds | What a reader knows, and which element told them |
 | Layout and grid | Columns, margins, how sections are separated, density |
@@ -82,7 +101,7 @@ evidence — a measured value, a page, a pixel width — not an adjective.
 
 The analyses are evidence. The synthesis is the deliverable.
 
-1. **Patterns, counted.** "Seven of eleven set the hero in one display face over 96 px", not "many
+1. **Patterns, counted** across the reviews. "Seven of eleven set the hero in one display face over 96 px", not "many
    use big type".
 2. **Want, don't want.** Each pattern is kept or rejected for **this** project, with the reason
    tied to step 1's reader, page types and constraints.
@@ -94,8 +113,9 @@ The analyses are evidence. The synthesis is the deliverable.
 
 ## 6. Write it up
 
-The result is a decision report: follow the `decision-report` skill. The per-site analyses go in as
-one table per dimension group, so the Result stays scannable; the synthesis is the Result's lead.
+The result is a decision report: follow the `decision-report` skill. The synthesis is the Result's
+lead; the per-site reviews stay in the library and the report links each entry rather than
+copying it.
 
 ## 📚 Lessons
 
@@ -105,3 +125,9 @@ one table per dimension group, so the Result stays scannable; the synthesis is t
 - **#472.** Only the first screen of each site was captured and each verdict was a sentence, with
   no measurements, no inner pages and no reference for the project's dense pages. The redo followed
   steps 3–5.
+- **The first library.** Each site was written up as a table of observations, one cell per
+  dimension, with no judgement in it; the user called it worthless and every entry was rewritten
+  as a critique. Measuring a site is not reviewing it.
+- **The first library.** Autopilot was filed as the example to avoid from one first-screen
+  capture, while its point was the scroll story the capture couldn't show. A verdict needs the
+  whole page; `avoid` needs the user's word.
