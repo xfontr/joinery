@@ -1,0 +1,171 @@
+id: developer-portal-front-door
+title: Developer portal front door
+template: custom
+area: app:developer-portal
+milestone: Developer portal front door
+ticketSize: supervised
+summary: The developer portal turned into the repo's public front door — a visitor view that shows
+  craft, AI-built engineering and the people the shipped apps serve, a developer view one click
+  away with every feature kept, and a visual identity of its own.
+
+extras:
+  - id: benchmark
+    stage: plan
+    kind: spike
+    title: Benchmark reference sites
+    complexity: 5
+    summary: Developer portfolios, engineering front pages and design-system sites studied for what
+      a non-developer reader takes away in 30 seconds, and what makes each look like nobody else.
+    reuse: { plan: method, from: docs/decisions }
+    doneWhen:
+      - At least eight sites are compared on the same rows, each with a screenshot at 390 and
+        1280 px.
+      - Each row names what this portal should copy, adapt or avoid.
+      - The default Nuxt UI traits the portal shows today are listed, so the lab can avoid them.
+
+  - id: visitor-structure
+    stage: plan
+    kind: spike
+    title: Visitor view structure
+    complexity: 5
+    dependsOn: [benchmark]
+    summary: How a visitor enters and moves through the portal — a door or a toggle, what the front
+      page says, and how each existing page shows to a visitor.
+    reuse: { plan: method, from: docs/decisions }
+    doneWhen:
+      - Door and toggle are both tried as rough lab pages and compared on clicks to first content.
+      - Every page the portal has today is listed as shown, re-presented or developer-only in the
+        visitor view.
+      - The front page's sections are listed in order, each with the existing data it reads.
+
+  - id: scope-signoff
+    stage: plan
+    kind: owner
+    title: Scope sign-off
+    complexity: 1
+    dependsOn: [visitor-structure]
+    summary: You approve the visitor view's structure before any of it is designed or built.
+    doneWhen:
+      - The entry choice, the page list and the front page's sections are approved.
+
+  - id: design-lab
+    stage: plan
+    title: Design lab
+    complexity: 13
+    dependsOn: [benchmark, scope-signoff]
+    summary: Three or four identity directions as dev-only lab pages on real portal content — the
+      front page, one dashboard page and one doc page — reviewed as screenshots.
+    reuse: { plan: method, from: apps/huella-legal/DESIGN.md }
+    doneWhen:
+      - Each direction renders the same three pages on real data under `pnpm dev`, and none is
+        served by the deployed site.
+      - Each has screenshots at 390, 768 and 1280 px, in light and dark.
+      - No direction keeps a trait the benchmark listed as default Nuxt UI.
+
+  - id: design-approval
+    stage: plan
+    kind: owner
+    title: Design approval
+    complexity: 1
+    dependsOn: [design-lab]
+    summary: You pick one direction, or a mix, from the lab screenshots.
+    doneWhen:
+      - One direction is approved at 390, 768 and 1280 px, in light and dark.
+
+  - id: visitor-copy
+    stage: plan
+    title: Visitor copy
+    complexity: 3
+    dependsOn: [scope-signoff]
+    summary: The plain-language words a visitor reads — the front page, and one line for each
+      shipped app and package — drafted by Claude and approved by you.
+    reuse: { plan: method, from: apps/developer-portal/layers/projects }
+    doneWhen:
+      - Every front-page section and every shipped project has its line, in English.
+      - Numbers in the copy come from the snapshot, never typed in.
+      - The owner approved the wording.
+
+  - id: design-system
+    stage: build
+    title: Design system
+    complexity: 8
+    dependsOn: [design-approval]
+    summary: The approved direction as semantic tokens, a type scale and a Nuxt UI theme in the
+      design layer, with a contrast table and the raw-palette ban.
+    reuse: { plan: method, from: apps/huella-legal/layers/design }
+    doneWhen:
+      - Every text-on-surface pair has a contrast ratio of at least 4.5:1, in light and dark,
+        written in the README's design-system section.
+      - The app's eslint config bans raw palette classes.
+      - Components stay Nuxt UI, themed through `app.config.ts`.
+
+  - id: shell-restyle
+    stage: build
+    title: Restyle the shell and every page
+    complexity: 8
+    dependsOn: [design-system]
+    summary: The layout, sidebar and shared parts like `StatTile` and `DashboardGrid` on the new
+      identity, so every existing page takes it on.
+    reuse: { plan: method, from: apps/developer-portal/app }
+    doneWhen:
+      - Every page the portal has today renders on the new identity with no `.report/`.
+      - No page keeps a colour, size or radius chosen outside the design layer.
+
+  - id: view-switch
+    stage: build
+    title: Visitor and developer views
+    complexity: 5
+    dependsOn: [scope-signoff, design-system]
+    summary: The visitor view by default and the developer view one click away, working on the
+      prerendered site, with plain-language nav labels for visitors.
+    reuse: { plan: method, from: apps/developer-portal/app }
+    doneWhen:
+      - A first visit lands in the visitor view; the choice is remembered and survives a reload.
+      - Every page that exists today is reachable in the developer view.
+      - Pages marked developer-only are absent from the visitor nav, never removed.
+
+  - id: front-page
+    stage: build
+    title: Visitor front page
+    complexity: 8
+    dependsOn: [visitor-copy, shell-restyle, view-switch]
+    summary: The page a visitor lands on — what this is in one line, the shipped apps with
+      screenshots, and how the repo is built with agents, with live numbers behind each claim.
+    reuse: { plan: method, from: apps/developer-portal/app/pages }
+    doneWhen:
+      - A reader who doesn't write code can say what the author does within 30 seconds.
+      - Every number on it comes from the snapshot, and the page renders without one.
+      - It reads well at 390 px first.
+
+  - id: project-showcase
+    stage: build
+    title: Project showcase
+    complexity: 5
+    dependsOn: [visitor-copy, shell-restyle, view-switch]
+    summary: The shipped apps as a visitor sees them — a screenshot, the approved line and a link
+      to the live site — kept in a shape that can move to another site later.
+    reuse: { plan: method, from: apps/developer-portal/layers/projects }
+    doneWhen:
+      - Each shipped app shows a current screenshot, its line and its live link.
+      - Screenshots and lines live as data, not inside a component.
+
+  - id: docs-update
+    stage: ship
+    title: Docs brought up to date
+    complexity: 2
+    dependsOn: [front-page, project-showcase]
+    summary: The portal's README and CLAUDE.md describe the two views, the new design system and
+      where visitor copy lives.
+    reuse: { plan: method, from: apps/developer-portal/README.md }
+    doneWhen:
+      - The doc-drift check reports nothing for the portal.
+
+  - id: go-live
+    stage: ship
+    kind: owner
+    title: Go live
+    complexity: 1
+    dependsOn: [docs-update]
+    summary: You approve the deployed site as the public front door.
+    doneWhen:
+      - The deployed site shows the visitor view by default and every developer page still works.
