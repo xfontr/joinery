@@ -1,7 +1,8 @@
 ---
 issue: 144
 status: implemented
-decision: accepted
+decision: superseded
+supersededBy: 0039-developer-portal-benchmark.md
 ---
 
 # 🧭 The developer portal gets one intent-led public front door
