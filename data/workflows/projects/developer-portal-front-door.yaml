@@ -30,13 +30,17 @@ extras:
     complexity: 5
     dependsOn: [benchmark]
     summary: How a visitor enters and moves through the portal — a door or a toggle, what the front
-      page says, and how each existing page shows to a visitor.
+      page says, and how each existing page shows to a visitor. The rules
+      are in `docs/decisions/0039-developer-portal-benchmark.md`.
     reuse: { plan: method, from: docs/decisions }
     doneWhen:
-      - Door and toggle are both tried as rough lab pages and compared on clicks to first content.
+      - Door and toggle are both tried as rough lab pages, both read with JavaScript off, and are
+        compared on clicks to first content.
       - Every page the portal has today is listed as shown, re-presented or developer-only in the
-        visitor view.
-      - The front page's sections are listed in order, each with the existing data it reads.
+        visitor view, covering every route under `app/pages` and `layers/*/app/pages`; nothing is
+        removed.
+      - The front page's sections are listed in order, each reading only `layers/snapshot`,
+        passing 0039's W1, W6 and W8 and avoiding N1–N4.
 
   - id: scope-signoff
     stage: plan
