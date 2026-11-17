@@ -81,3 +81,14 @@ export const projectYaml = (project: NewProject): string => {
         "",
     ].join("\n");
 };
+
+/** The opening of `projects/<id>.diary.md`, before its first line. */
+export const diaryHeader = (title: string): string =>
+    [
+        `# 📓 ${title} diary`,
+        "",
+        "What the snapshot and the commits can't record. The format and when to write are in",
+        "[the workflows README](../../../docs/workflows/README.md#-diary).",
+        "",
+        "",
+    ].join("\n");

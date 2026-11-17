@@ -1,9 +1,10 @@
 import { existsSync } from "node:fs";
-import { readFile, rm, writeFile } from "node:fs/promises";
+import { appendFile, readFile, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { isMap, parseDocument, type Document } from "yaml";
 import {
     assembleWorkflows,
+    diaryHeader,
     PROJECT_ID,
     projectYaml,
     SETTLED_STATES,
@@ -88,6 +89,24 @@ const milestoneProblem = (workflows: Workflows, id: string, milestone: string): 
     return owner ? `\`${milestone}\` is already ${owner.project.id}'s milestone` : null;
 };
 
+const pad = (value: number): string => String(value).padStart(2, "0");
+
+const diaryNow = (now: Date): string =>
+    `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ` +
+    `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+/** Opens the project's diary, or appends to the one a dropped project of the same id left. */
+const startDiary = async (id: string, title: string, templateId: string): Promise<void> => {
+    const path = resolve(workflowsDir(), "projects", `${id}.diary.md`);
+
+    if (!existsSync(path)) await writeFile(path, diaryHeader(title), "utf8");
+    await appendFile(
+        path,
+        `- ${diaryNow(new Date())} · note · Created from the \`${templateId}\` template\n`,
+        "utf8",
+    );
+};
+
 const createProject = async (
     edit: Record<string, unknown>,
     id: string,
@@ -144,6 +163,8 @@ const createProject = async (
         if ((error as NodeJS.ErrnoException).code === "EEXIST") return `${id} already exists`;
         throw error;
     }
+
+    await startDiary(id, title, template.id);
     return null;
 };
 

@@ -185,6 +185,7 @@ the symptom is `lint` failing to parse every file rather than anything mentionin
 | `start-issue` | Starting work on a specific issue — from the branch you're on, or from a number, link or description |
 | `decision-report` | "Do a spike on this" — research an architectural question and write the answer to `docs/decisions/`. Filing the *issue* is `github-issue` |
 | `audit-report` | "Audit X", "static analysis of X" — a numbered findings list for one project, filed to `docs/audits/` and worked down finding by finding |
+| `benchmark` | "Benchmark X", "find references for X" — sourced from juried galleries, analysed site by site, synthesised into what to take and how; written up with `decision-report` |
 | `content-new-vendor` | Adding a CMS vendor to `@monorepo/content` |
 | `i18n-new-vendor` | Adding a TMS vendor to `@monorepo/i18n` |
 | `scripts-new-script` | Adding a repo-local CLI under `infrastructure/scripts` |

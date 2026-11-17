@@ -1,0 +1,25 @@
+{
+    "syncedAt": "2026-11-17T13:01:09.340Z",
+    "milestone": "Developer portal front door",
+    "issues": [
+        {
+            "number": 472,
+            "title": "Benchmark reference sites",
+            "url": "https://github.com/xfontr/monorepo/issues/472",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "benchmark"
+            ],
+            "createdAt": "2026-11-17T12:57:53Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [],
+            "branch": true,
+            "pr": false,
+            "owner": false,
+            "complexity": 5
+        }
+    ],
+    "noMilestone": []
+}

@@ -27,7 +27,17 @@ export const missingReusePaths = (
         }),
     );
 
-/** Every rule `docs/workflows/README.md` states, plus the one only a filesystem can check. */
+/** Every project file with no `<id>.diary.md` beside it. */
+export const missingDiaries = (projectFiles: string[], dir: string): WorkflowProblem[] =>
+    projectFiles
+        .map((file) => file.replace(/\.yaml$/, ""))
+        .filter((id) => !existsSync(resolve(dir, "projects", `${id}.diary.md`)))
+        .map((id) => ({
+            file: `projects/${id}.yaml`,
+            message: `${id} has no \`${id}.diary.md\` beside it`,
+        }));
+
+/** Every rule `docs/workflows/README.md` states, plus the ones only a filesystem can check. */
 export const workflowProblems = async (
     dir: string,
     workspaceRoot: string,
@@ -39,5 +49,12 @@ export const workflowProblems = async (
         files.snapshots,
     );
 
-    return [...problems, ...missingReusePaths(templates, workspaceRoot)];
+    return [
+        ...problems,
+        ...missingReusePaths(templates, workspaceRoot),
+        ...missingDiaries(
+            files.projects.map(({ file }) => file),
+            dir,
+        ),
+    ];
 };
