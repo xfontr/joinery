@@ -11,10 +11,6 @@ permissions:
 jobs:
     checks:
         runs-on: ubuntu-latest
-        # The configs specs drive the e2e fixture through a real browser; keep the tag equal to e2e's
-        container:
-            image: mcr.microsoft.com/playwright:v1.64.0-noble
-            options: --user 1001
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:

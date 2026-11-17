@@ -21,9 +21,10 @@
   "scripts": {
     "lint": "nx eslint:lint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest . --watch=false",
-    "test:coverage": "vitest . --watch=false --coverage",
-    "test:dev": "vitest ."
+    "test": "vitest . --project unit --watch=false",
+    "test:coverage": "vitest . --project unit --watch=false --coverage",
+    "test:dev": "vitest . --project unit",
+    "test:e2e": "vitest --project browser --watch=false"
   },
   "nx": {
     "tags": [

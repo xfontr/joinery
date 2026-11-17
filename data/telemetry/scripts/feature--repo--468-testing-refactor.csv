@@ -64,3 +64,7 @@ at,script,command,target,flags,area,caller,tty,exit,ms
 2026-11-17,map,,,check,marina-roustan,claude-code,0,0,169
 2026-11-17,issue,pick,,title,repo,claude-code,0,0,13514
 2026-11-17,ci-failures,,,,repo,claude-code,0,1,4171
+2026-11-17,ci-failures,,,,repo,claude-code,0,1,4015
+2026-11-17,map,,,check,repo,claude-code,0,1,239
+2026-11-17,invariants,,,,repo,claude-code,0,0,72
+2026-11-17,map,,,,repo,claude-code,0,0,283
