@@ -1,10 +1,9 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@monorepo/configs/playwright/test";
+import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { expect, test } from "@monorepo/configs/playwright/utils/test";
+import { t } from "./copy.ts";
 import type { Page } from "@playwright/test";
 import { answerWith, expectEmptyFormRefused } from "./forms.ts";
 import { TURNSTILE_SCRIPT, TURNSTILE_SCRIPT_PATTERN } from "./vendors.ts";
-
-const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 
 const PATH = "/contacto/";
 
@@ -13,13 +12,15 @@ const ENDPOINT = "/api/contact";
 const send = async (page: Page, settled: () => Promise<void>) => {
     // CI's runner can type before hydration, which a server-rendered form then drops on submit
     await expect(async () => {
-        await page.getByRole("textbox", { name: "Nombre y apellidos" }).fill("Lucía Pérez");
-        await page.getByRole("textbox", { name: "Correo electrónico" }).fill("lucia@ejemplo.test");
+        await page.getByRole("textbox", { name: t("contactForm.name.label") }).fill("Lucía Pérez");
         await page
-            .getByRole("textbox", { name: "Mensaje" })
+            .getByRole("textbox", { name: t("contactForm.email.label") })
+            .fill("lucia@ejemplo.test");
+        await page
+            .getByRole("textbox", { name: t("contactForm.message.label") })
             .fill("Una pregunta sobre un artículo.");
         await page.getByRole("checkbox").check();
-        await page.getByRole("button", { name: "Enviar mensaje" }).click();
+        await page.getByRole("button", { name: t("contactForm.submit") }).click();
 
         await settled();
     }).toPass();
@@ -46,19 +47,19 @@ test("the footer's contact link lands on the form", async ({ page }) => {
     await page.getByRole("contentinfo").getByRole("link", { name: "Contacto" }).click();
 
     await expect(page).toHaveURL(/\/contacto\/$/);
-    await expect(page.getByRole("button", { name: "Enviar mensaje" })).toBeVisible();
+    await expect(page.getByRole("button", { name: t("contactForm.submit") })).toBeVisible();
 });
 
 test("sends a message and confirms it in place of the form", async ({ page }) => {
     await answerWith(page, ENDPOINT, 204);
     await page.goto(PATH);
 
-    const confirmation = page.getByRole("heading", { name: "Mensaje enviado" });
+    const confirmation = page.getByRole("heading", { name: t("contactForm.success.title") });
 
     await send(page, () => expect(confirmation).toBeVisible({ timeout: 2000 }));
 
     await expect(confirmation).toBeFocused();
-    await expect(page.getByRole("button", { name: "Enviar mensaje" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: t("contactForm.submit") })).toHaveCount(0);
 });
 
 test("refuses an empty form without sending it, naming each field", async ({ page }) => {
@@ -82,7 +83,7 @@ test.describe("a refused send", () => {
         });
         await page.goto(PATH);
 
-        const email = page.getByRole("textbox", { name: "Correo electrónico" });
+        const email = page.getByRole("textbox", { name: t("contactForm.email.label") });
 
         await send(page, () =>
             expect(email).toHaveAttribute("aria-invalid", "true", { timeout: 2000 }),
@@ -102,9 +103,9 @@ test.describe("a refused send", () => {
             expect(alert).toContainText("No hemos podido enviar tu mensaje", { timeout: 2000 }),
         );
 
-        await expect(page.getByRole("textbox", { name: "Mensaje" })).toHaveValue(
-            "Una pregunta sobre un artículo.",
-        );
+        await expect(
+            page.getByRole("textbox", { name: t("contactForm.message.label") }),
+        ).toHaveValue("Una pregunta sobre un artículo.");
     });
 });
 
@@ -121,11 +122,9 @@ test("the page fits the viewport without scrolling sideways", async ({ page }) =
 test("the contact page has no WCAG AA violations", async ({ page }, testInfo) => {
     await page.goto(PATH);
 
-    const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
     await testInfo.attach(`contacto-${testInfo.project.name}`, {
         body: await page.screenshot({ fullPage: true }),
         contentType: "image/png",
     });
-    expect(violations).toEqual([]);
+    await expectNoAxeViolations(page);
 });

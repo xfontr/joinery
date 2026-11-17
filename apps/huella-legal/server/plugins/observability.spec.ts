@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
 import type { H3Event } from "h3";
 import { SpanKind, SpanStatusCode } from "@opentelemetry/api";
 import {
@@ -69,14 +70,11 @@ let runtimeConfig: ReturnType<typeof createConfig>;
 let responseStatus: number;
 
 vi.stubGlobal("defineNitroPlugin", (plugin: unknown) => plugin);
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 vi.stubGlobal("useRuntimeConfig", () => runtimeConfig);
 vi.stubGlobal("getRequestHeaders", () => ({ traceparent: TRACEPARENT }));
 vi.stubGlobal("getRequestHost", () => "huella-legal.test");
 vi.stubGlobal("getResponseStatus", () => responseStatus);
-vi.stubGlobal("createError", (error: { statusCode?: number }) => ({
-    statusCode: error.statusCode ?? 500,
-}));
 
 const plugin = (await import("./observability")).default as unknown as (nitroApp: NitroApp) => void;
 
@@ -328,8 +326,9 @@ describe("the nitro observability plugin", () => {
                 traced("/articles", "/articles", () => Promise.reject(wrapped)),
             ).rejects.toBe(wrapped);
 
-            expect(otel.span.recordException).toHaveBeenNthCalledWith(1, wrapped);
-            expect(otel.span.recordException).toHaveBeenNthCalledWith(2, upstream);
+            expect(otel.span.recordException).toHaveBeenCalledTimes(2);
+            expect(otel.span.recordException).toHaveBeenCalledWith(wrapped);
+            expect(otel.span.recordException).toHaveBeenCalledWith(upstream);
         });
 
         it("records an error once when it has no cause", async () => {

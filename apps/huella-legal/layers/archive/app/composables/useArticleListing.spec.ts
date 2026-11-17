@@ -1,6 +1,7 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
+import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent, nextTick, reactive, ref, type Ref } from "vue";
+import { nextTick, reactive, ref, type Ref } from "vue";
 import type { LocationQueryRaw } from "vue-router";
 import { useArticleListing } from "./useArticleListing";
 
@@ -57,26 +58,9 @@ const listingAt = async (
     query: Record<string, string>,
     scope?: Parameters<typeof useArticleListing>[0],
 ) => {
-    let listing!: Awaited<ReturnType<typeof useArticleListing>>;
-    let failure: unknown;
-
     routing.route = reactive({ query });
 
-    const wrapper = await mountSuspended(
-        defineComponent({
-            setup: async () => {
-                listing = await useArticleListing(scope).catch((error: unknown) => {
-                    failure = error;
-
-                    return listing;
-                });
-
-                return () => null;
-            },
-        }),
-    );
-
-    if (failure) throw failure;
+    const { value: listing, wrapper } = await withSetup(() => useArticleListing(scope));
 
     return Object.assign(listing, { unmount: () => wrapper.unmount() });
 };

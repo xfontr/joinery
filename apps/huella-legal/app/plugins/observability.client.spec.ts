@@ -54,7 +54,11 @@ beforeEach(() => {
     telemetry.startWebTelemetry.mockReturnValue(telemetry.faro);
 });
 
-afterEach(() => {
+// A plugin left listening starts beside the next test's, and two concurrent imports of the mocked
+// module can hand one of them the real Faro
+afterEach(async () => {
+    window.dispatchEvent(new PointerEvent("pointerdown"));
+    await vi.dynamicImportSettled();
     vi.useRealTimers();
 });
 

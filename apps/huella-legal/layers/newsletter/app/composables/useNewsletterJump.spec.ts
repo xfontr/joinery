@@ -1,23 +1,8 @@
-import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent } from "vue";
 import { NEWSLETTER_ID, useNewsletterJump } from "./useNewsletterJump";
 
-const setUp = async () => {
-    let jump: ReturnType<typeof useNewsletterJump> | undefined;
-
-    await mountSuspended(
-        defineComponent({
-            setup: () => {
-                jump = useNewsletterJump();
-
-                return () => null;
-            },
-        }),
-    );
-
-    return jump!;
-};
+const setUp = async () => (await withSetup(() => useNewsletterJump())).value;
 
 const addBand = () => {
     const band = document.createElement("section");

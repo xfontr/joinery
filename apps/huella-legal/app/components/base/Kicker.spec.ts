@@ -21,6 +21,7 @@ describe("kicker", () => {
             slots: { default: () => "Área" },
         });
 
+        // Nuxt UI's link colour overrides the kicker's unless its class wins the merge
         expect(wrapper.find("a").classes()).toContain("text-muted");
         expect(wrapper.find("a").classes()).not.toContain("text-primary");
     });

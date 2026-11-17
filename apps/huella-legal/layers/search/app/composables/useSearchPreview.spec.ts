@@ -1,6 +1,7 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
+import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent, nextTick, ref, type Ref } from "vue";
+import { nextTick, ref, type Ref } from "vue";
 import { useSearchPreview } from "./useSearchPreview";
 
 const fetching = vi.hoisted(() => ({
@@ -30,21 +31,8 @@ mockNuxtImport(
         },
 );
 
-const previewOf = async (term: Ref<string>) => {
-    let preview!: ReturnType<typeof useSearchPreview>;
-
-    await mountSuspended(
-        defineComponent({
-            setup: () => {
-                preview = useSearchPreview(term);
-
-                return () => null;
-            },
-        }),
-    );
-
-    return preview;
-};
+const previewOf = async (term: Ref<string>) =>
+    (await withSetup(() => useSearchPreview(term))).value;
 
 beforeEach(() => {
     fetching.urls = [];

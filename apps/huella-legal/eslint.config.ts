@@ -4,6 +4,7 @@ export default [
     ...eslint.createNuxtConfig(),
     eslint.routeMeta,
     eslint.tailwind("layers/design/app/assets/main.css"),
+    eslint.i18nKeys("i18n/locales/*.json"),
     eslint.layerBoundaries({
         cores: ["articles", "forms", "design"],
         kit: [

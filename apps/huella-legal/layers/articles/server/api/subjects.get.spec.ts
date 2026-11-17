@@ -1,5 +1,6 @@
 import { fakeEntry, fakeTerm } from "@monorepo/content/testing";
 import { describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
 import type { ArticleSummary } from "../../shared/types/ArticleSummary";
 import type { Category } from "../../shared/types/Category";
 import type { SubjectIndex } from "../../shared/types/SubjectIndex";
@@ -10,7 +11,7 @@ const nitro = vi.hoisted(() => ({
     categories: [] as Category[],
 }));
 
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 
 vi.mock("../services/articleIndex", () => ({
     getArticleIndex: () => Promise.resolve(nitro.index),

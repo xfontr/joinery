@@ -1,7 +1,7 @@
+import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
 import type { FormError } from "@nuxt/ui";
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent } from "vue";
 import { useFormPost } from "./useFormPost";
 
 type Failure = "duplicate" | "unavailable";
@@ -35,24 +35,15 @@ const rejected = (statusCode: number, data?: unknown) =>
         data: { error: true, statusCode, statusMessage: "Refused", data },
     });
 
-const setUp = async (multipart = false) => {
-    let controller: ReturnType<typeof useFormPost<Request, FormError, Failure>> | undefined;
-
-    await mountSuspended(
-        defineComponent({
-            setup: () => {
-                controller = useFormPost<Request, FormError, Failure>(ENDPOINT, {
-                    failures: FAILURES,
-                    multipart,
-                });
-
-                return () => null;
-            },
-        }),
-    );
-
-    return controller!;
-};
+const setUp = async (multipart = false) =>
+    (
+        await withSetup(() =>
+            useFormPost<Request, FormError, Failure>(ENDPOINT, {
+                failures: FAILURES,
+                multipart,
+            }),
+        )
+    ).value;
 
 beforeEach(() => {
     vi.clearAllMocks();

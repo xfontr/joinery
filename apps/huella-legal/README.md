@@ -642,7 +642,7 @@ intended, so they failed every page PR and got accepted unread. CI runs the spec
 
 **Console output fails e2e, in the browser and on the server.** The mechanism lives in the
 [Playwright preset](../../packages/configs/README.md); this app only wires it. Specs import `test`
-from `@monorepo/configs/playwright/test`, never from `@playwright/test`, and the ESLint preset
+from `@monorepo/configs/playwright/utils/test`, never from `@playwright/test`, and the ESLint preset
 enforces it. Its `page` fails a test on any browser console message or uncaught page error, checked
 once the test body returns, so a test that ends on `page.goto` misses whatever the app logs as it
 boots after `load`. A test whose noise is justified allows it with

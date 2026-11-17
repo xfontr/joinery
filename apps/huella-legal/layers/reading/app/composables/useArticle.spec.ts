@@ -1,8 +1,7 @@
+import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
 import { fakeAsset, fakeAuthor } from "@monorepo/content/testing";
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { NuxtError } from "#app";
-import { defineComponent, ref, type Ref } from "vue";
+import { mockNuxtImport, registerEndpoint } from "@nuxt/test-utils/runtime";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useArticle } from "./useArticle";
 
 const ARTICLE: Article = {
@@ -27,21 +26,14 @@ const ARTICLE: Article = {
 
 const nuxt = vi.hoisted(() => ({
     fetches: new Map<string, Record<string, unknown> | undefined>(),
-    article: undefined as unknown as Ref<Article | undefined>,
-    error: undefined as unknown as Ref<NuxtError | undefined>,
     seo: {} as Record<string, unknown>,
     signedTitle: undefined as unknown as () => string | undefined,
 }));
 
-mockNuxtImport("useCachedFetch", () => (url: string, options?: Record<string, unknown>) => {
-    nuxt.fetches.set(url, options);
-
-    if (url.endsWith("/related") || url.endsWith("/comments") || url === "/api/authors")
-        return { data: ref([]), error: ref(new Error(`${url} failed`)) };
-
-    const result = { data: nuxt.article, error: nuxt.error };
-
-    return Object.assign(Promise.resolve(result), result);
+// A spy over the real composable: every read still runs, and its rendering options can be read
+mockNuxtImport("useCachedFetch", (original) => (...args: Parameters<typeof original>) => {
+    nuxt.fetches.set(args[0] as string, args[1] as Record<string, unknown> | undefined);
+    return original(...args);
 });
 
 mockNuxtImport("useSeoMeta", () => (input: Record<string, unknown>) => {
@@ -52,35 +44,38 @@ mockNuxtImport("useSeoTitleTemplate", () => (seoTitle: () => string | undefined)
     nuxt.signedTitle = seoTitle;
 });
 
-const setUp = async (route = "/la-culpa/") => {
-    let controller: Awaited<ReturnType<typeof useArticle>> | undefined;
-    let failure: unknown;
-
-    await mountSuspended(
-        defineComponent({
-            setup: async () => {
-                try {
-                    controller = await useArticle();
-                } catch (error) {
-                    failure = error;
-                }
-
-                return () => null;
-            },
-        }),
-        { route },
+const setUp = (route = "/la-culpa/") =>
+    withSetup(() => useArticle(), { route }).then(
+        ({ value }) => ({ controller: value, failure: undefined }),
+        (failure: unknown) => ({ controller: undefined, failure }),
     );
-
-    return { controller, failure };
-};
 
 const seo = (field: string) => (nuxt.seo[field] as () => unknown)();
 
+const unregisters: (() => void)[] = [];
+
+const FAILING = () => new Response("Upstream failed", { status: 500 });
+
+/** Serves the article; the related list, the comments and the author counts all fail. */
+const serve = (article: () => unknown) => {
+    unregisters.push(
+        registerEndpoint("/api/articles/la-culpa", article),
+        registerEndpoint("/api/articles/la-culpa/related", FAILING),
+        registerEndpoint("/api/articles/la-culpa/comments", FAILING),
+        registerEndpoint("/api/authors", FAILING),
+    );
+};
+
+// useCachedFetch serves a payload it already holds, which would outlive the test that fetched it
 beforeEach(() => {
     nuxt.fetches.clear();
-    nuxt.article = ref(ARTICLE);
-    nuxt.error = ref();
     nuxt.seo = {};
+    clearNuxtData();
+    serve(() => ARTICLE);
+});
+
+afterEach(() => {
+    unregisters.splice(0).forEach((unregister) => unregister());
 });
 
 describe("useArticle", () => {
@@ -149,23 +144,19 @@ describe("useArticle", () => {
 
     // Thrown during setup, so server rendering answers with the route's own status
     it("throws a fatal 404 when the post doesn't exist", async () => {
-        nuxt.error.value = createError(
-            Object.assign(new Error("Not found"), {
-                statusCode: 404,
-                statusMessage: "Not found",
-                response: { status: 404 },
-            }),
-        );
+        unregisters.splice(0).forEach((unregister) => unregister());
+        serve(() => new Response("Not found", { status: 404 }));
 
         expect((await setUp()).failure).toMatchObject({ status: 404, fatal: true });
     });
 
     describe("SEO", () => {
         it("prefers the CMS's SEO title and description over the article's own", async () => {
-            nuxt.article.value = {
+            unregisters.splice(0).forEach((unregister) => unregister());
+            serve(() => ({
                 ...ARTICLE,
                 seo: { title: "La culpa | Huella", description: "Resumen SEO" },
-            };
+            }));
 
             await setUp();
 
@@ -186,7 +177,8 @@ describe("useArticle", () => {
         });
 
         it("tells the title template which title the CMS wrote", async () => {
-            nuxt.article.value = { ...ARTICLE, seo: { title: "La culpa | Huella" } };
+            unregisters.splice(0).forEach((unregister) => unregister());
+            serve(() => ({ ...ARTICLE, seo: { title: "La culpa | Huella" } }));
 
             await setUp();
 
@@ -194,7 +186,8 @@ describe("useArticle", () => {
         });
 
         it("keeps a post the CMS marks noindex out of search", async () => {
-            nuxt.article.value = { ...ARTICLE, seo: { noindex: true } };
+            unregisters.splice(0).forEach((unregister) => unregister());
+            serve(() => ({ ...ARTICLE, seo: { noindex: true } }));
 
             await setUp();
 

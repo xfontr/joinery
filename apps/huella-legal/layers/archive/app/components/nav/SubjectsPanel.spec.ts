@@ -1,6 +1,7 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ref } from "vue";
+import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
+import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { flushPromises } from "@vue/test-utils";
+import { describe, expect, it } from "vitest";
 import NavSubjectsPanel from "./SubjectsPanel.vue";
 
 const subject = (slug: string, count: number): Facet<Category> => ({
@@ -20,31 +21,25 @@ const SUBJECTS = [
     subject("derecho-administrativo", 1),
 ];
 
-const fetching = vi.hoisted(() => ({
-    home: undefined as Home | undefined,
-    status: "success" as string,
-}));
+const HOME: Home = {
+    latest: [],
+    recent: [],
+    theses: [],
+    subjects: SUBJECTS,
+    formats: [],
+};
 
-mockNuxtImport("useCachedFetch", () => () => ({
-    data: ref(fetching.home),
-    status: ref(fetching.status),
-}));
-
-const mountPanel = () =>
-    mountSuspended(NavSubjectsPanel, {
+/** Mounts the panel over a home route answering with `answer`, once the read has settled. */
+const mountPanel = async (answer: () => unknown = () => HOME) => {
+    // useCachedFetch serves a payload it already holds, which would outlive the previous mount
+    clearNuxtData();
+    serveEndpoint("/api/home", answer);
+    const wrapper = await mountSuspended(NavSubjectsPanel, {
         global: { mocks: { $t: (key: string) => `t(${key})` } },
     });
-
-beforeEach(() => {
-    fetching.home = {
-        latest: [],
-        recent: [],
-        theses: [],
-        subjects: SUBJECTS,
-        formats: [],
-    };
-    fetching.status = "success";
-});
+    await flushPromises();
+    return wrapper;
+};
 
 describe("subjects panel", () => {
     it("lists the eight biggest areas, biggest first, then the whole index", async () => {
@@ -64,10 +59,7 @@ describe("subjects panel", () => {
     });
 
     it("links the whole index while the areas load, so an open panel always leads somewhere", async () => {
-        fetching.home = undefined;
-        fetching.status = "pending";
-
-        const wrapper = await mountPanel();
+        const wrapper = await mountPanel(() => new Promise(() => {}));
 
         expect(wrapper.findAll("a").map((link) => link.attributes("href"))).toEqual(["/areas/"]);
         expect(wrapper.text()).toContain("t(common.loading)");

@@ -1,7 +1,6 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@monorepo/configs/playwright/test";
-
-const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
+import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { expect, test } from "@monorepo/configs/playwright/utils/test";
+import { t } from "./copy.ts";
 
 const PATH = "/sobre/";
 
@@ -41,7 +40,7 @@ test("the call to action's fingerprint holds its draw until it scrolls into view
     await page.goto(PATH);
 
     const band = page.locator("section", {
-        has: page.getByRole("heading", { name: "Deja tu huella." }),
+        has: page.getByRole("heading", { name: t("aboutCallToAction.title") }),
     });
     const fingerprint = band.locator("svg[aria-hidden='true']").first();
 
@@ -68,9 +67,7 @@ test("the about page has no WCAG AA violations", async ({ page }, testInfo) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(PATH);
 
-    const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
-    expect(violations).toEqual([]);
+    await expectNoAxeViolations(page);
 
     const path = testInfo.outputPath(`about-${testInfo.project.name}.png`);
 

@@ -1,6 +1,7 @@
 import type { Entry } from "@monorepo/content";
 import { fakeEntry, fakeTerm } from "@monorepo/content/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
 import type { ArticleSummary } from "../../../../shared/types/ArticleSummary";
 
 const CATEGORY = fakeTerm();
@@ -12,7 +13,7 @@ const nitro = vi.hoisted(() => ({
     listEntries: vi.fn(),
 }));
 
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 vi.stubGlobal("getRouterParam", () => "la-culpa");
 vi.stubGlobal("useRuntimeConfig", () => ({ articles: { hiddenTerms: ["oculta"] } }));
 vi.stubGlobal("useContent", () => ({ getEntry: nitro.getEntry, listEntries: nitro.listEntries }));

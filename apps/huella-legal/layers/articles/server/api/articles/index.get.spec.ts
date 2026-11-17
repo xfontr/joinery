@@ -1,6 +1,7 @@
 import { MAX_SEARCH_LENGTH } from "@monorepo/content";
 import { fakeAuthor, fakeEntry, fakeTerm } from "@monorepo/content/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
 import type { ArticleListing } from "../../../shared/types/ArticleListing";
 import type { ArticleSummary } from "../../../shared/types/ArticleSummary";
 import { toArticleSummary } from "../../mappers/articleSummary";
@@ -11,11 +12,8 @@ const nitro = vi.hoisted(() => ({
     index: [] as ArticleSummary[],
 }));
 
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 vi.stubGlobal("getQuery", () => nitro.query);
-vi.stubGlobal("createError", (input: { statusCode?: number }) =>
-    Object.assign(new Error("http"), input),
-);
 vi.stubGlobal("useContent", () => ({ getTerm: nitro.getTerm }));
 vi.stubGlobal("useRuntimeConfig", () => ({ articles: { hiddenTerms: ["oculta"] } }));
 

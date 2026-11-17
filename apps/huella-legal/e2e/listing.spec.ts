@@ -1,9 +1,8 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect, NOT_FOUND_DOCUMENT, test } from "@monorepo/configs/playwright/test";
+import { expectNoAxeViolations } from "@monorepo/configs/playwright/utils/a11y";
+import { expect, NOT_FOUND_DOCUMENT, test } from "@monorepo/configs/playwright/utils/test";
+import { t } from "./copy.ts";
 import type { Page } from "@playwright/test";
 import { AUTHOR, POSTS, SIBLING, SOUGHT, SUBJECT, TAG } from "./fakes.ts";
-
-const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 
 const LISTINGS = [
     { name: "publications", path: "/publicaciones/", title: "Publicaciones" },
@@ -30,9 +29,7 @@ for (const { name, path, title } of LISTINGS) {
     test(`the ${name} listing has no WCAG AA violations`, async ({ page }) => {
         await page.goto(path);
 
-        const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
-        expect(violations).toEqual([]);
+        await expectNoAxeViolations(page);
     });
 }
 
@@ -45,7 +42,7 @@ test("the archive pages twenty at a time and scrolls back to the top on the next
 
     await expect(articles).toHaveCount(20);
 
-    await page.getByRole("link", { name: "Página siguiente" }).click();
+    await page.getByRole("link", { name: t("pagination.next.label") }).click();
 
     await expect(page).toHaveURL(/\/publicaciones\/\?page=2$/);
     await expect(articles).toHaveCount(POSTS.length - 20);
@@ -77,7 +74,7 @@ test("the sort lives in the URL, so an oldest-first listing can be shared", asyn
 
     await page.goto("/publicaciones/?sort=oldest&page=2");
 
-    await expect(page.getByRole("combobox", { name: "Ordenar publicaciones" })).toContainText(
+    await expect(page.getByRole("combobox", { name: t("sortSelect.label") })).toContainText(
         "Más antiguas",
     );
     await expect(page.getByRole("main").getByRole("heading", { level: 3 }).last()).toHaveText(
@@ -88,7 +85,7 @@ test("the sort lives in the URL, so an oldest-first listing can be shared", asyn
 test("a format pill narrows the archive and marks itself current", async ({ page }) => {
     await page.goto("/publicaciones/");
 
-    const pills = page.getByRole("navigation", { name: "Formato" });
+    const pills = page.getByRole("navigation", { name: t("archiveResults.formats") });
 
     await pills.getByRole("link", { name: /^TFG y TFM/ }).click();
 
@@ -100,7 +97,8 @@ test("a format pill narrows the archive and marks itself current", async ({ page
 });
 
 test.describe("the archive search", () => {
-    const searchbox = (page: Page) => page.getByRole("searchbox", { name: "Buscar en el archivo" });
+    const searchbox = (page: Page) =>
+        page.getByRole("searchbox", { name: t("archiveSearch.label") });
     const articles = (page: Page) => page.getByRole("main").getByRole("article");
 
     // The second post that /buscar/ finds has the word only in its body, which this search skips

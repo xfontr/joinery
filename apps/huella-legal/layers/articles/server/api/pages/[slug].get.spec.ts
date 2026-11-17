@@ -1,16 +1,14 @@
 import { fakeEntry } from "@monorepo/content/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
 import type { Page } from "../../../shared/types/Page";
 
 const ENTRY = fakeEntry({ slug: "aviso-legal", body: { format: "html", value: "<p>Uno</p>" } });
 
 const nitro = vi.hoisted(() => ({ getEntry: vi.fn(), param: vi.fn() }));
 
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 vi.stubGlobal("getRouterParam", nitro.param);
-vi.stubGlobal("createError", (input: { statusCode?: number }) =>
-    Object.assign(new Error("http"), input),
-);
 vi.stubGlobal("useRuntimeConfig", () => ({
     content: { vendor: { baseURL: "https://wp.revista.test" } },
     public: { site: { url: "https://revista.test" }, pageSlugs: ["aviso-legal"] },

@@ -54,7 +54,7 @@ describe("sort select", () => {
             global,
         });
 
-        wrapper.findComponent({ name: "USelect" }).vm.$emit("update:modelValue", "oldest");
+        await wrapper.findComponent({ name: "USelect" }).setValue("oldest");
 
         expect(wrapper.emitted("update:modelValue")).toEqual([["oldest"]]);
     });

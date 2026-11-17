@@ -1,7 +1,8 @@
+import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
 import { fakeAuthor } from "@monorepo/content/testing";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ref } from "vue";
+import { flushPromises, type VueWrapper } from "@vue/test-utils";
+import { describe, expect, it } from "vitest";
 import NavPublicationsPanel from "./PublicationsPanel.vue";
 
 const translate = (key: string) => `t(${key})`;
@@ -25,27 +26,21 @@ const HOME: Home = {
     formats: [],
 };
 
-const fetching = vi.hoisted(() => ({
-    home: undefined as Home | undefined,
-    status: "success" as string,
-}));
-
 mockNuxtImport("useI18n", () => () => ({ t: translate }));
-mockNuxtImport("useCachedFetch", () => () => ({
-    data: ref(fetching.home),
-    status: ref(fetching.status),
-}));
 
-const mountPanel = () =>
-    mountSuspended(NavPublicationsPanel, { global: { mocks: { $t: translate } } });
+/** Mounts the panel over a home route answering with `answer`, once the read has settled. */
+const mountPanel = async (answer: () => unknown = () => HOME) => {
+    // useCachedFetch serves a payload it already holds, which would outlive the previous mount
+    clearNuxtData();
+    serveEndpoint("/api/home", answer);
+    const wrapper = await mountSuspended(NavPublicationsPanel, {
+        global: { mocks: { $t: translate } },
+    });
+    await flushPromises();
+    return wrapper;
+};
 
-const hrefs = (wrapper: Awaited<ReturnType<typeof mountPanel>>) =>
-    wrapper.findAll("a").map((link) => link.attributes("href"));
-
-beforeEach(() => {
-    fetching.home = HOME;
-    fetching.status = "success";
-});
+const hrefs = (wrapper: VueWrapper) => wrapper.findAll("a").map((link) => link.attributes("href"));
 
 describe("publications panel", () => {
     it("previews the lead and then the latest, three in all, after the ways to browse", async () => {
@@ -64,20 +59,14 @@ describe("publications panel", () => {
     });
 
     it("offers the ways to browse while the previews load, so an open panel is never empty", async () => {
-        fetching.home = undefined;
-        fetching.status = "pending";
-
-        const wrapper = await mountPanel();
+        const wrapper = await mountPanel(() => new Promise(() => {}));
 
         expect(hrefs(wrapper)).toHaveLength(5);
         expect(wrapper.text()).toContain("t(common.loading)");
     });
 
     it("drops the previews when the home data failed, rather than a heading over nothing", async () => {
-        fetching.home = undefined;
-        fetching.status = "error";
-
-        const wrapper = await mountPanel();
+        const wrapper = await mountPanel(() => new Response("Upstream failed", { status: 500 }));
 
         expect(wrapper.text()).not.toContain("t(navPublicationsPanel.latest)");
         expect(hrefs(wrapper)).toHaveLength(5);

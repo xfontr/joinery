@@ -1,5 +1,7 @@
-import { expect, NOT_FOUND_DOCUMENT, test } from "@monorepo/configs/playwright/test";
-import { ESCAPED, HEADING } from "./fakes.ts";
+import { expect, NOT_FOUND_DOCUMENT, test } from "@monorepo/configs/playwright/utils/test";
+import { rawKeysIn } from "@monorepo/configs/playwright/utils/i18n";
+import { MESSAGES } from "./copy.ts";
+import { ARTICLE, AUTHOR, ESCAPED, HEADING, SUBJECT, TAG } from "./fakes.ts";
 
 test("opens an article by its slug", async ({ page }) => {
     await page.goto(`/${ESCAPED.slug}/`);
@@ -17,3 +19,28 @@ test.describe("an unknown slug", () => {
         expect(response?.status()).toBe(404);
     });
 });
+
+// vue-i18n prints a key it can't find, and keys built from a variable are out of the lint's reach
+const PAGES = [
+    "/",
+    "/publicaciones/",
+    "/areas/",
+    `/areas/${SUBJECT.slug}/`,
+    `/etiquetas/${TAG.slug}/`,
+    "/colaboradores/",
+    `/colaboradores/${AUTHOR.slug}/`,
+    `/${ARTICLE.slug}/`,
+    "/sobre/",
+    "/publicar/",
+    "/contacto/",
+    "/calculo-intereses/",
+    "/buscar/",
+];
+
+for (const path of PAGES) {
+    test(`renders every message on ${path}, never a bare key`, async ({ page }) => {
+        await page.goto(path);
+
+        expect(rawKeysIn(await page.locator("body").innerText(), MESSAGES)).toEqual([]);
+    });
+}

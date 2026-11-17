@@ -1,8 +1,9 @@
+import { slotStub } from "@monorepo/configs/vitest/utils/nuxt";
 import type { FormError } from "@nuxt/ui";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent, ref } from "vue";
+import { ref } from "vue";
 import type { FormPostStatus } from "#layers/forms/app/composables/useFormPost";
 import type { PostCommentFailure } from "../composables/usePostComment";
 import CommentForm from "./CommentForm.vue";
@@ -50,12 +51,7 @@ const comment = vi.hoisted(() => ({
 const challenge = vi.hoisted(() => vi.fn());
 
 // The real challenge mounts Cloudflare's widget, so only its slot contract with the form is kept
-const FormChallenge = defineComponent({
-    setup:
-        (_, { slots }) =>
-        () =>
-            slots.default?.({ challenge }),
-});
+const FormChallenge = slotStub({ challenge });
 
 vi.mock("../composables/usePostComment", () => ({ usePostComment: () => comment }));
 

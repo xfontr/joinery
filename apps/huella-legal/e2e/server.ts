@@ -1,5 +1,5 @@
 import { wordpressHandlers } from "@monorepo/content/testing";
-import { recordServerConsole } from "@monorepo/configs/playwright/server";
+import { recordServerConsole } from "@monorepo/configs/playwright/setup/server";
 import { setupServer } from "msw/node";
 import { COMMENTS, CONTENT } from "./fakes.ts";
 import { kitHandlers, turnstileHandlers, wordpressCommentHandlers } from "./vendors.ts";

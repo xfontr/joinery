@@ -1,7 +1,8 @@
+import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
 import type { AsyncData, NuxtError } from "#app";
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent, nextTick, ref } from "vue";
+import { nextTick, ref } from "vue";
 import { useFailOnError } from "./useFailOnError";
 
 const NOT_FOUND = { cause: { response: { status: 404 } } } as unknown as NuxtError;
@@ -26,25 +27,7 @@ const requestFailing = (initial?: NuxtError) => {
 const mountWith = async (
     request: AsyncData<unknown, NuxtError | undefined>,
     options?: Parameters<typeof useFailOnError>[1],
-) => {
-    let failure: unknown;
-
-    const wrapper = await mountSuspended(
-        defineComponent({
-            setup: async () => {
-                await useFailOnError(request, options).catch((error: unknown) => {
-                    failure = error;
-                });
-
-                return () => null;
-            },
-        }),
-    );
-
-    if (failure) throw failure;
-
-    return wrapper;
-};
+) => (await withSetup(() => useFailOnError(request, options))).wrapper;
 
 beforeEach(() => {
     vi.clearAllMocks();

@@ -1,12 +1,13 @@
 import { fakeEntry, fakeTerm } from "@monorepo/content/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
 import type { Article } from "../../../shared/types/Article";
 
 const ENTRY = fakeEntry({ slug: "la-culpa", body: { format: "html", value: "<h2>Uno</h2>" } });
 
 const nitro = vi.hoisted(() => ({ getEntry: vi.fn(), param: vi.fn() }));
 
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 vi.stubGlobal("getRouterParam", nitro.param);
 vi.stubGlobal("useRuntimeConfig", () => ({
     articles: { hiddenTerms: ["oculta"] },
