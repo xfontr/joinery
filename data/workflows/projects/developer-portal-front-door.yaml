@@ -98,18 +98,17 @@ extras:
     title: Design system
     complexity: 8
     dependsOn: [design-approval]
-    summary: Approved direction E as two token sets in the design layer, one for the visitor pages
-      (`app/lab/idea/tokens.css`) and one for the developer view (`app/lab/idea/e/developer.css`),
-      each scoped to its own view and applied to no page yet, with a contrast table and the
+    summary: Approved direction E as one design system in the design layer for the visitor pages
+      and the developer view alike, applied to no page yet, with a contrast table and the
       raw-palette ban. The lab is the design to rebuild on Nuxt UI, never code to copy, and it wins
       over 0039 and 0040 where they differ.
     reuse: { plan: method, from: apps/huella-legal/layers/design }
     doneWhen:
-      - Both token sets, with their faces, type steps and one accent each, are in `layers/design`
-        in light and dark.
+      - One token set, with its faces, type steps and one accent, is in `layers/design` in light
+        and dark.
       - No page the portal serves today looks any different.
-      - Every text-on-surface pair in both sets has a contrast ratio of at least 4.5:1, in light
-        and dark, written in the README's design-system section.
+      - Every text-on-surface pair has a contrast ratio of at least 4.5:1, in light and dark,
+        written in the README's design-system section.
       - The app's eslint config bans raw palette classes.
       - Components stay Nuxt UI, themed through `app.config.ts`.
 
@@ -118,14 +117,14 @@ extras:
     title: Developer view on E
     complexity: 13
     dependsOn: [design-system]
-    summary: The developer view rebuilt as `/lab/idea/e/developer` lays it out, on the developer
-      tokens. A collapsible icon rail groups every page the portal has today into Home, Catalog,
+    summary: The developer view rebuilt as `/lab/idea/e/developer` lays it out, on the design
+      system. A collapsible icon rail groups every page the portal has today into Home, Catalog,
       Docs, Work and Health; the Overview becomes Home at `/overview`, and every existing route
       keeps its path. This replaces the current shell; there is no visitor mode over these pages.
     reuse: { plan: method, from: apps/developer-portal/app/layouts }
     doneWhen:
-      - Every page the portal has today is reachable from the rail and renders on the developer
-        tokens with no `.report/`.
+      - Every page the portal has today is reachable from the rail and renders on the design
+        system with no `.report/`.
       - The rail collapses to icons, as in the lab.
       - Home, Catalog, a project page and every Health tab pass 0039's developer-view anti-list at
         390 and 1280 px.

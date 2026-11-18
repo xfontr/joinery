@@ -12,3 +12,6 @@ at,script,command,target,flags,area,caller,tty,exit,ms
 2026-11-18,map,,,check,developer-portal,claude-code,0,0,149
 2026-11-18,issue,brief,,,developer-portal,claude-code,0,0,2124
 2026-11-18,map,,,check,developer-portal,claude-code,0,0,171
+2026-11-18,workflow,next,,,developer-portal,claude-code,0,0,1653
+2026-11-18,workflow,file,,,developer-portal,claude-code,0,0,1413
+2026-11-18,workflow,sync,,,developer-portal,claude-code,0,0,2173

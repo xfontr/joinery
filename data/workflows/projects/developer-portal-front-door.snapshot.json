@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-18T09:21:07.955Z",
+    "syncedAt": "2026-11-18T18:38:30.486Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -99,10 +99,13 @@
             ],
             "createdAt": "2026-11-18T09:20:45Z",
             "closedAt": null,
-            "activity": [],
+            "activity": [
+                "2026-11-18",
+                "2026-11-18"
+            ],
             "blockedBy": [],
-            "branch": true,
-            "pr": false,
+            "branch": false,
+            "pr": true,
             "owner": false,
             "complexity": 8
         }
