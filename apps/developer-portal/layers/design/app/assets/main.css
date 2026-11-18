@@ -6,6 +6,52 @@
 
     /* One step under `text-xs`, for timestamps, tags and labels beside a title */
     --text-2xs: 0.6875rem;
+
+    /* Warm neutrals; every surface, text and border role of the identity is a step of this ramp */
+    --color-paper-50: #f8f5ef;
+    --color-paper-100: #f1ece3;
+    --color-paper-200: #e8e1d4;
+    --color-paper-300: #ddd5c6;
+    --color-paper-400: #a89f90;
+    --color-paper-500: #857d70;
+    --color-paper-600: #5f594f;
+    --color-paper-700: #29251f;
+    --color-paper-800: #221f1a;
+    --color-paper-900: #1c1915;
+    --color-paper-950: #12100e;
+
+    /* The one accent: 600 on light surfaces, 300 on dark ones */
+    --color-terracotta-50: #fdf3ee;
+    --color-terracotta-100: #fbe3d6;
+    --color-terracotta-200: #f7c3a8;
+    --color-terracotta-300: #f08a5d;
+    --color-terracotta-400: #e0703f;
+    --color-terracotta-500: #c4582c;
+    --color-terracotta-600: #994021;
+    --color-terracotta-700: #7a331b;
+    --color-terracotta-800: #5c2715;
+    --color-terracotta-900: #3f1b0f;
+    --color-terracotta-950: #261009;
+
+    --font-display: Fraunces, Georgia, serif;
+
+    /* Display steps; with `text-2xl`, `base`, `sm` and `xs` they make the scale's eight */
+    --text-statement: 8rem;
+    --text-statement--line-height: 1;
+    --text-statement--letter-spacing: -0.02em;
+    --text-statement--font-weight: 300;
+    --text-title: 4.5rem;
+    --text-title--line-height: 1;
+    --text-title--letter-spacing: -0.02em;
+    --text-title--font-weight: 300;
+    --text-section: 3rem;
+    --text-section--line-height: 1;
+    --text-section--letter-spacing: -0.02em;
+    --text-section--font-weight: 300;
+    --text-heading: 2.25rem;
+    --text-heading--line-height: 1.1;
+    --text-heading--letter-spacing: -0.02em;
+    --text-heading--font-weight: 300;
 }
 
 /* Tailwind v4 preflight leaves native <button> at the browser default (`cursor: default`) rather
@@ -99,4 +145,95 @@ button:not(:disabled) {
 @keyframes widget-wiggle {
     from { rotate: -0.4deg; }
     to { rotate: 0.4deg; }
+}
+
+/**
+ * The identity's roles. A layout opts in with `data-identity` on its root, so a page not yet moved
+ * keeps the current look; once every page has moved, this block becomes `:root`.
+ */
+[data-identity] {
+    --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+    --ui-bg: var(--color-paper-100);
+    --ui-bg-muted: var(--color-paper-200);
+    --ui-bg-elevated: var(--color-paper-50);
+    --ui-bg-accented: var(--color-paper-300);
+    --ui-bg-inverted: var(--color-paper-900);
+
+    --ui-text-dimmed: var(--color-paper-600);
+    --ui-text-muted: var(--color-paper-600);
+    --ui-text-toned: var(--color-paper-700);
+    --ui-text: var(--color-paper-800);
+    --ui-text-highlighted: var(--color-paper-900);
+    --ui-text-inverted: var(--color-paper-50);
+
+    --ui-border: var(--color-paper-300);
+    --ui-border-muted: var(--color-paper-200);
+    --ui-border-accented: var(--color-paper-400);
+    --ui-border-inverted: var(--color-paper-900);
+
+    --ui-primary: var(--color-terracotta-600);
+    --ui-radius: 0.125rem;
+    --radius-lg: 0;
+    --radius-xl: 0;
+    --radius-2xl: 0;
+
+    /* Validated as a set with the `dataviz` skill's validator against these surfaces */
+    --tone-good: #006641;
+    --tone-warn: #7a4100;
+    --tone-bad: #b30942;
+
+    font-family: var(--font-sans);
+    background: var(--ui-bg);
+    color: var(--ui-text);
+}
+
+.dark [data-identity] {
+    --ui-bg: var(--color-paper-900);
+    --ui-bg-muted: var(--color-paper-950);
+    --ui-bg-elevated: var(--color-paper-800);
+    --ui-bg-accented: var(--color-paper-700);
+    --ui-bg-inverted: var(--color-paper-100);
+
+    --ui-text-dimmed: var(--color-paper-400);
+    --ui-text-muted: var(--color-paper-400);
+    --ui-text-toned: var(--color-paper-300);
+    --ui-text: var(--color-paper-200);
+    --ui-text-highlighted: var(--color-paper-50);
+    --ui-text-inverted: var(--color-paper-900);
+
+    --ui-border: var(--color-paper-700);
+    --ui-border-muted: var(--color-paper-800);
+    --ui-border-accented: var(--color-paper-500);
+    --ui-border-inverted: var(--color-paper-100);
+
+    --ui-primary: var(--color-terracotta-300);
+
+    --tone-good: #36a184;
+    --tone-warn: #ad8c1f;
+    --tone-bad: #e4676b;
+}
+
+/* A marked word in a headline takes the accent instead of a highlight */
+[data-identity] mark {
+    background: none;
+    color: var(--ui-primary);
+    font-style: italic;
+}
+
+/* An ink fill that stays dark in both modes, such as the developer rail; it sets the fill itself */
+@utility surface-ink {
+    --ui-bg: var(--color-paper-950);
+    --ui-bg-elevated: var(--color-paper-900);
+    --ui-text-muted: var(--color-paper-400);
+    --ui-text: var(--color-paper-100);
+    --ui-text-highlighted: var(--color-paper-50);
+    --ui-border: var(--color-paper-800);
+    --ui-primary: var(--color-terracotta-300);
+    --tone-good: #329546;
+    --tone-warn: #cb6b0b;
+    --tone-bad: #f53864;
+    background: var(--ui-bg);
+    color: var(--ui-text);
 }
