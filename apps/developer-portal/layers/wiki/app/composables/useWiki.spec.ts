@@ -49,10 +49,10 @@ describe("useWiki", () => {
     });
 
     // Every page's payload carries the tree, so a page body in it would ship the whole wiki
-    it("reads only the fields the nav shows, never a page body", async () => {
+    it("reads only the path and title of each page", async () => {
         await use();
 
-        expect(docs.selected).toEqual(["path", "title", "kind", "verdict"]);
+        expect(docs.selected).toEqual(["path", "title"]);
     });
 
     it("builds an empty tree from an empty collection", async () => {

@@ -6,9 +6,6 @@ import { stripLeadingEmoji, toTitleCase } from "#layers/docs/shared/docPages.ts"
 export interface WikiPage {
     path: string;
     title?: string;
-    /** A benchmark's frontmatter `kind` and `verdict`; other docs leave them unset. */
-    kind?: string;
-    verdict?: string;
 }
 
 export interface WikiEntry {
@@ -16,8 +13,6 @@ export interface WikiEntry {
     path: string;
     label: string;
     kind: DocKind;
-    /** A short tag shown beside the label and sorted on, such as a benchmark's kind. */
-    detail?: string;
 }
 
 export interface WikiGroup {
@@ -44,6 +39,7 @@ const EXCLUDED = [
     /\/changelog$/,
     /^\/docs\/decisions\/\d{4}-/,
     /^\/docs\/audits\/\d{4}-/,
+    /^\/docs\/benchmarks\/(?!readme$)/,
     /\/template$/,
 ];
 
@@ -101,9 +97,6 @@ const GROUP_LABELS: Record<string, string> = {
     agents: "Subagents",
 };
 
-/** The verdict that tags a benchmark in place of its kind, and sorts it last. */
-const AVOID = "avoid";
-
 const segmentsOf = (path: string): string[] => path.split("/").filter(Boolean);
 
 const kindOf = (path: string): DocKind => {
@@ -135,9 +128,6 @@ const labelWithin = (root: string, path: string, title: string): string => {
     return stripLeadingEmoji(title);
 };
 
-const detailOf = (page: WikiPage): string | undefined =>
-    page.verdict === AVOID ? AVOID : page.kind?.replaceAll("-", " ");
-
 const place = (page: WikiPage): Placed => {
     const { path } = page;
     const title = page.title ?? path;
@@ -164,7 +154,7 @@ const place = (page: WikiPage): Placed => {
             group,
             groupLabel:
                 group === "docs" ? "Start here" : (GROUP_LABELS[group] ?? toTitleCase(group)),
-            entry: { path, label: labelWithin(root, path, title), kind, detail: detailOf(page) },
+            entry: { path, label: labelWithin(root, path, title), kind },
         };
     }
 
@@ -191,13 +181,8 @@ const place = (page: WikiPage): Placed => {
     };
 };
 
-/** Overview first and what to avoid last — the order you would read them. */
-const rankEntry = (entry: WikiEntry): number => {
-    if (entry.label === "Overview") return 0;
-    if (entry.detail === AVOID) return 2;
-
-    return 1;
-};
+/** Overview first, then everything else by label — the order you would read them. */
+const rankEntry = (entry: WikiEntry): number => (entry.label === "Overview" ? 0 : 1);
 
 const rankGroup = (section: SectionId, key: string): number => {
     if (section === "docs") {
@@ -228,12 +213,7 @@ export const buildWiki = (pages: WikiPage[]): WikiSection[] => {
                 entries: mine
                     .filter((item) => item.group === key)
                     .map((item) => item.entry)
-                    .sort(
-                        (a, b) =>
-                            rankEntry(a) - rankEntry(b) ||
-                            (a.detail ?? "").localeCompare(b.detail ?? "") ||
-                            a.label.localeCompare(b.label),
-                    ),
+                    .sort((a, b) => rankEntry(a) - rankEntry(b) || a.label.localeCompare(b.label)),
             }))
             .sort(
                 (a, b) => rankGroup(id, a.key) - rankGroup(id, b.key) || a.key.localeCompare(b.key),

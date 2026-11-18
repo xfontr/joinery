@@ -1,7 +1,7 @@
 ---
 url: https://carbondesignsystem.com
 kind: design-system
-page-types: [landing, docs, table, chart]
+page-types: [landing, docs, table, chart, dashboard]
 traits: [light, serif-display, mono-labels, one-accent]
 verdict: strong
 used-for: [developer-portal]
@@ -32,10 +32,20 @@ small thumbnail, grouped by what it's for (Simple, Flow, Spatial). A subject tha
 of text becomes something you browse with your eyes. The data table page numbers the parts of the
 component on a diagram, the way a product manual would.
 
+The dense-data guidance is the most specific in the library. The data table page names five row
+heights, 24, 32, 40, 48 and 64 px, and says when to use each, with 40 as the default and 24 for
+"highly dense layouts". It pairs a toolbar height with each, and a selection turns the toolbar into a
+blue batch-actions bar. Zebra stripes are an opt-in modifier, not the default. The dashboards page
+splits dashboards into *presentation* (status at a glance, few metrics) and *exploration* (filter,
+drill down). Its rules for both are one colour per dataset across the whole dashboard, linked
+charts, and annotations that mark peaks and averages. All of it is set in Plex Sans in six or seven
+sizes, with one blue.
+
 The cracks are practical. A cookie banner covers the first screen. In the full-page capture the
 home page has long blank stretches, probably illustrations that load lazily, so the page feels
 unfinished until they arrive. The blue line illustrations are pleasant corporate filler, nothing
 more.
 
 **Take:** square corners and hairlines as a whole attitude; one superfamily for three voices;
-browse-by-thumbnail for a catalogue of charts. **Leave:** decorative corporate illustration.
+browse-by-thumbnail for a catalogue of charts; named row heights; one colour per dataset across a
+dashboard. **Leave:** decorative corporate illustration.

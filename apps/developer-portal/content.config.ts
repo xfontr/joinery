@@ -7,8 +7,9 @@ export default defineContentConfig({
     collections: {
         docs: defineCollection({
             type: "page",
-            // Only docs/benchmarks/ sets these; the wiki nav sorts and tags its entries by them.
+            // Only docs/benchmarks/ sets these; the Benchmarks pages list and filter by them.
             schema: z.object({
+                url: z.string().optional(),
                 kind: z.string().optional(),
                 verdict: z.string().optional(),
             }),

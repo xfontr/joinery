@@ -15,12 +15,7 @@ const sections: WikiSection[] = [
                 label: "Guides",
                 entries: [
                     { path: "/docs/guides/readme", label: "Overview", kind: "doc" },
-                    {
-                        path: "/docs/guides/first-hour",
-                        label: "First hour",
-                        kind: "doc",
-                        detail: "portfolio",
-                    },
+                    { path: "/docs/guides/first-hour", label: "First hour", kind: "doc" },
                 ],
             },
             {
@@ -41,16 +36,6 @@ const sections: WikiSection[] = [
 ];
 
 describe("WikiNav", () => {
-    it("shows an entry's tag beside its label, which is how benchmarks show their kind", async () => {
-        const wrapper = await mountSuspended(WikiNav, {
-            props: { sections, current: "/docs/guides/first-hour" },
-        });
-
-        expect(wrapper.find("a[href='/wiki/docs/guides/first-hour']").text()).toContain(
-            "portfolio",
-        );
-    });
-
     it("opens only the group containing the current page and marks that entry selected", async () => {
         const wrapper = await mountSuspended(WikiNav, {
             props: { sections, current: "/docs/guides/first-hour" },

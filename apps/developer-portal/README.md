@@ -36,7 +36,7 @@ Under `pnpm dev developer-portal` it reads the working tree live. The deployed s
 | `design` | Core | Tokens, shared classes and the Nuxt UI theme |
 | `docs` | Core | Link rewriting and `ProseA` for rendered markdown |
 | `github` | Core | Browser-side reads of GitHub issues and deployments |
-| `decisions`, `audits` | Feature | Each record type's list and pages |
+| `decisions`, `audits`, `benchmarks` | Feature | Each record type's list and pages |
 | `projects` | Feature | Projects, Architecture and What's new |
 | `health` | Feature | Work in progress, Coverage, Dependencies |
 | `telemetry` | Feature | Tooling usage |
@@ -61,6 +61,7 @@ another feature. `eslint.layerBoundaries` in [`eslint.config.ts`](./eslint.confi
 | Architecture, Projects | The collected Nx graph, project metrics, and deleted projects from `git log` |
 | Decisions | `docs/decisions/NNNN-<slug>.md` frontmatter |
 | Audits | Every table in `docs/audits/` with an `ID` and a `Status` column |
+| Benchmarks | `docs/benchmarks/*.md` frontmatter and body, and the screenshots beside them in `images/` |
 | Workflows | `data/workflows/`, read on every request. Under `pnpm dev` the wizard and Settings page write it |
 | Work in progress | Open issues, fetched from GitHub in the reader's browser |
 | What's new | Every `CHANGELOG.md` plus unreleased commit counts |
@@ -79,9 +80,10 @@ link is counted on the Overview, never a build failure. Fix a link that breaks h
 
 ### The wiki tree
 
-Derived from paths alone, so a new doc appears on its own. Changelogs, dated audits and numbered
-decisions are left out of the tree since each has its own page. ⌘K search loads on first open,
-not in the layout, which kept it out of every page's payload.
+Derived from paths alone, so a new doc appears on its own. Changelogs, dated audits, numbered
+decisions and benchmark entries are left out of the tree since each has its own page; CLAUDE.md
+files are left out of the collection and link to GitHub. ⌘K search loads on first open, not in the
+layout, which kept it out of every page's payload.
 
 ### GitHub reads
 

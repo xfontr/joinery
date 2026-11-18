@@ -3,7 +3,8 @@
 Sites analysed as design references, one file per site, so a later benchmark starts from what's
 already been studied instead of re-capturing it. The `benchmark` skill reads and writes them.
 
-An entry describes the site, not a verdict for one project. What a project takes from it belongs
+The portal's Benchmarks page, under Design, shows them as a gallery. An entry describes the site,
+not a verdict for one project. What a project takes from it belongs
 in that project's decision report, such as [0039](../decisions/0039-developer-portal-benchmark.md).
 
 ## 🗂 Structure
@@ -48,6 +49,8 @@ Values come from these lists only. A new value is added here first.
 | `docs` | Long reference with navigation |
 | `chart` | Data visualisation |
 | `case-study` | One project told in depth |
+| `dashboard` | A home of panels, stats and short lists, read at a glance |
+| `detail` | One item's page with tabs: a repo, a package, a project |
 
 | Traits | |
 | --- | --- |

@@ -112,15 +112,8 @@ describe("buildWiki docs groups", () => {
         { path: "/docs/workflows/readme", title: "🧭 Workflows" },
         { path: "/docs/zines/readme", title: "📰 Zines" },
         { path: "/docs/benchmarks/readme", title: "🔖 Benchmarks" },
-        { path: "/docs/benchmarks/rauno-me", title: "🔖 rauno.me", kind: "portfolio" },
-        {
-            path: "/docs/benchmarks/autopilot",
-            title: "🔖 Autopilot",
-            kind: "product",
-            verdict: "avoid",
-        },
-        { path: "/docs/benchmarks/carbon", title: "🔖 Carbon", kind: "design-system" },
-        { path: "/docs/benchmarks/primer", title: "🔖 Primer", kind: "design-system" },
+        { path: "/docs/benchmarks/rauno-me", title: "🔖 rauno.me" },
+        { path: "/docs/benchmarks/carbon", title: "🔖 Carbon" },
     ];
 
     const docsGroups = () => buildWiki(BENCHMARKS).find((section) => section.id === "docs")?.groups;
@@ -134,16 +127,10 @@ describe("buildWiki docs groups", () => {
         ]);
     });
 
-    it("orders benchmarks by kind and tags each with it, with the example to avoid last", () => {
+    it("keeps the benchmarks README but drops each site, which has a page of its own in this app", () => {
         const entries = docsGroups()?.find((group) => group.key === "benchmarks")?.entries;
 
-        expect(entries?.map((entry) => [entry.label, entry.detail])).toEqual([
-            ["Overview", undefined],
-            ["Carbon", "design system"],
-            ["Primer", "design system"],
-            ["rauno.me", "portfolio"],
-            ["Autopilot", "avoid"],
-        ]);
+        expect(entries?.map((entry) => entry.label)).toEqual(["Overview"]);
     });
 });
 

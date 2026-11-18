@@ -92,6 +92,7 @@ interface NavLink {
 const GROUPS = [
     { label: "Explore", items: ["overview", "projects", "changelog"] },
     { label: "Build", items: ["docs", "graph", "decisions", "audits", "workflows"] },
+    { label: "Design", items: ["benchmarks"] },
     {
         label: "Engineering health",
         items: ["issues", "coverage", "telemetry", "deps"],

@@ -1,0 +1,42 @@
+{
+    "visitor": {
+        "apps": {
+            "label": "The apps"
+        },
+        "built": {
+            "figureCaption": "Which app uses which shared piece.",
+            "label": "How it's built",
+            "withNumbers": "Over the last {windowDays} days, AI agents made {agentShare}% of the {runs} tool runs in this repo. {specs} test files check {coverage}% of its code, and {decisions} written decisions and {audits} audits record why it looks the way it does.",
+            "withoutNumbers": "AI agents do much of the work in this repo, checked by tests, written decisions and audits that are all public here."
+        },
+        "developer": {
+            "line": "Every page at full detail, for readers who write code.",
+            "link": "Developer view"
+        },
+        "lead": "One person and a team of AI agents build and run the apps below. Every decision, audit and plan behind them is public here.",
+        "nav": {
+            "audits": "Audits",
+            "decisions": "Decisions",
+            "graph": "How it fits together",
+            "projects": "Apps",
+            "workflows": "Plans"
+        },
+        "statement": "Software made with care, sped up by AI, for the people who use it.",
+        "work": {
+            "label": "How the work is run",
+            "line": "Every change starts as a written question or plan. These are the latest."
+        }
+    },
+    "project": {
+        "configs": "The shared lint, test and build settings every project starts from.",
+        "content": "Fetches articles and categories from a site's WordPress for any app here.",
+        "developer-portal": "This site: the repo's docs, decisions and health in one place.",
+        "huella-legal": "A Spanish law magazine for students and general readers, being redesigned to read well on a phone.",
+        "i18n": "Loads each site's translations, from files or a translation service.",
+        "marina-roustan": "A psychotherapist's website, being rebuilt from WordPress.",
+        "observability": "Reports errors and slow pages from the browser and the server.",
+        "scripts": "The repo's own command-line tools, run by people and agents alike.",
+        "translations": "A small server for translation files; no site uses it yet.",
+        "wp-editor": "A tool that runs on one computer to review and apply edits across a WordPress site."
+    }
+}

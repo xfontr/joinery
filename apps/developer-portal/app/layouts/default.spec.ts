@@ -76,6 +76,7 @@ describe("default layout", () => {
             ["Decisions", "/decisions"],
             ["Audits", "/audits"],
             ["Workflows", "/workflows"],
+            ["Benchmarks", "/benchmarks"],
             ["Work in progress", "/issues"],
             ["Coverage", "/coverage"],
             ["Tooling usage", "/telemetry"],

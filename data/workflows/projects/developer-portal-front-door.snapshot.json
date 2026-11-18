@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-17T14:33:13.529Z",
+    "syncedAt": "2026-11-18T07:50:27.525Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -30,19 +30,43 @@
             "number": 474,
             "title": "Visitor view structure",
             "url": "https://github.com/xfontr/monorepo/issues/474",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "visitor-structure"
             ],
             "createdAt": "2026-11-17T14:31:47Z",
+            "closedAt": "2026-11-17T15:40:34Z",
+            "activity": [
+                "2026-11-17",
+                "2026-11-17"
+            ],
+            "blockedBy": [],
+            "branch": false,
+            "pr": true,
+            "owner": false,
+            "complexity": 5
+        },
+        {
+            "number": 477,
+            "title": "Design lab",
+            "url": "https://github.com/xfontr/monorepo/issues/477",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "design-lab"
+            ],
+            "createdAt": "2026-11-17T15:44:32Z",
             "closedAt": null,
-            "activity": [],
+            "activity": [
+                "2026-11-17",
+                "2026-11-17"
+            ],
             "blockedBy": [],
             "branch": true,
             "pr": false,
             "owner": false,
-            "complexity": 5
+            "complexity": 13
         }
     ],
     "noMilestone": []

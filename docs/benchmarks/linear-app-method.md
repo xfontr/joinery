@@ -29,7 +29,9 @@ diagram, closer to a wink than a feature.
 The chapter pages are the best long-form reading on a dark background in this set. There's one
 column of about 600 px, a 72 px serif title, short sans subheads, and generous air between each
 principle. No sidebar, no table of contents chasing you down the page. It trusts the reader to
-read, which is the right call for a document meant to be read top to bottom.
+read, which is the right call for a document meant to be read top to bottom. Measured, the body is
+Inter at 17 px against 13 px for the chrome. The column sits left of centre rather than centred, and
+each chapter ends on a numbered card for the next one ("2.1 › Set the product direction").
 
 The problem is everything around the serif. Near-black paper, grey body text (`#8a8f98`), Inter,
 one indigo accent: that's the default look of every developer tool since about 2021, and of the AI

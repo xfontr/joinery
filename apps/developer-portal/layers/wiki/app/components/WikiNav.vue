@@ -74,9 +74,6 @@
                 >
                     <UIcon :name="kindIcon(entry.kind)" class="size-3.5 shrink-0 text-dimmed" />
                     <span class="flex-1 truncate">{{ entry.label }}</span>
-                    <span v-if="entry.detail" class="shrink-0 text-xs text-dimmed">
-                        {{ entry.detail }}
-                    </span>
                 </NuxtLink>
             </div>
         </div>
