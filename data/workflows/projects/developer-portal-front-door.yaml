@@ -3,7 +3,7 @@ title: Developer portal front door
 template: custom
 area: app:developer-portal
 milestone: Developer portal front door
-ticketSize: supervised
+ticketSize: block
 summary: The developer portal turned into the repo's public front door — a visitor view that shows
   craft, AI-built engineering and the people the shipped apps serve, a developer view one click
   away with every feature kept, and a visual identity of its own.
@@ -98,64 +98,96 @@ extras:
     title: Design system
     complexity: 8
     dependsOn: [design-approval]
-    summary: The approved direction as semantic tokens, a type scale and a Nuxt UI theme in the
-      design layer, with a contrast table and the raw-palette ban.
+    summary: Approved direction E as one design system in the design layer for the visitor pages
+      and the developer view alike, applied to no page yet, with a contrast table and the
+      raw-palette ban. The lab is the design to rebuild on Nuxt UI, never code to copy, and it wins
+      over 0039 and 0040 where they differ.
     reuse: { plan: method, from: apps/huella-legal/layers/design }
     doneWhen:
+      - One token set, with its faces, type steps and one accent, is in `layers/design` in light
+        and dark.
+      - No page the portal serves today looks any different.
       - Every text-on-surface pair has a contrast ratio of at least 4.5:1, in light and dark,
         written in the README's design-system section.
       - The app's eslint config bans raw palette classes.
       - Components stay Nuxt UI, themed through `app.config.ts`.
 
-  - id: shell-restyle
+  - id: developer-view
     stage: build
-    title: Restyle the shell and every page
-    complexity: 8
+    title: Developer view on E
+    complexity: 13
     dependsOn: [design-system]
-    summary: The layout, sidebar and shared parts like `StatTile` and `DashboardGrid` on the new
-      identity, so every existing page takes it on.
-    reuse: { plan: method, from: apps/developer-portal/app }
+    summary: The developer view rebuilt as `/lab/idea/e/developer` lays it out, on the design
+      system. A collapsible icon rail groups every page the portal has today into Home, Catalog,
+      Docs, Work and Health; the Overview becomes Home at `/overview`, and every existing route
+      keeps its path. This replaces the current shell; there is no visitor mode over these pages.
+    reuse: { plan: method, from: apps/developer-portal/app/layouts }
     doneWhen:
-      - Every page the portal has today renders on the new identity with no `.report/`.
+      - Every page the portal has today is reachable from the rail and renders on the design
+        system with no `.report/`.
+      - The rail collapses to icons, as in the lab.
+      - Home, Catalog, a project page and every Health tab pass 0039's developer-view anti-list at
+        390 and 1280 px.
       - No page keeps a colour, size or radius chosen outside the design layer.
-
-  - id: view-switch
-    stage: build
-    title: Visitor and developer views
-    complexity: 5
-    dependsOn: [scope-signoff, design-system]
-    summary: The visitor view by default and the developer view one click away, working on the
-      prerendered site, with plain-language nav labels for visitors.
-    reuse: { plan: method, from: apps/developer-portal/app }
-    doneWhen:
-      - A first visit lands in the visitor view; the choice is remembered and survives a reload.
-      - Every page that exists today is reachable in the developer view.
-      - Pages marked developer-only are absent from the visitor nav, never removed.
 
   - id: front-page
     stage: build
     title: Visitor front page
     complexity: 8
-    dependsOn: [shell-restyle, view-switch]
-    summary: The page a visitor lands on — what this is in one line, the shipped apps with
-      screenshots, and how the repo is built with agents, with live numbers behind each claim.
+    dependsOn: [developer-view]
+    summary: The `idea` front page at `/`, as `/lab/idea` lays it out on the visitor tokens — the
+      statement, the principles with their proof, the workflow glyph linking to the workflows page,
+      the work, then the way into the craft. It is its own page with its own header, not a skin over
+      a developer page, and its "Developer view →" link goes to `/overview`.
     reuse: { plan: method, from: apps/developer-portal/app/pages }
     doneWhen:
-      - A reader who doesn't write code can say what the author does within 30 seconds.
+      - Its sections are the lab's, in the lab's order.
+      - A reader who doesn't write code can say what this is within 30 seconds.
       - Every number on it comes from the snapshot, and the page renders without one.
-      - It reads well at 390 px first.
+      - It reads well at 390 px first, in light and dark.
+      - Its words are written in this ticket and approved by the owner.
+
+  - id: visitor-pages
+    stage: build
+    title: How it's made and The craft
+    complexity: 8
+    dependsOn: [design-system]
+    summary: The two visitor pages behind the front page, `/method` and `/craft`, as
+      `/lab/idea/method` and `/lab/idea/craft` lay them out on the visitor tokens, in the visitor
+      header with its "Developer view →" link. They link into developer pages such as
+      `/decisions/<id>`; they never restyle them.
+    reuse: { plan: method, from: apps/developer-portal/app/pages }
+    doneWhen:
+      - Each page has the lab's sections in the lab's order and reads well at 390 px first.
+      - Every number on them comes from the snapshot, and both render without one.
+      - Their words are written in this ticket and approved by the owner.
+
+  - id: visitor-workflows
+    stage: build
+    title: Workflows for visitors
+    complexity: 5
+    dependsOn: [design-system]
+    summary: The portal's centrepiece for visitors, as `/lab/idea/workflows` lays it out on the
+      visitor tokens — how a project is planned and run, with the live projects linking to their
+      developer workflow pages. The developer index keeps `/workflows`, so this page takes its own
+      path in the visitor header.
+    reuse: { plan: method, from: apps/developer-portal/layers/workflows }
+    doneWhen:
+      - The page has the lab's sections in the lab's order and reads well at 390 px first.
+      - Every project it shows comes from `data/workflows/`, and each links to its developer page.
       - Its words are written in this ticket and approved by the owner.
 
   - id: project-showcase
     stage: build
-    title: Project showcase
+    title: Work pages
     complexity: 5
-    dependsOn: [shell-restyle, view-switch]
-    summary: The shipped apps as a visitor sees them — a screenshot, the approved line and a link
-      to the live site — kept in a shape that can move to another site later.
+    dependsOn: [design-system]
+    summary: One visitor page per shipped app at `/work/<app>`, as `/lab/idea/work/huella-legal`
+      lays it out on the visitor tokens — the screenshot, the approved line, the live link and the
+      decisions behind it — kept in a shape that can move to another site later.
     reuse: { plan: method, from: apps/developer-portal/layers/projects }
     doneWhen:
-      - Each shipped app shows a current screenshot, its line and its live link.
+      - Each shipped app has its page with a current screenshot, its line and its live link.
       - Screenshots and lines live as data, not inside a component.
       - Its words are written in this ticket and approved by the owner.
 
@@ -163,9 +195,9 @@ extras:
     stage: ship
     title: Docs brought up to date
     complexity: 2
-    dependsOn: [front-page, project-showcase]
-    summary: The portal's README and CLAUDE.md describe the two views, the new design system and
-      where visitor copy lives.
+    dependsOn: [front-page, visitor-pages, visitor-workflows, project-showcase]
+    summary: The portal's README and CLAUDE.md describe the visitor pages, the developer view, the
+      two token sets and where visitor copy lives.
     reuse: { plan: method, from: apps/developer-portal/README.md }
     doneWhen:
       - The doc-drift check reports nothing for the portal.
@@ -178,4 +210,5 @@ extras:
     dependsOn: [docs-update]
     summary: You approve the deployed site as the public front door.
     doneWhen:
-      - The deployed site shows the visitor view by default and every developer page still works.
+      - The deployed site serves the visitor front page at `/` and every developer page still
+        works.

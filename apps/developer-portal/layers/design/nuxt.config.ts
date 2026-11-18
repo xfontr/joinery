@@ -9,6 +9,10 @@ export default defineNuxtConfig({
         },
     },
 
+    fonts: {
+        families: [{ name: "Fraunces", weights: [300, 600], styles: ["normal", "italic"] }],
+    },
+
     colorMode: {
         preference: "system",
         fallback: "dark",

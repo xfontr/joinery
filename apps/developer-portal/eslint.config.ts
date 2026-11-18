@@ -1,5 +1,17 @@
 import { eslint } from "@monorepo/configs";
 
+const bracketedValue = {
+    pattern: String.raw`^.*-\[.*\]$`,
+    message: '"$0" hard-codes a value: use the scale, or add a token to main.css.',
+};
+
+const rawPalette = {
+    pattern:
+        "(^|:)(bg|text|border|divide|ring|outline|decoration|fill|stroke|from|via|to|shadow|accent|caret|placeholder)-(slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|paper|terracotta)-[0-9]{2,3}(/|$)|(^|:)(bg|text|border|divide|ring|outline|decoration|fill|stroke)-(black|white)(/|$)",
+    message:
+        '"$0" is a raw palette colour: use a role such as bg-default, text-muted or border-accented.',
+};
+
 export default [
     ...eslint.createNuxtConfig(),
     eslint.tailwind("layers/design/app/assets/main.css"),
@@ -24,16 +36,15 @@ export default [
             ],
             "better-tailwindcss/no-restricted-classes": [
                 "error",
-                {
-                    restrict: [
-                        {
-                            pattern: String.raw`^.*-\[.*\]$`,
-                            message:
-                                '"$0" hard-codes a value: use the scale, or add a token to main.css.',
-                        },
-                    ],
-                },
+                { restrict: [bracketedValue, rawPalette] },
             ],
+        },
+    },
+    {
+        // The design lab is a dev-only mock deleted once the views are built, so it keeps its own picks.
+        files: ["app/lab/**/*.{vue,ts}", "app/pages/lab/**/*.{vue,ts}"],
+        rules: {
+            "better-tailwindcss/no-restricted-classes": ["error", { restrict: [bracketedValue] }],
         },
     },
 

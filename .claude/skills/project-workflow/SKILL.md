@@ -133,7 +133,10 @@ anything started or closed stays.
 Every project has a `<id>.diary.md`. Append one line in the
 [diary's shape](../../../docs/workflows/README.md#-diary), dated from `date +%F`, when:
 
-- a ticket closes (an `estimate` line);
+- the PR that closes a ticket is about to open (an `estimate` line). That PR closes the block: commit
+  the line, `pnpm workflow:sync <id>` and any unfiled block the work proved wrong to its branch
+  before `gh pr create` or `pnpm issue:ship`, never after the merge. `workflow-close.sh` refuses
+  the PR otherwise;
 - the user corrects or complains about the workflow, the tooling or your output, or says something
   went well, logged as it happens;
 - the map, a ticket's text, a rule or a command turns out wrong, or plainly works.

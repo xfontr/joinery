@@ -135,6 +135,48 @@ semantic roles and Tailwind's scale; ESLint rejects bracketed values.
 The three status colours were validated as a set for contrast and colour-blind separation. Re-run
 the `dataviz` skill's validator before changing one.
 
+ESLint also rejects raw palette classes (`bg-slate-500`, `text-white`) everywhere except the design
+lab under `app/lab/` and `app/pages/lab/`.
+
+### 🪟 The identity
+
+Direction E, approved in [`0039`](../../docs/decisions/0039-developer-portal-benchmark.md), is one
+system in [`main.css`](./layers/design/app/assets/main.css) for the visitor pages and the developer
+view alike. A layout opts in with `data-identity` on its root; a page without it keeps the look
+above.
+
+| Piece | What it is |
+| --- | --- |
+| `paper-*`, `terracotta-*` | The palette: warm neutrals and the one accent. Read through the roles, never as classes |
+| `--font-display`, `--font-sans`, `--font-mono` | Fraunces, IBM Plex Sans, IBM Plex Mono |
+| `text-statement`, `title`, `section`, `heading` | The display steps; with `text-2xl`, `base`, `sm` and `xs` they make the scale's eight |
+| `--ui-primary` | Terracotta 600 in light, 300 in dark |
+| `--tone-*` | The status colours, re-picked for these surfaces with the `dataviz` validator |
+| `surface-ink` | A fill that stays dark in both modes, such as the developer rail, with its own tones |
+| `<mark>` | A marked word takes the accent in italic |
+
+Every text role clears 4.5:1 on every surface. Each cell is light / dark:
+
+| Text | `bg` | `bg-muted` | `bg-elevated` | `bg-accented` |
+| --- | ---: | ---: | ---: | ---: |
+| `dimmed`, `muted` | 5.9 / 6.7 | 5.3 / 7.3 | 6.4 / 6.3 | 4.8 / 5.8 |
+| `toned` | 12.9 / 12.0 | 11.7 / 13.0 | 14.0 / 11.3 | 10.5 / 10.5 |
+| default | 14.0 / 13.5 | 12.6 / 14.6 | 15.1 / 12.6 | 11.3 / 11.7 |
+| `highlighted` | 14.9 / 16.1 | 13.5 / 17.4 | 16.1 / 15.1 | 12.0 / 14.0 |
+| `primary` | 5.7 / 7.1 | 5.2 / 7.7 | 6.2 / 6.6 | 4.6 / 6.2 |
+| `--tone-good` | 6.0 / 5.5 | 5.4 / 6.0 | 6.5 / 5.2 | 4.8 / 4.8 |
+| `--tone-warn` | 6.9 / 5.5 | 6.3 / 5.9 | 7.5 / 5.1 | 5.6 / 4.7 |
+| `--tone-bad` | 5.9 / 5.4 | 5.3 / 5.8 | 6.4 / 5.0 | 4.7 / 4.7 |
+| `inverted` on `bg-inverted` | 16.1 / 14.9 | | | |
+
+| Text on `surface-ink` | Fill | `bg-elevated` |
+| --- | ---: | ---: |
+| `muted` | 7.3 | 6.7 |
+| default | 16.1 | 14.9 |
+| `highlighted` | 17.4 | 16.1 |
+| `primary` | 7.7 | 7.1 |
+| `--tone-good`, `-warn`, `-bad`, lowest | 5.0 | 4.6 |
+
 ## 📐 Boundaries
 
 `type:app`, `scope:internal`. Depends only on `@monorepo/configs`; nothing depends on it.
