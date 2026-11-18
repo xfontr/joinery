@@ -233,11 +233,16 @@ report or the commit, not here. One line per entry, appended, in this shape:
 
 | Type | Means | When |
 | --- | --- | --- |
-| `estimate` | Points against time | A ticket closes: its points against what it actually took |
+| `estimate` | Points against time | The PR that closes a ticket opens: its points against what it actually took |
 | `worked` | Went right | A block, a `reuse` plan, a command, a ticket's text or the map did its job with nothing to fix |
 | `friction` | Went wrong | A command failed or confused, something was done by hand, or the owner corrected the agent |
 | `map` | Went wrong | A block nobody drew, a missing or wrong `dependsOn`, a block or criterion that didn't apply |
 | `rule` | Either, and the line says which | A rule blocked something it shouldn't have, or saved a redo |
+
+A block closes in the PR that closes its ticket, never after the merge: that PR carries the
+`estimate` line, a `pnpm workflow:sync` and any unfiled block the work proved wrong.
+[`workflow-close.sh`](../../.claude/hooks/workflow-close.sh) refuses to open the PR without the
+line.
 
 One clause for what happened, one for the evidence. Say which way it went; never praise your own
 work. [`check-invariants.sh`](../../.claude/hooks/check-invariants.sh) rejects any other type when
