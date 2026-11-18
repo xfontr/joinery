@@ -7,7 +7,7 @@
                 </template>
                 <template #right>
                     <UButton
-                        to="/docs/docs/decisions/readme"
+                        to="/wiki/docs/decisions/readme"
                         label="How a report is written"
                         icon="i-lucide-ruler"
                         color="neutral"

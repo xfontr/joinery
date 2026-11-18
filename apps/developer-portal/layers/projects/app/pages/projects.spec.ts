@@ -130,7 +130,7 @@ describe("projects page", () => {
             "UI kit",
         ]);
         expect(
-            card(wrapper, "UI kit").querySelector("a[href='/docs/packages/ui/readme']"),
+            card(wrapper, "UI kit").querySelector("a[href='/wiki/packages/ui/readme']"),
         ).not.toBeNull();
     });
 
@@ -228,7 +228,7 @@ describe("projects page", () => {
         expect(retired.textContent).toContain("Deleted 2026-11-08 · chore: delete the old package");
         expect(retired.querySelector("[aria-label='Commits']")?.textContent?.trim()).toBe("12");
         expect(retired.querySelector("a[href$='/commit/abc123']")).not.toBeNull();
-        expect(retired.querySelector("a[href='/docs/packages/old/readme']")).toBeNull();
+        expect(retired.querySelector("a[href='/wiki/packages/old/readme']")).toBeNull();
     });
 
     it("renders no cards when nothing was collected", async () => {

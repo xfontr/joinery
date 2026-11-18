@@ -8,6 +8,16 @@ summary: The developer portal turned into the repo's public front door — a vis
   craft, AI-built engineering and the people the shipped apps serve, a developer view one click
   away with every feature kept, and a visual identity of its own.
 
+settled:
+  scope-signoff:
+    status: done
+    on: 2026-11-17
+    note: The owner approved 0040 as it stands — the toggle, the page table and the front page's sections.
+  design-approval:
+    status: done
+    on: 2026-11-18
+    note: The owner approved direction E — the `idea` front page at `/lab/idea` and the developer view at `/lab/idea/e/developer`, with a collapsible icon rail; every other direction was deleted.
+
 extras:
   - id: benchmark
     stage: plan
@@ -58,13 +68,20 @@ extras:
     complexity: 13
     dependsOn: [benchmark, scope-signoff]
     summary: Three or four identity directions as dev-only lab pages on real portal content — the
-      front page, one dashboard page and one doc page — reviewed as screenshots.
+      front page, one dashboard page and one doc page — reviewed as screenshots. The rules are in
+      `docs/decisions/0039-developer-portal-benchmark.md` and the front page's sections in
+      `docs/decisions/0040-developer-portal-visitor-structure.md`; the door and toggle pages
+      already under `app/pages/lab/` are a measurement mock to replace, not a design.
     reuse: { plan: method, from: apps/huella-legal/DESIGN.md }
     doneWhen:
       - Each direction renders the same three pages on real data under `pnpm dev`, and none is
         served by the deployed site.
       - Each has screenshots at 390, 768 and 1280 px, in light and dark.
-      - No direction keeps a trait the benchmark listed as default Nuxt UI.
+      - No direction keeps a trait 0039 lists as stock Nuxt UI, and each follows its "How it
+        lands in the portal" rules and avoids N1–N4.
+      - Each front page has 0040's five sections in order, with the top of the first app's
+        screenshot in the first screen at 390 px.
+      - Each names its one W8 figure, or says it has none.
 
   - id: design-approval
     stage: plan
@@ -75,19 +92,6 @@ extras:
     summary: You pick one direction, or a mix, from the lab screenshots.
     doneWhen:
       - One direction is approved at 390, 768 and 1280 px, in light and dark.
-
-  - id: visitor-copy
-    stage: plan
-    title: Visitor copy
-    complexity: 3
-    dependsOn: [scope-signoff]
-    summary: The plain-language words a visitor reads — the front page, and one line for each
-      shipped app and package — drafted by Claude and approved by you.
-    reuse: { plan: method, from: apps/developer-portal/layers/projects }
-    doneWhen:
-      - Every front-page section and every shipped project has its line, in English.
-      - Numbers in the copy come from the snapshot, never typed in.
-      - The owner approved the wording.
 
   - id: design-system
     stage: build
@@ -132,7 +136,7 @@ extras:
     stage: build
     title: Visitor front page
     complexity: 8
-    dependsOn: [visitor-copy, shell-restyle, view-switch]
+    dependsOn: [shell-restyle, view-switch]
     summary: The page a visitor lands on — what this is in one line, the shipped apps with
       screenshots, and how the repo is built with agents, with live numbers behind each claim.
     reuse: { plan: method, from: apps/developer-portal/app/pages }
@@ -140,18 +144,20 @@ extras:
       - A reader who doesn't write code can say what the author does within 30 seconds.
       - Every number on it comes from the snapshot, and the page renders without one.
       - It reads well at 390 px first.
+      - Its words are written in this ticket and approved by the owner.
 
   - id: project-showcase
     stage: build
     title: Project showcase
     complexity: 5
-    dependsOn: [visitor-copy, shell-restyle, view-switch]
+    dependsOn: [shell-restyle, view-switch]
     summary: The shipped apps as a visitor sees them — a screenshot, the approved line and a link
       to the live site — kept in a shape that can move to another site later.
     reuse: { plan: method, from: apps/developer-portal/layers/projects }
     doneWhen:
       - Each shipped app shows a current screenshot, its line and its live link.
       - Screenshots and lines live as data, not inside a component.
+      - Its words are written in this ticket and approved by the owner.
 
   - id: docs-update
     stage: ship

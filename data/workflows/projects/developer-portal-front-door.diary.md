@@ -17,4 +17,21 @@ What in the workflow worked and what went wrong. The format and when to write ar
 - 2026-11-17 · friction · #474 · After filing, the agent stopped to summarise instead of starting the spike the brief asked for; the owner had to tell it to start
 - 2026-11-17 · worked · #474 · The dev-only `/lab` wiring copied from marina-roustan's cf9dd791 held: `build-static` shipped no `/lab` route
 - 2026-11-17 · map · #474 · The filed criterion "each section reading only `layers/snapshot`" was wrong: sections 1 and 2 read `visitor-copy` and `project-showcase`
-- 2026-11-17 · friction · #474 · `workflow:next` failed after the spike: `milestoneIssues` asked GitHub for project fields and the token has no `read:project` scope; it had run at the start of the session
+- 2026-11-17 · friction · #474 · `workflow:next` and `gh pr create` failed because `gh` was on an account with no `project` scope and read-only repo access; switching to the owner's account fixed both
+- 2026-11-17 · estimate · #474 · 5 SP, took about 70 min from filing to merge: two lab pages, one measurement script, one report
+- 2026-11-17 · rule · scope-signoff · The skill forbids the agent settling an owner block, so it sent the owner to the portal panel; the owner approved in chat and had the agent write `settled` in the yaml instead, which the rule should allow
+- 2026-11-17 · worked · #476, #477 · Both drafts were sharpened with 0039 and 0040 before filing, using #474's lesson that a drafted body leaves out the decision reports
+- 2026-11-17 · friction · #476 · The agent stored visitor copy as a hand-typed TS object with its own `{slot}` scheme; the owner rejected it: copy is either hardcoded or i18n, never an invented structure; moved to `@nuxtjs/i18n` and `i18n/locales/en.json`, copying huella-legal
+- 2026-11-17 · map · #476 · `visitor-copy` as its own block ran ahead of design: words written before any page existed pulled i18n, a new dependency and a projects-page change into prod before the lab; the owner asked why copy isn't written as each page is built
+- 2026-11-17 · map · #476 · `visitor-copy` should never have been a block: copy belongs to the ticket that builds the page it sits on; the owner had the block deleted and #476 closed as not planned
+- 2026-11-17 · friction · #477 · The owner called all three lab directions AI slop: each front page opened on a full-width app screenshot, led with usage numbers nobody asked for, and listed raw decisions as "how the work is run"
+- 2026-11-17 · map · #477 · 0040's front-page sections were drawn from the data the snapshot has, not from what a visitor wants to know, and the lab followed them literally; W6 was read as "one giant screenshot" though no benchmarked site leads with one
+- 2026-11-17 · friction · #477 · The lab's coverage and doc pages were wired into the visitor nav, though they stood for developer-view pages; the owner expects the developer view redesigned on the same system
+- 2026-11-17 · worked · #477 · Rebuilding the front page as one story (who, what's being made, how it's made, then the details) turned the owner's verdict from "AI slop" to "far better"; the story became the `idea` baseline for every direction
+- 2026-11-17 · friction · #477 · The owner rejected B as uneventful, called C's long pages unreadable for lack of hierarchy and A dry; the copy also named the owner in first person, which they don't want on the portal
+- 2026-11-17 · worked · #477 · The owner ranked D, E and F as the strongest directions so far; telling the story through principles, questions and one journey beat styling alone
+- 2026-11-17 · map · #477 · The owner wants workflows as the portal's centrepiece, shown live on the landing with its own middle page; no block in the map named it, so it rode on design-lab
+- 2026-11-17 · friction · #477 · The owner found D's landing map too much: Huella's whole plan with labels, legend and counts; replaced with an unlabelled glyph of the same plan that links to the workflows page
+- 2026-11-17 · worked · #477 · The owner named the principles direction their favourite story; it became the `idea` baseline, with E's look retold on it and three new directions built against it
+- 2026-11-17 · friction · #477 · A running dev server skipped Tailwind classes from new lab files, so D's big figures rendered at 16 px; touching `main.css`, the fix Huella's DESIGN.md records, made it rescan
+- 2026-11-18 · worked · #477 · The owner approved E: the `idea` front page and the paired developer view, with one fix, an icon rail that collapses; the other directions were deleted

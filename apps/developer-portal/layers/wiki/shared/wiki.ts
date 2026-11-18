@@ -9,7 +9,7 @@ export interface WikiPage {
 }
 
 export interface WikiEntry {
-    /** The collection path, e.g. `/packages/ui/readme`. The route prefixes it with `/docs`. */
+    /** The collection path, e.g. `/packages/ui/readme`. The route prefixes it with `/wiki`. */
     path: string;
     label: string;
     kind: DocKind;
@@ -39,6 +39,7 @@ const EXCLUDED = [
     /\/changelog$/,
     /^\/docs\/decisions\/\d{4}-/,
     /^\/docs\/audits\/\d{4}-/,
+    /^\/docs\/benchmarks\/(?!readme$)/,
     /\/template$/,
 ];
 
@@ -83,13 +84,15 @@ const SECTIONS = {
 } as const satisfies Record<SectionId, { label: string; icon: string; blurb: string }>;
 
 /** Ordered where the order carries meaning; anything new falls through to alphabetical. */
-const DOCS_GROUPS = ["concepts", "guides", "decisions", "audits"];
+const DOCS_GROUPS = ["concepts", "guides", "decisions", "audits", "workflows", "benchmarks"];
 
 const GROUP_LABELS: Record<string, string> = {
     concepts: "Concepts",
     guides: "Guides",
     decisions: "Decisions",
     audits: "Audits",
+    workflows: "Workflows",
+    benchmarks: "Benchmarks",
     skills: "Skills",
     agents: "Subagents",
 };
@@ -111,7 +114,7 @@ interface Placed {
     entry: WikiEntry;
 }
 
-/** Generic labels for README/CLAUDE.md — the group name already says the project; the real title is still the page's own heading. */
+/** A generic label for a README — the group name already says the project; the real title is still the page's own heading. */
 const labelWithin = (root: string, path: string, title: string): string => {
     const raw = segmentsOf(path.slice(root.length));
     // `src` is where the code lives, not a taxonomy a reader navigates by — a nested README's own directory names it.
@@ -120,7 +123,6 @@ const labelWithin = (root: string, path: string, title: string): string => {
     const directory = rest.slice(0, -1).join("/");
 
     if (file === "skill") return stripLeadingEmoji(title);
-    if (file === "agents") return "Agent notes";
     if (file === "readme") return directory === "" ? "Overview" : directory;
 
     return stripLeadingEmoji(title);
@@ -150,7 +152,8 @@ const place = (page: WikiPage): Placed => {
         return {
             section: "docs",
             group,
-            groupLabel: GROUP_LABELS[group] ?? "The tree itself",
+            groupLabel:
+                group === "docs" ? "Start here" : (GROUP_LABELS[group] ?? toTitleCase(group)),
             entry: { path, label: labelWithin(root, path, title), kind },
         };
     }
@@ -178,13 +181,8 @@ const place = (page: WikiPage): Placed => {
     };
 };
 
-/** Overview, then the agent notes, then everything else by label — the order you would read them. */
-const rankEntry = (entry: WikiEntry): number => {
-    if (entry.label === "Overview") return 0;
-    if (entry.label === "Agent notes") return 1;
-
-    return 2;
-};
+/** Overview first, then everything else by label — the order you would read them. */
+const rankEntry = (entry: WikiEntry): number => (entry.label === "Overview" ? 0 : 1);
 
 const rankGroup = (section: SectionId, key: string): number => {
     if (section === "docs") {

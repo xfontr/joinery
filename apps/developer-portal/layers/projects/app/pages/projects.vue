@@ -80,9 +80,10 @@
                                     icon="i-lucide-external-link"
                                     size="xs"
                                     target="_blank"
+                                    external
                                 />
                                 <UButton
-                                    :to="`/docs/${project.root.toLowerCase()}/readme`"
+                                    :to="`/wiki/${project.root.toLowerCase()}/readme`"
                                     label="Docs"
                                     icon="i-lucide-book-open"
                                     size="xs"
@@ -95,6 +96,7 @@
                                     icon="i-lucide-braces"
                                     size="xs"
                                     target="_blank"
+                                    external
                                 />
                                 <UButton
                                     v-if="storybookFor(project)"
@@ -103,6 +105,7 @@
                                     icon="i-lucide-panels-top-left"
                                     size="xs"
                                     target="_blank"
+                                    external
                                 />
                                 <UButton
                                     v-if="deploysFor(project)"
@@ -111,6 +114,7 @@
                                     size="xs"
                                     variant="soft"
                                     target="_blank"
+                                    external
                                 />
                             </div>
 
@@ -186,6 +190,7 @@
                                     size="xs"
                                     variant="soft"
                                     target="_blank"
+                                    external
                                 />
                             </div>
 

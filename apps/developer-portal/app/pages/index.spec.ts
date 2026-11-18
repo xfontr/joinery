@@ -128,7 +128,7 @@ describe("overview page", () => {
         expect(wrapper.text()).toContain("Repository overview");
         expect(wrapper.text()).toContain("What it holds.");
         expect(hrefs(wrapper)).toEqual(
-            expect.arrayContaining(["/projects", "/graph", "/docs/docs/guides/first-hour"]),
+            expect.arrayContaining(["/projects", "/graph", "/wiki/docs/guides/first-hour"]),
         );
     });
 
@@ -145,7 +145,7 @@ describe("overview page", () => {
         const wrapper = await open();
 
         expect(wrapper.text()).toContain("Huella Legal");
-        expect(hrefs(wrapper)).toContain("/docs/apps/huella-legal/readme");
+        expect(hrefs(wrapper)).toContain("/wiki/apps/huella-legal/readme");
         expect(wrapper.text()).not.toContain("@monorepo/ui");
     });
 
@@ -253,7 +253,7 @@ describe("overview page", () => {
         });
         const wrapper = await open();
 
-        expect(hrefs(wrapper)).toContain("/docs/docs/a");
+        expect(hrefs(wrapper)).toContain("/wiki/docs/a");
         expect(wrapper.text()).toContain("Drift");
     });
 

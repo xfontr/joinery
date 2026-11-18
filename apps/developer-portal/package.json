@@ -41,9 +41,11 @@
     "@iconify-json/lucide": "^1.2.128",
     "@nuxt/content": "^3.16.0",
     "@nuxt/ui": "^4.11.0",
+    "@nuxtjs/i18n": "catalog:",
     "nuxt": "catalog:",
     "vue": "catalog:",
     "vue-draggable-plus": "^0.6.1",
+    "vue-router": "^5.4.0",
     "yaml": "^2.9.1"
   },
   "devDependencies": {

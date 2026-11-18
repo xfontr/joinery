@@ -1,11 +1,14 @@
 import { resolve } from "node:path";
 
+// `@nuxtjs/i18n` imports this too, and loading both at once trips a Node ESM-loader assert
+await import("vue-router/unplugin");
+
 const WORKSPACE_ROOT = resolve(import.meta.dirname, "../..");
 
 export default defineNuxtConfig({
     compatibilityDate: "2025-01-15",
 
-    modules: ["@nuxt/ui", "@nuxt/content"],
+    modules: ["@nuxtjs/i18n", "@nuxt/ui", "@nuxt/content"],
 
     ssr: true,
     devtools: false,
@@ -50,6 +53,13 @@ export default defineNuxtConfig({
                 }
             },
         },
+    },
+
+    i18n: {
+        locales: [{ code: "en", language: "en", file: "en.json" }],
+        defaultLocale: "en",
+        strategy: "no_prefix",
+        detectBrowserLanguage: false,
     },
 
     runtimeConfig: {

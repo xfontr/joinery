@@ -1,0 +1,39 @@
+[data-lab="idea"] {
+    --font-serif: Fraunces, Georgia, serif;
+    --font-sans: Inter, system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+    --ui-bg: #f1ece3;
+    --ui-bg-muted: #e8e1d4;
+    --ui-bg-elevated: #f8f5ef;
+    --ui-text: #3b3731;
+    --ui-text-muted: #6e675c;
+    --ui-text-highlighted: #1f1c18;
+    --ui-border: #d8cfbf;
+    --ui-border-accented: #1f1c18;
+    --ui-primary: #b04a26;
+    --ui-radius: 0;
+}
+
+.dark [data-lab="idea"] {
+    --ui-bg: #1c1915;
+    --ui-bg-muted: #26221c;
+    --ui-bg-elevated: #2c2720;
+    --ui-text: #ddd5c7;
+    --ui-text-muted: #a89f90;
+    --ui-text-highlighted: #f6efe2;
+    --ui-border: #3d362d;
+    --ui-border-accented: #f6efe2;
+    --ui-primary: #f08a5d;
+}
+
+[data-lab="idea"] .font-serif {
+    font-weight: 300;
+    font-variation-settings: "opsz" 144;
+    letter-spacing: -0.02em;
+}
+
+[data-lab="idea"] mark {
+    background: none;
+    color: var(--ui-primary);
+    font-style: italic;
+}

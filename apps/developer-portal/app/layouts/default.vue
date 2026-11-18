@@ -92,6 +92,7 @@ interface NavLink {
 const GROUPS = [
     { label: "Explore", items: ["overview", "projects", "changelog"] },
     { label: "Build", items: ["docs", "graph", "decisions", "audits", "workflows"] },
+    { label: "Design", items: ["benchmarks"] },
     {
         label: "Engineering health",
         items: ["issues", "coverage", "telemetry", "deps"],
@@ -205,7 +206,7 @@ const searchGroups = computed(() => [
         items: sections.value.map((section) => ({
             label: section.title,
             suffix: section.content,
-            to: `/docs${section.id}`,
+            to: `/wiki${section.id}`,
             icon: "i-lucide-file-text",
         })),
     },

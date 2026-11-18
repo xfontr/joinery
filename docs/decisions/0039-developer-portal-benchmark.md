@@ -68,6 +68,75 @@ and the build blocks implement.
 | Two densities of one page | W7 | `cap:view-switch` | The visitor view leaves out detail; it never has different facts |
 | One figure, static | W8, N1 | `app/pages/index.vue` | Rendered at build, readable with JavaScript off |
 
+### 🛠 The developer view
+
+The twelve sites above have no dashboard, table or chart worth copying, so the developer view was
+benchmarked on its own against seven sites with dense pages, measured on 2026-11-17. Its baseline
+is lab direction B (`app/lab/idea/b/`, `app/pages/lab/idea/b/developer/`): black chrome, signal
+yellow on three marks, IBM Plex, boxed panels with the count on the right, meters and proportion
+bars. The patterns below refine B; none replaces it.
+
+| Site | Page types it covers | Entry |
+| --- | --- | --- |
+| Carbon | table, chart, dashboard guidance | [carbondesignsystem-com](../benchmarks/carbondesignsystem-com.md) |
+| Primer | table and chart rules | [primer-style](../benchmarks/primer-style.md) |
+| Linear Method | long docs | [linear-app-method](../benchmarks/linear-app-method.md) |
+| Plausible | dashboard, chart, ranked rows | [plausible-io-plausible-io](../benchmarks/plausible-io-plausible-io.md) |
+| GitHub repository | project detail, README, insights, board | [github-com-vuejs-core](../benchmarks/github-com-vuejs-core.md) |
+| PlanetScale benchmarks | tables and charts written up | [planetscale-com-benchmarks](../benchmarks/planetscale-com-benchmarks.md) |
+| Our World in Data | chart page | [ourworldindata-org-grapher-life-expectancy](../benchmarks/ourworldindata-org-grapher-life-expectancy.md) |
+
+| # | Pattern | Seen in | For the developer view |
+| --- | --- | --- | --- |
+| D1 | Right-aligned tabular figures | 4 of 7: Primer's rule, PlanetScale, OWID, Carbon; Plausible's proportional figures drift | **Keep**: B already does it |
+| D2 | A reading column with body text larger than the chrome | 5 of 7: Linear 17/13 px, GitHub 16/14 px, Primer, Carbon, OWID | **Want** for README tabs |
+| D3 | A panel shows a short list; the whole table is one step away | 4 of 7: Plausible, Carbon, Primer, GitHub | **Want** for every Home panel |
+| D4 | Source, window and age printed with the figure | 4 of 7: OWID, PlanetScale, Plausible, GitHub | **Want** on Health and charts; the status bar alone is not enough |
+| D5 | Chart and table as two views of one dataset | 3 of 7: OWID, Primer, Plausible | **Want** for tooling usage |
+| D6 | Direct labels, or a legend that is itself data | 3 of 7: OWID, Primer, PlanetScale's sparkline toggles | **Want**: no legend box |
+| D7 | Facts as label–value lines beside the main content | 3 of 7: GitHub's About, OWID's metadata, PlanetScale's configuration | **Want** on the project detail page |
+| D8 | Phones reorder by importance and hide nothing silently | 3 of 7 manage it (GitHub, OWID's picker, Plausible); PlanetScale drops columns, OWID clips rows | **Want** |
+| D9 | Stats that select what the chart below shows | 1 of 7: Plausible | **Want** for tooling usage only, the one page with a chart |
+| D10 | A one-line reading under each chart | 2 of 7: PlanetScale, OWID | **Want** on chart pages only, never on Home |
+| D11 | Bars behind rows, one hue, stopping short of the figure | 2 of 7: Plausible, OWID | **Keep** B's `data-share`, and stop it short of the figure |
+| X1 | One type size for everything | PlanetScale | **Reject**: headers and cells blur |
+| X2 | Prose summaries of numbers already on screen | GitHub Pulse | **Reject** |
+| X3 | Serif display, cream panels | OWID, Linear | **Reject**: the beige-editorial look |
+| X4 | A different hue per panel | Plausible | **Reject**: colour then means nothing |
+| X5 | Four or more coloured labels on one card | GitHub's roadmap board | **Reject** |
+| X6 | Donuts and rings | Primer won't support new ones | **Reject**: B's workflow rings become meters |
+| X7 | The full table in a modal | Plausible | **Reject**: link to the page, since every route stays addressable |
+
+Each kept pattern as a rule for B. Paths are under `apps/developer-portal/`; line numbers are as of
+this report and name B's files as measured. The owner approved direction E on 2026-11-18
+(`app/lab/idea/e/`, `/lab/idea/e/developer`): B with these rules applied and a collapsible icon
+rail, paired with the `idea` front page at `/lab/idea`. Every other direction was deleted.
+
+| Rule | From | Where | Change |
+| --- | --- | --- | --- |
+| A panel footer link when its list is cut | D3 | `app/lab/idea/b/DevPanel.vue` | An `all` prop renders "All 30 →" under the list; Home panels pass the full count and the route |
+| Bars stop short of the figure | D11 | `app/lab/idea/b/developer.css:102` (`[data-share]`) | The fill spans the label column only; the figure column is never under a bar |
+| Every Health tab and chart says where its numbers come from | D4 | `app/pages/lab/idea/b/developer/health.vue`, `DevPanel` `meta` | "pnpm audit · collected 9 h ago", "telemetry · last 90 days · …" |
+| Tooling usage gets its chart | D5, D6, D9, D10 | `health.vue`, tooling tab (`Repo scripts`, line 153); a lab chart component in `app/lab/idea/b/` | The stat strip selects Runs, By agents or Failed, plotted from `dailyTotals` in `layers/telemetry/shared/usageView.ts`; one panel with Chart and Table tabs; series labelled at the line end; one sentence under it |
+| One About panel on the detail page | D7 | `app/pages/lab/idea/b/developer/catalog/[name].vue:295-296` and the `Tags` panel at `:65` | Depends on, Used by and Tags become label–value lines in one boxed panel |
+| README prose capped near 72 characters | D2 | `catalog/[name].vue:36-38` (`data-readme`) | Prose column capped; tables and code may run the full panel width |
+| Workflow progress as a meter | X6 | A lab card in `app/lab/idea/b/` replacing `WorkflowCard` at `app/pages/lab/idea/b/developer/index.vue:179` | Same box and facts, with B's thin `data-meter` under "3 of 12 done" instead of the ring; `WorkflowCard` itself is untouched |
+| Phones keep the figures | D8 | `catalog/index.vue` table, `DevShell.vue:93` tabs, `health.vue:166` "Last run" | Figures move under the project name; tabs show that they scroll; relative times shorten to "23 h" |
+| Nothing under 12 px | N2 | `DevStatusBar.vue:4`, `DevShell.vue:116` (`text-2xs`) | The existing `text-xs` token; a size that comes from a production component B renders is listed for the build, not edited |
+
+The anti-list. A lab direction fails the developer view if any row fails at 390 or 1280 px.
+
+| Check | B as of this report |
+| --- | --- |
+| No text under 12 px | Fails: the status bar and tab counts use `text-2xs` |
+| No bar sits under a figure | Fails: "Ready to release" fills under `+14` |
+| No figure on Health or a chart without its source and age | Fails: only the status bar says "collected" |
+| No legend box, donut or ring | Fails: the workflow rings |
+| No phone table that hides columns off-screen without a hint | Fails: the catalog scrolls sideways with no hint, past every figure |
+| README lines under about 75 characters | Fails: about 110 at 1280 px |
+| No serif display, cream paper, indigo, white SaaS cards or per-panel hues | Passes |
+| Panels, stat strips and workflow cards stay boxed | Passes |
+
 ### Per-site analysis
 
 Shortlisted from 28 candidates on Awwwards (developer, data-visualisation and typography lists) and
@@ -127,6 +196,8 @@ The stock traits the lab must not keep, as of this report:
 | Benchmark well-known developer blogs and portfolios | A first pass did; the owner rejected most of it. Juried galleries replaced it |
 | Benchmark only landing pages | The portal is mostly collections, tables and docs; W4 and W5 come from inner pages |
 | Retheme Nuxt UI's colours and stop there | Eight of the ten stock traits survive a colour change |
+| Judge the developer view against the twelve visitor references | None of them has a dashboard, table or chart page; D1–D11 come from the seven dense-page sites |
+| Replace B's boxed panels with ruled rows or serif prose | Already tried in the lab, and rejected as a downgrade; both dashboards in the set, Plausible and GitHub Pulse, box their panels |
 
 ## Consequences
 
@@ -138,8 +209,17 @@ figure, or says it has none.
 component, which four pages share. The front page and showcase come last, because they depend on
 `cap:visitor-copy`.
 
+**Developer view order.** The 12 px floor and the bar fix first: they are CSS in B's own
+`developer.css` and touch every page. Then `DevPanel`'s footer link and provenance meta, since Home
+and Health both read them. The tooling chart comes last, as the one new component.
+
 **Tripwires.**
 
+- Developer-view changes are lab-only: `app/lab/idea/e/` and `app/pages/lab/idea/e/developer/`.
+  Production components such as `WorkflowCard` and `DashboardGrid` are used as they are; anything
+  that needs them changed is a build ticket, not a lab edit.
+- E's helpers are data attributes (`data-figure`, `data-meter`, `data-share`) because the repo's
+  lint rejects unknown Tailwind classes; a new helper follows the same pattern.
 - The three status tones in `main.css` were validated as a set for contrast and colour-blind
   separation. The new accent must not replace one; re-run the `dataviz` validator if it sits beside
   them.
@@ -157,3 +237,6 @@ component, which four pages share. The front page and showcase come last, becaus
 | No text step under 12 px | `grep -n "text-2xs" -r apps/developer-portal --include=*.css` finds no 11 px step |
 | Collections are index rows | The four index pages render the shared row component, not `UCard` |
 | No stock trait survives | Each `/lab` direction's screenshots at 390 and 1280 px show none of the ten traits above |
+| E has nothing under 12 px | The computed font size of every visible text node on E's rendered pages, at 390 and 1280 px, is at least 12 px; a grep of the lab folders misses sizes from production components |
+| E's workflow progress has no ring | `/lab/idea/e/developer` at 1280 px shows meters, not rings, in Active workflows |
+| The developer view passes its anti-list | Each row of the anti-list above holds in screenshots of Home, Health (all tabs), Catalog and one project at 390 and 1280 px |
