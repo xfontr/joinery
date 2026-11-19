@@ -620,6 +620,27 @@ capabilities:
           - Editors have a written guide for the tasks they do every week.
 
   # ── Hardening ──────────────────────────────────────────────────────────────────────────────────
+  - id: build-review
+    stage: build
+    title: Build review
+    complexity: 3
+    kind: owner
+    dependsOn: [stage:build]
+    summary: You look at the whole build at once, every page and feature together, before hardening sets it in stone; or you settle it as skipped when the build was small.
+    reuse: { plan: method, from: .claude/skills/project-workflow/SKILL.md }
+    doneWhen:
+      - Every page the build made is seen side by side at 390 and 1280 px, and any colour, size or radius off the design system is listed.
+      - The features as built are checked against the site brief, with what to add or drop.
+      - Each build ticket has a line on where its agent departed from the brief.
+      - Every change you ask for is filed as a ticket or settled.
+    lessons:
+      - text: Six build blocks across two designs shipped with no block looking at them together; the review was added after the build had started.
+        issues: [484]
+    tickets:
+      - title: "[OWNER] Review the build as a whole"
+        criteria:
+          - The overview is linked in a comment, and every change asked for is filed or settled.
+
   - id: performance
     stage: hardening
     title: Performance
@@ -718,7 +739,7 @@ capabilities:
     title: Go-live approval
     complexity: 1
     kind: owner
-    dependsOn: [seo, performance, security, accessibility, legacy-redirects, quality-sweep, env-discipline, images, observability, content-migration, search, newsletter, contact-form, comments, consent-analytics, i18n]
+    dependsOn: [build-review, seo, performance, security, accessibility, legacy-redirects, quality-sweep, env-discipline, images, observability, content-migration, search, newsletter, contact-form, comments, consent-analytics, i18n]
     summary: You approve the cutover once every switched-on feature is done and a preview deploy passes the field performance, axe, security-header and SEO checks.
     reuse: { plan: new }
     doneWhen:

@@ -1,7 +1,7 @@
 <template>
     <figure class="flex max-w-sm flex-col gap-1">
         <figcaption
-            class="flex flex-wrap items-baseline justify-between gap-x-4 text-2xs text-dimmed"
+            class="flex flex-wrap items-baseline justify-between gap-x-4 text-xs text-dimmed"
             title="Capabilities moved per day, from commits tagged with a ticket number"
         >
             <span class="font-semibold text-muted">Activity</span>
@@ -24,7 +24,7 @@
             </li>
         </ol>
 
-        <ol class="flex gap-px text-2xs text-dimmed" aria-hidden="true">
+        <ol class="flex gap-px text-xs text-dimmed" aria-hidden="true">
             <li v-for="column in columns" :key="column.day" class="min-w-0 flex-1">
                 <span v-if="column.month" class="whitespace-nowrap">{{ column.month }}</span>
             </li>

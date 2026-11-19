@@ -1,10 +1,5 @@
 export default defineAppConfig({
     ui: {
-        tv: {
-            // tailwind-merge reads a custom type step as a colour and drops it beside a real one
-            twMergeConfig: { extend: { theme: { text: ["2xs"] } } },
-        },
-
         card: {
             variants: {
                 variant: {

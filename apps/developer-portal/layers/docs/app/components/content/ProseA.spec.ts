@@ -22,6 +22,19 @@ describe("ProseA", () => {
         });
     });
 
+    it("restores a markdown target's escaped extension in the forge link", () => {
+        useRuntimeConfig().public.repoUrl = "https://github.com/acme/repo";
+        const wrapper = mount(ProseA, {
+            props: { href: "repo:apps/web/CLAUDE%2Emd" },
+            slots: { default: "CLAUDE.md" },
+            global: { stubs: { NuxtLink: NuxtLinkStub } },
+        });
+
+        expect(wrapper.find("a").attributes("href")).toBe(
+            "https://github.com/acme/repo/blob/master/apps/web/CLAUDE.md",
+        );
+    });
+
     it("renders an unconfigured repo target as text rather than a dead link", () => {
         useRuntimeConfig().public.repoUrl = "";
         const wrapper = mount(ProseA, {

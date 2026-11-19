@@ -1,5 +1,5 @@
 <template>
-    <div class="flex h-2 w-24 gap-px overflow-hidden rounded-full bg-accented/40" :title>
+    <div class="flex h-2 w-24 gap-px overflow-hidden rounded-sm bg-accented/40" :title>
         <span v-for="part in parts" :key="part.color" :style="part.style" />
     </div>
 </template>

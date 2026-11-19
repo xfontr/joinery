@@ -1,4 +1,4 @@
-import { routedNeeds } from "./capability.ts";
+import { routedNeeds, withStageNeeds } from "./capability.ts";
 import { featuresOf, isEnabled, isGroupEnabled } from "./project.ts";
 import { day, issueAsOf, ticketStatus } from "./ticket.ts";
 import { ticketsToFile } from "./ticketSize.ts";
@@ -65,7 +65,7 @@ export const projectView = (
         (issue) => issueAsOf(issue, asOf, syncedOn) ?? [],
     );
     const extraIds = new Set(project.extras.map((extra) => extra.id));
-    const all = [...template.capabilities, ...project.extras];
+    const all = withStageNeeds([...template.capabilities, ...project.extras]);
     const byId = new Map(all.map((capability) => [capability.id, capability]));
     const enabled = new Map(
         all.map((capability) => [

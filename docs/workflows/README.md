@@ -25,7 +25,7 @@ data/workflows/
 | Noun | Is | Lives in |
 | --- | --- | --- |
 | Block | One thing the project needs — a content audit, comments, a cutover, a sign-off. Required, optional with a default, or `onDemand`: no switch, in the map only while a page depends on it. The code calls it a capability | The template, or a project's `extras` for something only it has |
-| Need | A `dependsOn` link from one block to another it can't start without | The block |
+| Need | A `dependsOn` link from one block to another it can't start without. `stage:<id>` needs every other block in that stage, including the pages a project adds to it | The block |
 | Stage | A colour and a label for a family of blocks — discovery, design, launch. It orders nothing | The template |
 | Feature | One switch in the plan: an optional block such as storybook, or a `groups` entry bundling several. None is special; switching one off takes its blocks out of the map, and whatever needed them waits on what they needed instead | The template's `optional` blocks and `groups`; the project's `switches` |
 | Ticket | A GitHub issue in the project's milestone with a `cap:<block>` label, or several when blocks share it | GitHub |
@@ -207,7 +207,7 @@ shows when work happened, not how long it took.
 | Create its milestone and labels | `pnpm workflow:setup <id> --yes` |
 | Refresh the portal's snapshot | `pnpm workflow:sync [<id>]`; post-checkout and post-merge also run it in the main checkout |
 | See what can be taken now | `pnpm workflow:next <id>` |
-| File a block (dry run without `--yes`) | `pnpm workflow:file <id> <block> --yes` |
+| File everything that can be filed (dry run without `--yes`) | `pnpm workflow:file <id> --yes` |
 | Abandon a project | `pnpm workflow:drop <id> --yes`, then delete it in Settings |
 | Switch features, ticket size, edit, delete | The project's Settings page under `pnpm dev` |
 | Settle a block without a ticket | Its panel on the project page under `pnpm dev`: done or skipped, with a note and `on:` date |
@@ -240,9 +240,9 @@ report or the commit, not here. One line per entry, appended, in this shape:
 | `rule` | Either, and the line says which | A rule blocked something it shouldn't have, or saved a redo |
 
 A block closes in the PR that closes its ticket, never after the merge: that PR carries the
-`estimate` line, a `pnpm workflow:sync` and any unfiled block the work proved wrong.
+`estimate` line, a `pnpm workflow:sync <id> --close` and any unfiled block the work proved wrong.
 [`workflow-close.sh`](../../.claude/hooks/workflow-close.sh) refuses to open the PR without the
-line.
+line and the closed ticket.
 
 One clause for what happened, one for the evidence. Say which way it went; never praise your own
 work. [`check-invariants.sh`](../../.claude/hooks/check-invariants.sh) rejects any other type when

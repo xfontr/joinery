@@ -1,14 +1,14 @@
 <template>
     <NuxtLink
         :to="`/workflows/${card.id}`"
-        class="flex items-center gap-4 rounded-lg border border-default bg-default p-4 transition-colors hover:bg-elevated/50"
+        class="flex flex-col gap-3 border border-default bg-default p-4 transition-colors hover:bg-elevated"
     >
-        <WorkflowProgressRing :percent="card.percent" :size="64" />
-        <div class="min-w-0 flex-1">
-            <p class="truncate font-semibold">{{ card.title }}</p>
+        <div class="min-w-0">
+            <p class="truncate font-semibold text-highlighted">{{ card.title }}</p>
             <p class="truncate text-xs text-muted">{{ card.templateTitle }}</p>
-            <p class="mt-1 text-xs text-dimmed tabular-nums">{{ card.done }}</p>
         </div>
+        <WorkflowProgressMeter :percent="card.percent" />
+        <p class="text-xs text-muted tabular-nums">{{ card.done }}</p>
     </NuxtLink>
 </template>
 

@@ -88,7 +88,12 @@ describe("resolveDocLink", () => {
     });
 
     it("sends a markdown target the collection does not have to the repo, so no link renders a soft 404", () => {
-        expect(resolveDocLink("./docs/GONE.md", ROOT, isPage)).toBe("repo:docs/GONE.md");
+        expect(resolveDocLink("./docs/GONE.md", ROOT, isPage)).toBe("repo:docs/GONE%2Emd");
+    });
+
+    // @nuxt/content rewrote `repo:CLAUDE.md` to the route `CLAUDE`, and every such link prerendered a 404.
+    it("escapes a markdown repo target's extension so the content parser leaves the href alone", () => {
+        expect(resolveDocLink("./apps/web/CLAUDE.md", ROOT, isPage)).not.toMatch(/\.md$/);
     });
 });
 

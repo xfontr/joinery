@@ -32,7 +32,7 @@
                 <span
                     v-for="stage in card.stages"
                     :key="stage.title"
-                    class="rounded-full border border-(--stage)/40 bg-(--stage)/12 px-2 py-0.5 text-xs"
+                    class="rounded-sm border border-(--stage)/40 bg-(--stage)/12 px-2 py-0.5 text-xs"
                     :style="{ '--stage': stage.color }"
                 >
                     {{ stage.title }}

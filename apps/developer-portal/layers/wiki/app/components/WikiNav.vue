@@ -2,7 +2,7 @@
     <nav class="flex flex-col gap-5 text-sm">
         <div v-for="section in sections" :key="section.id" class="flex flex-col gap-1">
             <div
-                class="flex items-center gap-1.5 px-2 text-2xs font-medium tracking-wide text-dimmed uppercase"
+                class="flex items-center gap-1.5 px-2 text-xs font-medium tracking-wide text-dimmed uppercase"
             >
                 <UIcon :name="section.icon" class="size-3.5" />
                 {{ section.label }}

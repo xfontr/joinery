@@ -44,3 +44,38 @@ export const relativeTime = (iso: string | null | undefined): string => {
         step.unit,
     );
 };
+
+/** The one threshold pair in the app, so the overview tile and the coverage table cannot disagree. */
+export const coverageTone = (pct: number | null | undefined): Tone => {
+    if (pct === null || pct === undefined) return "neutral";
+    if (pct >= 80) return "good";
+    if (pct >= 60) return "warn";
+
+    return "bad";
+};
+
+/** `pnpm audit`'s own five-band scale, collapsed to the app's three tones. */
+export const severityTone = (severity: "info" | "low" | "moderate" | "high" | "critical"): Tone => {
+    if (severity === "critical" || severity === "high") return "bad";
+    if (severity === "moderate") return "warn";
+
+    return "neutral";
+};
+
+const SHORT_UNITS = [
+    { label: "y", size: 31_536_000 },
+    { label: "mo", size: 2_592_000 },
+    { label: "d", size: 86_400 },
+    { label: "h", size: 3600 },
+    { label: "min", size: 60 },
+] as const;
+
+/** "23 h", "2 d": an age that fits a figure column on a phone. */
+export const shortAge = (iso: string | null | undefined): string => {
+    if (!iso) return "never";
+
+    const seconds = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
+    const unit = SHORT_UNITS.find((entry) => seconds >= entry.size);
+
+    return unit ? `${Math.floor(seconds / unit.size)} ${unit.label}` : "now";
+};

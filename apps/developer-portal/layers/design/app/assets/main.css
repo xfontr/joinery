@@ -2,10 +2,8 @@
 @import "@nuxt/ui";
 
 @theme static {
-    --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
-
-    /* One step under `text-xs`, for timestamps, tags and labels beside a title */
-    --text-2xs: 0.6875rem;
+    --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
     /* Warm neutrals; every surface, text and border role of the identity is a step of this ramp */
     --color-paper-50: #f8f5ef;
@@ -59,29 +57,6 @@
    as <button> underneath. Without this every button in the app looks unclickable on hover. */
 button:not(:disabled) {
     cursor: pointer;
-}
-
-/**
- * Status roles, not colours. Every number in this app that carries a verdict — a coverage
- * percentage, an unreleased-commit count — is written against these three, so the light/dark steps
- * swap in one place.
- *
- * They were validated as a set against each surface (lightness band, chroma floor, CVD separation,
- * normal-vision separation, contrast) rather than picked by eye. Five bands were tried first and
- * failed: an orange and a red land 7.1 apart on the normal-vision scale, which no amount of
- * colourblind-safe intent fixes. Three steps pass, and every one of them sits beside the number it
- * describes — nothing here is ever a colour alone.
- */
-:root {
-    --tone-good: #008300;
-    --tone-warn: #eda100;
-    --tone-bad: #e34948;
-}
-
-.dark {
-    --tone-good: #199e70;
-    --tone-warn: #c98500;
-    --tone-bad: #e34948;
 }
 
 .tone-good { color: var(--tone-good); }
@@ -147,14 +122,8 @@ button:not(:disabled) {
     to { rotate: 0.4deg; }
 }
 
-/**
- * The identity's roles. A layout opts in with `data-identity` on its root, so a page not yet moved
- * keeps the current look; once every page has moved, this block becomes `:root`.
- */
-[data-identity] {
-    --font-sans: "IBM Plex Sans", system-ui, sans-serif;
-    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
-
+/* The identity's roles; `:root` so Nuxt UI's teleported overlays take them too */
+:root {
     --ui-bg: var(--color-paper-100);
     --ui-bg-muted: var(--color-paper-200);
     --ui-bg-elevated: var(--color-paper-50);
@@ -175,21 +144,26 @@ button:not(:disabled) {
 
     --ui-primary: var(--color-terracotta-600);
     --ui-radius: 0.125rem;
+    --radius-xs: 0.125rem;
+    --radius-sm: 0.125rem;
+    --radius-md: 0.125rem;
     --radius-lg: 0;
     --radius-xl: 0;
     --radius-2xl: 0;
 
-    /* Validated as a set with the `dataviz` skill's validator against these surfaces */
+    /* Validated as a set with the `dataviz` skill's validator; five steps failed, three pass */
     --tone-good: #006641;
     --tone-warn: #7a4100;
     --tone-bad: #b30942;
+}
 
+body {
     font-family: var(--font-sans);
     background: var(--ui-bg);
     color: var(--ui-text);
 }
 
-.dark [data-identity] {
+.dark {
     --ui-bg: var(--color-paper-900);
     --ui-bg-muted: var(--color-paper-950);
     --ui-bg-elevated: var(--color-paper-800);
@@ -216,7 +190,7 @@ button:not(:disabled) {
 }
 
 /* A marked word in a headline takes the accent instead of a highlight */
-[data-identity] mark {
+mark {
     background: none;
     color: var(--ui-primary);
     font-style: italic;
@@ -229,6 +203,7 @@ button:not(:disabled) {
     --ui-text-muted: var(--color-paper-400);
     --ui-text: var(--color-paper-100);
     --ui-text-highlighted: var(--color-paper-50);
+    --ui-text-inverted: var(--color-paper-950);
     --ui-border: var(--color-paper-800);
     --ui-primary: var(--color-terracotta-300);
     --tone-good: #329546;
@@ -236,4 +211,26 @@ button:not(:disabled) {
     --tone-bad: #f53864;
     background: var(--ui-bg);
     color: var(--ui-text);
+}
+
+/* A count or a percentage that leads a panel or a fact */
+[data-figure] {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+}
+
+/* A sideways-scrolling row fades at its right edge, so a phone reader knows there is more */
+[data-scroll-x] {
+    mask-image: linear-gradient(to left, transparent, #000 2rem);
+}
+
+/* Rendered prose keeps a reading measure; tables and code keep the full width */
+[data-prose] :is(p, li, h2, h3, h4, blockquote) {
+    max-width: 72ch;
+}
+
+/* A README under a page that already shows its title drops its own `# heading` */
+[data-readme] h1:first-child {
+    display: none;
 }

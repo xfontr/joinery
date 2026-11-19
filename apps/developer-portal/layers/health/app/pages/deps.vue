@@ -5,14 +5,19 @@
                 <template #leading>
                     <UDashboardSidebarCollapse />
                 </template>
-                <template #right>
-                    <SnapshotAge :manifest="snapshot?.manifest ?? null" artifact="deps" />
-                </template>
             </UDashboardNavbar>
+            <UDashboardToolbar>
+                <AppTabs />
+            </UDashboardToolbar>
         </template>
 
         <template #body>
             <div class="flex flex-col gap-4">
+                <SnapshotAge
+                    :manifest="snapshot?.manifest ?? null"
+                    artifact="deps"
+                    source="pnpm audit, pnpm outdated"
+                />
                 <div
                     v-if="deps?.vulnerabilities || deps?.outdated"
                     class="grid grid-cols-2 gap-3 lg:grid-cols-5"
@@ -59,7 +64,7 @@
                         {{ deps?.vulnerabilities ? "No known vulnerabilities." : "Not collected." }}
                     </div>
 
-                    <div v-else class="overflow-x-auto">
+                    <div v-else data-scroll-x class="overflow-x-auto">
                         <table class="data-table">
                             <thead>
                                 <tr>
@@ -118,7 +123,7 @@
                         }}
                     </div>
 
-                    <div v-else class="overflow-x-auto">
+                    <div v-else data-scroll-x class="overflow-x-auto">
                         <table class="data-table">
                             <thead>
                                 <tr>

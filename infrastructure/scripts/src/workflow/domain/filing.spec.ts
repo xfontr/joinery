@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { bundleFor, bundlesOf, planFiling, readMap, toFile } from "./filing.ts";
+import { bundleFor, bundlesOf, fileableNow, planFiling, readMap, toFile } from "./filing.ts";
 import type { SnapshotIssue } from "./snapshot.ts";
 
 const TEMPLATE = {
@@ -374,6 +374,21 @@ describe("bundleFor", () => {
     });
 });
 
+describe("fileableNow", () => {
+    // Two blocks that only need a filed build block were left unfiled while agents sat idle (#484).
+    it("offers every block whose needs are filed, not only the one a closed ticket opened", () => {
+        const map = readMap(TEMPLATE, PROJECT);
+        const issues = [closed(1, "design-approval"), ticket(2, "component-kit")];
+
+        expect(fileableNow(map, issues)).toEqual([["article-page"]]);
+        expect(fileableNow(map, [...issues, ticket(3, "article-page")])).toEqual([["comments"]]);
+    });
+
+    it("holds back a block still waiting on an open decision", () => {
+        expect(fileableNow(readMap(TEMPLATE, PROJECT), [ticket(1, "design-approval")])).toEqual([]);
+    });
+});
+
 describe("readMap types", () => {
     const TYPED = {
         capabilities: [{ id: "page-layout", stage: "build", title: "Page layout" }],
@@ -423,5 +438,22 @@ describe("readMap types", () => {
     it("files an on-demand setup only while a page needs it, as the portal maps it", () => {
         expect(isOn([{ id: "news", type: "blog", title: "News" }])).toBe(false);
         expect(isOn([{ id: "news", type: "blog-comments", title: "News" }])).toBe(true);
+    });
+});
+
+describe("readMap stage needs", () => {
+    it("blocks a block needing a whole stage on every ticket in it, the project's own pages too", () => {
+        const map = readMap(
+            {
+                capabilities: [
+                    { id: "home-page", stage: "build", title: "Home page" },
+                    { id: "review", stage: "ship", title: "Review", dependsOn: ["stage:build"] },
+                ],
+            },
+            { ...PROJECT, extras: [{ id: "landing", stage: "build", title: "Landing" }] },
+        );
+        const filing = planFiling(map, [ticket(3, "home-page"), ticket(4, "landing")], ["review"]);
+
+        expect(filing.ok && filing.tickets[0]?.blockedBy.sort()).toEqual([3, 4]);
     });
 });

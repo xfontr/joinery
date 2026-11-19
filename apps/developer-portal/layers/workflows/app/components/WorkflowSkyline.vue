@@ -24,7 +24,7 @@
                 />
             </div>
 
-            <span class="h-0.5 rounded-full bg-(--hue) opacity-70" aria-hidden="true" />
+            <span class="h-0.5 bg-(--hue) opacity-70" aria-hidden="true" />
 
             <!-- Stretched over the whole column, so a click between the squares picks the stage too -->
             <button

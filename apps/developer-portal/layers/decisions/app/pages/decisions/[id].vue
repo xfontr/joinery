@@ -55,7 +55,7 @@
                             >
                                 <UIcon name="i-lucide-arrow-left" class="size-4 text-dimmed" />
                                 <div class="min-w-0">
-                                    <div class="text-2xs text-dimmed">Decided before</div>
+                                    <div class="text-xs text-dimmed">Decided before</div>
                                     <div class="truncate text-sm">
                                         {{ around.previous.title }}
                                     </div>
@@ -68,7 +68,7 @@
                                 class="flex items-center justify-end gap-2 rounded-lg border border-default p-3 transition-colors hover:bg-elevated/50 sm:col-start-2"
                             >
                                 <div class="min-w-0 text-right">
-                                    <div class="text-2xs text-dimmed">Decided after</div>
+                                    <div class="text-xs text-dimmed">Decided after</div>
                                     <div class="truncate text-sm">
                                         {{ around.next.title }}
                                     </div>

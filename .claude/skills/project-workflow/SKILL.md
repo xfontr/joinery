@@ -17,7 +17,8 @@ Report it in three lines: what waits on the user, the top of the ready list, and
 For the picture, run `pnpm workflow:sync <id>` and point the user at `/workflows/<id>` in the portal.
 
 Never tune anything to how many agents are running. The ready list is the same for one agent or a
-hundred.
+hundred. A *Can file now* section means blocks sit unfiled while agents could take them: file them
+before answering (step 2).
 
 ## 1. Starting a project
 
@@ -76,12 +77,31 @@ Show the user the map in the portal at `/workflows/<id>` before running `workflo
 change the file until they agree with it. If a second project of the same kind turns up, its map
 becomes a template.
 
+## 1.6 Every build ends in a review
+
+Per-ticket review sees one block; nobody sees the build as a whole. The website templates carry a
+required `build-review` owner block with `dependsOn: [stage:build]`, so it waits on every build
+block, the project's own pages included. A `custom` map has no template to inherit it from: when
+you draft or redraft one, copy `new-website`'s block into `extras` in the stage after the build,
+and make that stage's blocks need it.
+
+When the build closes, the agent prepares the overview its `doneWhen` asks for and the user makes
+the calls. The user may instead settle it as skipped in its panel, but that is their call; never
+settle it yourself (`developer-portal-front-door` drew six build blocks over two designs and no
+review).
+
 ## 2. Filing a block
 
-File what the map says can be filed, not a stage. In the portal a block that can be filed reads
+File everything the map says can be filed, never one block at a time: the point of the map is that
+every unblocked block has a ticket an agent can take in parallel. A block that needs only build
+blocks can be filed as soon as those have tickets. In the portal a block that can be filed reads
 *Can file now*; one that can't reads *Waits* and names what it waits on.
 
-1. `pnpm workflow:file <id> <block>` prints the tickets, their labels and their blocked-by links
+After any filing, any close and any merge, run `pnpm workflow:file <id>` with no block. It lists
+every block that can be filed now; with `--yes` it files them, round after round until nothing more
+opens.
+
+1. `pnpm workflow:file <id> <block>` files one block. It prints the tickets, their labels and their blocked-by links
    without writing anything. Under a `ticketSize` other than `block` it is one ticket for the
    block and the others its size bundles it with, filed whole or not at all. It refuses a block still waiting on an open `spike` or `owner` block,
    because that decision can still change what the tickets say (#208, #242 → #299).
@@ -89,7 +109,7 @@ File what the map says can be filed, not a stage. In the portal a block that can
    and `doneWhen`. If that would be too thin for an agent to act on, add `tickets` to the template
    first; the next project inherits them.
 3. Show the user the dry run. Filing is outward-facing.
-4. `pnpm workflow:file <id> <block> --yes`, then `pnpm workflow:sync <id>`.
+4. `pnpm workflow:file <id> --yes`, which re-syncs.
 
 A dependency that turns up later is added on GitHub, on the issue's *Relationships* panel or with
 `gh issue edit <n> --add-blocked-by <m>`, not in the project file. After filing, GitHub wins.
@@ -134,7 +154,7 @@ Every project has a `<id>.diary.md`. Append one line in the
 [diary's shape](../../../docs/workflows/README.md#-diary), dated from `date +%F`, when:
 
 - the PR that closes a ticket is about to open (an `estimate` line). That PR closes the block: commit
-  the line, `pnpm workflow:sync <id>` and any unfiled block the work proved wrong to its branch
+  the line, `pnpm workflow:sync <id> --close` and any unfiled block the work proved wrong to its branch
   before `gh pr create` or `pnpm issue:ship`, never after the merge. `workflow-close.sh` refuses
   the PR otherwise;
 - the user corrects or complains about the workflow, the tooling or your output, or says something

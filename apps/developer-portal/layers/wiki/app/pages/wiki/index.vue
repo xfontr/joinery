@@ -110,7 +110,7 @@
                                 <span class="flex-1 truncate font-mono text-xs">{{
                                     page.path
                                 }}</span>
-                                <span class="shrink-0 text-2xs text-dimmed">{{
+                                <span class="shrink-0 text-xs text-dimmed">{{
                                     relativeTime(page.updatedAt)
                                 }}</span>
                             </NuxtLink>

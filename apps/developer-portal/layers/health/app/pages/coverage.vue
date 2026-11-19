@@ -5,14 +5,19 @@
                 <template #leading>
                     <UDashboardSidebarCollapse />
                 </template>
-                <template #right>
-                    <SnapshotAge :manifest="snapshot?.manifest ?? null" artifact="coverage" />
-                </template>
             </UDashboardNavbar>
+            <UDashboardToolbar>
+                <AppTabs />
+            </UDashboardToolbar>
         </template>
 
         <template #body>
             <div class="flex flex-col gap-4">
+                <SnapshotAge
+                    :manifest="snapshot?.manifest ?? null"
+                    artifact="coverage"
+                    source="pnpm test:coverage"
+                />
                 <div v-if="coverage?.totals" class="grid grid-cols-2 gap-3 lg:grid-cols-4">
                     <StatTile
                         v-for="metric in metrics"
@@ -36,7 +41,7 @@
                         </div>
                     </template>
 
-                    <div class="overflow-x-auto">
+                    <div data-scroll-x class="overflow-x-auto">
                         <table class="data-table">
                             <thead>
                                 <tr>

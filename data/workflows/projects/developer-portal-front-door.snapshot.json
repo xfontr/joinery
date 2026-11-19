@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-19T09:10:56.017Z",
+    "syncedAt": "2026-11-19T09:17:38.804Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -115,14 +115,19 @@
             "number": 484,
             "title": "Developer view on E",
             "url": "https://github.com/xfontr/monorepo/issues/484",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "developer-view"
             ],
             "createdAt": "2026-11-18T18:44:00Z",
-            "closedAt": null,
-            "activity": [],
+            "closedAt": "2026-11-19T09:17:38.804Z",
+            "activity": [
+                "2026-11-19",
+                "2026-11-19",
+                "2026-11-19",
+                "2026-11-19"
+            ],
             "blockedBy": [],
             "branch": true,
             "pr": false,
@@ -144,8 +149,8 @@
             "blockedBy": [
                 {
                     "number": 484,
-                    "open": true,
-                    "closedAt": null
+                    "open": false,
+                    "closedAt": "2026-11-19T09:17:38.804Z"
                 }
             ],
             "branch": true,
@@ -193,17 +198,17 @@
             "number": 488,
             "title": "Work pages",
             "url": "https://github.com/xfontr/monorepo/issues/488",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "project-showcase"
             ],
             "createdAt": "2026-11-18T18:58:14Z",
-            "closedAt": null,
+            "closedAt": "2026-11-19T09:12:24Z",
             "activity": [],
             "blockedBy": [],
-            "branch": true,
-            "pr": false,
+            "branch": false,
+            "pr": true,
             "owner": false,
             "complexity": 5
         },
@@ -237,8 +242,8 @@
                 },
                 {
                     "number": 488,
-                    "open": true,
-                    "closedAt": null
+                    "open": false,
+                    "closedAt": "2026-11-19T09:12:24Z"
                 }
             ],
             "branch": false,

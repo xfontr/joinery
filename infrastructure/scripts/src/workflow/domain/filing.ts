@@ -96,6 +96,27 @@ const withType = (extra: unknown, types: Raw[]): unknown => {
     };
 };
 
+/** A `dependsOn` entry with this prefix needs every other block in the named stage, as the portal reads it. */
+const STAGE_NEED_PREFIX = "stage:";
+
+const withStageNeeds = (blocks: Block[]): Block[] => {
+    const inStage = (stage: string, except: string): string[] =>
+        blocks.filter((other) => other.stage === stage && other.id !== except).map(({ id }) => id);
+
+    return blocks.map((block) => ({
+        ...block,
+        dependsOn: [
+            ...new Set(
+                block.dependsOn.flatMap((need) =>
+                    need.startsWith(STAGE_NEED_PREFIX)
+                        ? inStage(need.slice(STAGE_NEED_PREFIX.length), block.id)
+                        : [need],
+                ),
+            ),
+        ],
+    }));
+};
+
 /** A parsed template and project file as one map of blocks, with the project's switches applied. */
 export const readMap = (template: unknown, project: unknown): WorkflowMap => {
     const source = record(project);
@@ -116,12 +137,13 @@ export const readMap = (template: unknown, project: unknown): WorkflowMap => {
             : true;
     };
 
-    const blocks = [
+    const raw = [
         ...list(record(template).capabilities),
         ...list(source.extras).map((extra) =>
             withType(extra, list(record(template).types).map(record)),
         ),
     ].map(toBlock);
+    const blocks = withStageNeeds(raw);
     const demanded = new Set(
         blocks
             .filter((block) => extras.has(block.id) && groupOn(block.group))
@@ -516,4 +538,19 @@ export const bundleFor = (map: WorkflowMap, issues: SnapshotIssue[], id: string)
     const bundle = bundlesOf(pool, map.ticketSize, needs).find((ids) => ids.includes(id)) ?? [id];
 
     return bundle.filter((member) => member === id || unfiled.has(member));
+};
+
+/** Every unfiled bundle that `planFiling` would file right now, each as the ids filed together. */
+export const fileableNow = (map: WorkflowMap, issues: SnapshotIssue[]): string[][] => {
+    const seen = new Set<string>();
+    const groups: string[][] = [];
+
+    for (const block of toFile(map, issues)) {
+        if (seen.has(block.id)) continue;
+        const ids = bundleFor(map, issues, block.id);
+        for (const id of ids) seen.add(id);
+        if (planFiling(map, issues, ids).ok) groups.push(ids);
+    }
+
+    return groups;
 };

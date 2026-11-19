@@ -1,4 +1,4 @@
-import { routedNeeds } from "./capability.ts";
+import { routedNeeds, withStageNeeds } from "./capability.ts";
 import { complexityOf } from "./complexity.ts";
 import { featuresOf, isEnabled } from "./project.ts";
 import type { NewPage } from "./projectFile.ts";
@@ -212,7 +212,7 @@ export const estimateOf = (
 ) => {
     const project = draftProject(template, switches, "block", extras);
     const blocks = [...blocksOn(template, switches, extras), ...extras];
-    const needs = routedNeeds([...template.capabilities, ...extras], (capability) =>
+    const needs = routedNeeds(withStageNeeds([...template.capabilities, ...extras]), (capability) =>
         isEnabled(capability, project, template),
     );
 

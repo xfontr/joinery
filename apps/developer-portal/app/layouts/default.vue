@@ -1,56 +1,80 @@
 <template>
-    <UDashboardGroup unit="rem">
+    <UDashboardGroup unit="rem" class="bottom-7">
         <UDashboardSidebar
             id="dashboard"
             resizable
             collapsible
             :default-size="15"
             :min-size="12"
-            :max-size="22"
+            :max-size="20"
+            :collapsed-size="3.5"
+            :ui="{
+                root: 'surface-ink min-h-0 border-e-0',
+                content: 'surface-ink lg:hidden',
+                body: 'gap-3',
+                footer: 'border-t border-default',
+            }"
         >
             <template #header="{ collapsed }">
-                <NuxtLink to="/" class="flex min-w-0 items-center gap-2">
-                    <UIcon name="i-lucide-activity" class="size-5 shrink-0 text-primary" />
-                    <span v-if="!collapsed" class="truncate font-semibold">Monorepo</span>
+                <NuxtLink
+                    to="/overview"
+                    class="flex min-w-0 items-baseline gap-2"
+                    :class="collapsed && 'mx-auto'"
+                    aria-label="Monorepo developer view"
+                >
+                    <span class="font-display text-xl text-highlighted italic">
+                        {{ collapsed ? "m" : "monorepo" }}
+                    </span>
+                    <span v-if="!collapsed" class="text-sm text-muted">dev</span>
                 </NuxtLink>
             </template>
 
             <template #default="{ collapsed }">
-                <UDashboardSearchButton :collapsed class="bg-transparent ring-default" />
+                <UDashboardSearchButton
+                    :collapsed
+                    color="neutral"
+                    variant="outline"
+                    class="bg-elevated text-muted ring-default"
+                />
 
-                <div v-for="group in navGroups" :key="group.label" class="flex flex-col gap-1">
-                    <p v-if="!collapsed" class="px-2 pt-3 text-xs font-semibold text-dimmed">
-                        {{ group.label }}
-                    </p>
-                    <UNavigationMenu
-                        :model-value="group.open"
-                        @update:model-value="(values) => toggle(group.open, values)"
-                        :items="group.items"
-                        :collapsed
-                        orientation="vertical"
-                        trailing-trigger
-                        popover
-                    />
-                </div>
+                <UNavigationMenu
+                    v-model="openApps"
+                    :items="railItems"
+                    :collapsed
+                    orientation="vertical"
+                    color="neutral"
+                    variant="link"
+                    highlight
+                    highlight-color="primary"
+                    trailing-trigger
+                    popover
+                    :ui="{
+                        link: 'text-muted hover:text-highlighted data-active:text-highlighted',
+                        linkTrailingBadge:
+                            'bg-transparent px-0 font-mono text-xs text-muted ring-0',
+                    }"
+                    aria-label="Developer view"
+                />
             </template>
 
             <template #footer="{ collapsed }">
-                <div class="flex w-full items-center gap-1.5">
+                <div class="flex w-full items-center gap-1" :class="collapsed && 'flex-col'">
                     <UColorModeButton
-                        :block="!collapsed"
                         :label="collapsed ? undefined : 'Theme'"
-                        class="flex-1"
+                        color="neutral"
+                        variant="ghost"
+                        class="text-muted"
                     />
 
                     <UButton
-                        v-if="!collapsed"
                         :to="repoUrl"
                         target="_blank"
                         icon="i-simple-icons-github"
                         color="neutral"
                         variant="ghost"
-                        size="sm"
-                        square
+                        :label="collapsed ? undefined : 'Source'"
+                        class="text-muted"
+                        :class="!collapsed && 'ml-auto'"
                         aria-label="View source on GitHub"
                     />
                 </div>
@@ -66,44 +90,38 @@
 
         <slot />
     </UDashboardGroup>
+
+    <StatusBar :collected="badges?.collected ?? null" :items="statusItems" />
 </template>
 
 <script setup lang="ts">
 import type { NavigationMenuItem } from "@nuxt/ui";
+import type { Badges } from "#layers/snapshot/shared/types/Badges.ts";
+import type { StatusItem } from "~/components/StatusBar.vue";
+import { appEntries, locate, type NavLink } from "~/utils/apps";
 
 const { data: issues } = useIssues();
-const { data: badges } = await useFetch<{ advisories: number }>("/api/badges", { key: "badges" });
+const { data: badges } = await useFetch<Badges>("/api/badges", { key: "badges" });
 const {
     public: { repoUrl },
 } = useRuntimeConfig();
 
-const open = computed(() => issues.value.issues.length);
-const advisories = computed(() => badges.value?.advisories ?? 0);
-
-interface NavLink {
-    label: string;
-    icon: string;
-    to: string;
-    /** A route answering with the submenu, so every page's payload carries a few rows, not the feature's data. */
-    menu?: string;
-}
-
-/** A key no layer declares is skipped, so removing a layer drops its entry. */
-const GROUPS = [
-    { label: "Explore", items: ["overview", "projects", "changelog"] },
-    { label: "Build", items: ["docs", "graph", "decisions", "audits", "workflows"] },
-    { label: "Design", items: ["benchmarks"] },
-    {
-        label: "Engineering health",
-        items: ["issues", "coverage", "telemetry", "deps"],
-    },
-];
-
 const { nav }: { nav: Record<string, NavLink | undefined> } = useAppConfig();
+const apps = appEntries(nav);
+
+const mounted = ref(false);
+onMounted(() => (mounted.value = true));
+
+/** GitHub is read in the browser, so the prerendered HTML can't know the count. */
+const openIssues = computed(() =>
+    mounted.value && issues.value.fetchedAt && !issues.value.error
+        ? issues.value.issues.length
+        : null,
+);
 
 const counts = computed<Record<string, number>>(() => ({
-    issues: open.value,
-    deps: advisories.value,
+    issues: openIssues.value ?? 0,
+    deps: badges.value?.advisories ?? 0,
 }));
 
 const menus = Object.fromEntries(
@@ -123,64 +141,91 @@ const menus = Object.fromEntries(
 );
 
 const route = useRoute();
+const here = computed(() => locate(apps, route.path));
 
-/** One submenu open in the whole sidebar, so opening any entry folds the others back. */
-const openKey = ref<string | null>(null);
+const railItems = computed((): NavigationMenuItem[] =>
+    apps.map((app) => {
+        const [first] = app.entries;
+        const single = app.entries.length === 1;
 
-const navItems = computed(() =>
-    GROUPS.map(({ label, items }) => ({
-        label,
-        items: items.flatMap((key): NavigationMenuItem[] => {
-            const link = nav[key];
-            const count = counts.value[key] ?? 0;
-            const children = menus[key]?.value ?? [];
+        return {
+            label: app.label,
+            icon: app.icon,
+            to: first?.to,
+            value: app.id,
+            active: here.value?.app.id === app.id,
+            children: single
+                ? undefined
+                : app.entries.map((entry) => {
+                      const count = counts.value[entry.key] ?? 0;
+                      const children = menus[entry.key]?.value ?? [];
 
-            return link
-                ? [
-                      {
-                          label: link.label,
-                          icon: link.icon,
-                          to: link.to,
-                          value: key,
-                          onClick: () => {
-                              openKey.value = children.length === 0 ? null : key;
-                          },
+                      return {
+                          label: entry.label,
+                          icon: entry.icon,
+                          to: entry.to,
+                          value: entry.key,
+                          defaultOpen: here.value?.entry.key === entry.key,
                           badge: count === 0 ? undefined : String(count),
                           children: children.length === 0 ? undefined : children,
-                      },
-                  ]
-                : [];
-        }),
-    })),
+                      };
+                  }),
+        };
+    }),
 );
 
-/** Each menu sees the open key only when it holds that entry. */
-const navGroups = computed(() =>
-    navItems.value.map((group) => ({
-        ...group,
-        open: group.items.some(({ value }) => value === openKey.value) ? [openKey.value!] : [],
-    })),
-);
+/** The app holding the current page stays unfolded; the others fold back on navigation. */
+const openApps = ref<string[]>([]);
 
-/** The arrow adds or removes one value; an added one becomes the only open entry. */
-const toggle = (was: string[], value: string | string[] | undefined): void => {
-    const values = Array.isArray(value) ? value : [value ?? ""].filter(Boolean);
-    const added = values.find((value) => !was.includes(value));
-    if (added) openKey.value = added;
-    else if (was.length > 0 && values.length === 0) openKey.value = null;
-};
-
-/** The page a reader lands on, by link or by URL, shows its section's submenu. */
+// The prerendered HTML has every app folded, so unfolding one before hydration would mismatch.
 const unfoldCurrent = (): void => {
-    const current = navItems.value
-        .flatMap(({ items }) => items)
-        .find(({ to }) => route.path === to || route.path.startsWith(`${String(to)}/`));
-    openKey.value = current?.children ? String(current.value) : null;
+    openApps.value = here.value ? [here.value.app.id] : [];
 };
 
-// The prerendered HTML has every submenu closed, so opening one before hydration would mismatch.
 onMounted(unfoldCurrent);
 watch(() => route.path, unfoldCurrent);
+
+const statusItems = computed((): StatusItem[] => {
+    const lines = badges.value?.lineCoverage ?? null;
+    const worst = badges.value?.worstSeverity ?? null;
+    const pages = badges.value?.docPages ?? null;
+    const broken = badges.value?.brokenLinks ?? 0;
+
+    return [
+        {
+            id: "coverage",
+            label: "coverage",
+            value: lines === null ? "—" : `${lines}%`,
+            detail: "lines",
+            tone: coverageTone(lines),
+            to: "/coverage",
+        },
+        {
+            id: "advisories",
+            label: "advisories",
+            value: badges.value?.collected ? String(badges.value.advisories) : "—",
+            detail: worst ? `worst ${worst}` : "none",
+            tone: worst ? severityTone(worst) : "neutral",
+            to: "/deps",
+        },
+        {
+            id: "issues",
+            label: "issues",
+            value: openIssues.value === null ? "—" : String(openIssues.value),
+            detail: "open",
+            tone: mounted.value && issues.value.error ? "warn" : "neutral",
+            to: "/issues",
+        },
+        {
+            id: "docs",
+            label: "docs",
+            value: pages === null ? "—" : String(pages),
+            detail: broken > 0 ? `${broken} broken links` : "no broken links",
+            tone: broken > 0 ? "bad" : "neutral",
+            to: "/wiki",
+        },
+    ];
+});
 
 const searchOpen = ref(false);
 
