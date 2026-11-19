@@ -29,6 +29,11 @@ the wrong issue is expensive to notice later. Don't guess past one weak match.
 
 Skip this if step 1 already found you standing on the issue's branch.
 
+**Pick it in the checkout you're in.** A single ticket never gets its own worktree, least of all
+when the current checkout is on `master` with no branch picked. A worktree is only for asking for
+more than one ticket at once, and even then one of them stays in the current checkout. In doubt,
+ask before creating one.
+
 Otherwise run `pnpm issue:pick` with the number. It asks nothing, and does what the interactive
 pick does: builds `<type>/<area>/<number>-<slug>`, the area being the issue's area label, runs `gh issue develop --checkout` so the
 branch is linked on the issue, self-assigns, and moves the issue to *In Progress*.

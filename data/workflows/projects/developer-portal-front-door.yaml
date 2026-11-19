@@ -145,7 +145,7 @@ extras:
       - A reader who doesn't write code can say what this is within 30 seconds.
       - Every number on it comes from the snapshot, and the page renders without one.
       - It reads well at 390 px first, in light and dark.
-      - Its words are written in this ticket and approved by the owner.
+      - Its words are written in place as the page is built; the owner reviews them on the page.
 
   - id: visitor-pages
     stage: build
@@ -160,7 +160,7 @@ extras:
     doneWhen:
       - Each page has the lab's sections in the lab's order and reads well at 390 px first.
       - Every number on them comes from the snapshot, and both render without one.
-      - Their words are written in this ticket and approved by the owner.
+      - Their words are written in place as the pages are built; the owner reviews them on the pages.
 
   - id: visitor-workflows
     stage: build
@@ -175,7 +175,7 @@ extras:
     doneWhen:
       - The page has the lab's sections in the lab's order and reads well at 390 px first.
       - Every project it shows comes from `data/workflows/`, and each links to its developer page.
-      - Its words are written in this ticket and approved by the owner.
+      - Its words are written in place as the page is built; the owner reviews them on the page.
 
   - id: project-showcase
     stage: build
@@ -189,7 +189,7 @@ extras:
     doneWhen:
       - Each shipped app has its page with a current screenshot, its line and its live link.
       - Screenshots and lines live as data, not inside a component.
-      - Its words are written in this ticket and approved by the owner.
+      - Its words are written in place as the page is built; the owner reviews them on the page.
 
   - id: build-review
     stage: ship
