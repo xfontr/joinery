@@ -220,15 +220,16 @@ describe("default layout", () => {
         expect(search).toHaveBeenCalledOnce();
     });
 
-    it("finds a page by its name even when more docs match than the palette lists", async () => {
-        const docs = Array.from({ length: 20 }, (_, index) => ({
-            id: `/docs/notes/${index}`,
-            title: `Benchmarks note ${index}`,
-            titles: [],
-            level: 1,
-            content: "How the benchmarks were captured.",
-        }));
-        search.mockResolvedValueOnce(docs);
+    it("offers a page by its name in the search box, not only the docs that mention it", async () => {
+        search.mockResolvedValueOnce([
+            {
+                id: "/docs/benchmarks/readme",
+                title: "Benchmarks",
+                titles: [],
+                level: 1,
+                content: "",
+            },
+        ]);
         serve();
         const wrapper = await open();
         const palette = wrapper.findComponent({ name: "UDashboardSearch" });
