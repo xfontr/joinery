@@ -67,7 +67,9 @@ who uses it, what done looks like, and what is still undecided.
    such as scope, a provider or an API shape. Build blocks that depend on the answer go in
    `dependsOn`, so filing waits for them.
 3. **Every block has `doneWhen`**, written as checks rather than tasks, and a `reuse` naming the
-   precedent to copy — a package, a script folder, a layer — with a path that exists.
+   precedent to copy — a package, a script folder, a layer — with a path that exists. Copy is
+   written in place as the page is built and reviewed by the owner on that page, never approved
+   up front as a list in the ticket.
 4. **Write lessons only from issues that happened**, with their numbers. Leave them out rather than
    inventing any.
 5. **Stages are `plan`, `build` and `ship`.** End with an `owner` block in `ship` that needs every

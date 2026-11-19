@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-19T09:25:19.747Z",
+    "syncedAt": "2026-11-19T14:57:40.685Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -162,16 +162,16 @@
             "number": 486,
             "title": "How it's made and The craft",
             "url": "https://github.com/xfontr/monorepo/issues/486",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "visitor-pages"
             ],
             "createdAt": "2026-11-18T18:57:54Z",
-            "closedAt": null,
+            "closedAt": "2026-11-19T14:57:40.685Z",
             "activity": [],
             "blockedBy": [],
-            "branch": false,
+            "branch": true,
             "pr": false,
             "owner": false,
             "complexity": 8
@@ -235,8 +235,8 @@
                 },
                 {
                     "number": 486,
-                    "open": true,
-                    "closedAt": null
+                    "open": false,
+                    "closedAt": "2026-11-19T14:57:40.685Z"
                 },
                 {
                     "number": 487,
@@ -298,8 +298,8 @@
                 },
                 {
                     "number": 486,
-                    "open": true,
-                    "closedAt": null
+                    "open": false,
+                    "closedAt": "2026-11-19T14:57:40.685Z"
                 },
                 {
                     "number": 487,
