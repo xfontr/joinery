@@ -5,6 +5,7 @@
         >
             <ULink to="/" class="font-display text-2xl text-highlighted italic">monorepo</ULink>
             <nav class="flex items-baseline gap-6 text-sm" aria-label="Main">
+                <ULink to="/how-its-run" active-class="text-primary">How it's run</ULink>
                 <ULink :to="DEVELOPER_VIEW" class="text-primary">Developer view →</ULink>
             </nav>
         </header>

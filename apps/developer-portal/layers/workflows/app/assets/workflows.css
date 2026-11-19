@@ -20,3 +20,46 @@
     --stage-6: oklch(0.72 0.18 275);
     --stage-7: oklch(0.72 0.18 315);
 }
+
+/* The visitor map's tones, read from the identity's roles so it follows light and dark. */
+[data-workflow-map] [data-column] {
+    fill: var(--ui-text-muted);
+    text-transform: uppercase;
+}
+
+[data-workflow-map] [data-edge] {
+    fill: none;
+    stroke: var(--ui-border-accented);
+}
+
+[data-workflow-map] g[data-tone="done"] rect {
+    fill: var(--ui-primary);
+}
+
+[data-workflow-map] g[data-tone="done"] text {
+    fill: var(--ui-text-inverted);
+}
+
+[data-workflow-map] g[data-tone="moving"] rect {
+    fill: var(--ui-bg-elevated);
+    stroke: var(--ui-primary);
+    stroke-width: 2;
+}
+
+[data-workflow-map] g[data-tone="moving"] text {
+    fill: var(--ui-text-highlighted);
+}
+
+[data-workflow-map] g[data-tone="waiting"] rect {
+    fill: var(--ui-bg);
+    stroke: var(--ui-border-accented);
+    stroke-dasharray: 4 3;
+}
+
+[data-workflow-map] g[data-tone="waiting"] text {
+    fill: var(--ui-text-muted);
+}
+
+[data-workflow-map] li[data-tone="done"] > [aria-hidden] {
+    color: var(--ui-primary);
+}
