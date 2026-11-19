@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-19T09:20:16.421Z",
+    "syncedAt": "2026-11-19T09:25:19.747Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -180,19 +180,20 @@
             "number": 487,
             "title": "Workflows for visitors",
             "url": "https://github.com/xfontr/monorepo/issues/487",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "visitor-workflows"
             ],
             "createdAt": "2026-11-18T18:58:03Z",
-            "closedAt": null,
+            "closedAt": "2026-11-19T09:21:42Z",
             "activity": [
+                "2026-11-19",
                 "2026-11-19"
             ],
             "blockedBy": [],
-            "branch": true,
-            "pr": false,
+            "branch": false,
+            "pr": true,
             "owner": false,
             "complexity": 5
         },
@@ -239,8 +240,8 @@
                 },
                 {
                     "number": 487,
-                    "open": true,
-                    "closedAt": null
+                    "open": false,
+                    "closedAt": "2026-11-19T09:21:42Z"
                 },
                 {
                     "number": 488,
@@ -276,6 +277,40 @@
             "pr": false,
             "owner": true,
             "complexity": 1
+        },
+        {
+            "number": 493,
+            "title": "Build review",
+            "url": "https://github.com/xfontr/monorepo/issues/493",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "build-review"
+            ],
+            "createdAt": "2026-11-19T09:21:04Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [
+                {
+                    "number": 485,
+                    "open": true,
+                    "closedAt": null
+                },
+                {
+                    "number": 486,
+                    "open": true,
+                    "closedAt": null
+                },
+                {
+                    "number": 487,
+                    "open": false,
+                    "closedAt": "2026-11-19T09:21:42Z"
+                }
+            ],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 3
         }
     ],
     "noMilestone": []
