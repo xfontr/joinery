@@ -5,6 +5,7 @@ import { ref } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { IssuesRead } from "#layers/github/shared/issues.ts";
 import type { Badges } from "#layers/snapshot/shared/types/Badges.ts";
+import type { SearchSection } from "~/utils/search";
 import Layout from "./default.vue";
 
 // GitHub is read straight from the browser, so the github layer's composable is the boundary
@@ -12,7 +13,7 @@ const github = vi.hoisted(() => ({ read: null as unknown }));
 mockNuxtImport("useIssues", () => () => ({ data: github.read }));
 
 // Search reads the docs collection, so a call here means the search data was built
-const search = vi.hoisted(() => vi.fn(() => Promise.resolve([])));
+const search = vi.hoisted(() => vi.fn((): Promise<SearchSection[]> => Promise.resolve([])));
 mockNuxtImport("queryCollectionSearchSections", () => search);
 
 const MENUS = ["/api/decisions/menu", "/api/audits/menu", "/api/workflows/menu"];
@@ -217,5 +218,27 @@ describe("default layout", () => {
         await flushPromises();
 
         expect(search).toHaveBeenCalledOnce();
+    });
+
+    it("finds a page by its name even when more docs match than the palette lists", async () => {
+        const docs = Array.from({ length: 20 }, (_, index) => ({
+            id: `/docs/notes/${index}`,
+            title: `Benchmarks note ${index}`,
+            titles: [],
+            level: 1,
+            content: "How the benchmarks were captured.",
+        }));
+        search.mockResolvedValueOnce(docs);
+        serve();
+        const wrapper = await open();
+        const palette = wrapper.findComponent({ name: "UDashboardSearch" });
+
+        await palette.setValue(true, "open");
+        await flushPromises();
+        await palette.setValue("benchmarks", "searchTerm");
+
+        await vi.waitFor(() =>
+            expect(document.body.querySelector("a[href='/benchmarks']")).not.toBeNull(),
+        );
     });
 });

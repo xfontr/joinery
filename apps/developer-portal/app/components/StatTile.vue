@@ -10,7 +10,7 @@
             {{ label }}
         </div>
 
-        <div class="text-2xl font-semibold tabular-nums" :class="colorClass">
+        <div data-figure class="text-2xl leading-none" :class="colorClass">
             {{ value }}
         </div>
 

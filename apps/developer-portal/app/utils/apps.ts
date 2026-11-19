@@ -4,6 +4,24 @@ export interface NavLink {
     to: string;
     /** A route answering with the submenu, so every page's payload carries a few rows, not the feature's data. */
     menu?: string;
+    /** A route answering with the `RailFigure` the rail prints beside the entry. */
+    figure?: string;
+}
+
+/** A figure beside a rail entry; `alert` prints it in the bad tone. */
+export interface RailFigure {
+    value: string;
+    alert: boolean;
+}
+
+/** A row a `menu` route answers with; a `coverage` row's badge takes the coverage tone. */
+export interface MenuRow {
+    label: string;
+    to: string;
+    icon?: string;
+    badge?: string;
+    coverage?: number | null;
+    children?: MenuRow[];
 }
 
 export interface AppGroup {
@@ -67,3 +85,22 @@ export const locate = <T extends { entries: AppEntry[] }>(
         .flatMap((app) => app.entries.map((entry) => ({ app, entry })))
         .filter(({ entry }) => owns(entry.to, path))
         .toSorted((a, b) => b.entry.to.length - a.entry.to.length)[0] ?? null;
+
+/** A tab a feature layer adds to every project page, fetched without the page importing the layer. */
+export interface ProjectTab {
+    label: string;
+    /** A route answering with `ProjectTabRow[]` for every project, keyed by its folder. */
+    rows: string;
+    /** The page the whole dataset lives on. */
+    to: string;
+    empty: string;
+}
+
+export interface ProjectTabRow {
+    id: string;
+    title: string;
+    to: string;
+    percent: number;
+    done: number;
+    left: number;
+}

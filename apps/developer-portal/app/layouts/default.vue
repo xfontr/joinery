@@ -88,7 +88,7 @@
             v-model:open="searchOpen"
             :groups="searchGroups"
             :loading="status === 'pending'"
-            placeholder="Search pages and docs…"
+            placeholder="Search pages, projects and docs…"
         />
 
         <slot />
@@ -101,8 +101,9 @@
 import type { NavigationMenuItem } from "@nuxt/ui";
 import type { Badges } from "#layers/snapshot/shared/types/Badges.ts";
 import type { StatusItem } from "~/components/StatusBar.vue";
-import { appEntries, locate, type NavLink } from "~/utils/apps";
-import { searchGroups as toSearchGroups } from "~/utils/search";
+import { appEntries, locate, type MenuRow, type NavLink, type RailFigure } from "~/utils/apps";
+import type { Tone } from "~/utils/format";
+import { matchPages, searchGroups as toSearchGroups } from "~/utils/search";
 
 const { data: issues } = useIssues();
 const { data: badges } = await useFetch<Badges>("/api/badges", { key: "badges" });
@@ -123,29 +124,63 @@ const openIssues = computed(() =>
         : null,
 );
 
-const counts = computed<Record<string, number>>(() => ({
-    issues: openIssues.value ?? 0,
-    deps: badges.value?.advisories ?? 0,
-}));
+const routed = <T,>(field: "menu" | "figure", fallback: () => T) =>
+    Object.fromEntries(
+        Object.entries(nav).flatMap(([key, link]) => {
+            const url = link?.[field];
+            return url
+                ? [[key, useFetch<T>(url, { key: `${field}-${key}`, default: fallback }).data]]
+                : [];
+        }),
+    );
 
-const menus = Object.fromEntries(
-    Object.entries(nav).flatMap(([key, link]) =>
-        link?.menu
-            ? [
-                  [
-                      key,
-                      useFetch<NavigationMenuItem[]>(link.menu, {
-                          key: `menu-${key}`,
-                          default: () => [],
-                      }).data,
-                  ],
-              ]
-            : [],
-    ),
-);
+const menus = routed<MenuRow[]>("menu", () => []);
+const figures = routed<RailFigure | null>("figure", () => null);
+
+const tooling = computed(() => figures.telemetry?.value ?? null);
+
+const toolingTone = computed((): Tone => (tooling.value?.alert ? "bad" : "neutral"));
+const worstTone = computed((): Tone => {
+    const worst = badges.value?.worstSeverity ?? null;
+    return worst ? severityTone(worst) : "neutral";
+});
+
+const badge = (label: string, tone: Tone) => ({ label, class: toneClass(tone) });
+
+/** The figure beside each entry, in its tone, as the lab's rail prints a section's state. */
+const entryBadges = computed((): Record<string, { label: string; class: string } | undefined> => {
+    const lines = badges.value?.lineCoverage ?? null;
+
+    return {
+        issues: openIssues.value ? badge(String(openIssues.value), "neutral") : undefined,
+        coverage: lines === null ? undefined : badge(`${lines}%`, coverageTone(lines)),
+        deps: badges.value?.collected
+            ? badge(`${badges.value.advisories} adv.`, worstTone.value)
+            : undefined,
+        telemetry: tooling.value
+            ? badge(`${tooling.value.value} fail`, toolingTone.value)
+            : undefined,
+    };
+});
 
 const route = useRoute();
 const here = computed(() => locate(apps, route.path));
+
+const holds = (row: MenuRow): boolean =>
+    row.to === route.fullPath || row.to === route.path || (row.children ?? []).some(holds);
+
+const toItem = (row: MenuRow): NavigationMenuItem => ({
+    label: row.label,
+    icon: row.icon,
+    to: row.to,
+    active: row.to === route.fullPath,
+    defaultOpen: (row.children ?? []).some(holds),
+    badge:
+        row.badge === undefined
+            ? undefined
+            : { label: row.badge, class: toneClass(coverageTone(row.coverage)) },
+    children: row.children?.length ? row.children.map(toItem) : undefined,
+});
 
 const railItems = computed((): NavigationMenuItem[] =>
     apps.map((app) => {
@@ -161,8 +196,7 @@ const railItems = computed((): NavigationMenuItem[] =>
             children: single
                 ? undefined
                 : app.entries.map((entry) => {
-                      const count = counts.value[entry.key] ?? 0;
-                      const children = menus[entry.key]?.value ?? [];
+                      const children = (menus[entry.key]?.value ?? []).map(toItem);
 
                       return {
                           label: entry.label,
@@ -172,7 +206,7 @@ const railItems = computed((): NavigationMenuItem[] =>
                           // Router matching alone leaves `/projects` dark on `/projects/<name>`.
                           active: here.value?.entry.key === entry.key,
                           defaultOpen: here.value?.entry.key === entry.key,
-                          badge: count === 0 ? undefined : String(count),
+                          badge: entryBadges.value[entry.key],
                           children: children.length === 0 ? undefined : children,
                       };
                   }),
@@ -214,6 +248,18 @@ const statusItems = computed((): StatusItem[] => {
             tone: worst ? severityTone(worst) : "neutral",
             to: "/deps",
         },
+        ...(tooling.value
+            ? [
+                  {
+                      id: "tooling",
+                      label: "tooling",
+                      value: tooling.value.value,
+                      detail: "failed",
+                      tone: toolingTone.value,
+                      to: "/telemetry",
+                  },
+              ]
+            : []),
         {
             id: "issues",
             label: "issues",
@@ -250,5 +296,23 @@ watch(searchOpen, () => {
     if (searchOpen.value && status.value === "idle") execute();
 });
 
-const searchGroups = computed(() => toSearchGroups(apps, sections.value));
+const projectGroup = computed(() => ({
+    id: "projects",
+    label: "Projects",
+    ignoreFilter: true,
+    postFilter: matchPages,
+    items: (menus.projects?.value ?? []).flatMap((kind) =>
+        (kind.children ?? []).map((row) => ({
+            label: row.label,
+            suffix: kind.label,
+            to: row.to,
+            icon: "i-lucide-box",
+        })),
+    ),
+}));
+
+const searchGroups = computed(() => {
+    const [pages, ...docs] = toSearchGroups(apps, sections.value);
+    return [...(pages ? [pages] : []), projectGroup.value, ...docs];
+});
 </script>

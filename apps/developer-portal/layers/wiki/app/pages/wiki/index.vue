@@ -1,14 +1,11 @@
 <template>
     <UDashboardPanel id="docs">
         <template #header>
-            <UDashboardNavbar title="Wiki">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader title="Wiki">
+                <template #actions>
                     <span class="text-xs text-muted">{{ count }} pages, read in place</span>
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
         </template>
 
         <template #body>

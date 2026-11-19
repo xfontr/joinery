@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-19T15:40:43.070Z",
+    "syncedAt": "2026-11-19T21:04:02.197Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -316,5 +316,22 @@
             "complexity": 3
         }
     ],
-    "noMilestone": []
+    "noMilestone": [
+        {
+            "number": 501,
+            "title": "Polish rough edges left by the developer portal redesign",
+            "url": "https://github.com/xfontr/monorepo/issues/501",
+            "state": "open",
+            "reason": null,
+            "caps": [],
+            "createdAt": "2026-11-19T21:03:48Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": null
+        }
+    ]
 }

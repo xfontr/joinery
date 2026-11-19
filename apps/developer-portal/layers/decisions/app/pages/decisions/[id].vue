@@ -1,11 +1,11 @@
 <template>
     <UDashboardPanel id="decision">
         <template #header>
-            <UDashboardNavbar :title="report?.title ?? page?.title ?? 'Not found'">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader
+                :crumbs="[{ label: 'decisions', to: '/decisions' }]"
+                :title="report?.title ?? page?.title ?? 'Not found'"
+            >
+                <template #actions>
                     <StatusPill
                         v-if="supersession"
                         :label="supersession.label"
@@ -23,7 +23,7 @@
                     >
                     <code class="font-mono text-xs text-dimmed">{{ source }}</code>
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
         </template>
 
         <template #body>

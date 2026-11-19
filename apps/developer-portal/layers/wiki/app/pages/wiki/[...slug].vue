@@ -1,17 +1,17 @@
 <template>
     <UDashboardPanel id="doc">
         <template #header>
-            <UDashboardNavbar :title="here?.entry.label ?? page?.title ?? 'Not found'">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader
+                :crumbs="[{ label: 'wiki', to: '/wiki' }]"
+                :title="here?.entry.label ?? page?.title ?? 'Not found'"
+            >
+                <template #actions>
                     <span v-if="meta" class="text-xs text-muted"
                         >{{ meta.words }} words · updated {{ updated }}</span
                     >
                     <code class="font-mono text-xs text-dimmed">{{ source }}</code>
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
         </template>
 
         <template #body>

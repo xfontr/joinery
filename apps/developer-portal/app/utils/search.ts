@@ -19,6 +19,16 @@ const RECORDS: Record<string, RegExp> = {
     benchmarks: /^\/docs\/benchmarks\/((?!readme$|template$)[^/]+)$/,
 };
 
+/** A page whose name or app holds every word typed, in any case; an empty search keeps them all. */
+export const matchPages = (term: string, items: CommandPaletteItem[]): CommandPaletteItem[] => {
+    const words = term.toLowerCase().split(/\s+/).filter(Boolean);
+
+    return items.filter((item) => {
+        const text = `${item.label ?? ""} ${item.suffix ?? ""}`.toLowerCase();
+        return words.every((word) => text.includes(word));
+    });
+};
+
 const WIKI = { id: "docs", label: "Wiki", icon: "i-lucide-file-text", to: "/wiki" };
 
 /** Every page in the rail, then each doc under the page that renders it, the wiki taking the rest. */
@@ -65,6 +75,10 @@ export const searchGroups = (
         {
             id: "pages",
             label: "Pages",
+            // The palette keeps its 12 best matches across every group, and docs that also match in
+            // their text outrank a page matching by name alone, so pages are matched apart.
+            ignoreFilter: true,
+            postFilter: matchPages,
             items: apps.flatMap((app) =>
                 app.entries.map((entry) => ({
                     label: entry.label,

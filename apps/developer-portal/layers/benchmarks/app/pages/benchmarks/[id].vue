@@ -1,11 +1,11 @@
 <template>
     <UDashboardPanel id="benchmark">
         <template #header>
-            <UDashboardNavbar :title="benchmark?.title ?? page?.title ?? 'Not found'">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader
+                :crumbs="[{ label: 'benchmarks', to: '/benchmarks' }]"
+                :title="benchmark?.title ?? page?.title ?? 'Not found'"
+            >
+                <template #actions>
                     <StatusPill
                         v-if="verdictPill"
                         :label="verdictPill.label"
@@ -25,7 +25,7 @@
                     />
                     <code class="font-mono text-xs text-dimmed">{{ source }}</code>
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
         </template>
 
         <template #body>

@@ -87,6 +87,9 @@ far outside that is worth opening. The `comment-cleanup` skill runs the pass.
 - **Never screenshot a feature you built to check it.** Nobody looks at those, Claude included;
   lint, specs and the build are the check. Screenshots the work itself calls for, such as benchmark
   captures or lab pages for the owner's review, are a different thing and stay.
+- **Never build from a lab without its checklist.** A ticket that names a `/lab/...` path gets a
+  `## Lab checklist` comment listing every lab page's features before any code, and every box
+  ticked before the PR; `start-issue` step 4 has the shape and a hook enforces it.
 - **Never write a decision report unprompted.** Only when the user asks for one; you may ask whether
   they want one, but never write it on your own judgement. A `/ship-issue` run on a `spike` ticket
   is that ask.

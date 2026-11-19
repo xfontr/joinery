@@ -1,11 +1,8 @@
 <template>
     <UDashboardPanel id="decisions">
         <template #header>
-            <UDashboardNavbar title="Decisions">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader title="Decisions">
+                <template #actions>
                     <UButton
                         to="/wiki/docs/decisions/readme"
                         label="How a report is written"
@@ -16,7 +13,7 @@
                     />
                     <SnapshotAge :manifest="snapshot?.manifest ?? null" artifact="docs" />
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
 
             <UDashboardToolbar>
                 <template #left>
