@@ -2,8 +2,8 @@ import { out } from "../shared/adapters/io.ts";
 import { flag, type Args } from "../shared/cli.ts";
 import { ExpectedError } from "../shared/errors.ts";
 import { createTicket, milestoneIssues } from "./adapters/gh.ts";
-import { oneProject, readProject, readTemplate } from "./adapters/files.ts";
-import { bundleFor, fileableNow, planFiling, readMap, type WorkflowMap } from "./domain/filing.ts";
+import { oneProject, projectMap } from "./adapters/files.ts";
+import { bundleFor, fileableNow, planFiling, type WorkflowMap } from "./domain/filing.ts";
 import { toSnapshot, type SnapshotIssue } from "./domain/snapshot.ts";
 import { sync } from "./sync.ts";
 
@@ -36,25 +36,25 @@ const fileEverything = (map: WorkflowMap, write: boolean): boolean => {
     let groups = fileableNow(map, issues);
     if (groups.length === 0) return false;
 
+    const filed = new Set<string>();
+
     while (groups.length > 0) {
+        const again = groups.flat().filter((id) => filed.has(id));
+        // A ticket GitHub hasn't returned yet would otherwise be filed a second time.
+        if (again.length > 0) {
+            throw new ExpectedError(
+                `Stopped: ${again.join(", ")} still read as unfiled after filing; check the milestone on GitHub before running again.`,
+            );
+        }
+
         for (const ids of groups) fileGroup(map, issues, ids, write);
         if (!write) break;
+        for (const id of groups.flat()) filed.add(id);
         issues = liveIssues(map);
         groups = fileableNow(map, issues);
     }
 
     return true;
-};
-
-/** The project's map, from its file and the template it names. */
-export const projectMap = (id: string): WorkflowMap => {
-    const project = readProject(id);
-    const templateId = (project as { template?: unknown } | null)?.template;
-    const template = typeof templateId === "string" ? readTemplate(templateId) : null;
-
-    if (!template) throw new ExpectedError(`${id}.yaml names no template that exists.`);
-
-    return readMap(template, project);
 };
 
 /**

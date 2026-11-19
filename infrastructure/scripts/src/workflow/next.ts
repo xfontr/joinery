@@ -3,10 +3,9 @@ import type { Args } from "../shared/cli.ts";
 import { ExpectedError } from "../shared/errors.ts";
 import { milestoneIssues } from "./adapters/gh.ts";
 import { commitLog } from "./adapters/git.ts";
-import { oneProject, readProject } from "./adapters/files.ts";
+import { oneProject, projectMap, readProject } from "./adapters/files.ts";
 import { fileableNow } from "./domain/filing.ts";
 import { describeQueue } from "./domain/queue.ts";
-import { projectMap } from "./file.ts";
 import { activityByIssue, syncTargetOf, toSnapshot } from "./domain/snapshot.ts";
 
 /** What can be taken or filed now, read live from GitHub rather than from the last snapshot. */
