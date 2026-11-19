@@ -29,6 +29,9 @@ export const TICKET_STATUSES = [
     "dropped",
 ] as const;
 
+/** A `dependsOn` entry with this prefix needs every other block in the named stage. */
+export const STAGE_NEED_PREFIX = "stage:";
+
 /** The prefix of the GitHub label that places an issue under a capability. */
 export const CAPABILITY_LABEL_PREFIX = "cap:";
 

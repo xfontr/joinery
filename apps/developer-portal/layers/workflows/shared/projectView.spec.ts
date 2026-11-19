@@ -467,3 +467,29 @@ describe("tickets to file", () => {
         expect(result.tickets.toFile).toEqual({ block: 2, supervised: 1, fast: 1 });
     });
 });
+
+describe("stage needs", () => {
+    const REVIEWED = {
+        ...TEMPLATE,
+        stages: [...TEMPLATE.stages, { id: "ship", title: "Ship" }],
+        capabilities: [
+            ...TEMPLATE.capabilities,
+            { id: "review", stage: "ship", title: "Review", dependsOn: ["stage:build"] },
+        ],
+    };
+
+    it("holds a block needing a whole stage behind a page the project added to it, and skips what's off", () => {
+        const result = view(
+            { extras: [{ id: "landing", stage: "build", title: "Landing" }] },
+            [],
+            [],
+            REVIEWED,
+        );
+
+        expect(capabilityOf(result, "review")?.needs.sort()).toEqual([
+            "article-page",
+            "landing",
+            "search",
+        ]);
+    });
+});

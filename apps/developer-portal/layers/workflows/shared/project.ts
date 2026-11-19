@@ -1,7 +1,7 @@
-import { cycleProblem, readCapability } from "./capability.ts";
+import { cycleProblem, readCapability, withStageNeeds } from "./capability.ts";
 import { complexityOf } from "./complexity.ts";
 import { asText, isRecord, Reader } from "./reader.ts";
-import { SETTLED_STATES, TICKET_SIZES } from "./constants.ts";
+import { SETTLED_STATES, STAGE_NEED_PREFIX, TICKET_SIZES } from "./constants.ts";
 import type { Capability } from "./types/Capability.ts";
 import type { Feature } from "./types/Feature.ts";
 import type { Group } from "./types/Group.ts";
@@ -183,7 +183,11 @@ const extraProblems = (extra: Capability, template: Template, known: Set<string>
     if (!template.stages.some((stage) => stage.id === extra.stage)) {
         problems.push(`extra \`${extra.id}\` names stage \`${extra.stage}\`, which doesn't exist`);
     }
-    for (const dependency of extra.dependsOn.filter((id) => !known.has(id))) {
+    const stageNeeds = new Set(template.stages.map(({ id }) => `${STAGE_NEED_PREFIX}${id}`));
+
+    for (const dependency of extra.dependsOn.filter(
+        (id) => !known.has(id) && !stageNeeds.has(id),
+    )) {
         problems.push(`extra \`${extra.id}\` depends on \`${dependency}\`, which doesn't exist`);
     }
 
@@ -203,7 +207,9 @@ export const projectProblems = (project: Project, template: Template): string[] 
         ...project.extras.flatMap((extra) => extraProblems(extra, template, known)),
     ];
 
-    return project.extras.length > 0 ? [...problems, ...cycleProblem(all)] : problems;
+    return project.extras.length > 0
+        ? [...problems, ...cycleProblem(withStageNeeds(all))]
+        : problems;
 };
 
 export const featuresOf = (project: Project, template: Template): Feature[] => {

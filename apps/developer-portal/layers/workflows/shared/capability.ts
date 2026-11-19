@@ -1,5 +1,5 @@
 import { asText, isRecord, type Reader } from "./reader.ts";
-import { COMPLEXITY_SCALE, KINDS, REUSE_PLANS } from "./constants.ts";
+import { COMPLEXITY_SCALE, KINDS, REUSE_PLANS, STAGE_NEED_PREFIX } from "./constants.ts";
 import type { Capability } from "./types/Capability.ts";
 import type { Kind } from "./types/Kind.ts";
 import type { ReusePlan } from "./types/ReusePlan.ts";
@@ -93,6 +93,27 @@ export const readCapability = (reader: Reader, raw: unknown, index: number): Cap
         ),
         complexity,
     };
+};
+
+/** The blocks with each `stage:<id>` need swapped for every other block in that stage. */
+export const withStageNeeds = (capabilities: Capability[]): Capability[] => {
+    const inStage = (stage: string, except: string): string[] =>
+        capabilities
+            .filter((other) => other.stage === stage && other.id !== except)
+            .map(({ id }) => id);
+
+    return capabilities.map((capability) => ({
+        ...capability,
+        dependsOn: [
+            ...new Set(
+                capability.dependsOn.flatMap((need) =>
+                    need.startsWith(STAGE_NEED_PREFIX)
+                        ? inStage(need.slice(STAGE_NEED_PREFIX.length), capability.id)
+                        : [need],
+                ),
+            ),
+        ],
+    }));
 };
 
 /** The first loop of `dependsOn` links found, as the ids walked round it, or null when there is none. */

@@ -4,10 +4,12 @@ import { ExpectedError } from "../shared/errors.ts";
 import { milestoneIssues } from "./adapters/gh.ts";
 import { commitLog } from "./adapters/git.ts";
 import { oneProject, readProject } from "./adapters/files.ts";
+import { fileableNow } from "./domain/filing.ts";
 import { describeQueue } from "./domain/queue.ts";
+import { projectMap } from "./file.ts";
 import { activityByIssue, syncTargetOf, toSnapshot } from "./domain/snapshot.ts";
 
-/** What can be taken now, read live from GitHub rather than from the last snapshot. */
+/** What can be taken or filed now, read live from GitHub rather than from the last snapshot. */
 export const next = ({ positionals }: Args): void => {
     const id = oneProject(positionals);
     const read = syncTargetOf(readProject(id));
@@ -21,7 +23,13 @@ export const next = ({ positionals }: Args): void => {
         activityByIssue(commitLog()),
         "",
     );
-    const lines = describeQueue(issues);
+    const fileable = fileableNow(projectMap(id), issues).map((ids) => `  ${ids.join(" + ")}`);
+    const lines = [
+        ...(fileable.length > 0
+            ? [`Can file now (${fileable.length}) · pnpm workflow:file ${id} --yes`, ...fileable]
+            : []),
+        ...describeQueue(issues),
+    ];
 
     if (lines.length === 0) {
         out.success(`${id}: nothing open in ${read.milestone}.`);

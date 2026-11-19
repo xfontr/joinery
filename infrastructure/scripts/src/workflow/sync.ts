@@ -14,12 +14,19 @@ import {
     activityByIssue,
     describeSnapshot,
     sameIssues,
+    settleCloses,
     syncTargetOf,
     toSnapshot,
 } from "./domain/snapshot.ts";
+import { issueFromBranch } from "../issue/domain/branch.ts";
+import { currentBranch } from "../shared/adapters/usage.ts";
 
 /** False when the milestone isn't there yet, so one missing milestone doesn't stop the others. */
-const syncOne = (id: string, activity: ReturnType<typeof activityByIssue>): boolean => {
+const syncOne = (
+    id: string,
+    activity: ReturnType<typeof activityByIssue>,
+    closing: number | null,
+): boolean => {
     const read = syncTargetOf(readProject(id));
 
     if ("problem" in read) throw new ExpectedError(`${id}.yaml can't be synced: ${read.problem}.`);
@@ -33,15 +40,20 @@ const syncOne = (id: string, activity: ReturnType<typeof activityByIssue>): bool
         return false;
     }
 
-    const snapshot = toSnapshot(
-        read.milestone,
-        issues,
-        read.area ? areaIssuesWithoutMilestone(read.area) : [],
-        activity,
-        new Date().toISOString(),
+    const previous = readSnapshot(id);
+    const snapshot = settleCloses(
+        toSnapshot(
+            read.milestone,
+            issues,
+            read.area ? areaIssuesWithoutMilestone(read.area) : [],
+            activity,
+            new Date().toISOString(),
+        ),
+        previous,
+        closing,
     );
 
-    if (sameIssues(readSnapshot(id), snapshot)) {
+    if (sameIssues(previous, snapshot)) {
         out.success(`${id}: unchanged — ${describeSnapshot(snapshot)}.`);
         return true;
     }
@@ -51,8 +63,11 @@ const syncOne = (id: string, activity: ReturnType<typeof activityByIssue>): bool
     return true;
 };
 
-/** Snapshots each project's milestone and commit activity beside its project file. */
-export const sync = ({ positionals }: Args): void => {
+/**
+ * Snapshots each project's milestone and commit activity beside its project file. `--close`
+ * records the current branch's ticket as closed, for the PR that closes it.
+ */
+export const sync = ({ positionals, flags }: Args): void => {
     const known = projectIds();
     const ids = positionals.length > 0 ? positionals : known;
 
@@ -65,8 +80,13 @@ export const sync = ({ positionals }: Args): void => {
         );
     }
 
+    const closing = flags.has("close") ? (issueFromBranch(currentBranch())?.number ?? null) : null;
+    if (flags.has("close") && closing === null) {
+        throw new ExpectedError("--close needs a ticket branch such as feature/<area>/<n>-<slug>.");
+    }
+
     const activity = activityByIssue(commitLog());
-    const failed = ids.filter((id) => !syncOne(id, activity));
+    const failed = ids.filter((id) => !syncOne(id, activity, closing));
 
     if (failed.length > 0) throw new ExpectedError(`Not synced: ${failed.join(", ")}.`);
 };

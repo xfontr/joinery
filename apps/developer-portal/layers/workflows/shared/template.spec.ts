@@ -28,6 +28,20 @@ describe("readTemplate", () => {
         ]);
     });
 
+    it("accepts a need on a declared stage and catches one on a stage that doesn't exist", () => {
+        const { problems } = readTemplate({
+            ...TEMPLATE,
+            capabilities: [
+                { id: "x", stage: "build", title: "X", dependsOn: ["stage:discovery"] },
+                { id: "y", stage: "build", title: "Y", dependsOn: ["stage:launch"] },
+            ],
+        });
+
+        expect(problems).toEqual([
+            "capability `y` depends on `stage:launch`, which the template doesn't have",
+        ]);
+    });
+
     it("rejects a complexity off the Fibonacci scale, which would make totals incomparable", () => {
         const { template, problems } = readTemplate({
             ...TEMPLATE,

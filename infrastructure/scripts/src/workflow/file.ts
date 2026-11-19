@@ -3,38 +3,17 @@ import { flag, type Args } from "../shared/cli.ts";
 import { ExpectedError } from "../shared/errors.ts";
 import { createTicket, milestoneIssues } from "./adapters/gh.ts";
 import { oneProject, readProject, readTemplate } from "./adapters/files.ts";
-import { bundleFor, planFiling, readMap } from "./domain/filing.ts";
-import { toSnapshot } from "./domain/snapshot.ts";
+import { bundleFor, fileableNow, planFiling, readMap, type WorkflowMap } from "./domain/filing.ts";
+import { toSnapshot, type SnapshotIssue } from "./domain/snapshot.ts";
 import { sync } from "./sync.ts";
 
-/**
- * Turns a block of the map into GitHub tickets, together with the blocks the project's ticket size
- * bundles it with, or exactly the blocks named; a dry run unless `--yes`.
- */
-export const file = ({ positionals }: Args): void => {
-    const [projectId, capability, ...rest] = positionals;
+const liveIssues = (map: WorkflowMap): SnapshotIssue[] =>
+    toSnapshot(map.milestone, milestoneIssues(map.milestone), [], new Map(), "").issues;
 
-    if (!capability) {
-        throw new ExpectedError(
-            "Usage: pnpm workflow:file <project> <capability> [<capability>…] [--yes]",
-        );
-    }
-
-    const id = oneProject([projectId ?? ""]);
-    const project = readProject(id);
-    const templateId = (project as { template?: unknown } | null)?.template;
-    const template = typeof templateId === "string" ? readTemplate(templateId) : null;
-
-    if (!template) throw new ExpectedError(`${id}.yaml names no template that exists.`);
-
-    const map = readMap(template, project);
-    const { issues } = toSnapshot(map.milestone, milestoneIssues(map.milestone), [], new Map(), "");
-    const ids = rest.length > 0 ? [capability, ...rest] : bundleFor(map, issues, capability);
+const fileGroup = (map: WorkflowMap, issues: SnapshotIssue[], ids: string[], write: boolean) => {
     const filing = planFiling(map, issues, ids);
 
     if (!filing.ok) throw new ExpectedError(`Not filed: ${filing.reason}.`);
-
-    const write = flag("yes");
 
     for (const ticket of filing.tickets) {
         const links = ticket.blockedBy.map((number) => `#${number}`).join(" ") || "nothing";
@@ -48,6 +27,55 @@ export const file = ({ positionals }: Args): void => {
         }
 
         out.success(`${createTicket({ ...ticket, milestone: map.milestone })}\n  ${ticket.title}`);
+    }
+};
+
+/** False when nothing could be filed; a dry run stops after the first round. */
+const fileEverything = (map: WorkflowMap, write: boolean): boolean => {
+    let issues = liveIssues(map);
+    let groups = fileableNow(map, issues);
+    if (groups.length === 0) return false;
+
+    while (groups.length > 0) {
+        for (const ids of groups) fileGroup(map, issues, ids, write);
+        if (!write) break;
+        issues = liveIssues(map);
+        groups = fileableNow(map, issues);
+    }
+
+    return true;
+};
+
+/** The project's map, from its file and the template it names. */
+export const projectMap = (id: string): WorkflowMap => {
+    const project = readProject(id);
+    const templateId = (project as { template?: unknown } | null)?.template;
+    const template = typeof templateId === "string" ? readTemplate(templateId) : null;
+
+    if (!template) throw new ExpectedError(`${id}.yaml names no template that exists.`);
+
+    return readMap(template, project);
+};
+
+/**
+ * Turns a block of the map into GitHub tickets, together with the blocks the project's ticket size
+ * bundles it with, or exactly the blocks named; with no block, every block that can be filed now,
+ * round after round as each round's tickets open the next. A dry run unless `--yes`.
+ */
+export const file = ({ positionals }: Args): void => {
+    const [projectId, capability, ...rest] = positionals;
+
+    const id = oneProject([projectId ?? ""]);
+    const map = projectMap(id);
+    const write = flag("yes");
+
+    if (capability) {
+        const issues = liveIssues(map);
+        const ids = rest.length > 0 ? [capability, ...rest] : bundleFor(map, issues, capability);
+        fileGroup(map, issues, ids, write);
+    } else if (!fileEverything(map, write)) {
+        out.success(`${id}: nothing can be filed yet.`);
+        return;
     }
 
     if (!write) {

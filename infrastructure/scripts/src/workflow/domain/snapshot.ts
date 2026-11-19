@@ -120,6 +120,61 @@ export const toSnapshot = (
     return { syncedAt, milestone, issues: byNumber(issues), noMilestone: byNumber(noMilestone) };
 };
 
+const closedAtOf = (issue: SnapshotIssue | undefined, reason: SnapshotIssue["reason"]) =>
+    issue?.state === "closed" && issue.reason === reason ? issue.closedAt : null;
+
+/**
+ * Closes `closing` (the ticket whose branch is synced) as the PR that closes it will, and keeps a
+ * close already written down, so syncing after the merge leaves the committed file as it is.
+ */
+export const settleCloses = (
+    next: Snapshot,
+    previous: Snapshot | null,
+    closing: number | null,
+): Snapshot => {
+    const before = new Map(previous?.issues.map((issue) => [issue.number, issue]));
+
+    const issues = next.issues.map((issue): SnapshotIssue => {
+        const old = before.get(issue.number);
+
+        if (issue.number === closing && issue.state === "open") {
+            return {
+                ...issue,
+                state: "closed",
+                reason: "completed",
+                closedAt: closedAtOf(old, "completed") ?? next.syncedAt,
+                pr: false,
+            };
+        }
+
+        const keptAt = closedAtOf(old, issue.reason);
+        if (issue.state !== "closed" || !old || !keptAt) return issue;
+
+        return {
+            ...issue,
+            closedAt: keptAt,
+            activity: old.activity,
+            branch: old.branch,
+            pr: old.pr,
+        };
+    });
+
+    const closedAt = new Map(
+        issues.filter(({ state }) => state === "closed").map((issue) => [issue.number, issue]),
+    );
+
+    return {
+        ...next,
+        issues: issues.map((issue) => ({
+            ...issue,
+            blockedBy: issue.blockedBy.map((blocker) => {
+                const settled = closedAt.get(blocker.number);
+                return settled ? { ...blocker, open: false, closedAt: settled.closedAt } : blocker;
+            }),
+        })),
+    };
+};
+
 /** The milestone and area label a parsed project file names, or why it can't be synced. */
 export const syncTargetOf = (
     project: unknown,
