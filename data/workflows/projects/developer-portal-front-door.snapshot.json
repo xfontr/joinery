@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-18T18:38:30.486Z",
+    "syncedAt": "2026-11-19T09:10:56.017Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -92,14 +92,16 @@
             "number": 481,
             "title": "Design system",
             "url": "https://github.com/xfontr/monorepo/issues/481",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "design-system"
             ],
             "createdAt": "2026-11-18T09:20:45Z",
-            "closedAt": null,
+            "closedAt": "2026-11-18T18:41:53Z",
             "activity": [
+                "2026-11-18",
+                "2026-11-18",
                 "2026-11-18",
                 "2026-11-18"
             ],
@@ -108,6 +110,165 @@
             "pr": true,
             "owner": false,
             "complexity": 8
+        },
+        {
+            "number": 484,
+            "title": "Developer view on E",
+            "url": "https://github.com/xfontr/monorepo/issues/484",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "developer-view"
+            ],
+            "createdAt": "2026-11-18T18:44:00Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [],
+            "branch": true,
+            "pr": false,
+            "owner": false,
+            "complexity": 13
+        },
+        {
+            "number": 485,
+            "title": "Visitor front page",
+            "url": "https://github.com/xfontr/monorepo/issues/485",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "front-page"
+            ],
+            "createdAt": "2026-11-18T18:57:42Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [
+                {
+                    "number": 484,
+                    "open": true,
+                    "closedAt": null
+                }
+            ],
+            "branch": true,
+            "pr": false,
+            "owner": false,
+            "complexity": 8
+        },
+        {
+            "number": 486,
+            "title": "How it's made and The craft",
+            "url": "https://github.com/xfontr/monorepo/issues/486",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "visitor-pages"
+            ],
+            "createdAt": "2026-11-18T18:57:54Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 8
+        },
+        {
+            "number": 487,
+            "title": "Workflows for visitors",
+            "url": "https://github.com/xfontr/monorepo/issues/487",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "visitor-workflows"
+            ],
+            "createdAt": "2026-11-18T18:58:03Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [],
+            "branch": true,
+            "pr": false,
+            "owner": false,
+            "complexity": 5
+        },
+        {
+            "number": 488,
+            "title": "Work pages",
+            "url": "https://github.com/xfontr/monorepo/issues/488",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "project-showcase"
+            ],
+            "createdAt": "2026-11-18T18:58:14Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [],
+            "branch": true,
+            "pr": false,
+            "owner": false,
+            "complexity": 5
+        },
+        {
+            "number": 489,
+            "title": "Docs brought up to date",
+            "url": "https://github.com/xfontr/monorepo/issues/489",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "docs-update"
+            ],
+            "createdAt": "2026-11-18T18:58:25Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [
+                {
+                    "number": 485,
+                    "open": true,
+                    "closedAt": null
+                },
+                {
+                    "number": 486,
+                    "open": true,
+                    "closedAt": null
+                },
+                {
+                    "number": 487,
+                    "open": true,
+                    "closedAt": null
+                },
+                {
+                    "number": 488,
+                    "open": true,
+                    "closedAt": null
+                }
+            ],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 2
+        },
+        {
+            "number": 490,
+            "title": "Go live",
+            "url": "https://github.com/xfontr/monorepo/issues/490",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "go-live"
+            ],
+            "createdAt": "2026-11-18T18:58:39Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [
+                {
+                    "number": 489,
+                    "open": true,
+                    "closedAt": null
+                }
+            ],
+            "branch": false,
+            "pr": false,
+            "owner": true,
+            "complexity": 1
         }
     ],
     "noMilestone": []
