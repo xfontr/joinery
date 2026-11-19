@@ -45,3 +45,5 @@ What in the workflow worked and what went wrong. The format and when to write ar
 - 2026-11-18 · map · #481 · The redraft copied the lab's two CSS files into two token sets; the owner rejected two systems for one app, so #481 shipped one and `design-system` and `developer-view` were reworded
 - 2026-11-18 · friction · #481 · The PR closing #481 was opened without its workflow close, the diary line and the synced snapshot; the owner had flagged the same miss earlier the same day
 - 2026-11-18 · estimate · #481 · 8 SP, took about 9 h from filing to PR: one token set, a contrast table and a lint ban
+- 2026-11-19 · friction · #488 · Claude screenshotted the work pages it built at two widths in light and dark, and nobody, Claude included, ever looked at them; verification is lint, specs and the build
+- 2026-11-19 · estimate · #488 · 5 SP, took about 1 h of work: one data file, one page and its spec, two captures of the live sites
