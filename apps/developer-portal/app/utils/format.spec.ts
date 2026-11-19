@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { coverageTone, relativeTime, severityTone, shortAge } from "./format.ts";
+import { counted, coverageTone, relativeTime, severityTone, shortAge } from "./format.ts";
 
 describe("relativeTime", () => {
     afterEach(() => {
@@ -63,5 +63,15 @@ describe("shortAge", () => {
         vi.setSystemTime(new Date("2026-09-20T12:00:00.000Z"));
 
         expect(shortAge(timestamp)).toBe(label);
+    });
+});
+
+describe("counted", () => {
+    it.each([
+        [0, "0 broken links"],
+        [1, "1 broken link"],
+        [2, "2 broken links"],
+    ])("words %i without a stray or missing plural", (count, label) => {
+        expect(counted(count, "broken link")).toBe(label);
     });
 });

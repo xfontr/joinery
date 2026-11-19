@@ -20,6 +20,10 @@ const CATEGORIES: Record<string, string> = {
 /** The last path segment, which names a project's page under `/projects/`. */
 export const folderOf = (root: string): string => root.split("/").at(-1) ?? root;
 
+/** A metric with its unit, or a dash for a project nothing collected it for. */
+export const dash = (value: number | null | undefined, unit = ""): string =>
+    typeof value === "number" ? `${value}${unit}` : "—";
+
 export const categoryOf = (root: string): string =>
     CATEGORIES[root.split("/")[0] ?? ""] ?? "Repository project";
 

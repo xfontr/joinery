@@ -120,9 +120,6 @@ const { data: readme } = await useAsyncData(`project-readme-${name.value}`, () =
         : Promise.resolve(null),
 );
 
-const dash = (value: number | null | undefined, unit = ""): string =>
-    typeof value === "number" ? `${value}${unit}` : "—";
-
 const facts = computed(() => {
     if (!project.value) return [];
     const metric = metricFor(project.value);

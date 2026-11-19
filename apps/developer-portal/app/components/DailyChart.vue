@@ -35,19 +35,18 @@
 
                 <div class="absolute inset-x-0 bottom-0 border-t border-accented" />
 
-                <div
+                <output
                     v-if="tip"
-                    class="pointer-events-none absolute top-0 z-10 border border-default bg-default px-2.5 py-1.5 text-xs whitespace-nowrap shadow-sm"
+                    class="pointer-events-none absolute top-0 z-10 block border border-default bg-default px-2.5 py-1.5 text-xs whitespace-nowrap shadow-sm"
                     :class="tip.flip && '-translate-x-full'"
                     :style="{ left: tip.left }"
-                    role="status"
                 >
-                    <p class="text-muted">{{ tip.day }}</p>
-                    <p>
+                    <span class="block text-muted">{{ tip.day }}</span>
+                    <span class="block">
                         <span class="font-mono font-medium text-highlighted">{{ tip.value }}</span>
                         {{ unit }}
-                    </p>
-                </div>
+                    </span>
+                </output>
             </div>
 
             <div class="relative h-48 w-14 shrink-0 text-xs text-muted">

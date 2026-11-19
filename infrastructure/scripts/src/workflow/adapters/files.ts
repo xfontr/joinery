@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { parse } from "yaml";
 import { at } from "../../shared/adapters/git.ts";
 import { ExpectedError } from "../../shared/errors.ts";
+import { readMap, type WorkflowMap } from "../domain/filing.ts";
 import type { Snapshot } from "../domain/snapshot.ts";
 
 export const PROJECTS_DIR = "data/workflows/projects";
@@ -39,6 +40,17 @@ export const TEMPLATES_DIR = "data/workflows/templates";
 export const readTemplate = (id: string): unknown => {
     const path = at(TEMPLATES_DIR, `${id}.yaml`);
     return existsSync(path) ? (parse(readFileSync(path, "utf8")) as unknown) : null;
+};
+
+/** The project's map, from its file and the template it names. */
+export const projectMap = (id: string): WorkflowMap => {
+    const project = readProject(id);
+    const templateId = (project as { template?: unknown } | null)?.template;
+    const template = typeof templateId === "string" ? readTemplate(templateId) : null;
+
+    if (!template) throw new ExpectedError(`${id}.yaml names no template that exists.`);
+
+    return readMap(template, project);
 };
 
 /** The one project id a command was given, checked against the project files. */

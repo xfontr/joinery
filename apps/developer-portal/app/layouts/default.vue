@@ -220,7 +220,7 @@ const statusItems = computed((): StatusItem[] => {
             id: "docs",
             label: "docs",
             value: pages === null ? "—" : String(pages),
-            detail: broken > 0 ? `${broken} broken links` : "no broken links",
+            detail: broken > 0 ? counted(broken, "broken link") : "no broken links",
             tone: broken > 0 ? "bad" : "neutral",
             to: "/wiki",
         },
