@@ -66,5 +66,6 @@ export const resolveDocLink = (
 
     if (isPage(resolved)) return `/wiki${toCollectionPath(resolved)}${anchor}`;
 
-    return `${REPO_SCHEME}${resolved}`;
+    // `@nuxt/content` turns any non-http href ending in `.md` into a relative route, dropping the scheme.
+    return `${REPO_SCHEME}${resolved.replace(/\.(mdx?)$/i, "%2E$1")}`;
 };

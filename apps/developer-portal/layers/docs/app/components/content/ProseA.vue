@@ -34,6 +34,8 @@ const {
 // Everything else `remarkDocLinks` already resolved to a route; only the forge's own URL is runtime
 // config, so only this half is left to the renderer.
 const file = computed(() =>
-    props.href?.startsWith(REPO_SCHEME) ? props.href.slice(REPO_SCHEME.length) : null,
+    props.href?.startsWith(REPO_SCHEME)
+        ? decodeURIComponent(props.href.slice(REPO_SCHEME.length))
+        : null,
 );
 </script>
