@@ -1,12 +1,19 @@
 import type { CapabilityState } from "./types/CapabilityState.ts";
+import type { MapScale } from "./types/MapScale.ts";
 import type { MapTone } from "./types/MapTone.ts";
 import type { ProjectView } from "./types/ProjectView.ts";
 
-const COLUMN = 184;
-const NODE_WIDTH = 164;
-const NODE_HEIGHT = 30;
-const ROW = 40;
-const HEADER = 36;
+const FULL_MAP: MapScale = { column: 184, nodeWidth: 164, nodeHeight: 30, row: 40, header: 36 };
+
+/** Blocks only, no labels: the map at a glance. */
+export const GLYPH_MAP: MapScale = {
+    column: 52,
+    nodeWidth: 10,
+    nodeHeight: 10,
+    row: 16,
+    header: 0,
+};
+
 const MAX_CHARS = 21;
 
 const toneOf = (state: CapabilityState): MapTone => {
@@ -19,7 +26,14 @@ const clip = (text: string): string =>
     text.length > MAX_CHARS ? `${text.slice(0, MAX_CHARS - 1).trimEnd()}…` : text;
 
 /** A project as a static map: stages become columns, blocks rows, and each need one curve. */
-export const projectMap = (view: ProjectView) => {
+export const projectMap = (view: ProjectView, scale: MapScale = FULL_MAP) => {
+    const {
+        column: COLUMN,
+        nodeWidth: NODE_WIDTH,
+        nodeHeight: NODE_HEIGHT,
+        row: ROW,
+        header: HEADER,
+    } = scale;
     const stages = view.stages
         .map((stage) => ({ ...stage, blocks: stage.capabilities.filter((block) => block.enabled) }))
         .filter((stage) => stage.blocks.length > 0);

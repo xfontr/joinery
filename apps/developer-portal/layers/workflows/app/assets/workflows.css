@@ -63,3 +63,23 @@
 [data-workflow-map] li[data-tone="done"] > [aria-hidden] {
     color: var(--ui-primary);
 }
+
+[data-workflow-glyph] {
+    max-width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+[data-workflow-glyph] [data-edge] {
+    fill: none;
+    stroke: var(--ui-border-accented);
+}
+
+[data-workflow-glyph] rect {
+    fill: var(--ui-primary);
+}
+
+[data-workflow-glyph] rect[data-tone="waiting"] {
+    fill: var(--ui-bg);
+    stroke: var(--ui-primary);
+}
