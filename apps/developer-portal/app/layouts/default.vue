@@ -17,16 +17,19 @@
         >
             <template #header="{ collapsed }">
                 <NuxtLink
+                    v-if="!collapsed"
                     to="/overview"
-                    class="flex min-w-0 items-baseline gap-2"
-                    :class="collapsed && 'mx-auto'"
+                    class="flex min-w-0 flex-1 items-baseline gap-2"
                     aria-label="Monorepo developer view"
                 >
-                    <span class="font-display text-xl text-highlighted italic">
-                        {{ collapsed ? "m" : "monorepo" }}
-                    </span>
-                    <span v-if="!collapsed" class="text-sm text-muted">dev</span>
+                    <span class="font-display text-xl text-highlighted italic">monorepo</span>
+                    <span class="text-sm text-muted">dev</span>
                 </NuxtLink>
+                <UDashboardSidebarCollapse
+                    color="neutral"
+                    class="text-muted"
+                    :class="collapsed && 'mx-auto'"
+                />
             </template>
 
             <template #default="{ collapsed }">
@@ -85,7 +88,7 @@
             v-model:open="searchOpen"
             :groups="searchGroups"
             :loading="status === 'pending'"
-            placeholder="Search the workspace docs…"
+            placeholder="Search pages and docs…"
         />
 
         <slot />
@@ -99,6 +102,7 @@ import type { NavigationMenuItem } from "@nuxt/ui";
 import type { Badges } from "#layers/snapshot/shared/types/Badges.ts";
 import type { StatusItem } from "~/components/StatusBar.vue";
 import { appEntries, locate, type NavLink } from "~/utils/apps";
+import { searchGroups as toSearchGroups } from "~/utils/search";
 
 const { data: issues } = useIssues();
 const { data: badges } = await useFetch<Badges>("/api/badges", { key: "badges" });
@@ -165,6 +169,8 @@ const railItems = computed((): NavigationMenuItem[] =>
                           icon: entry.icon,
                           to: entry.to,
                           value: entry.key,
+                          // Router matching alone leaves `/projects` dark on `/projects/<name>`.
+                          active: here.value?.entry.key === entry.key,
                           defaultOpen: here.value?.entry.key === entry.key,
                           badge: count === 0 ? undefined : String(count),
                           children: children.length === 0 ? undefined : children,
@@ -244,16 +250,5 @@ watch(searchOpen, () => {
     if (searchOpen.value && status.value === "idle") execute();
 });
 
-const searchGroups = computed(() => [
-    {
-        id: "docs",
-        label: "Wiki",
-        items: sections.value.map((section) => ({
-            label: section.title,
-            suffix: section.content,
-            to: `/wiki${section.id}`,
-            icon: "i-lucide-file-text",
-        })),
-    },
-]);
+const searchGroups = computed(() => toSearchGroups(apps, sections.value));
 </script>
