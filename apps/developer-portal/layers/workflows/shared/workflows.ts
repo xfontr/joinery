@@ -61,3 +61,4 @@ export {
     type NewProject,
 } from "./projectFile.ts";
 export { assembleWorkflows, type ParsedFile, type Workflows } from "./directory.ts";
+export { projectMap, type ProjectMap } from "./projectMap.ts";
