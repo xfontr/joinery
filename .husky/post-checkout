@@ -34,7 +34,9 @@ fi
 
 
 # A worktree is a ship-issue run's, whose ship step stops on a file it didn't write.
-if [ "$(git rev-parse --git-dir)" = "$(git rev-parse --git-common-dir)" ]; then
+# Master is left to post-merge: synced before the pull, it dirties the snapshot and blocks the pull.
+if [ "$(git rev-parse --git-dir)" = "$(git rev-parse --git-common-dir)" ] && \
+    [ "$(git branch --show-current)" != "master" ]; then
     (pnpm workflow:sync >/dev/null 2>&1 &)
 fi
 
