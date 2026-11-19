@@ -183,7 +183,7 @@ describe("default layout", () => {
             "coverage: 81% lines",
             "advisories: 2 worst high",
             "issues: — open",
-            "docs: 12 1 broken links",
+            "docs: 12 1 broken link",
         ]);
     });
 

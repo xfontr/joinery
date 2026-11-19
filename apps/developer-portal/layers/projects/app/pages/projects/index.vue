@@ -84,9 +84,6 @@ const {
     public: { repoUrl },
 } = useRuntimeConfig();
 
-const dash = (value: number | null | undefined, unit = ""): string =>
-    typeof value === "number" ? `${value}${unit}` : "—";
-
 const groups = computed(() => {
     const live = projects.value.map((project) => {
         const metric = metricFor(project);

@@ -574,25 +574,30 @@
                         to="/coverage"
                     >
                         <dl class="divide-y divide-default">
-                            <div v-for="line in healthLines" :key="line.label" class="px-4 py-3">
-                                <NuxtLink :to="line.to" class="group flex flex-col gap-2">
-                                    <div class="flex items-baseline justify-between gap-3">
-                                        <dt class="text-sm text-toned group-hover:text-highlighted">
-                                            {{ line.label }}
-                                        </dt>
-                                        <dd
-                                            data-figure
-                                            class="text-xl leading-none"
-                                            :class="line.class || 'text-highlighted'"
-                                        >
-                                            {{ line.value }}
-                                        </dd>
-                                    </div>
+                            <div
+                                v-for="line in healthLines"
+                                :key="line.label"
+                                class="group relative flex flex-wrap items-baseline justify-between gap-x-3 gap-y-2 px-4 py-3"
+                            >
+                                <dt class="text-sm text-toned group-hover:text-highlighted">
+                                    <!-- Stretched over the row, so the bar and the note click through too -->
+                                    <NuxtLink :to="line.to" class="after:absolute after:inset-0">
+                                        {{ line.label }}
+                                    </NuxtLink>
+                                </dt>
+                                <dd
+                                    data-figure
+                                    class="text-xl leading-none"
+                                    :class="line.class || 'text-highlighted'"
+                                >
+                                    {{ line.value }}
+                                </dd>
+                                <dd class="flex basis-full flex-col gap-2">
                                     <SplitBar :parts="line.parts" :legend="line.legend" />
                                     <p v-if="line.note" class="text-xs text-muted">
                                         {{ line.note }}
                                     </p>
-                                </NuxtLink>
+                                </dd>
                             </div>
                         </dl>
                     </WidgetPanel>
@@ -819,11 +824,12 @@ const next = computed(() => sortIssues(issues.value.issues).slice(0, 6));
 
 const decisionReports = useDecisionReports();
 const decisionCounts = computed(() => countByStatus(decisionReports.value));
-const pendingDecisions = computed(() =>
-    sortDecisions(decisionReports.value, "newest")
-        .filter((report) => report.status === "to-implement" && report.decision !== "superseded")
-        .slice(0, 5),
+const toImplement = computed(() =>
+    sortDecisions(decisionReports.value, "newest").filter(
+        (report) => report.status === "to-implement" && report.decision !== "superseded",
+    ),
 );
+const pendingDecisions = computed(() => toImplement.value.slice(0, 5));
 
 const auditReports = useAuditReports();
 const auditTotals = computed(() => countAll(auditReports.value));
@@ -878,16 +884,14 @@ const queueByKind = computed((): Record<QueueKind, QueueRow[]> => ({
         to: issue.url,
         external: true,
     })),
-    decisions: sortDecisions(decisionReports.value, "newest")
-        .filter((report) => report.status === "to-implement" && report.decision !== "superseded")
-        .map((report) => ({
-            key: `decision-${report.id}`,
-            kind: "decisions",
-            id: report.number,
-            title: report.title,
-            meta: "to implement",
-            to: `/decisions/${report.id}`,
-        })),
+    decisions: toImplement.value.map((report) => ({
+        key: `decision-${report.id}`,
+        kind: "decisions",
+        id: report.number,
+        title: report.title,
+        meta: "to implement",
+        to: `/decisions/${report.id}`,
+    })),
     audits: openAudits.value.map((report) => ({
         key: `audit-${report.id}`,
         kind: "audits",
@@ -905,7 +909,7 @@ const queueByKind = computed((): Record<QueueKind, QueueRow[]> => ({
             id: `+${project.unreleasedCommits}`,
             title: project.name,
             meta: `${project.currentVersion ?? "unversioned"} · unreleased`,
-            to: `/projects/${project.root.split("/").at(-1)}`,
+            to: `/projects/${folderOf(project.root)}`,
         })),
     attention: [
         ...findings.value.map((finding) => ({
@@ -1057,11 +1061,11 @@ const healthLines = computed(() => {
         {
             label: "Doc pages",
             value: docs.value ? String(docs.value.pages.length) : "—",
-            class: docs.value?.brokenLinkCount ? "tone-bad" : "",
+            class: toneClass(docs.value?.brokenLinkCount ? "bad" : "neutral"),
             to: "/wiki",
             legend: false,
             note: docs.value?.brokenLinkCount
-                ? `${docs.value.brokenLinkCount} broken links`
+                ? counted(docs.value.brokenLinkCount, "broken link")
                 : "No broken links",
             parts: [] satisfies SplitPart[],
         },

@@ -1,11 +1,7 @@
 <template>
     <div class="flex flex-col gap-1.5">
-        <div
-            v-if="parts.length > 0"
-            class="flex h-1 gap-0.5 bg-muted"
-            role="img"
-            :aria-label="summary"
-        >
+        <span v-if="!legend && parts.length > 0" class="sr-only">{{ summary }}</span>
+        <div v-if="parts.length > 0" class="flex h-1 gap-0.5 bg-muted" aria-hidden="true">
             <span
                 v-for="part in visible"
                 :key="part.label"

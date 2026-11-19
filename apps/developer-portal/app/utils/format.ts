@@ -79,3 +79,7 @@ export const shortAge = (iso: string | null | undefined): string => {
 
     return unit ? `${Math.floor(seconds / unit.size)} ${unit.label}` : "now";
 };
+
+/** "1 broken link", "3 broken links": a count with its noun, for nouns that just take an s. */
+export const counted = (count: number, noun: string): string =>
+    `${count} ${noun}${count === 1 ? "" : "s"}`;
