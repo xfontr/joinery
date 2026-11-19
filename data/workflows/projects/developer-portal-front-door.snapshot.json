@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-19T14:57:40.685Z",
+    "syncedAt": "2026-11-19T15:40:43.070Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -138,14 +138,17 @@
             "number": 485,
             "title": "Visitor front page",
             "url": "https://github.com/xfontr/monorepo/issues/485",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "front-page"
             ],
             "createdAt": "2026-11-18T18:57:42Z",
-            "closedAt": null,
-            "activity": [],
+            "closedAt": "2026-11-19T15:40:43.070Z",
+            "activity": [
+                "2026-11-19",
+                "2026-11-19"
+            ],
             "blockedBy": [
                 {
                     "number": 484,
@@ -230,8 +233,8 @@
             "blockedBy": [
                 {
                     "number": 485,
-                    "open": true,
-                    "closedAt": null
+                    "open": false,
+                    "closedAt": "2026-11-19T15:40:43.070Z"
                 },
                 {
                     "number": 486,
@@ -293,8 +296,8 @@
             "blockedBy": [
                 {
                     "number": 485,
-                    "open": true,
-                    "closedAt": null
+                    "open": false,
+                    "closedAt": "2026-11-19T15:40:43.070Z"
                 },
                 {
                     "number": 486,

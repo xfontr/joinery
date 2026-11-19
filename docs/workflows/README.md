@@ -205,7 +205,7 @@ shows when work happened, not how long it took.
 | --- | --- |
 | Create a project | The plus card on the Workflows page under `pnpm dev developer-portal`. Deployed, it downloads the file for a PR |
 | Create its milestone and labels | `pnpm workflow:setup <id> --yes` |
-| Refresh the portal's snapshot | `pnpm workflow:sync [<id>]`; post-checkout and post-merge also run it in the main checkout |
+| Refresh the portal's snapshot | `pnpm workflow:sync [<id>]`; post-merge also runs it in the main checkout, and post-checkout on any branch but `master` |
 | See what can be taken now | `pnpm workflow:next <id>` |
 | File everything that can be filed (dry run without `--yes`) | `pnpm workflow:file <id> --yes` |
 | Abandon a project | `pnpm workflow:drop <id> --yes`, then delete it in Settings |

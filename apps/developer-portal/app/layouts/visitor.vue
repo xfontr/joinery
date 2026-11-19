@@ -30,6 +30,5 @@
 </template>
 
 <script setup lang="ts">
-// Becomes `/overview` once the visitor front page takes `/` (#485).
-const DEVELOPER_VIEW = "/";
+const DEVELOPER_VIEW = "/overview";
 </script>
