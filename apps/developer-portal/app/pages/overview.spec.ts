@@ -2,13 +2,16 @@ import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { ref } from "vue";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { IssuesRead } from "#layers/github/shared/issues.ts";
+import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
+import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import type { Snapshot } from "#layers/workflows/shared/types/Snapshot.ts";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
-import Page from "./index.vue";
+import type { DashboardLayout } from "~/utils/dashboardLayout";
+import Page from "./overview.vue";
 
 // An in-memory docs collection, answering the README query the page sends
 const docs = vi.hoisted(() => ({
@@ -108,6 +111,48 @@ const tiles = (wrapper: VueWrapper) =>
 
 const hrefs = (wrapper: VueWrapper) => wrapper.findAll("a").map((a) => a.attributes("href"));
 
+/** Brings back widgets that start in the Add widget list, as a developer would from Customize. */
+const restore = (...ids: string[]) =>
+    localStorage.setItem(
+        "home-layout",
+        JSON.stringify({
+            version: 1,
+            widgets: ids.map((id) => ({ id, size: "medium" as const })),
+            hidden: [],
+        } satisfies DashboardLayout),
+    );
+
+const METRICS = {
+    generatedAt: "2026-11-01T00:00:00Z",
+    commit: "abc",
+    branch: "master",
+    projects: [],
+    invariantFindings: [],
+    conventionalCommitRate: null,
+    commitsSinceLastRelease: null,
+} satisfies MetricsArtifact;
+
+const unreleased = (name: string, commits: number): ProjectMetrics => ({
+    name: `@monorepo/${name}`,
+    root: `packages/${name}`,
+    specs: 0,
+    commits: null,
+    commitsLastTwoWeeks: null,
+    coverageLinesPct: null,
+    unreleasedCommits: commits,
+    currentVersion: "1.0.0",
+    hasChangelog: true,
+});
+
+/** Each Health line's label and figure. */
+const health = (wrapper: VueWrapper) =>
+    Object.fromEntries(
+        wrapper.findAll("dl > div").flatMap((line) => {
+            const [label, figure] = [line.find("dt"), line.find("dd")];
+            return label.exists() && figure.exists() ? [[label.text(), figure.text()]] : [];
+        }),
+    );
+
 const projects = (nodes: ProjectNode[]): Artifacts => ({
     projects: { generatedAt: "2026-11-01T00:00:00Z", projects: nodes, retired: [] },
 });
@@ -117,106 +162,73 @@ beforeEach(() => {
     github.read = ref<IssuesRead>({ fetchedAt: "2026-11-01", error: null, issues: [] });
 });
 
-describe("overview page", () => {
-    it("introduces the repository from its README and links the newcomer routes", async () => {
-        docs.readmes = [
-            { path: "/readme", title: "Repository overview", description: "What it holds." },
-        ];
-        serve({});
-        const wrapper = await open();
+afterEach(() => {
+    localStorage.clear();
+});
 
-        expect(wrapper.text()).toContain("Repository overview");
-        expect(wrapper.text()).toContain("What it holds.");
-        expect(hrefs(wrapper)).toEqual(
-            expect.arrayContaining(["/projects", "/graph", "/wiki/docs/guides/first-hour"]),
-        );
-    });
-
-    it("features applications, titled by their README, and never a package", async () => {
-        docs.readmes = [
-            { path: "/apps/huella-legal/readme", title: "Huella Legal", description: "Law." },
-        ];
-        serve(
-            projects([
-                app("huella-legal"),
-                { ...app("ui"), name: "@monorepo/ui", root: "packages/ui" },
-            ]),
-        );
-        const wrapper = await open();
-
-        expect(wrapper.text()).toContain("Huella Legal");
-        expect(hrefs(wrapper)).toContain("/wiki/apps/huella-legal/readme");
-        expect(wrapper.text()).not.toContain("@monorepo/ui");
-    });
-
-    it("features at most two applications", async () => {
-        serve(projects([app("one"), app("two"), app("three")]));
-        const wrapper = await open();
-
-        expect(wrapper.text()).toContain("@monorepo/two");
-        expect(wrapper.text()).not.toContain("@monorepo/three");
-    });
-
-    it("says the summaries are missing instead of inventing them", async () => {
-        serve(projects([app("huella-legal")]));
-        const wrapper = await open();
-
-        expect(wrapper.text()).toContain("The repository summary is not available yet.");
-        expect(wrapper.text()).toContain("No project description is available yet.");
-    });
-
-    it("shows a dash on every tile whose artifact was never collected", async () => {
-        serve({});
-        const wrapper = await open();
-
-        expect(tiles(wrapper)).toMatchObject({
-            Docs: { value: "—" },
-            "Line coverage": { value: "—" },
-            Vulnerabilities: { value: "—" },
-        });
-    });
-
-    it("feeds the collected coverage and the live issue count into their tiles", async () => {
-        github.read = ref<IssuesRead>({
-            fetchedAt: "2026-11-01",
-            error: null,
-            issues: [
-                {
-                    number: 4,
-                    title: "Open issue",
-                    body: "",
-                    url: "",
-                    labels: [],
-                    assignees: [],
-                    createdAt: "2026-11-01",
-                    updatedAt: "2026-11-01",
-                },
-            ],
-        });
+describe("home page", () => {
+    it("queues unreleased projects by how far behind they are, each linking to its page", async () => {
         serve({
-            coverage: {
-                generatedAt: "2026-11-01T00:00:00Z",
-                totals: { lines: 82, statements: 0, functions: 0, branches: 0 },
-                report: false,
-                projects: [],
+            metrics: {
+                ...METRICS,
+                projects: [unreleased("small", 2), unreleased("big", 9)],
+            },
+        });
+        const wrapper = await open();
+        const queue = hrefs(wrapper).filter((href) => href?.startsWith("/projects/"));
+
+        expect(queue).toEqual(["/projects/big", "/projects/small"]);
+    });
+
+    it("narrows the queue to one kind of work when its filter is picked", async () => {
+        serve({
+            metrics: {
+                ...METRICS,
+                projects: [unreleased("lib", 3)],
+                invariantFindings: [
+                    { id: "drift", title: "Drift", detail: "Fix it", evidence: [] },
+                ],
             },
         });
         const wrapper = await open();
 
-        expect(tiles(wrapper)["Line coverage"]).toMatchObject({ value: "82%" });
-        expect(tiles(wrapper)["Open issues"]).toMatchObject({ value: 1 });
-        expect(wrapper.text()).toContain("Open issue");
+        await wrapper.findComponent({ name: "UTabs" }).setValue("attention");
+
+        expect(wrapper.text()).toContain("Drift");
+        expect(hrefs(wrapper)).not.toContain("/projects/lib");
     });
 
-    it("blanks the issue count and says why when GitHub cannot be read", async () => {
-        github.read = ref<IssuesRead>({ fetchedAt: "", error: "offline", issues: [] });
+    it("puts a dash on every Health figure whose artifact was never collected", async () => {
         serve({});
         const wrapper = await open();
 
-        expect(tiles(wrapper)["Open issues"]).toMatchObject({
-            value: "—",
-            hint: "GitHub could not be read",
+        expect(health(wrapper)).toMatchObject({
+            "Line coverage": "—",
+            Advisories: "—",
+            "Tooling runs failed": "—",
+            "Doc pages": "—",
         });
+    });
+
+    it("reads the Health figures from the snapshot", async () => {
+        serve({
+            coverage: {
+                generatedAt: "",
+                totals: { lines: 82, statements: 0, functions: 0, branches: 0 },
+                report: false,
+                projects: [],
+            },
+            deps: {
+                generatedAt: "",
+                vulnerabilities: { info: 0, low: 1, moderate: 0, high: 2, critical: 0 },
+                totalDependencies: 10,
+                advisories: [],
+                outdated: [],
+            },
+        });
+        const wrapper = await open();
+
+        expect(health(wrapper)).toMatchObject({ "Line coverage": "82%", Advisories: "0" });
     });
 
     it("links each page with a broken link and lists invariant findings for attention", async () => {
@@ -273,12 +285,127 @@ describe("overview page", () => {
         expect(hrefs(wrapper)).toContain("/workflows/new");
     });
 
-    it("still offers a new project when none is in progress", async () => {
-        serve({});
-        const wrapper = await open();
+    // The visitor front page carries these two, so they start in the Add widget list.
+    describe("once the welcome and featured widgets are added back", () => {
+        beforeEach(() => {
+            restore("welcome", "featured");
+        });
 
-        expect(wrapper.find("a[href='/workflows/new']").attributes("aria-label")).toBe(
-            "New project",
-        );
+        it("introduces the repository from its README and links the newcomer routes", async () => {
+            docs.readmes = [
+                { path: "/readme", title: "Repository overview", description: "What it holds." },
+            ];
+            serve({});
+            const wrapper = await open();
+
+            expect(wrapper.text()).toContain("Repository overview");
+            expect(wrapper.text()).toContain("What it holds.");
+            expect(hrefs(wrapper)).toEqual(
+                expect.arrayContaining(["/projects", "/graph", "/wiki/docs/guides/first-hour"]),
+            );
+        });
+
+        it("features applications, titled by their README, and never a package", async () => {
+            docs.readmes = [
+                { path: "/apps/huella-legal/readme", title: "Huella Legal", description: "Law." },
+            ];
+            serve(
+                projects([
+                    app("huella-legal"),
+                    { ...app("ui"), name: "@monorepo/ui", root: "packages/ui" },
+                ]),
+            );
+            const wrapper = await open();
+
+            expect(wrapper.text()).toContain("Huella Legal");
+            expect(hrefs(wrapper)).toContain("/wiki/apps/huella-legal/readme");
+            expect(wrapper.text()).not.toContain("@monorepo/ui");
+        });
+
+        it("features at most two applications", async () => {
+            serve(projects([app("one"), app("two"), app("three")]));
+            const wrapper = await open();
+
+            expect(wrapper.text()).toContain("@monorepo/two");
+            expect(wrapper.text()).not.toContain("@monorepo/three");
+        });
+
+        it("says the summaries are missing instead of inventing them", async () => {
+            serve(projects([app("huella-legal")]));
+            const wrapper = await open();
+
+            expect(wrapper.text()).toContain("The repository summary is not available yet.");
+            expect(wrapper.text()).toContain("No project description is available yet.");
+        });
+    });
+
+    // The panels the lab's four widgets replaced start in the Add widget list, so nothing was lost.
+    describe("once the earlier panels are added back", () => {
+        beforeEach(() => {
+            restore("docs", "coverage", "issues", "vulnerabilities", "workflowCards");
+        });
+
+        it("shows a dash on every tile whose artifact was never collected", async () => {
+            serve({});
+            const wrapper = await open();
+
+            expect(tiles(wrapper)).toMatchObject({
+                Docs: { value: "—" },
+                "Line coverage": { value: "—" },
+                Vulnerabilities: { value: "—" },
+            });
+        });
+
+        it("feeds the collected coverage and the live issue count into their tiles", async () => {
+            github.read = ref<IssuesRead>({
+                fetchedAt: "2026-11-01",
+                error: null,
+                issues: [
+                    {
+                        number: 4,
+                        title: "Open issue",
+                        body: "",
+                        url: "",
+                        labels: [],
+                        assignees: [],
+                        createdAt: "2026-11-01",
+                        updatedAt: "2026-11-01",
+                    },
+                ],
+            });
+            serve({
+                coverage: {
+                    generatedAt: "2026-11-01T00:00:00Z",
+                    totals: { lines: 82, statements: 0, functions: 0, branches: 0 },
+                    report: false,
+                    projects: [],
+                },
+            });
+            const wrapper = await open();
+
+            expect(tiles(wrapper)["Line coverage"]).toMatchObject({ value: "82%" });
+            expect(tiles(wrapper)["Open issues"]).toMatchObject({ value: 1 });
+            expect(wrapper.text()).toContain("Open issue");
+        });
+
+        it("blanks the issue count and says why when GitHub cannot be read", async () => {
+            github.read = ref<IssuesRead>({ fetchedAt: "", error: "offline", issues: [] });
+            serve({});
+            const wrapper = await open();
+
+            expect(tiles(wrapper)["Open issues"]).toMatchObject({
+                value: "—",
+                hint: "GitHub could not be read",
+            });
+        });
+
+        it("still offers a new project when none is in progress", async () => {
+            serve({});
+            const wrapper = await open();
+
+            expect(wrapper.find("a[href='/workflows/new']").attributes("aria-label")).toBe(
+                "New project",
+            );
+        });
     });
 });

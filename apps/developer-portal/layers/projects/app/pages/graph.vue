@@ -88,7 +88,7 @@
                                             color="neutral"
                                             variant="subtle"
                                             size="sm"
-                                            class="font-mono text-2xs"
+                                            class="font-mono text-xs"
                                         />
                                     </div>
 
@@ -150,7 +150,7 @@
                                     :color="tag.startsWith('type:') ? 'primary' : 'neutral'"
                                     variant="subtle"
                                     size="sm"
-                                    class="font-mono text-2xs"
+                                    class="font-mono text-xs"
                                     :label="tag"
                                 />
                             </div>

@@ -24,7 +24,9 @@
         </template>
 
         <span v-else :title="`At ${manifest.commit} on ${manifest.branch}`">
-            Collected {{ collected }}
+            <template v-if="source">{{ source }} · collected</template>
+            <template v-else>Collected</template>
+            {{ collected }}
         </span>
     </div>
 </template>
@@ -35,9 +37,11 @@ import type { Manifest } from "#layers/snapshot/shared/types/Manifest.ts";
 interface Props {
     manifest: Manifest | null;
     artifact?: string;
+    /** The command or file the figures come from, printed beside their age. */
+    source?: string;
 }
 
-const { manifest, artifact } = defineProps<Props>();
+const { manifest, artifact, source } = defineProps<Props>();
 
 const status = computed(() => (artifact ? manifest?.artifacts[artifact] : undefined));
 

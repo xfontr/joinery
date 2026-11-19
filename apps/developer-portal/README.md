@@ -23,7 +23,7 @@ Under `pnpm dev developer-portal` it reads the working tree live. The deployed s
 
 | Path | What lives there |
 | --- | --- |
-| `app/` | The shell: layout, sidebar, Overview, and shared parts like `StatTile` and `DashboardGrid` |
+| `app/` | The shell: layout, rail, status bar, Home, and shared parts like `StatTile` and `DashboardGrid` |
 | `layers/` | One Nuxt layer per capability — see [🧱 Layers](#-layers) |
 | `tools/collect/` | The collector that builds the snapshot |
 | `tools/lib/` | Node-only helpers: paths, `git`, the shape checks, the doc-link rewriter |
@@ -51,7 +51,8 @@ another feature. `eslint.layerBoundaries` in [`eslint.config.ts`](./eslint.confi
   field in [`package.json`](./package.json).
 - No root `shared/`: a relative import into it broke the prerendered build
   ([0014](../../docs/decisions/0014-developer-portal-deployment.md)).
-- Each layer declares its sidebar links under `nav` in its `app/app.config.ts`.
+- Each layer declares its rail links under `nav` in its `app/app.config.ts`; [`apps.ts`](./app/utils/apps.ts)
+  groups them into Home, Catalog, Docs, Work and Health.
 
 ## 📄 What each page reads
 
@@ -72,7 +73,7 @@ another feature. `eslint.layerBoundaries` in [`eslint.config.ts`](./eslint.confi
 
 Docs link to files the GitHub way. [`remarkDocLinks`](./tools/lib/remarkDocLinks.ts) rewrites each
 link at parse time: a markdown target becomes a route, anything else a link to the repo. A broken
-link is counted on the Overview, never a build failure. Fix a link that breaks here in
+link is counted on Home, never a build failure. Fix a link that breaks here in
 [`docLinks.ts`](./layers/docs/shared/docLinks.ts), not in the doc.
 
 `@nuxt/content` lower-cases every route, so anything joining a route to a repo path goes through
@@ -108,7 +109,7 @@ Storybook is built into the same artifact under `/huella-legal-storybook/`.
 ## 🔍 Checks it surfaces
 
 [`tools/lib/invariants.ts`](./tools/lib/invariants.ts) runs on every collect and shows findings on
-the Overview. It blocks nothing.
+Home. It blocks nothing.
 
 | Check | Flags |
 | --- | --- |
@@ -125,7 +126,6 @@ semantic roles and Tailwind's scale; ESLint rejects bracketed values.
 | Piece | Where | What it is |
 | --- | --- | --- |
 | `--tone-good`, `-warn`, `-bad` | [`main.css`](./layers/design/app/assets/main.css) | The three status colours; [`toneClass`](./app/utils/format.ts) maps a `Tone` to its class |
-| `text-2xs` | `main.css` | The one step under `text-xs` |
 | `.data-table`, `.numeric` | `main.css` | Every table |
 | `.embedded-report` | `main.css` | The frame around the coverage report and Nx graph |
 | `variant="flush"` on `UCard` | [`app.config.ts`](./layers/design/app/app.config.ts) | A card with no body padding |
@@ -142,8 +142,7 @@ lab under `app/lab/` and `app/pages/lab/`.
 
 Direction E, approved in [`0039`](../../docs/decisions/0039-developer-portal-benchmark.md), is one
 system in [`main.css`](./layers/design/app/assets/main.css) for the visitor pages and the developer
-view alike. A layout opts in with `data-identity` on its root; a page without it keeps the look
-above.
+view alike, set on `:root` so Nuxt UI's overlays take it too. Nothing is set under 12 px.
 
 | Piece | What it is |
 | --- | --- |
@@ -154,6 +153,9 @@ above.
 | `--tone-*` | The status colours, re-picked for these surfaces with the `dataviz` validator |
 | `surface-ink` | A fill that stays dark in both modes, such as the developer rail, with its own tones |
 | `<mark>` | A marked word takes the accent in italic |
+| `data-figure` | A count or percentage that leads a panel: tabular, semibold |
+| `data-scroll-x` | A row or table that scrolls sideways fades at its right edge |
+| `data-prose`, `data-readme` | Rendered markdown keeps a 72-character measure; a README drops its own `#` title |
 
 Every text role clears 4.5:1 on every surface. Each cell is light / dark:
 
@@ -175,6 +177,7 @@ Every text role clears 4.5:1 on every surface. Each cell is light / dark:
 | default | 16.1 | 14.9 |
 | `highlighted` | 17.4 | 16.1 |
 | `primary` | 7.7 | 7.1 |
+| `inverted` on `bg-primary` | 7.7 | |
 | `--tone-good`, `-warn`, `-bad`, lowest | 5.0 | 4.6 |
 
 ## 📐 Boundaries

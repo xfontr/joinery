@@ -28,7 +28,7 @@
                         :label
                     />
 
-                    <span v-if="!compact" class="text-2xs text-dimmed">updated {{ updated }}</span>
+                    <span v-if="!compact" class="text-xs text-dimmed">updated {{ updated }}</span>
                 </div>
 
                 <div v-if="expanded" class="mt-3 flex flex-col gap-3">

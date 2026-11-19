@@ -4,6 +4,7 @@ import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { ref } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { IssuesRead } from "#layers/github/shared/issues.ts";
+import type { Badges } from "#layers/snapshot/shared/types/Badges.ts";
 import Layout from "./default.vue";
 
 // GitHub is read straight from the browser, so the github layer's composable is the boundary
@@ -16,44 +17,59 @@ mockNuxtImport("queryCollectionSearchSections", () => search);
 
 const MENUS = ["/api/decisions/menu", "/api/audits/menu", "/api/workflows/menu"];
 
-const serve = ({ advisories = 0, decisions = [] as { label: string; to: string }[] } = {}) => {
-    serveEndpoint("/api/badges", () => ({ advisories }));
+const NEVER_COLLECTED = {
+    advisories: 0,
+    worstSeverity: null,
+    lineCoverage: null,
+    docPages: null,
+    brokenLinks: 0,
+    collected: null,
+} satisfies Badges;
+
+const serve = ({
+    badges = {} as Partial<Badges>,
+    decisions = [] as { label: string; to: string }[],
+} = {}) => {
+    serveEndpoint("/api/badges", () => ({ ...NEVER_COLLECTED, ...badges }));
     for (const menu of MENUS)
         serveEndpoint(menu, () => (menu === "/api/decisions/menu" ? decisions : []));
 };
 
-const open = async () => {
-    const wrapper = await mountSuspended(Layout);
+const open = async (route = "/overview") => {
+    const wrapper = await mountSuspended(Layout, { route });
     await flushPromises();
     return wrapper;
 };
 
-const menus = (wrapper: VueWrapper) => wrapper.findAllComponents({ name: "UNavigationMenu" });
+const rail = (wrapper: VueWrapper) => wrapper.findComponent({ name: "UNavigationMenu" });
 
-/** Every entry the sidebar offers, as label and destination, in order. */
-const entries = (wrapper: VueWrapper) =>
-    menus(wrapper).flatMap((menu) =>
-        (menu.props("items") as { label: string; to: string }[]).map(({ label, to }) => [
-            label,
-            to,
-        ]),
-    );
+interface Item {
+    label: string;
+    to: string;
+    badge?: string;
+    children?: Item[];
+}
 
-const item = (wrapper: VueWrapper, label: string) =>
-    menus(wrapper)
-        .flatMap(
-            (menu) =>
-                menu.props("items") as { label: string; badge?: string; children?: unknown[] }[],
-        )
+const items = (wrapper: VueWrapper) => rail(wrapper).props("items") as Item[];
+
+/** Every app with the pages under it, as label and destination, in order. */
+const tree = (wrapper: VueWrapper) =>
+    items(wrapper).map(({ label, to, children }) => [
+        label,
+        to,
+        (children ?? []).map((child) => [child.label, child.to]),
+    ]);
+
+const page = (wrapper: VueWrapper, label: string) =>
+    items(wrapper)
+        .flatMap((app) => app.children ?? [])
         .find((found) => found.label === label)!;
 
-const openSubmenus = (wrapper: VueWrapper) =>
-    menus(wrapper).flatMap((menu) => menu.props("modelValue") as string[]);
+const status = (wrapper: VueWrapper) => wrapper.find("footer[aria-label='Status']").text();
 
-const click = async (wrapper: VueWrapper, href: string) => {
-    await wrapper.find(`nav a[href='${href}']`).trigger("click");
-    await flushPromises();
-};
+/** Each status figure as its link spells it out in full. */
+const figures = (wrapper: VueWrapper) =>
+    wrapper.findAll("footer[aria-label='Status'] a").map((link) => link.attributes("title"));
 
 const DECISION = { label: "0036 Drop the UI kit", to: "/decisions/0036-ui" };
 
@@ -63,57 +79,69 @@ beforeEach(() => {
 });
 
 describe("default layout", () => {
-    it("lists every entry under its group, in order, pointing at its route", async () => {
+    it("groups every page under its app, each pointing at its route", async () => {
         serve();
         const wrapper = await open();
 
-        expect(entries(wrapper)).toEqual([
-            ["Overview", "/"],
-            ["Projects", "/projects"],
-            ["What's new", "/changelog"],
-            ["Documentation", "/wiki"],
-            ["Architecture", "/graph"],
-            ["Decisions", "/decisions"],
-            ["Audits", "/audits"],
-            ["Workflows", "/workflows"],
-            ["Benchmarks", "/benchmarks"],
-            ["Work in progress", "/issues"],
-            ["Coverage", "/coverage"],
-            ["Tooling usage", "/telemetry"],
-            ["Dependencies", "/deps"],
+        expect(tree(wrapper)).toEqual([
+            ["Home", "/overview", []],
+            [
+                "Catalog",
+                "/projects",
+                [
+                    ["Projects", "/projects"],
+                    ["Architecture", "/graph"],
+                    ["What's new", "/changelog"],
+                ],
+            ],
+            [
+                "Docs",
+                "/wiki",
+                [
+                    ["Documentation", "/wiki"],
+                    ["Decisions", "/decisions"],
+                    ["Audits", "/audits"],
+                    ["Benchmarks", "/benchmarks"],
+                ],
+            ],
+            [
+                "Work",
+                "/workflows",
+                [
+                    ["Workflows", "/workflows"],
+                    ["Work in progress", "/issues"],
+                ],
+            ],
+            [
+                "Health",
+                "/coverage",
+                [
+                    ["Coverage", "/coverage"],
+                    ["Dependencies", "/deps"],
+                    ["Tooling usage", "/telemetry"],
+                ],
+            ],
         ]);
     });
 
-    it("unfolds an entry into the rows its menu route answers, and leaves an empty one a plain link", async () => {
+    it("unfolds a page into the rows its menu route answers, and leaves an empty one a plain link", async () => {
         serve({ decisions: [DECISION] });
         const wrapper = await open();
 
-        expect(item(wrapper, "Decisions").children).toEqual([DECISION]);
-        expect(item(wrapper, "Audits").children).toBeUndefined();
+        expect(page(wrapper, "Decisions").children).toEqual([DECISION]);
+        expect(page(wrapper, "Audits").children).toBeUndefined();
     });
 
-    it("opens a submenu when its entry is clicked, not only from the arrow beside it", async () => {
-        serve({ decisions: [DECISION] });
-        const wrapper = await open();
+    it("unfolds the app holding the current page, including a page under an entry's route", async () => {
+        serve();
+        const wrapper = await open("/projects/scripts");
 
-        await click(wrapper, "/decisions");
-
-        expect(openSubmenus(wrapper)).toEqual(["decisions"]);
-    });
-
-    it("folds the open submenu back when another entry is clicked, so only one stays open", async () => {
-        serve({ decisions: [DECISION] });
-        const wrapper = await open();
-
-        await click(wrapper, "/decisions");
-        await click(wrapper, "/coverage");
-
-        expect(openSubmenus(wrapper)).toEqual([]);
+        expect(rail(wrapper).props("modelValue")).toEqual(["catalog"]);
     });
 
     it("badges the open issues and the advisories, and nothing at zero", async () => {
         github.read = ref<IssuesRead>({
-            fetchedAt: "",
+            fetchedAt: "2026-11-18T10:00:00Z",
             error: null,
             issues: [
                 {
@@ -128,12 +156,44 @@ describe("default layout", () => {
                 },
             ],
         });
-        serve({ advisories: 3 });
+        serve({ badges: { advisories: 3 } });
         const wrapper = await open();
 
-        expect(item(wrapper, "Work in progress").badge).toBe("1");
-        expect(item(wrapper, "Dependencies").badge).toBe("3");
-        expect(item(wrapper, "Coverage").badge).toBeUndefined();
+        expect(page(wrapper, "Work in progress").badge).toBe("1");
+        expect(page(wrapper, "Dependencies").badge).toBe("3");
+        expect(page(wrapper, "Coverage").badge).toBeUndefined();
+    });
+
+    it("prints the snapshot's branch, commit and figures in the status bar", async () => {
+        serve({
+            badges: {
+                advisories: 2,
+                worstSeverity: "high",
+                lineCoverage: 81,
+                docPages: 12,
+                brokenLinks: 1,
+                collected: { branch: "master", commit: "abc1234def", at: "2026-11-18T10:00:00Z" },
+            },
+        });
+        const wrapper = await open();
+
+        expect(status(wrapper)).toContain("master");
+        expect(status(wrapper)).toContain("@abc1234");
+        expect(figures(wrapper)).toEqual([
+            "coverage: 81% lines",
+            "advisories: 2 worst high",
+            "issues: — open",
+            "docs: 12 1 broken links",
+        ]);
+    });
+
+    it("says the snapshot was never collected instead of printing zeros", async () => {
+        serve();
+        const wrapper = await open();
+
+        expect(status(wrapper)).toContain("never collected");
+        expect(figures(wrapper)).toContain("coverage: — lines");
+        expect(figures(wrapper)).toContain("advisories: — none");
     });
 
     it("links the repository's source, in a new tab", async () => {

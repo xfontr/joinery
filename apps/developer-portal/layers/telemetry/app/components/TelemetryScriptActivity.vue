@@ -20,7 +20,7 @@
             </div>
         </template>
 
-        <div class="overflow-x-auto">
+        <div data-scroll-x class="overflow-x-auto">
             <table class="data-table">
                 <thead>
                     <tr>

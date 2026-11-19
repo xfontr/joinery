@@ -5,14 +5,19 @@
                 <template #leading>
                     <UDashboardSidebarCollapse />
                 </template>
-                <template #right>
-                    <SnapshotAge :manifest="snapshot?.manifest ?? null" artifact="usage" />
-                </template>
             </UDashboardNavbar>
+            <UDashboardToolbar>
+                <AppTabs />
+            </UDashboardToolbar>
         </template>
 
         <template #body>
             <div class="flex flex-col gap-4">
+                <SnapshotAge
+                    :manifest="snapshot?.manifest ?? null"
+                    artifact="usage"
+                    source="data/telemetry"
+                />
                 <UAlert
                     v-if="!hasRuns"
                     color="neutral"

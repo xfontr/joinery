@@ -9,7 +9,7 @@ import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetric
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 import type { RetiredProject } from "#layers/snapshot/shared/types/RetiredProject.ts";
 import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
-import Page from "./projects.vue";
+import Page from "./index.vue";
 
 // An in-memory docs collection, answering the README query the page sends
 const docs = vi.hoisted(() => ({
@@ -23,7 +23,12 @@ const github = vi.hoisted(() => ({
 }));
 
 mockNuxtImport("queryCollection", () => () => {
-    const query = { select: () => query, all: () => Promise.resolve(docs.readmes) };
+    const query = {
+        select: () => query,
+        path: () => query,
+        all: () => Promise.resolve(docs.readmes),
+        first: () => Promise.resolve(null),
+    };
     return query;
 });
 
@@ -84,32 +89,16 @@ const serve = (
     }));
 };
 
-type Wrapper = VueWrapper;
-
-const cards = (wrapper: Wrapper) =>
-    wrapper.findAll("h2").map((h2) => ({
-        title: h2.text(),
-        element: h2.element.closest("[data-slot=root]") as HTMLElement,
+const rows = (wrapper: VueWrapper) =>
+    wrapper.findAll("li > *").map((row) => ({
+        to: row.attributes("href"),
+        text: row.text(),
+        figures: Object.fromEntries(
+            row
+                .findAll("dl > div")
+                .map((figure) => [figure.find("dt").text(), figure.find("dd").text()]),
+        ),
     }));
-
-const card = (wrapper: Wrapper, title: string) =>
-    cards(wrapper).find((found) => found.title === title)!.element;
-
-const squash = (text: string | null | undefined) => (text ?? "").replace(/\s+/g, " ").trim();
-
-/** The value printed under a metric's label, such as "Commits". */
-const metricIn = (element: HTMLElement, label: string) =>
-    squash(
-        [...element.querySelectorAll("p")].find((p) => squash(p.textContent) === label)
-            ?.nextElementSibling?.textContent,
-    );
-
-/** The relationship line that starts with `prefix`, such as "Uses:". */
-const lineIn = (element: HTMLElement, prefix: string) =>
-    [...element.querySelectorAll("div")]
-        .filter((div) => div.querySelector("div") === null)
-        .map((div) => squash(div.textContent))
-        .find((text) => text.startsWith(prefix));
 
 beforeEach(() => {
     docs.readmes = [
@@ -119,90 +108,31 @@ beforeEach(() => {
     github.error = null;
 });
 
-describe("projects page", () => {
-    it("orders applications, then tooling, then packages, each titled by its README", async () => {
+describe("catalog page", () => {
+    it("orders applications, then tooling, then packages, each linking to its own page", async () => {
         serve([UI, SCRIPTS, SITE]);
         const wrapper = await mountSuspended(Page);
 
-        expect(cards(wrapper).map(({ title }) => title)).toEqual([
-            "@monorepo/huella-legal",
-            "@monorepo/scripts",
-            "UI kit",
+        expect(rows(wrapper).map((row) => row.to)).toEqual([
+            "/projects/huella-legal",
+            "/projects/scripts",
+            "/projects/UI",
         ]);
-        expect(
-            card(wrapper, "UI kit").querySelector("a[href='/wiki/packages/ui/readme']"),
-        ).not.toBeNull();
+        expect(rows(wrapper)[2]?.text).toContain("Shared interface pieces.");
     });
 
     it("pairs each metric with its unit and shows a dash where nothing was measured", async () => {
         serve([UI, SCRIPTS], {
-            metrics: [
-                metric("@monorepo/ui", {
-                    commits: 4,
-                    commitsLastTwoWeeks: 1,
-                    specs: 2,
-                    coverageLinesPct: 90,
-                }),
-            ],
+            metrics: [metric("@monorepo/ui", { commits: 4, specs: 2, coverageLinesPct: 90 })],
         });
         const wrapper = await mountSuspended(Page);
-        const measured = card(wrapper, "UI kit");
-        const unmeasured = card(wrapper, "@monorepo/scripts");
+        const [scripts, ui] = rows(wrapper);
 
-        expect(metricIn(measured, "Commits")).toBe("4 (1 last two weeks)");
-        expect(metricIn(measured, "Tests")).toBe("2 (90% coverage)");
-        expect(metricIn(unmeasured, "Commits")).toBe("—");
-        expect(metricIn(unmeasured, "Tests")).toBe("—");
+        expect(ui?.figures).toEqual({ coverage: "90%", specs: "2", commits: "4" });
+        expect(scripts?.figures).toEqual({ coverage: "—", specs: "—", commits: "—" });
     });
 
-    it("lists what a project uses and what uses it, and says so when it is isolated", async () => {
-        serve([UI, SCRIPTS]);
-        const wrapper = await mountSuspended(Page);
-
-        const ui = card(wrapper, "UI kit");
-
-        expect(lineIn(ui, "Uses:")).toBe("Uses: @monorepo/configs");
-        expect(lineIn(ui, "Used by:")).toBe("Used by: @monorepo/developer-portal");
-        expect(card(wrapper, "@monorepo/scripts").textContent).toContain(
-            "No project relationships recorded.",
-        );
-    });
-
-    it("links a deployed app to its live site, API docs, Storybook and deploys", async () => {
-        github.deployments = [
-            {
-                environment: "huella-legal",
-                state: "success",
-                url: "https://site.example",
-                updatedAt: "2026-09-20",
-            },
-        ];
-        serve([SITE, SCRIPTS]);
-        const wrapper = await mountSuspended(Page);
-        const site = card(wrapper, "@monorepo/huella-legal");
-        const hrefs = [...site.querySelectorAll("a")].map((a) => a.getAttribute("href"));
-
-        expect(hrefs).toEqual(
-            expect.arrayContaining([
-                "https://site.example",
-                "https://site.example/_scalar",
-                expect.stringMatching(/\/huella-legal-storybook\/$/),
-                expect.stringMatching(/\/actions\/workflows\/netlify-deployment\.yml$/),
-            ]),
-        );
-        expect(card(wrapper, "@monorepo/scripts").querySelector("a[href$='/_scalar']")).toBeNull();
-    });
-
-    it("drops the live links and says why when GitHub cannot be read", async () => {
-        github.error = "GitHub unavailable";
-        serve([SITE]);
-        const wrapper = await mountSuspended(Page);
-
-        expect(wrapper.text()).toContain("Live deployment status is unavailable");
-        expect(wrapper.find("a[href$='/_scalar']").exists()).toBe(false);
-    });
-
-    it("lists a deleted project after every live one, linking its commit instead of dead docs", async () => {
+    it("lists a deleted project after every live one, linking its commit", async () => {
         serve([node("@monorepo/zeta", "packages/zeta")], {
             retired: [
                 {
@@ -219,22 +149,36 @@ describe("projects page", () => {
         useRuntimeConfig().public.repoUrl = "https://github.com/acme/repo";
         const wrapper = await mountSuspended(Page);
         useRuntimeConfig().public.repoUrl = "";
-        const retired = card(wrapper, "@monorepo/old");
+        const [, retired] = rows(wrapper);
 
-        expect(cards(wrapper).map(({ title }) => title)).toEqual([
-            "@monorepo/zeta",
-            "@monorepo/old",
-        ]);
-        expect(retired.textContent).toContain("Deleted 2026-11-08 · chore: delete the old package");
-        expect(retired.querySelector("[aria-label='Commits']")?.textContent?.trim()).toBe("12");
-        expect(retired.querySelector("a[href$='/commit/abc123']")).not.toBeNull();
-        expect(retired.querySelector("a[href='/wiki/packages/old/readme']")).toBeNull();
+        expect(retired?.to).toBe("https://github.com/acme/repo/commit/abc123");
+        expect(retired?.text).toContain("Deleted 2026-11-08 · chore: delete the old package");
+        expect(retired?.figures.commits).toBe("12");
     });
 
-    it("renders no cards when nothing was collected", async () => {
+    it("leaves a deleted project unlinked when no repository is configured, rather than linking a dead path", async () => {
+        serve([], {
+            retired: [
+                {
+                    name: "@monorepo/old",
+                    root: "packages/old",
+                    tags: [],
+                    deletedAt: "2026-11-08",
+                    commit: "abc123",
+                    subject: "chore: delete the old package",
+                    commits: 12,
+                },
+            ],
+        });
+        const wrapper = await mountSuspended(Page);
+
+        expect(rows(wrapper)[0]?.to).toBeUndefined();
+    });
+
+    it("lists no rows when nothing was collected", async () => {
         serve([]);
         const wrapper = await mountSuspended(Page);
 
-        expect(cards(wrapper)).toHaveLength(0);
+        expect(rows(wrapper)).toHaveLength(0);
     });
 });

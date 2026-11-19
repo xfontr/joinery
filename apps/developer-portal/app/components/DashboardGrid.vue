@@ -74,7 +74,7 @@
 
         <div
             v-if="editing"
-            class="sticky bottom-4 z-10 flex flex-wrap items-center justify-center gap-2 self-center rounded-full border border-default bg-default/90 px-3 py-2 shadow-lg backdrop-blur-sm"
+            class="sticky bottom-4 z-10 flex flex-wrap items-center justify-center gap-2 self-center rounded-sm border border-default bg-default/90 px-3 py-2 shadow-lg backdrop-blur-sm"
         >
             <span class="hidden px-1 text-xs text-muted sm:inline">
                 Drag, resize or remove widgets

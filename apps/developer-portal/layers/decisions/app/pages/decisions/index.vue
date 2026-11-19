@@ -146,7 +146,7 @@
                                     :tone="decisionStatusTone(report.status)"
                                 />
 
-                                <span class="w-24 shrink-0 text-right text-2xs text-dimmed">{{
+                                <span class="w-24 shrink-0 text-right text-xs text-dimmed">{{
                                     relativeTime(report.updatedAt)
                                 }}</span>
                             </NuxtLink>

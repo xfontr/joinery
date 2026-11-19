@@ -101,7 +101,7 @@
                             />
                             <span class="truncate">{{ node.capability.title }}</span>
                         </span>
-                        <span class="truncate text-2xs font-medium text-(--state)">
+                        <span class="truncate text-xs font-medium text-(--state)">
                             {{ capabilityStateLabel(node.capability.state) }}
                             <span v-if="relation[node.id]" class="text-muted">
                                 · {{ relation[node.id] }}</span

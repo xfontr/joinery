@@ -1,12 +1,15 @@
 <template>
     <UDashboardPanel id="overview">
         <template #header>
-            <UDashboardNavbar title="Overview">
+            <UDashboardNavbar title="Home">
                 <template #leading>
                     <UDashboardSidebarCollapse />
                 </template>
                 <template #right>
-                    <SnapshotAge class="mr-3" :manifest="docsSnapshot?.manifest ?? null" />
+                    <SnapshotAge
+                        class="mr-3 hidden sm:flex"
+                        :manifest="docsSnapshot?.manifest ?? null"
+                    />
                     <UButton
                         :label="editing ? 'Done' : 'Customize'"
                         :icon="editing ? 'i-lucide-check' : 'i-lucide-layout-grid'"
@@ -23,7 +26,7 @@
                 v-model:editing="editing"
                 :widgets="WIDGETS"
                 :empty="emptyWidgets"
-                storage-key="overview-layout"
+                storage-key="home-layout"
             >
                 <template #welcome>
                     <section class="flex flex-col gap-3">
@@ -140,7 +143,7 @@
                     </section>
                 </template>
 
-                <template #workflows>
+                <template #workflowCards>
                     <section class="flex flex-col gap-3">
                         <div class="flex items-center justify-between gap-3">
                             <div>
@@ -514,6 +517,149 @@
                         </template>
                     </UCard>
                 </template>
+                <template #queue>
+                    <WidgetPanel
+                        v-model:filter="kind"
+                        title="Work queue"
+                        meta="What's open across issues, decisions, audits, releases and docs"
+                        :count="queueRows.length"
+                        :filters="queueFilters"
+                        :all="queueAll"
+                    >
+                        <p
+                            v-if="queueRows.length === 0"
+                            class="px-4 py-8 text-center text-sm text-muted"
+                        >
+                            {{ queueEmpty }}
+                        </p>
+                        <ul v-else class="divide-y divide-default">
+                            <li v-for="row in queueShown" :key="row.key">
+                                <component
+                                    :is="row.to ? NuxtLink : 'div'"
+                                    :to="row.to ?? undefined"
+                                    :target="row.external ? '_blank' : undefined"
+                                    class="flex items-baseline gap-3 px-4 py-2"
+                                    :class="row.to && 'hover:bg-elevated'"
+                                >
+                                    <span
+                                        class="w-18 shrink-0 truncate font-mono text-xs text-muted"
+                                    >
+                                        {{ row.id }}
+                                    </span>
+                                    <span class="min-w-0 flex-1">
+                                        <span class="block truncate text-sm text-highlighted">
+                                            {{ row.title }}
+                                        </span>
+                                        <span
+                                            class="block truncate font-mono text-xs text-muted sm:hidden"
+                                        >
+                                            {{ row.meta }}
+                                        </span>
+                                    </span>
+                                    <span
+                                        class="hidden max-w-60 shrink-0 truncate font-mono text-xs text-muted sm:block"
+                                    >
+                                        {{ row.meta }}
+                                    </span>
+                                </component>
+                            </li>
+                        </ul>
+                    </WidgetPanel>
+                </template>
+
+                <template #health>
+                    <WidgetPanel
+                        title="Health"
+                        :meta="`Snapshot collected ${collectedAge}`"
+                        to="/coverage"
+                    >
+                        <dl class="divide-y divide-default">
+                            <div v-for="line in healthLines" :key="line.label" class="px-4 py-3">
+                                <NuxtLink :to="line.to" class="group flex flex-col gap-2">
+                                    <div class="flex items-baseline justify-between gap-3">
+                                        <dt class="text-sm text-toned group-hover:text-highlighted">
+                                            {{ line.label }}
+                                        </dt>
+                                        <dd
+                                            data-figure
+                                            class="text-xl leading-none"
+                                            :class="line.class || 'text-highlighted'"
+                                        >
+                                            {{ line.value }}
+                                        </dd>
+                                    </div>
+                                    <SplitBar :parts="line.parts" :legend="line.legend" />
+                                    <p v-if="line.note" class="text-xs text-muted">
+                                        {{ line.note }}
+                                    </p>
+                                </NuxtLink>
+                            </div>
+                        </dl>
+                    </WidgetPanel>
+                </template>
+
+                <template #workflows>
+                    <WidgetPanel
+                        title="Workflows"
+                        meta="Projects working through their map"
+                        :count="workflowRows.length"
+                        to="/workflows"
+                        :all="{ label: 'New workflow', to: '/workflows/new' }"
+                    >
+                        <p
+                            v-if="workflowRows.length === 0"
+                            class="px-4 py-8 text-center text-sm text-muted"
+                        >
+                            No workflow is running.
+                        </p>
+                        <ul v-else class="divide-y divide-default">
+                            <li v-for="card in workflowRows" :key="card.id">
+                                <NuxtLink
+                                    :to="`/workflows/${card.id}`"
+                                    class="flex flex-col gap-2 px-4 py-3 hover:bg-elevated"
+                                >
+                                    <div class="flex items-baseline justify-between gap-3">
+                                        <span class="min-w-0">
+                                            <span
+                                                class="block truncate text-sm font-medium text-highlighted"
+                                            >
+                                                {{ card.title }}
+                                            </span>
+                                            <span class="block truncate text-xs text-muted">
+                                                {{ card.templateTitle }}
+                                            </span>
+                                        </span>
+                                        <span
+                                            data-figure
+                                            class="shrink-0 text-xl leading-none text-highlighted"
+                                        >
+                                            {{ card.percent
+                                            }}<span class="text-sm text-muted">%</span>
+                                        </span>
+                                    </div>
+                                    <SplitBar :parts="card.parts" />
+                                </NuxtLink>
+                            </li>
+                        </ul>
+                    </WidgetPanel>
+                </template>
+
+                <template #activity>
+                    <WidgetPanel
+                        title="Tooling runs per day"
+                        :meta="`Usage log · collected ${usageAge}`"
+                        to="/telemetry"
+                    >
+                        <div class="px-4 pt-5 pb-4">
+                            <DailyChart
+                                :days="usageDays"
+                                :values="runsPerDay"
+                                unit="runs"
+                                end-label="last day"
+                            />
+                        </div>
+                    </WidgetPanel>
+                </template>
             </DashboardGrid>
         </template>
     </UDashboardPanel>
@@ -527,28 +673,64 @@ import { activeProjects } from "#layers/workflows/shared/workflows.ts";
 import { countByStatus, sortDecisions } from "#layers/decisions/shared/decisionReports.ts";
 import { countAll, sortAudits } from "#layers/audits/shared/auditReports.ts";
 import { WINDOW_DAYS } from "#layers/telemetry/shared/usage.ts";
-import { isFailing, scriptRows, sumDays } from "#layers/telemetry/shared/usageView.ts";
+import { NuxtLink } from "#components";
+import {
+    dailyTotals,
+    isFailing,
+    scriptRows,
+    shownDays,
+    sumDays,
+} from "#layers/telemetry/shared/usageView.ts";
+import { projectCard } from "#layers/workflows/shared/projectCard.ts";
+import type { SplitPart } from "~/components/SplitBar.vue";
 
 const WIDGETS: WidgetDefinition[] = [
-    { id: "welcome", label: "Welcome", icon: "i-lucide-house", size: "wide" },
-    { id: "docs", label: "Docs", icon: "i-lucide-book-open", size: "small" },
-    { id: "coverage", label: "Line coverage", icon: "i-lucide-shield-check", size: "small" },
-    { id: "issues", label: "Open issues", icon: "i-lucide-circle-dot", size: "small" },
-    {
-        id: "vulnerabilities",
-        label: "Vulnerabilities",
-        icon: "i-lucide-shield-alert",
-        size: "small",
-    },
-    { id: "work", label: "Work in progress", icon: "i-lucide-list-todo", size: "medium" },
-    { id: "attention", label: "Needs attention", icon: "i-lucide-unlink", size: "medium" },
-    { id: "decisions", label: "Decisions to implement", icon: "i-lucide-scale", size: "medium" },
-    { id: "audits", label: "Open audit findings", icon: "i-lucide-search-check", size: "medium" },
-    { id: "tooling", label: "Tooling usage", icon: "i-lucide-wrench", size: "medium" },
-    { id: "featured", label: "Featured projects", icon: "i-lucide-star", size: "wide" },
-    { id: "workflows", label: "Active workflows", icon: "i-lucide-workflow", size: "wide" },
-    // Its hint repeats the invariant findings Needs attention already lists.
-    { id: "projects", label: "Projects", icon: "i-lucide-boxes", size: "small", hidden: true },
+    { id: "queue", label: "Work queue", icon: "i-lucide-list-todo", size: "wide" },
+    { id: "health", label: "Health", icon: "i-lucide-activity", size: "medium" },
+    { id: "workflows", label: "Workflows", icon: "i-lucide-workflow", size: "medium" },
+    { id: "activity", label: "Tooling runs", icon: "i-lucide-chart-column", size: "wide" },
+    ...(
+        [
+            { id: "docs", label: "Docs", icon: "i-lucide-book-open", size: "small" },
+            {
+                id: "coverage",
+                label: "Line coverage",
+                icon: "i-lucide-shield-check",
+                size: "small",
+            },
+            { id: "issues", label: "Open issues", icon: "i-lucide-circle-dot", size: "small" },
+            {
+                id: "vulnerabilities",
+                label: "Vulnerabilities",
+                icon: "i-lucide-shield-alert",
+                size: "small",
+            },
+            { id: "work", label: "Work in progress", icon: "i-lucide-circle-dot", size: "medium" },
+            { id: "attention", label: "Needs attention", icon: "i-lucide-unlink", size: "medium" },
+            {
+                id: "decisions",
+                label: "Decisions to implement",
+                icon: "i-lucide-scale",
+                size: "medium",
+            },
+            {
+                id: "audits",
+                label: "Open audit findings",
+                icon: "i-lucide-search-check",
+                size: "medium",
+            },
+            { id: "tooling", label: "Tooling usage", icon: "i-lucide-wrench", size: "medium" },
+            {
+                id: "workflowCards",
+                label: "Workflow cards",
+                icon: "i-lucide-layout-grid",
+                size: "wide",
+            },
+            { id: "projects", label: "Projects", icon: "i-lucide-boxes", size: "small" },
+            { id: "welcome", label: "Welcome", icon: "i-lucide-house", size: "wide" },
+            { id: "featured", label: "Featured projects", icon: "i-lucide-star", size: "wide" },
+        ] satisfies WidgetDefinition[]
+    ).map((widget) => ({ ...widget, hidden: true })),
 ];
 
 const editing = ref(false);
@@ -635,10 +817,6 @@ const broken = computed(
 
 const next = computed(() => sortIssues(issues.value.issues).slice(0, 6));
 
-const emptyWidgets = computed(() =>
-    findings.value.length === 0 && broken.value.length === 0 ? ["attention"] : [],
-);
-
 const decisionReports = useDecisionReports();
 const decisionCounts = computed(() => countByStatus(decisionReports.value));
 const pendingDecisions = computed(() =>
@@ -673,4 +851,235 @@ const usageTotals = computed(() => {
         idle: rows.filter((row) => row.runs === 0).length,
     };
 });
+
+const QUEUE_ROWS = 8;
+
+type QueueKind = "issues" | "decisions" | "audits" | "releases" | "attention";
+
+interface QueueRow {
+    key: string;
+    kind: QueueKind;
+    id: string;
+    title: string;
+    meta: string;
+    to: string | null;
+    external?: boolean;
+}
+
+const kind = ref<string>("all");
+
+const queueByKind = computed((): Record<QueueKind, QueueRow[]> => ({
+    issues: sortIssues(issues.value.issues).map((issue) => ({
+        key: `issue-${issue.number}`,
+        kind: "issues",
+        id: `#${issue.number}`,
+        title: issue.title,
+        meta: shortAge(issue.updatedAt),
+        to: issue.url,
+        external: true,
+    })),
+    decisions: sortDecisions(decisionReports.value, "newest")
+        .filter((report) => report.status === "to-implement" && report.decision !== "superseded")
+        .map((report) => ({
+            key: `decision-${report.id}`,
+            kind: "decisions",
+            id: report.number,
+            title: report.title,
+            meta: "to implement",
+            to: `/decisions/${report.id}`,
+        })),
+    audits: openAudits.value.map((report) => ({
+        key: `audit-${report.id}`,
+        kind: "audits",
+        id: report.date.slice(5),
+        title: report.title,
+        meta: `${report.counts.open} of ${report.findings.length} open`,
+        to: `/audits/${report.id}`,
+    })),
+    releases: (metricsSnapshot.value?.metrics?.projects ?? [])
+        .filter((project) => (project.unreleasedCommits ?? 0) > 0)
+        .toSorted((a, b) => (b.unreleasedCommits ?? 0) - (a.unreleasedCommits ?? 0))
+        .map((project) => ({
+            key: `release-${project.root}`,
+            kind: "releases",
+            id: `+${project.unreleasedCommits}`,
+            title: project.name,
+            meta: `${project.currentVersion ?? "unversioned"} · unreleased`,
+            to: `/projects/${project.root.split("/").at(-1)}`,
+        })),
+    attention: [
+        ...findings.value.map((finding) => ({
+            key: `finding-${finding.id}`,
+            kind: "attention" as const,
+            id: "invariant",
+            title: finding.title,
+            meta: finding.detail,
+            to: null,
+        })),
+        ...broken.value.map((page) => ({
+            key: `docs-${page.path}`,
+            kind: "attention" as const,
+            id: "link",
+            title: page.path,
+            meta: `${page.brokenLinks.length} broken`,
+            to: `/wiki${toCollectionPath(page.path)}`,
+        })),
+    ],
+}));
+
+const queueAllRows = computed(() => Object.values(queueByKind.value).flat());
+
+const queueRows = computed(() =>
+    kind.value === "all" ? queueAllRows.value : (queueByKind.value[kind.value as QueueKind] ?? []),
+);
+
+const queueShown = computed(() => queueRows.value.slice(0, QUEUE_ROWS));
+
+const QUEUE_PAGES: Record<string, string | null> = {
+    all: null,
+    issues: "/issues",
+    decisions: "/decisions",
+    audits: "/audits",
+    releases: "/projects",
+    attention: null,
+};
+
+const queueFilters = computed(() => [
+    { value: "all", label: "All", badge: queueAllRows.value.length },
+    {
+        value: "issues",
+        label: "Issues",
+        badge: issues.value.fetchedAt ? queueByKind.value.issues.length : undefined,
+    },
+    { value: "decisions", label: "Decisions", badge: queueByKind.value.decisions.length },
+    { value: "audits", label: "Audits", badge: queueByKind.value.audits.length },
+    { value: "releases", label: "Releases", badge: queueByKind.value.releases.length },
+    { value: "attention", label: "Attention", badge: queueByKind.value.attention.length },
+]);
+
+const queueAll = computed(() => {
+    const to = QUEUE_PAGES[kind.value] ?? null;
+
+    return queueRows.value.length > QUEUE_ROWS && to
+        ? { label: `All ${queueRows.value.length}`, to }
+        : null;
+});
+
+const queueEmpty = computed(() =>
+    kind.value === "issues" && issues.value.error
+        ? "GitHub could not be read from this browser."
+        : "Nothing open here.",
+);
+
+const collectedAge = computed(() => relativeTime(metricsSnapshot.value?.metrics?.generatedAt));
+const usageAge = computed(() => relativeTime(usageSnapshot.value?.usage?.generatedAt));
+
+const usageScripts = computed(() =>
+    usageSnapshot.value?.usage ? scriptRows(usageSnapshot.value.usage) : [],
+);
+const usageDays = computed(() =>
+    usageSnapshot.value?.usage ? shownDays(usageSnapshot.value.usage) : [],
+);
+const runsPerDay = computed(() => dailyTotals(usageScripts.value).map((day) => day.runs));
+
+const healthLines = computed(() => {
+    const lines = coverage.value;
+    const counts = deps.value?.vulnerabilities ?? null;
+    const tooling = sumDays(usageScripts.value);
+
+    return [
+        {
+            label: "Line coverage",
+            value: lines === null ? "—" : `${lines}%`,
+            class: toneClass(coverageTone(lines)),
+            to: "/coverage",
+            legend: false,
+            note: "",
+            parts: [
+                { label: "covered", value: lines ?? 0, tone: "ink" },
+                { label: "uncovered", value: 100 - (lines ?? 0), tone: "soft" },
+            ] satisfies SplitPart[],
+        },
+        {
+            label: "Advisories",
+            value: counts ? String(advisories.value) : "—",
+            class: toneClass(vulnerabilityTone.value),
+            to: "/deps",
+            legend: true,
+            note: "",
+            parts: [
+                { label: "critical", value: counts?.critical ?? 0, tone: "bad" },
+                { label: "high", value: counts?.high ?? 0, tone: "bad" },
+                { label: "moderate", value: counts?.moderate ?? 0, tone: "warn" },
+                { label: "low", value: counts?.low ?? 0, tone: "soft" },
+            ] satisfies SplitPart[],
+        },
+        {
+            label: "Tooling runs failed",
+            value: tooling.runs ? `${percentOf(tooling.failures, tooling.runs)}%` : "—",
+            class: toneClass(tooling.runs && isFailing(tooling) ? "bad" : "neutral"),
+            to: "/telemetry",
+            legend: true,
+            note: "",
+            parts: [
+                { label: "passed", value: tooling.runs - tooling.failures, tone: "ink" },
+                { label: "failed", value: tooling.failures, tone: "bad" },
+            ] satisfies SplitPart[],
+        },
+        {
+            label: "Decisions implemented",
+            value: String(decisionCounts.value.implemented),
+            class: "",
+            to: "/decisions",
+            legend: true,
+            note: "",
+            parts: [
+                { label: "implemented", value: decisionCounts.value.implemented, tone: "ink" },
+                {
+                    label: "to implement",
+                    value: decisionCounts.value["to-implement"],
+                    tone: "soft",
+                },
+            ] satisfies SplitPart[],
+        },
+        {
+            label: "Audit findings open",
+            value: String(auditTotals.value.findings.open),
+            class: "",
+            to: "/audits",
+            legend: false,
+            note: "",
+            parts: [
+                { label: "open", value: auditTotals.value.findings.open, tone: "warn" },
+                { label: "fixed", value: auditTotals.value.findings.fixed ?? 0, tone: "soft" },
+            ] satisfies SplitPart[],
+        },
+        {
+            label: "Doc pages",
+            value: docs.value ? String(docs.value.pages.length) : "—",
+            class: docs.value?.brokenLinkCount ? "tone-bad" : "",
+            to: "/wiki",
+            legend: false,
+            note: docs.value?.brokenLinkCount
+                ? `${docs.value.brokenLinkCount} broken links`
+                : "No broken links",
+            parts: [] satisfies SplitPart[],
+        },
+    ];
+});
+
+const workflowRows = computed(() =>
+    activeWorkflows.value.map((view) => ({
+        ...projectCard(view),
+        parts: [
+            { label: "done", value: view.progress.done, tone: "ink" },
+            { label: "to go", value: view.progress.total - view.progress.done, tone: "soft" },
+        ] satisfies SplitPart[],
+    })),
+);
+
+const emptyWidgets = computed(() => [
+    ...(findings.value.length === 0 && broken.value.length === 0 ? ["attention"] : []),
+    ...(usageDays.value.length === 0 ? ["activity"] : []),
+]);
 </script>

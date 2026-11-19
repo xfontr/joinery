@@ -37,8 +37,12 @@
 
             <div v-else class="flex flex-col gap-6">
                 <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
-                    <div class="flex min-w-0 flex-1 items-center gap-4">
-                        <WorkflowProgressRing :percent="view.progress.percent" :size="72" />
+                    <div class="flex min-w-0 flex-1 flex-col gap-3">
+                        <WorkflowProgressMeter
+                            :percent="view.progress.percent"
+                            size="lg"
+                            class="max-w-md"
+                        />
                         <div class="min-w-0">
                             <p class="text-lg font-semibold">
                                 {{ view.progress.done }} of {{ view.progress.total }} done
@@ -60,7 +64,7 @@
                             <UPopover v-model:open="openStates[group.state]">
                                 <button
                                     type="button"
-                                    class="flex items-center gap-1.5 rounded-full border border-(--state)/40 bg-(--state)/12 px-2.5 py-0.5 tabular-nums transition hover:bg-(--state)/24"
+                                    class="flex items-center gap-1.5 rounded-sm border border-(--state)/40 bg-(--state)/12 px-2.5 py-0.5 tabular-nums transition hover:bg-(--state)/24"
                                     :style="{ '--state': group.color }"
                                 >
                                     <span class="font-semibold text-(--state)">{{
@@ -199,7 +203,7 @@
                         />
                         <div v-if="range" class="flex min-w-48 flex-1 flex-col gap-1">
                             <span
-                                class="flex items-baseline justify-between gap-x-4 text-2xs text-dimmed"
+                                class="flex items-baseline justify-between gap-x-4 text-xs text-dimmed"
                             >
                                 <span class="font-semibold text-muted">Replay</span>
                                 <output class="tabular-nums">{{ dayLabel }}</output>

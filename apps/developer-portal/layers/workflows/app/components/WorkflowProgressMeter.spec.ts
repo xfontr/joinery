@@ -1,22 +1,22 @@
-import { mount } from "@vue/test-utils";
+import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
-import WorkflowProgressRing from "./WorkflowProgressRing.vue";
+import WorkflowProgressMeter from "./WorkflowProgressMeter.vue";
 
-describe("WorkflowProgressRing", () => {
+describe("WorkflowProgressMeter", () => {
     it.each([
         [100, "tone-good"],
         [60, "tone-warn"],
         [10, "text-dimmed"],
-    ])("colours %i%% as %s, beside the number rather than instead of it", (percent, tone) => {
-        const wrapper = mount(WorkflowProgressRing, { props: { percent } });
+    ])("colours %i%% as %s, beside the number rather than instead of it", async (percent, tone) => {
+        const wrapper = await mountSuspended(WorkflowProgressMeter, { props: { percent } });
 
         expect(wrapper.text()).toBe(`${percent}%`);
-        expect(wrapper.findAll("circle")[1]?.classes()).toContain(tone);
+        expect(wrapper.findComponent({ name: "UProgress" }).classes()).toContain(tone);
     });
 
-    it("never overdraws the ring past a full circle", () => {
-        const wrapper = mount(WorkflowProgressRing, { props: { percent: 140 } });
+    it("never fills the bar past full", async () => {
+        const wrapper = await mountSuspended(WorkflowProgressMeter, { props: { percent: 140 } });
 
-        expect(Number(wrapper.findAll("circle")[1]?.attributes("stroke-dashoffset"))).toBe(0);
+        expect(wrapper.findComponent({ name: "UProgress" }).props("modelValue")).toBe(100);
     });
 });

@@ -12,320 +12,122 @@
         </template>
 
         <template #body>
-            <div class="flex flex-col gap-4">
-                <UAlert
-                    v-if="live.error"
-                    color="warning"
-                    variant="subtle"
-                    icon="i-lucide-cloud-off"
-                    title="Live deployment status is unavailable"
-                    :description="live.error"
-                />
+            <div class="flex flex-col gap-6">
+                <p v-if="groups.length === 0" class="p-8 text-center text-sm text-muted">
+                    No projects collected yet.
+                </p>
 
-                <div class="grid gap-4 xl:grid-cols-2">
-                    <UCard
-                        v-for="project in orderedProjects"
-                        :key="project.name"
-                        :ui="{ root: 'h-full flex flex-col', body: 'flex-1 flex flex-col gap-4' }"
+                <UCard v-for="group in groups" :key="group.label" variant="flush">
+                    <template #header>
+                        <div class="flex items-baseline justify-between gap-3">
+                            <h2 class="font-semibold text-highlighted">{{ group.label }}</h2>
+                            <span data-figure class="text-xl text-highlighted">
+                                {{ group.rows.length }}
+                            </span>
+                        </div>
+                    </template>
+
+                    <div
+                        class="hidden gap-4 border-b border-default px-4 py-2 text-xs text-muted sm:flex"
+                        aria-hidden="true"
                     >
-                        <template #header>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <h2 class="font-semibold">
-                                    {{ readmeFor(project)?.title ?? project.name }}
-                                </h2>
-                                <UBadge
-                                    :label="categoryFor(project)"
-                                    color="primary"
-                                    variant="subtle"
-                                    size="sm"
-                                />
-                            </div>
-                        </template>
+                        <span class="flex-1">Project</span>
+                        <span v-for="column in COLUMNS" :key="column" class="w-24 text-right">
+                            {{ column }}
+                        </span>
+                    </div>
 
-                        <div class="flex flex-col gap-3">
-                            <p class="line-clamp-3 text-sm text-muted">
-                                {{
-                                    readmeFor(project)?.description ??
-                                    "No project description is available yet."
-                                }}
-                            </p>
-
-                            <div class="flex flex-col gap-1 text-sm">
-                                <div v-if="project.dependsOn.length > 0">
-                                    <span class="text-dimmed">Uses:</span>
-                                    {{ project.dependsOn.join(", ") }}
-                                </div>
-                                <div v-if="project.dependedOnBy.length > 0">
-                                    <span class="text-dimmed">Used by:</span>
-                                    {{ project.dependedOnBy.join(", ") }}
-                                </div>
-                                <p
-                                    v-if="
-                                        project.dependsOn.length === 0 &&
-                                        project.dependedOnBy.length === 0
-                                    "
-                                    class="text-dimmed"
-                                >
-                                    No project relationships recorded.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="mt-auto flex flex-col gap-3">
-                            <div class="flex flex-wrap gap-2">
-                                <UButton
-                                    v-if="websiteFor(project)"
-                                    :to="websiteFor(project)"
-                                    label="Open site"
-                                    icon="i-lucide-external-link"
-                                    size="xs"
-                                    target="_blank"
-                                    external
-                                />
-                                <UButton
-                                    :to="`/wiki/${project.root.toLowerCase()}/readme`"
-                                    label="Docs"
-                                    icon="i-lucide-book-open"
-                                    size="xs"
-                                    variant="soft"
-                                />
-                                <UButton
-                                    v-if="apiDocsFor(project)"
-                                    :to="apiDocsFor(project)"
-                                    label="API"
-                                    icon="i-lucide-braces"
-                                    size="xs"
-                                    target="_blank"
-                                    external
-                                />
-                                <UButton
-                                    v-if="storybookFor(project)"
-                                    :to="storybookFor(project)"
-                                    label="Storybook"
-                                    icon="i-lucide-panels-top-left"
-                                    size="xs"
-                                    target="_blank"
-                                    external
-                                />
-                                <UButton
-                                    v-if="deploysFor(project)"
-                                    :to="deploysFor(project)"
-                                    label="Deploys"
-                                    size="xs"
-                                    variant="soft"
-                                    target="_blank"
-                                    external
-                                />
-                            </div>
-
-                            <div class="border-t border-default pt-3 text-sm text-muted">
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <p class="text-xs text-dimmed">Commits</p>
-                                        <p class="font-semibold">
-                                            {{ metricFor(project)?.commits ?? "—" }}
-                                            <span
-                                                v-if="
-                                                    typeof metricFor(project)
-                                                        ?.commitsLastTwoWeeks === 'number'
-                                                "
-                                                class="font-normal text-muted"
-                                            >
-                                                ({{ metricFor(project)?.commitsLastTwoWeeks }} last
-                                                two weeks)</span
-                                            >
-                                        </p>
+                    <ul class="divide-y divide-default">
+                        <li v-for="row in group.rows" :key="row.name">
+                            <component
+                                :is="row.to ? NuxtLink : 'div'"
+                                :to="row.to ?? undefined"
+                                class="flex flex-col gap-1 px-4 py-3 hover:bg-elevated sm:flex-row sm:items-baseline sm:gap-4"
+                                :class="row.retired && 'text-muted'"
+                            >
+                                <span class="min-w-0 flex-1">
+                                    <span class="block font-mono text-sm text-highlighted">
+                                        {{ row.name }}
+                                    </span>
+                                    <span class="block truncate text-sm text-muted">
+                                        {{ row.description }}
+                                    </span>
+                                </span>
+                                <dl class="flex gap-4 font-mono text-xs sm:text-sm">
+                                    <div
+                                        v-for="figure in row.figures"
+                                        :key="figure.label"
+                                        class="flex gap-1.5 sm:w-24 sm:justify-end"
+                                    >
+                                        <dt class="text-muted sm:sr-only">{{ figure.label }}</dt>
+                                        <dd class="tabular-nums" :class="figure.class">
+                                            {{ figure.value }}
+                                        </dd>
                                     </div>
-                                    <div>
-                                        <p class="text-xs text-dimmed">Tests</p>
-                                        <p class="font-semibold">
-                                            {{ metricFor(project)?.specs ?? "—" }}
-                                            <span
-                                                v-if="
-                                                    typeof metricFor(project)?.coverageLinesPct ===
-                                                    'number'
-                                                "
-                                                class="font-normal text-muted"
-                                            >
-                                                ({{ metricFor(project)?.coverageLinesPct }}%
-                                                coverage)</span
-                                            >
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </UCard>
-
-                    <UCard
-                        v-for="project in retired"
-                        :key="project.name"
-                        :ui="{
-                            root: 'h-full flex flex-col opacity-70',
-                            body: 'flex-1 flex flex-col gap-4',
-                        }"
-                    >
-                        <template #header>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <h2 class="font-semibold text-muted">{{ project.name }}</h2>
-                                <UBadge
-                                    label="Retired"
-                                    color="neutral"
-                                    variant="subtle"
-                                    size="sm"
-                                />
-                            </div>
-                        </template>
-
-                        <p class="text-sm text-muted">
-                            Deleted {{ project.deletedAt }} · {{ project.subject }}
-                        </p>
-
-                        <div class="mt-auto flex flex-col gap-3">
-                            <div v-if="repoUrl" class="flex flex-wrap gap-2">
-                                <UButton
-                                    :to="`${repoUrl}/commit/${project.commit}`"
-                                    label="Deleting commit"
-                                    icon="i-lucide-git-commit-horizontal"
-                                    size="xs"
-                                    variant="soft"
-                                    target="_blank"
-                                    external
-                                />
-                            </div>
-
-                            <div class="border-t border-default pt-3 text-sm text-muted">
-                                <p class="text-xs text-dimmed">Commits</p>
-                                <p class="font-semibold" aria-label="Commits">
-                                    {{ project.commits }}
-                                </p>
-                            </div>
-                        </div>
-                    </UCard>
-                </div>
+                                </dl>
+                            </component>
+                        </li>
+                    </ul>
+                </UCard>
             </div>
         </template>
     </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { deploymentUrlFor } from "#layers/github/shared/deployments.ts";
-import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
-import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
+import { NuxtLink } from "#components";
 
-const { data: snapshot } = await useSnapshot("projects");
-const { data: metricsSnapshot } = await useSnapshot("metrics");
-const { data: live } = useDeployments();
+const COLUMNS = ["Coverage", "Specs", "Commits"] as const;
+
+const { snapshot, projects, retired, metricFor, readmeFor } = await useCatalog();
 const {
     public: { repoUrl },
 } = useRuntimeConfig();
-const { data: readmes } = await useAsyncData("project-readmes", () =>
-    queryCollection("docs").select("path", "title", "description").all(),
-);
 
-const projects = computed(() => snapshot.value?.projects?.projects ?? []);
-const retired = computed(() => snapshot.value?.projects?.retired ?? []);
-const metrics = computed(
-    () =>
-        new Map(
-            metricsSnapshot.value?.metrics?.projects.map((project) => [project.name, project]) ??
-                [],
-        ),
-);
-const deployments = computed(() => live.value.deployments);
-const readmeByPath = computed(
-    () =>
-        new Map(
-            (readmes.value ?? [])
-                .filter((page) => page.path !== "/readme" && page.path.endsWith("/readme"))
-                .map((page) => [page.path, page]),
-        ),
-);
+const dash = (value: number | null | undefined, unit = ""): string =>
+    typeof value === "number" ? `${value}${unit}` : "—";
 
-const projectLinks: Record<
-    string,
-    {
-        storybook?: string;
-        deploys?: string;
-        environment?: string;
-        website?: () => string | undefined;
-        apiDocs?: string;
-    }
-> = {
-    "@monorepo/huella-legal": {
-        storybook: embedUrl("/huella-legal-storybook/"),
-        deploys: `${repoUrl}/actions/workflows/netlify-deployment.yml`,
-        environment: "huella-legal",
-        apiDocs: "/_scalar",
-    },
-    "@monorepo/developer-portal": {
-        deploys: `${repoUrl}/actions/workflows/developer-portal-deploy.yml`,
-        website: () => {
-            try {
-                const { hostname, pathname } = new URL(repoUrl);
-                const [owner, repo] = pathname.split("/").filter(Boolean);
+const groups = computed(() => {
+    const live = projects.value.map((project) => {
+        const metric = metricFor(project);
 
-                return owner && repo && hostname === "github.com"
-                    ? `https://${owner}.github.io/${repo}/`
-                    : undefined;
-            } catch {
-                return undefined;
-            }
-        },
-    },
-};
+        return {
+            name: project.name,
+            category: categoryOf(project.root),
+            description: readmeFor(project)?.description ?? "No description yet.",
+            to: `/projects/${folderOf(project.root)}` as string | null,
+            retired: false,
+            figures: [
+                {
+                    label: "coverage",
+                    value: dash(metric?.coverageLinesPct, "%"),
+                    class: toneClass(coverageTone(metric?.coverageLinesPct)),
+                },
+                { label: "specs", value: dash(metric?.specs), class: "" },
+                { label: "commits", value: dash(metric?.commits), class: "" },
+            ],
+        };
+    });
 
-const areaOrder: Record<string, number> = { apps: 0, infrastructure: 1, packages: 2 };
+    const deleted = retired.value.map((project) => ({
+        name: project.name,
+        category: "Retired",
+        description: `Deleted ${project.deletedAt} · ${project.subject}`,
+        to: repoUrl ? `${repoUrl}/commit/${project.commit}` : null,
+        retired: true,
+        figures: [
+            { label: "coverage", value: "—", class: "" },
+            { label: "specs", value: "—", class: "" },
+            { label: "commits", value: String(project.commits), class: "" },
+        ],
+    }));
 
-const orderedProjects = computed(() =>
-    projects.value.slice().sort((a, b) => {
-        const [aArea] = a.root.split("/");
-        const [bArea] = b.root.split("/");
-        const aOrder = areaOrder[aArea ?? ""] ?? Number.MAX_SAFE_INTEGER;
-        const bOrder = areaOrder[bArea ?? ""] ?? Number.MAX_SAFE_INTEGER;
+    const rows = [...live, ...deleted];
+    const labels = [...new Set(rows.map((row) => row.category))];
 
-        return aOrder === bOrder ? a.name.localeCompare(b.name) : aOrder - bOrder;
-    }),
-);
-
-const metricFor = (project: ProjectNode): ProjectMetrics | undefined =>
-    metrics.value.get(project.name);
-
-const readmeFor = (project: ProjectNode) =>
-    readmeByPath.value.get(`/${project.root.toLowerCase()}/readme`);
-
-const categoryFor = (project: ProjectNode): string => {
-    const [area] = project.root.split("/");
-
-    return (
-        {
-            apps: "Application",
-            packages: "Shared building block",
-            infrastructure: "Repository tooling",
-        }[area ?? ""] ?? "Repository project"
-    );
-};
-
-const storybookFor = (project: ProjectNode): string | undefined =>
-    projectLinks[project.name]?.storybook;
-
-const deploysFor = (project: ProjectNode): string | undefined =>
-    projectLinks[project.name]?.deploys;
-
-const deploymentsFor = (project: ProjectNode) =>
-    projectLinks[project.name]?.environment ? deployments.value : [];
-
-const websiteFor = (project: ProjectNode): string | undefined => {
-    const links = projectLinks[project.name];
-    if (links?.environment) return deploymentUrlFor(deploymentsFor(project), links.environment);
-
-    return links?.website?.();
-};
-
-const apiDocsFor = (project: ProjectNode): string | undefined => {
-    const path = projectLinks[project.name]?.apiDocs;
-    const website = websiteFor(project);
-
-    return path && website ? new URL(path, website).href : undefined;
-};
+    return labels.map((label) => ({
+        label,
+        rows: rows.filter((row) => row.category === label),
+    }));
+});
 </script>
