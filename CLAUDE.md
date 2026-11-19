@@ -84,6 +84,9 @@ far outside that is worth opening. The `comment-cleanup` skill runs the pass.
   `domain/`/`adapters/` split — and keeps its naming. A folder shape found nowhere in the repo
   needs the user's agreement first. The settled naming rules are in
   [`docs/concepts/conventions.md`](./docs/concepts/conventions.md).
+- **Never screenshot a feature you built to check it.** Nobody looks at those, Claude included;
+  lint, specs and the build are the check. Screenshots the work itself calls for, such as benchmark
+  captures or lab pages for the owner's review, are a different thing and stay.
 - **Never write a decision report unprompted.** Only when the user asks for one; you may ask whether
   they want one, but never write it on your own judgement. A `/ship-issue` run on a `spike` ticket
   is that ask.
