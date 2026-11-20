@@ -1,11 +1,8 @@
 <template>
     <UDashboardPanel id="audits">
         <template #header>
-            <UDashboardNavbar title="Audits">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader title="Audits">
+                <template #actions>
                     <UButton
                         to="/wiki/docs/audits/readme"
                         label="How an audit is written"
@@ -16,7 +13,7 @@
                     />
                     <SnapshotAge :manifest="snapshot?.manifest ?? null" artifact="docs" />
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
 
             <UDashboardToolbar>
                 <template #left>

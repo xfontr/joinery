@@ -1,11 +1,11 @@
 <template>
     <UDashboardPanel id="workflow">
         <template #header>
-            <UDashboardNavbar :title="base?.project.title ?? 'Workflow'">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader
+                :crumbs="[{ label: 'workflows', to: '/workflows' }]"
+                :title="base?.project.title ?? 'Workflow'"
+            >
+                <template #actions>
                     <span class="flex items-center gap-1.5 text-xs text-muted">
                         <UIcon name="i-lucide-refresh-cw" class="size-3.5" />
                         <template v-if="base?.syncedAt">Snapshot updated {{ synced }}</template>
@@ -26,7 +26,7 @@
                         size="sm"
                     />
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
         </template>
 
         <template #body>

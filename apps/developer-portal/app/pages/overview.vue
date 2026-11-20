@@ -1,11 +1,8 @@
 <template>
     <UDashboardPanel id="overview">
         <template #header>
-            <UDashboardNavbar title="Home">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader title="Home">
+                <template #actions>
                     <SnapshotAge
                         class="mr-3 hidden sm:flex"
                         :manifest="docsSnapshot?.manifest ?? null"
@@ -14,11 +11,12 @@
                         :label="editing ? 'Done' : 'Customize'"
                         :icon="editing ? 'i-lucide-check' : 'i-lucide-layout-grid'"
                         size="sm"
-                        :variant="editing ? 'solid' : 'soft'"
+                        :variant="editing ? 'solid' : 'outline'"
+                        color="neutral"
                         @click="editing = !editing"
                     />
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
         </template>
 
         <template #body>
@@ -45,9 +43,9 @@
                         <div class="grid gap-3 @2xl:grid-cols-3">
                             <NuxtLink
                                 to="/projects"
-                                class="rounded-lg border border-default bg-default p-4 transition-colors hover:bg-elevated/50"
+                                class="border border-default bg-default p-4 hover:bg-elevated"
                             >
-                                <UIcon name="i-lucide-boxes" class="size-5 text-primary" />
+                                <UIcon name="i-lucide-boxes" class="size-5 text-muted" />
                                 <h2 class="mt-3 font-semibold">Explore what exists</h2>
                                 <p class="mt-1 text-sm text-muted">
                                     Browse the applications, building blocks, and tooling.
@@ -55,9 +53,9 @@
                             </NuxtLink>
                             <NuxtLink
                                 to="/graph"
-                                class="rounded-lg border border-default bg-default p-4 transition-colors hover:bg-elevated/50"
+                                class="border border-default bg-default p-4 hover:bg-elevated"
                             >
-                                <UIcon name="i-lucide-git-fork" class="size-5 text-primary" />
+                                <UIcon name="i-lucide-git-fork" class="size-5 text-muted" />
                                 <h2 class="mt-3 font-semibold">Understand how it works</h2>
                                 <p class="mt-1 text-sm text-muted">
                                     See how projects fit together and share responsibilities.
@@ -65,9 +63,9 @@
                             </NuxtLink>
                             <NuxtLink
                                 to="/wiki/docs/guides/first-hour"
-                                class="rounded-lg border border-default bg-default p-4 transition-colors hover:bg-elevated/50"
+                                class="border border-default bg-default p-4 hover:bg-elevated"
                             >
-                                <UIcon name="i-lucide-play" class="size-5 text-primary" />
+                                <UIcon name="i-lucide-play" class="size-5 text-muted" />
                                 <h2 class="mt-3 font-semibold">Run or contribute</h2>
                                 <p class="mt-1 text-sm text-muted">
                                     Get a working checkout and find your first useful step.
@@ -119,11 +117,9 @@
                                                 }}
                                             </p>
                                         </div>
-                                        <UBadge
-                                            label="Application"
-                                            color="primary"
-                                            variant="subtle"
-                                        />
+                                        <span class="shrink-0 font-mono text-xs text-muted">
+                                            app
+                                        </span>
                                     </div>
                                 </template>
                                 <div class="flex items-center justify-between gap-3">
@@ -246,67 +242,72 @@
                 </template>
 
                 <template #attention>
-                    <UCard class="h-full" :ui="{ body: 'flex flex-col gap-3' }">
-                        <template #header>
-                            <div>
-                                <h3 class="font-semibold">Needs attention</h3>
-                                <p class="text-xs text-muted">
-                                    Two files that have to agree and no longer do, or a link that
-                                    resolves to nothing. Both are checked on every collect rather
-                                    than only while an agent is editing.
-                                </p>
-                            </div>
-                        </template>
-
+                    <WidgetPanel
+                        title="Needs attention"
+                        meta="Files that have to agree and no longer do, or a link to nothing"
+                        :count="findings.length + broken.length"
+                    >
                         <p
                             v-if="findings.length === 0 && broken.length === 0"
-                            class="p-4 text-center text-sm text-muted"
+                            class="px-4 py-8 text-center text-sm text-muted"
                         >
                             Nothing needs attention.
                         </p>
-
-                        <UAlert
-                            v-for="finding in findings"
-                            :key="finding.id"
-                            color="warning"
-                            variant="subtle"
-                            icon="i-lucide-unlink"
-                            :title="finding.title"
-                            :description="finding.detail"
-                        />
-
-                        <NuxtLink
-                            v-for="page in broken"
-                            :key="page.path"
-                            :to="`/wiki${toCollectionPath(page.path)}`"
-                            class="flex items-center gap-3 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-elevated/50"
-                        >
-                            <UIcon name="i-lucide-link-2-off" class="size-4 shrink-0 text-dimmed" />
-                            <span class="truncate font-mono text-xs">{{ page.path }}</span>
-                            <span class="truncate text-xs text-muted">
-                                {{ page.brokenLinks.map((link) => link.href).join(", ") }}
-                            </span>
-                        </NuxtLink>
-                    </UCard>
+                        <ul v-else class="divide-y divide-default">
+                            <li
+                                v-for="finding in findings"
+                                :key="finding.id"
+                                class="flex items-baseline gap-3 px-4 py-2"
+                            >
+                                <span class="tone-warn w-18 shrink-0 font-mono text-xs">
+                                    invariant
+                                </span>
+                                <span class="min-w-0 flex-1">
+                                    <span class="block text-sm text-highlighted">
+                                        {{ finding.title }}
+                                    </span>
+                                    <span class="block text-xs text-muted">{{
+                                        finding.detail
+                                    }}</span>
+                                </span>
+                            </li>
+                            <li v-for="page in broken" :key="page.path">
+                                <NuxtLink
+                                    :to="`/wiki${toCollectionPath(page.path)}`"
+                                    class="flex items-baseline gap-3 px-4 py-2 hover:bg-elevated"
+                                >
+                                    <span class="tone-bad w-18 shrink-0 font-mono text-xs"
+                                        >link</span
+                                    >
+                                    <span class="min-w-0 flex-1">
+                                        <span
+                                            class="block truncate font-mono text-sm text-highlighted"
+                                        >
+                                            {{ page.path }}
+                                        </span>
+                                        <span class="block truncate font-mono text-xs text-muted">
+                                            {{
+                                                page.brokenLinks.map((link) => link.href).join(", ")
+                                            }}
+                                        </span>
+                                    </span>
+                                </NuxtLink>
+                            </li>
+                        </ul>
+                    </WidgetPanel>
                 </template>
 
                 <template #work>
-                    <UCard class="h-full" variant="flush">
-                        <template #header>
-                            <div class="flex items-center justify-between">
-                                <h3 class="font-semibold">Work in progress</h3>
-                                <UButton
-                                    to="/issues"
-                                    label="All issues"
-                                    size="xs"
-                                    variant="ghost"
-                                    color="neutral"
-                                    trailing-icon="i-lucide-arrow-right"
-                                />
-                            </div>
-                        </template>
-
-                        <div v-if="next.length === 0" class="p-8 text-center text-sm text-muted">
+                    <WidgetPanel
+                        title="Work in progress"
+                        :meta="issuesRead"
+                        :count="issues.error ? '—' : open"
+                        to="/issues"
+                    >
+                        <p
+                            v-if="next.length === 0"
+                            class="px-4 py-8 text-center text-sm text-muted"
+                        >
                             {{
                                 issues.error
                                     ? "GitHub could not be read from this browser."
@@ -314,8 +315,7 @@
                                       ? "No open issues."
                                       : "Reading open issues…"
                             }}
-                        </div>
-
+                        </p>
                         <div v-else class="divide-y divide-default">
                             <HealthIssueRow
                                 v-for="issue in next"
@@ -324,34 +324,18 @@
                                 compact
                             />
                         </div>
-                    </UCard>
+                    </WidgetPanel>
                 </template>
                 <template #decisions>
-                    <UCard class="h-full" variant="flush">
-                        <template #header>
-                            <div class="flex items-center justify-between gap-3">
-                                <div>
-                                    <h3 class="font-semibold">Decisions to implement</h3>
-                                    <p class="text-xs text-muted">
-                                        {{ decisionCounts["implemented"] }} implemented ·
-                                        {{ decisionCounts["to-implement"] }} to implement ·
-                                        {{ decisionCounts["wont-implement"] }} won't implement
-                                    </p>
-                                </div>
-                                <UButton
-                                    to="/decisions"
-                                    label="All decisions"
-                                    size="xs"
-                                    variant="ghost"
-                                    color="neutral"
-                                    trailing-icon="i-lucide-arrow-right"
-                                />
-                            </div>
-                        </template>
-
+                    <WidgetPanel
+                        title="Decisions to implement"
+                        :meta="`${decisionCounts['implemented']} implemented · ${decisionCounts['wont-implement']} won't implement`"
+                        :count="decisionCounts['to-implement']"
+                        to="/decisions"
+                    >
                         <p
                             v-if="pendingDecisions.length === 0"
-                            class="p-8 text-center text-sm text-muted"
+                            class="px-4 py-8 text-center text-sm text-muted"
                         >
                             {{
                                 decisionReports.length === 0
@@ -359,49 +343,34 @@
                                     : "Every accepted decision has landed."
                             }}
                         </p>
-
-                        <div v-else class="divide-y divide-default">
-                            <NuxtLink
-                                v-for="report in pendingDecisions"
-                                :key="report.id"
-                                :to="`/decisions/${report.id}`"
-                                class="flex items-center gap-3 px-4 py-2 text-sm transition-colors hover:bg-elevated/50"
-                            >
-                                <span class="shrink-0 font-mono text-xs text-dimmed">
-                                    {{ report.number }}
-                                </span>
-                                <span class="truncate">{{ report.title }}</span>
-                            </NuxtLink>
-                        </div>
-                    </UCard>
+                        <ul v-else class="divide-y divide-default">
+                            <li v-for="report in pendingDecisions" :key="report.id">
+                                <NuxtLink
+                                    :to="`/decisions/${report.id}`"
+                                    class="flex items-baseline gap-3 px-4 py-2 hover:bg-elevated"
+                                >
+                                    <span class="w-18 shrink-0 font-mono text-xs text-muted">
+                                        {{ report.number }}
+                                    </span>
+                                    <span class="min-w-0 flex-1 truncate text-sm text-highlighted">
+                                        {{ report.title }}
+                                    </span>
+                                </NuxtLink>
+                            </li>
+                        </ul>
+                    </WidgetPanel>
                 </template>
 
                 <template #audits>
-                    <UCard class="h-full" variant="flush">
-                        <template #header>
-                            <div class="flex items-center justify-between gap-3">
-                                <div>
-                                    <h3 class="font-semibold">Open audit findings</h3>
-                                    <p class="text-xs text-muted">
-                                        {{ auditTotals.findings.open }} open across
-                                        {{ openAudits.length }}
-                                        {{ openAudits.length === 1 ? "audit" : "audits" }}
-                                    </p>
-                                </div>
-                                <UButton
-                                    to="/audits"
-                                    label="All audits"
-                                    size="xs"
-                                    variant="ghost"
-                                    color="neutral"
-                                    trailing-icon="i-lucide-arrow-right"
-                                />
-                            </div>
-                        </template>
-
+                    <WidgetPanel
+                        title="Open audit findings"
+                        :meta="auditMeta"
+                        :count="auditTotals.findings.open"
+                        to="/audits"
+                    >
                         <p
                             v-if="openAudits.length === 0"
-                            class="p-8 text-center text-sm text-muted"
+                            class="px-4 py-8 text-center text-sm text-muted"
                         >
                             {{
                                 auditReports.length === 0
@@ -409,113 +378,89 @@
                                     : "Every audit is closed."
                             }}
                         </p>
-
-                        <div v-else class="divide-y divide-default">
-                            <NuxtLink
-                                v-for="report in topAudits"
-                                :key="report.id"
-                                :to="`/audits/${report.id}`"
-                                class="flex items-center gap-3 px-4 py-2 text-sm transition-colors hover:bg-elevated/50"
-                            >
-                                <div class="min-w-0 flex-1">
-                                    <p class="truncate">{{ report.title }}</p>
-                                    <p class="text-xs text-muted">
-                                        {{ report.counts.open }} of
-                                        {{ report.findings.length }} open
-                                    </p>
-                                </div>
-                                <UProgress
-                                    :model-value="report.findings.length - report.counts.open"
-                                    :max="Math.max(report.findings.length, 1)"
-                                    size="sm"
-                                    class="w-20 shrink-0"
-                                />
-                            </NuxtLink>
-                        </div>
-                    </UCard>
+                        <ul v-else class="divide-y divide-default">
+                            <li v-for="report in auditRows" :key="report.id">
+                                <NuxtLink
+                                    :to="`/audits/${report.id}`"
+                                    class="flex flex-col gap-2 px-4 py-3 hover:bg-elevated"
+                                >
+                                    <span class="flex items-baseline justify-between gap-3">
+                                        <span class="truncate text-sm text-highlighted">
+                                            {{ report.title }}
+                                        </span>
+                                        <span class="shrink-0 font-mono text-xs text-muted">
+                                            {{ report.open }} of {{ report.total }} open
+                                        </span>
+                                    </span>
+                                    <SplitBar :parts="report.parts" />
+                                </NuxtLink>
+                            </li>
+                        </ul>
+                    </WidgetPanel>
                 </template>
 
                 <template #tooling>
-                    <UCard class="h-full" :ui="{ body: 'flex flex-col gap-4' }">
-                        <template #header>
-                            <div class="flex items-center justify-between gap-3">
-                                <div>
-                                    <h3 class="font-semibold">Tooling usage</h3>
-                                    <p class="text-xs text-muted">
-                                        Repo scripts over the last {{ WINDOW_DAYS }} days
-                                    </p>
-                                </div>
-                                <UButton
-                                    to="/telemetry"
-                                    label="Details"
-                                    size="xs"
-                                    variant="ghost"
-                                    color="neutral"
-                                    trailing-icon="i-lucide-arrow-right"
-                                />
-                            </div>
-                        </template>
-
-                        <p v-if="!usageTotals" class="text-center text-sm text-muted">
+                    <WidgetPanel
+                        title="Tooling usage"
+                        :meta="`Repo scripts over the last ${WINDOW_DAYS} days`"
+                        to="/telemetry"
+                    >
+                        <p v-if="!usageTotals" class="px-4 py-8 text-center text-sm text-muted">
                             Not collected.
                         </p>
-
                         <template v-else>
-                            <dl class="grid grid-cols-3 gap-3">
+                            <dl class="grid grid-cols-3 gap-3 border-b border-default px-4 py-3">
                                 <div>
                                     <dt class="text-xs text-muted">Runs</dt>
-                                    <dd class="text-2xl font-semibold tabular-nums">
+                                    <dd data-figure class="text-2xl leading-none text-highlighted">
                                         {{ usageTotals.runs }}
                                     </dd>
                                 </div>
                                 <div>
                                     <dt class="text-xs text-muted">By agents</dt>
-                                    <dd class="text-2xl font-semibold tabular-nums">
+                                    <dd data-figure class="text-2xl leading-none text-highlighted">
                                         {{ usageTotals.agentShare }}%
                                     </dd>
                                 </div>
                                 <div>
                                     <dt class="text-xs text-muted">Failed</dt>
                                     <dd
-                                        class="text-2xl font-semibold tabular-nums"
-                                        :class="usageTotals.failedClass"
+                                        data-figure
+                                        class="text-2xl leading-none"
+                                        :class="usageTotals.failedClass || 'text-highlighted'"
                                     >
                                         {{ usageTotals.failureRate }}%
                                     </dd>
                                 </div>
                             </dl>
-
-                            <div class="flex flex-col gap-1 text-sm">
-                                <p
+                            <ul class="divide-y divide-default">
+                                <li
                                     v-for="script in usageTotals.failingScripts"
                                     :key="script.name"
-                                    class="flex items-center gap-2"
+                                    class="flex items-baseline gap-3 px-4 py-2"
                                 >
-                                    <UIcon
-                                        name="i-lucide-circle-x"
-                                        class="tone-bad size-4 shrink-0"
-                                    />
-                                    <span class="truncate font-mono text-xs">{{
-                                        script.name
-                                    }}</span>
-                                    <span class="ml-auto text-xs text-muted">
+                                    <span class="min-w-0 flex-1 truncate font-mono text-sm">
+                                        {{ script.name }}
+                                    </span>
+                                    <span class="tone-bad shrink-0 font-mono text-xs">
                                         {{ script.failed }}% failed
                                     </span>
-                                </p>
-                                <p
+                                </li>
+                                <li
                                     v-if="usageTotals.failingScripts.length === 0"
-                                    class="text-xs text-muted"
+                                    class="px-4 py-2 text-xs text-muted"
                                 >
                                     No script is failing.
-                                </p>
-                                <p v-if="usageTotals.idle > 0" class="text-xs text-muted">
-                                    {{ usageTotals.idle }}
-                                    {{ usageTotals.idle === 1 ? "script" : "scripts" }} never run in
-                                    the window.
-                                </p>
-                            </div>
+                                </li>
+                                <li
+                                    v-if="usageTotals.idle > 0"
+                                    class="px-4 py-2 text-xs text-muted"
+                                >
+                                    {{ usageTotals.idleText }}
+                                </li>
+                            </ul>
                         </template>
-                    </UCard>
+                    </WidgetPanel>
                 </template>
                 <template #queue>
                     <WidgetPanel
@@ -836,7 +781,20 @@ const auditTotals = computed(() => countAll(auditReports.value));
 const openAudits = computed(() =>
     sortAudits(auditReports.value, "most-open").filter((report) => report.state !== "closed"),
 );
-const topAudits = computed(() => openAudits.value.slice(0, 4));
+const auditMeta = computed(() => `Across ${counted(openAudits.value.length, "open audit")}`);
+
+const auditRows = computed(() =>
+    openAudits.value.slice(0, 4).map((report) => ({
+        id: report.id,
+        title: report.title,
+        open: report.counts.open,
+        total: report.findings.length,
+        parts: [
+            { label: "done", value: report.findings.length - report.counts.open, tone: "ink" },
+            { label: "open", value: report.counts.open, tone: "warn" },
+        ] satisfies SplitPart[],
+    })),
+);
 
 const usageTotals = computed(() => {
     const usage = usageSnapshot.value?.usage;
@@ -855,6 +813,7 @@ const usageTotals = computed(() => {
             .filter((row) => row.failing)
             .map((row) => ({ name: row.name, failed: percentOf(row.failures, row.runs) })),
         idle: rows.filter((row) => row.runs === 0).length,
+        idleText: `${counted(rows.filter((row) => row.runs === 0).length, "script")} never run in the window.`,
     };
 });
 

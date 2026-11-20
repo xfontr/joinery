@@ -42,7 +42,7 @@ describe("TelemetryScriptActivity", () => {
             .findAll("tbody tr")
             .map((row) => row.findAll("td").map((td) => td.text()));
 
-        expect(rows[1]).toEqual(["env-sync", "", "—", "", "—", "never"]);
+        expect(rows[1]).toEqual(["env-sync", "", "—", "—", "—", "never"]);
     });
 
     it("marks a failing script's rate in the bad tone, so the column isn't read by number alone", async () => {

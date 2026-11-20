@@ -1,17 +1,14 @@
 <template>
     <UDashboardPanel id="changelog">
         <template #header>
-            <UDashboardNavbar title="What's new">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader title="What's new">
+                <template #actions>
                     <span class="text-xs text-muted">
                         {{ snapshot?.metrics?.commitsSinceLastRelease ?? "—" }} commits since the
                         last release
                     </span>
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
         </template>
 
         <template #body>

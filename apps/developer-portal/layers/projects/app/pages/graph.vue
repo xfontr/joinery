@@ -1,14 +1,11 @@
 <template>
     <UDashboardPanel id="graph">
         <template #header>
-            <UDashboardNavbar title="Project graph">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader title="Project graph">
+                <template #actions>
                     <SnapshotAge :manifest="snapshot?.manifest ?? null" artifact="projects" />
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
         </template>
 
         <template #body>

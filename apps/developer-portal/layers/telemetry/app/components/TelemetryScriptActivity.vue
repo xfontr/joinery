@@ -1,24 +1,17 @@
 <template>
-    <UCard variant="flush">
-        <template #header>
-            <div class="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                    <h2 class="font-semibold">Script activity</h2>
-                    <p class="text-xs text-muted">
-                        One cell per day from the first recorded run, darker for more runs, a red
-                        base when one failed. The bar splits runs by who ran them. No free text is
-                        recorded: no titles, paths or issue numbers.
-                    </p>
-                </div>
-
-                <ul class="flex flex-wrap items-center gap-4 text-xs text-muted">
-                    <li v-for="item in legend" :key="item.label" class="flex items-center gap-1.5">
-                        <span class="size-2.5 rounded-xs bg-accented/40" :style="item.style" />
-                        {{ item.label }}
-                    </li>
-                </ul>
-            </div>
-        </template>
+    <WidgetPanel
+        title="Repo scripts"
+        :meta="`Most run first · failing from ${MIN_RUNS} runs at ${failingPercent}% failed`"
+        :count="rows.length"
+    >
+        <ul
+            class="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-default px-4 py-2 text-xs text-muted"
+        >
+            <li v-for="item in legend" :key="item.label" class="flex items-center gap-1.5">
+                <span class="size-2.5 bg-accented/40" :style="item.style" />
+                {{ item.label }}
+            </li>
+        </ul>
 
         <div data-scroll-x class="overflow-x-auto">
             <table class="data-table">
@@ -39,28 +32,31 @@
                             </ol>
                         </th>
                         <th class="numeric">Runs</th>
-                        <th class="whitespace-nowrap">Agent / person</th>
+                        <th class="whitespace-nowrap">By agents</th>
                         <th class="numeric">Failed</th>
                         <th class="numeric whitespace-nowrap">Last run</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="row in rows" :key="row.name">
-                        <td class="font-mono text-xs whitespace-nowrap">{{ row.name }}</td>
+                        <td class="font-mono whitespace-nowrap text-highlighted">{{ row.name }}</td>
                         <td class="hidden md:table-cell">
                             <TelemetryDayStrip :days :usage="row.days" :busiest />
                         </td>
-                        <td class="numeric font-semibold">{{ row.runs }}</td>
+                        <td class="numeric font-mono">{{ row.runs }}</td>
                         <td>
-                            <TelemetryCallerSplit :runs="row.total" :agent="row.agent" />
+                            <span class="flex items-center gap-2">
+                                <TelemetryCallerSplit :runs="row.total" :agent="row.agent" />
+                                <span class="font-mono text-xs">{{ row.agentShare }}</span>
+                            </span>
                         </td>
-                        <td
-                            class="numeric text-xs"
-                            :class="row.failing && 'tone-bad font-semibold'"
-                        >
+                        <td class="numeric font-mono" :class="row.failing && 'tone-bad'">
                             {{ row.failed }}
                         </td>
-                        <td class="numeric text-xs whitespace-nowrap text-muted">
+                        <td
+                            class="numeric font-mono whitespace-nowrap text-muted"
+                            :title="row.lastExact"
+                        >
                             {{ row.last }}
                         </td>
                     </tr>
@@ -71,22 +67,26 @@
                         <td class="hidden md:table-cell">
                             <TelemetryDayStrip :days :usage="totals" :busiest="busiestTotal" />
                         </td>
-                        <td class="numeric font-semibold">{{ total.runs }}</td>
+                        <td class="numeric font-mono font-medium">{{ total.runs }}</td>
                         <td>
-                            <TelemetryCallerSplit :runs="total.runs" :agent="total.agent" />
+                            <span class="flex items-center gap-2">
+                                <TelemetryCallerSplit :runs="total.runs" :agent="total.agent" />
+                                <span class="font-mono text-xs">{{ total.agentShare }}</span>
+                            </span>
                         </td>
-                        <td class="numeric text-xs font-semibold">{{ total.failed }}</td>
+                        <td class="numeric font-mono font-medium">{{ total.failed }}</td>
                         <td />
                     </tr>
                 </tfoot>
             </table>
         </div>
-    </UCard>
+    </WidgetPanel>
 </template>
 
 <script setup lang="ts">
 import type { DayUsage } from "#layers/snapshot/shared/types/DayUsage.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
+import { FAILING_RATE, MIN_RUNS } from "#layers/telemetry/shared/usage.ts";
 import { dailyTotals, scriptRows, shownDays, sumDays } from "#layers/telemetry/shared/usageView.ts";
 
 interface Props {
@@ -102,8 +102,13 @@ const legend = [
     { label: "A run failed", style: { boxShadow: FAILED_MARK } },
 ];
 
+const failingPercent = Math.round(FAILING_RATE * 100);
+
 const failedShare = ({ runs, failures }: DayUsage): string =>
     runs ? `${percentOf(failures, runs)}%` : "—";
+
+const agentShare = ({ runs, agent }: DayUsage): string =>
+    runs ? `${percentOf(agent, runs)}%` : "—";
 
 const days = computed(() => shownDays(usage));
 const scripts = computed(() => scriptRows(usage));
@@ -117,7 +122,9 @@ const rows = computed(() =>
         agent: row.agent,
         failing: row.failing,
         failed: failedShare(row),
-        last: row.last ? calendarDay(row.last.slice(0, 10)) : "never",
+        agentShare: agentShare(row),
+        last: shortAge(row.last),
+        lastExact: row.last ? calendarDay(row.last.slice(0, 10)) : "",
     })),
 );
 
@@ -126,7 +133,7 @@ const totals = computed(() => dailyTotals(scripts.value));
 const total = computed(() => {
     const sum = sumDays(totals.value);
 
-    return { ...sum, failed: failedShare(sum) };
+    return { ...sum, failed: failedShare(sum), agentShare: agentShare(sum) };
 });
 
 const busiest = computed(() =>

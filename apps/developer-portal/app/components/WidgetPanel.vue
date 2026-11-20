@@ -1,7 +1,11 @@
 <template>
-    <UCard variant="flush" class="flex h-full flex-col" :ui="{ body: 'min-h-0 flex-1' }">
+    <UCard
+        variant="flush"
+        class="flex flex-col"
+        :ui="{ header: 'p-0 sm:px-0', body: 'min-h-0 flex-1', footer: 'px-4 py-2 sm:px-4' }"
+    >
         <template #header>
-            <div class="flex items-start justify-between gap-3">
+            <div class="flex items-start justify-between gap-3 px-4 py-3">
                 <div class="min-w-0">
                     <h2 class="text-sm font-semibold text-highlighted">
                         <NuxtLink v-if="to" :to class="group inline-flex items-center gap-1">
@@ -32,11 +36,13 @@
                 size="xs"
                 color="neutral"
                 data-scroll-x
-                class="mt-2 -mb-4 overflow-x-auto"
+                class="overflow-x-auto border-t border-default px-4"
                 :ui="{
                     root: 'items-start',
-                    list: 'w-max',
-                    trigger: 'shrink-0',
+                    list: 'mb-0 h-9 w-max gap-3 border-b-0 p-0',
+                    indicator: 'bottom-0 h-0.5 rounded-none bg-inverted',
+                    trigger:
+                        'shrink-0 px-0 py-0 font-normal data-[state=active]:font-medium data-[state=active]:text-highlighted',
                     label: 'overflow-visible',
                     trailingBadge: 'bg-transparent px-0 font-mono text-xs text-muted ring-0',
                 }"

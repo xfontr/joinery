@@ -1,5 +1,5 @@
 <template>
-    <UDashboardGroup unit="rem" class="bottom-7">
+    <UDashboardGroup unit="rem">
         <UDashboardSidebar
             id="dashboard"
             resizable
@@ -9,24 +9,28 @@
             :max-size="20"
             :collapsed-size="3.5"
             :ui="{
-                root: 'surface-ink min-h-0 border-e-0',
+                root: 'surface-ink min-h-0 border-e border-default',
                 content: 'surface-ink lg:hidden',
-                body: 'gap-3',
-                footer: 'border-t border-default',
+                header: 'h-14 pr-2 pl-5',
+                body: 'gap-4 px-3 py-0 pb-4',
+                footer: 'border-t border-default px-3',
             }"
         >
             <template #header="{ collapsed }">
                 <NuxtLink
+                    v-if="!collapsed"
                     to="/overview"
-                    class="flex min-w-0 items-baseline gap-2"
-                    :class="collapsed && 'mx-auto'"
+                    class="flex min-w-0 flex-1 items-baseline gap-2"
                     aria-label="Monorepo developer view"
                 >
-                    <span class="font-display text-xl text-highlighted italic">
-                        {{ collapsed ? "m" : "monorepo" }}
-                    </span>
-                    <span v-if="!collapsed" class="text-sm text-muted">dev</span>
+                    <span class="font-display text-xl text-highlighted italic">monorepo</span>
+                    <span class="text-sm text-muted">dev</span>
                 </NuxtLink>
+                <UDashboardSidebarCollapse
+                    color="neutral"
+                    class="text-muted"
+                    :class="collapsed && 'mx-auto'"
+                />
             </template>
 
             <template #default="{ collapsed }">
@@ -34,11 +38,14 @@
                     :collapsed
                     color="neutral"
                     variant="outline"
-                    class="bg-elevated text-muted ring-default"
+                    size="sm"
+                    class="bg-elevated text-sm font-normal text-muted ring-default"
+                    :ui="{ leadingIcon: 'size-3.5' }"
                 />
 
+                <!-- It hands every nested list's open state to one v-model, so it stays uncontrolled -->
                 <UNavigationMenu
-                    v-model="openApps"
+                    :key="route.path"
                     :items="railItems"
                     :collapsed
                     orientation="vertical"
@@ -49,7 +56,11 @@
                     trailing-trigger
                     popover
                     :ui="{
-                        link: 'text-muted hover:text-highlighted data-active:text-highlighted',
+                        link: 'h-9 gap-2.5 px-2 py-0 font-normal text-muted hover:text-highlighted data-active:font-medium data-active:text-highlighted',
+                        linkLeadingIcon: 'size-4',
+                        linkTrailingIcon: 'size-3.5',
+                        childLink: 'h-8 items-center gap-2 py-0 text-sm',
+                        childLinkIcon: 'size-3.5',
                         linkTrailingBadge:
                             'bg-transparent px-0 font-mono text-xs text-muted ring-0',
                     }"
@@ -63,7 +74,9 @@
                         :label="collapsed ? undefined : 'Theme'"
                         color="neutral"
                         variant="ghost"
+                        size="xs"
                         class="text-muted"
+                        :ui="{ leadingIcon: 'size-3.5' }"
                     />
 
                     <UButton
@@ -72,7 +85,9 @@
                         icon="i-simple-icons-github"
                         color="neutral"
                         variant="ghost"
+                        size="xs"
                         :label="collapsed ? undefined : 'Source'"
+                        :ui="{ leadingIcon: 'size-3.5' }"
                         class="text-muted"
                         :class="!collapsed && 'ml-auto'"
                         aria-label="View source on GitHub"
@@ -85,20 +100,27 @@
             v-model:open="searchOpen"
             :groups="searchGroups"
             :loading="status === 'pending'"
-            placeholder="Search the workspace docs…"
+            placeholder="Search pages, projects and docs…"
         />
 
         <slot />
     </UDashboardGroup>
 
-    <StatusBar :collected="badges?.collected ?? null" :items="statusItems" />
+    <StatusBar
+        :collected="badges?.collected ?? null"
+        :items="statusItems"
+        :style="{ '--rail': `${railWidth}px` }"
+        class="lg:left-(--rail)"
+    />
 </template>
 
 <script setup lang="ts">
 import type { NavigationMenuItem } from "@nuxt/ui";
 import type { Badges } from "#layers/snapshot/shared/types/Badges.ts";
 import type { StatusItem } from "~/components/StatusBar.vue";
-import { appEntries, locate, type NavLink } from "~/utils/apps";
+import { appEntries, locate, type MenuRow, type NavLink, type RailFigure } from "~/utils/apps";
+import type { Tone } from "~/utils/format";
+import { matchPages, searchGroups as toSearchGroups } from "~/utils/search";
 
 const { data: issues } = useIssues();
 const { data: badges } = await useFetch<Badges>("/api/badges", { key: "badges" });
@@ -119,29 +141,87 @@ const openIssues = computed(() =>
         : null,
 );
 
-const counts = computed<Record<string, number>>(() => ({
-    issues: openIssues.value ?? 0,
-    deps: badges.value?.advisories ?? 0,
-}));
+const routesFor = (field: "menu" | "figure"): [string, string][] =>
+    Object.entries(nav).flatMap(([key, link]) => {
+        const url = link?.[field];
+        return url ? [[key, url] as [string, string]] : [];
+    });
 
 const menus = Object.fromEntries(
-    Object.entries(nav).flatMap(([key, link]) =>
-        link?.menu
-            ? [
-                  [
-                      key,
-                      useFetch<NavigationMenuItem[]>(link.menu, {
-                          key: `menu-${key}`,
-                          default: () => [],
-                      }).data,
-                  ],
-              ]
-            : [],
-    ),
+    routesFor("menu").map(([key, url]) => [
+        key,
+        useFetch<MenuRow[]>(url, { key: `menu-${key}`, default: () => [] }).data,
+    ]),
 );
 
+const figures = Object.fromEntries(
+    routesFor("figure").map(([key, url]) => [
+        key,
+        useFetch<RailFigure>(url, { key: `figure-${key}` }).data,
+    ]),
+);
+
+const tooling = computed(() => figures.telemetry?.value ?? null);
+
+const toolingTone = computed((): Tone => (tooling.value?.alert ? "bad" : "neutral"));
+const worstTone = computed((): Tone => {
+    const worst = badges.value?.worstSeverity ?? null;
+    return worst ? severityTone(worst) : "neutral";
+});
+
+const badge = (label: string, tone: Tone) => ({ label, class: toneClass(tone) });
+
+/** The figure beside each entry, in its tone, as the lab's rail prints a section's state. */
+const entryBadges = computed((): Record<string, { label: string; class: string } | undefined> => {
+    const lines = badges.value?.lineCoverage ?? null;
+
+    return {
+        issues: openIssues.value ? badge(String(openIssues.value), "neutral") : undefined,
+        coverage: lines === null ? undefined : badge(`${lines}%`, coverageTone(lines)),
+        deps: badges.value?.collected
+            ? badge(`${badges.value.advisories} adv.`, worstTone.value)
+            : undefined,
+        telemetry: tooling.value
+            ? badge(`${tooling.value.value} fail`, toolingTone.value)
+            : undefined,
+    };
+});
+
 const route = useRoute();
+
+const railWidth = ref(0);
+
+// The status bar starts where the rail ends, and the rail's width is only known once it renders
+const observer = import.meta.client
+    ? new ResizeObserver(([entry]) => {
+          railWidth.value = entry?.borderBoxSize[0]?.inlineSize ?? 0;
+      })
+    : null;
+
+// Nuxt UI ids the rail `<storageKey>-sidebar-<id>`, and the component renders more than one root
+onMounted(() => {
+    const rail = document.getElementById("dashboard-sidebar-dashboard");
+    if (rail) observer?.observe(rail);
+});
+onBeforeUnmount(() => observer?.disconnect());
 const here = computed(() => locate(apps, route.path));
+
+const holds = (row: MenuRow): boolean => row.to === route.fullPath || row.to === route.path;
+
+const toItem = (row: MenuRow): NavigationMenuItem => ({
+    label: row.label,
+    icon: row.icon,
+    to: row.to,
+    active: row.to === route.fullPath,
+    badge:
+        row.badge === undefined
+            ? undefined
+            : { label: row.badge, class: toneClass(coverageTone(row.coverage)) },
+});
+
+/** A menu one level deep at a time: inside a group, its members stand in for the groups. */
+const menuSections = (rows: MenuRow[]): NavigationMenuItem[] =>
+    (rows.find((row) => (row.children ?? []).some(holds))?.children ?? rows).map(toItem);
 
 const railItems = computed((): NavigationMenuItem[] =>
     apps.map((app) => {
@@ -154,36 +234,27 @@ const railItems = computed((): NavigationMenuItem[] =>
             to: first?.to,
             value: app.id,
             active: here.value?.app.id === app.id,
+            defaultOpen: here.value?.app.id === app.id,
             children: single
                 ? undefined
                 : app.entries.map((entry) => {
-                      const count = counts.value[entry.key] ?? 0;
-                      const children = menus[entry.key]?.value ?? [];
+                      const children = menuSections(menus[entry.key]?.value ?? []);
 
                       return {
                           label: entry.label,
                           icon: entry.icon,
                           to: entry.to,
                           value: entry.key,
+                          // Router matching alone leaves `/projects` dark on `/projects/<name>`.
+                          active: here.value?.entry.key === entry.key,
                           defaultOpen: here.value?.entry.key === entry.key,
-                          badge: count === 0 ? undefined : String(count),
+                          badge: entryBadges.value[entry.key],
                           children: children.length === 0 ? undefined : children,
                       };
                   }),
         };
     }),
 );
-
-/** The app holding the current page stays unfolded; the others fold back on navigation. */
-const openApps = ref<string[]>([]);
-
-// The prerendered HTML has every app folded, so unfolding one before hydration would mismatch.
-const unfoldCurrent = (): void => {
-    openApps.value = here.value ? [here.value.app.id] : [];
-};
-
-onMounted(unfoldCurrent);
-watch(() => route.path, unfoldCurrent);
 
 const statusItems = computed((): StatusItem[] => {
     const lines = badges.value?.lineCoverage ?? null;
@@ -208,6 +279,18 @@ const statusItems = computed((): StatusItem[] => {
             tone: worst ? severityTone(worst) : "neutral",
             to: "/deps",
         },
+        ...(tooling.value
+            ? [
+                  {
+                      id: "tooling",
+                      label: "tooling",
+                      value: tooling.value.value,
+                      detail: "failed",
+                      tone: toolingTone.value,
+                      to: "/telemetry",
+                  },
+              ]
+            : []),
         {
             id: "issues",
             label: "issues",
@@ -244,16 +327,23 @@ watch(searchOpen, () => {
     if (searchOpen.value && status.value === "idle") execute();
 });
 
-const searchGroups = computed(() => [
-    {
-        id: "docs",
-        label: "Wiki",
-        items: sections.value.map((section) => ({
-            label: section.title,
-            suffix: section.content,
-            to: `/wiki${section.id}`,
-            icon: "i-lucide-file-text",
+const projectGroup = computed(() => ({
+    id: "projects",
+    label: "Projects",
+    ignoreFilter: true,
+    postFilter: matchPages,
+    items: (menus.projects?.value ?? []).flatMap((kind) =>
+        (kind.children ?? []).map((row) => ({
+            label: row.label,
+            suffix: kind.label,
+            to: row.to,
+            icon: "i-lucide-box",
         })),
-    },
-]);
+    ),
+}));
+
+const searchGroups = computed(() => {
+    const [pages, ...docs] = toSearchGroups(apps, sections.value);
+    return [...(pages ? [pages] : []), projectGroup.value, ...docs];
+});
 </script>

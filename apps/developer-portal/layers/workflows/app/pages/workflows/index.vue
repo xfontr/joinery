@@ -1,11 +1,8 @@
 <template>
     <UDashboardPanel id="workflows">
         <template #header>
-            <UDashboardNavbar title="Workflows">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader title="Workflows">
+                <template #actions>
                     <UButton
                         to="/wiki/docs/workflows/readme"
                         label="How workflows work"
@@ -15,7 +12,7 @@
                         size="xs"
                     />
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
         </template>
 
         <template #body>

@@ -204,7 +204,7 @@ mark {
     --ui-text: var(--color-paper-100);
     --ui-text-highlighted: var(--color-paper-50);
     --ui-text-inverted: var(--color-paper-950);
-    --ui-border: var(--color-paper-800);
+    --ui-border: var(--color-paper-700);
     --ui-primary: var(--color-terracotta-300);
     --tone-good: #329546;
     --tone-warn: #cb6b0b;
@@ -218,6 +218,21 @@ mark {
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.01em;
+}
+
+/* A percentage drawn as a hairline under its own figure, in the figure's tone */
+[data-meter] {
+    background: linear-gradient(
+            to right,
+            currentcolor calc(var(--pct, 0) * 1%),
+            var(--ui-border-muted) 0
+        )
+        left bottom / 100% 2px no-repeat;
+}
+
+td[data-meter] {
+    background-size: calc(100% - 1.5rem) 2px;
+    background-position: right 0.75rem bottom 0.375rem;
 }
 
 /* A sideways-scrolling row fades at its right edge, so a phone reader knows there is more */

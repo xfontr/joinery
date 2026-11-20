@@ -1,130 +1,171 @@
 <template>
     <UDashboardPanel id="projects">
         <template #header>
-            <UDashboardNavbar title="Projects">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
+            <PageHeader :title="current.label" :crumbs>
+                <template #title>
+                    <h1 class="flex items-baseline gap-2 text-2xl font-semibold text-highlighted">
+                        {{ current.label }}
+                        <span data-figure class="text-dimmed">{{ shown.length }}</span>
+                    </h1>
                 </template>
-                <template #right>
-                    <SnapshotAge :manifest="snapshot?.manifest ?? null" artifact="metrics" />
+                <template #actions>
+                    <UInput
+                        v-model="search"
+                        icon="i-lucide-search"
+                        placeholder="Filter projects"
+                        size="sm"
+                        aria-label="Filter projects"
+                    />
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
         </template>
 
         <template #body>
-            <div class="flex flex-col gap-6">
-                <p v-if="groups.length === 0" class="p-8 text-center text-sm text-muted">
-                    No projects collected yet.
-                </p>
-
-                <UCard v-for="group in groups" :key="group.label" variant="flush">
-                    <template #header>
-                        <div class="flex items-baseline justify-between gap-3">
-                            <h2 class="font-semibold text-highlighted">{{ group.label }}</h2>
-                            <span data-figure class="text-xl text-highlighted">
-                                {{ group.rows.length }}
-                            </span>
-                        </div>
-                    </template>
-
-                    <div
-                        class="hidden gap-4 border-b border-default px-4 py-2 text-xs text-muted sm:flex"
-                        aria-hidden="true"
-                    >
-                        <span class="flex-1">Project</span>
-                        <span v-for="column in COLUMNS" :key="column" class="w-24 text-right">
-                            {{ column }}
-                        </span>
-                    </div>
-
-                    <ul class="divide-y divide-default">
-                        <li v-for="row in group.rows" :key="row.name">
-                            <component
-                                :is="row.to ? NuxtLink : 'div'"
-                                :to="row.to ?? undefined"
-                                class="flex flex-col gap-1 px-4 py-3 hover:bg-elevated sm:flex-row sm:items-baseline sm:gap-4"
-                                :class="row.retired && 'text-muted'"
+            <div data-scroll-x class="overflow-x-auto border border-default bg-default">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th class="numeric hidden md:table-cell">Version</th>
+                            <th class="numeric hidden md:table-cell">Unreleased</th>
+                            <th class="numeric hidden md:table-cell">Commits, 2 wk</th>
+                            <th class="numeric hidden md:table-cell">Specs</th>
+                            <th class="numeric">Lines covered</th>
+                            <th class="numeric hidden md:table-cell">Used by</th>
+                        </tr>
+                    </thead>
+                    <tbody v-for="group in groups" :key="group.id">
+                        <tr v-if="filter === 'all'">
+                            <th
+                                colspan="7"
+                                scope="colgroup"
+                                class="bg-muted text-left text-xs font-medium text-muted"
                             >
-                                <span class="min-w-0 flex-1">
-                                    <span class="block font-mono text-sm text-highlighted">
+                                {{ group.label }}
+                                <span class="font-mono">{{ group.rows.length }}</span>
+                            </th>
+                        </tr>
+                        <tr v-for="row in group.rows" :key="row.root">
+                            <td>
+                                <NuxtLink :to="row.to" class="group flex flex-col">
+                                    <span class="font-mono text-highlighted group-hover:underline">
                                         {{ row.name }}
                                     </span>
-                                    <span class="block truncate text-sm text-muted">
+                                    <span class="max-w-xl text-xs text-muted">
                                         {{ row.description }}
                                     </span>
-                                </span>
-                                <dl class="flex gap-4 font-mono text-xs sm:text-sm">
-                                    <div
-                                        v-for="figure in row.figures"
-                                        :key="figure.label"
-                                        class="flex gap-1.5 sm:w-24 sm:justify-end"
-                                    >
-                                        <dt class="text-muted sm:sr-only">{{ figure.label }}</dt>
-                                        <dd class="tabular-nums" :class="figure.class">
-                                            {{ figure.value }}
-                                        </dd>
-                                    </div>
-                                </dl>
-                            </component>
-                        </li>
-                    </ul>
-                </UCard>
+                                    <span class="mt-1 font-mono text-xs text-toned md:hidden">
+                                        {{ row.compact }}
+                                    </span>
+                                </NuxtLink>
+                            </td>
+                            <td class="numeric hidden font-mono md:table-cell">
+                                {{ row.version ?? "—" }}
+                            </td>
+                            <td
+                                class="numeric hidden font-mono md:table-cell"
+                                :class="
+                                    row.unreleased ? 'font-medium text-highlighted' : 'text-dimmed'
+                                "
+                            >
+                                {{ row.unreleased ? `+${row.unreleased}` : "—" }}
+                            </td>
+                            <td class="numeric hidden font-mono md:table-cell">
+                                {{ row.recent ?? "—" }}
+                            </td>
+                            <td class="numeric hidden font-mono md:table-cell">
+                                {{ row.specs ?? "—" }}
+                            </td>
+                            <td
+                                data-meter
+                                :style="{ '--pct': row.lines ?? 0 }"
+                                class="numeric font-mono"
+                                :class="row.tone"
+                            >
+                                {{ dash(row.lines, "%") }}
+                            </td>
+                            <td class="numeric hidden font-mono md:table-cell">
+                                {{ row.usedBy }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p v-if="shown.length === 0" class="px-4 py-8 text-center text-sm text-muted">
+                    {{ search ? `No project matches “${search}”.` : "No projects collected yet." }}
+                </p>
             </div>
         </template>
     </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { NuxtLink } from "#components";
+type KindId = "all" | "apps" | "packages" | "infrastructure";
 
-const COLUMNS = ["Coverage", "Specs", "Commits"] as const;
+const KINDS = [
+    { id: "all", label: "All projects" },
+    { id: "apps", label: "Apps" },
+    { id: "packages", label: "Packages" },
+    { id: "infrastructure", label: "Infrastructure" },
+] as const satisfies { id: KindId; label: string }[];
 
-const { snapshot, projects, retired, metricFor, readmeFor } = await useCatalog();
-const {
-    public: { repoUrl },
-} = useRuntimeConfig();
+const route = useRoute();
+const filter = computed<KindId>(
+    () => KINDS.find((kind) => kind.id === route.query.kind)?.id ?? "all",
+);
+const current = computed(() => KINDS.find((kind) => kind.id === filter.value) ?? KINDS[0]);
+const crumbs = computed(() =>
+    filter.value === "all" ? [] : [{ label: "projects", to: "/projects" }, { label: filter.value }],
+);
 
-const groups = computed(() => {
-    const live = projects.value.map((project) => {
-        const metric = metricFor(project);
+const search = ref("");
 
-        return {
-            name: project.name,
-            category: categoryOf(project.root),
-            description: readmeFor(project)?.description ?? "No description yet.",
-            to: `/projects/${folderOf(project.root)}` as string | null,
-            retired: false,
-            figures: [
-                {
-                    label: "coverage",
-                    value: dash(metric?.coverageLinesPct, "%"),
-                    class: toneClass(coverageTone(metric?.coverageLinesPct)),
-                },
-                { label: "specs", value: dash(metric?.specs), class: "" },
-                { label: "commits", value: dash(metric?.commits), class: "" },
-            ],
-        };
-    });
+const { projects, metricFor, readmeFor } = await useCatalog();
 
-    const deleted = retired.value.map((project) => ({
-        name: project.name,
-        category: "Retired",
-        description: `Deleted ${project.deletedAt} · ${project.subject}`,
-        to: repoUrl ? `${repoUrl}/commit/${project.commit}` : null,
-        retired: true,
-        figures: [
-            { label: "coverage", value: "—", class: "" },
-            { label: "specs", value: "—", class: "" },
-            { label: "commits", value: String(project.commits), class: "" },
-        ],
-    }));
+const rows = computed(() =>
+    projects.value
+        .map((project) => {
+            const metric = metricFor(project);
+            const version = metric?.currentVersion ?? null;
+            const unreleased = metric?.unreleasedCommits ?? 0;
+            const lines = metric?.coverageLinesPct ?? null;
+            const usedBy = project.dependedOnBy.length;
 
-    const rows = [...live, ...deleted];
-    const labels = [...new Set(rows.map((row) => row.category))];
+            return {
+                name: project.name,
+                root: project.root,
+                to: `/projects/${folderOf(project.root)}`,
+                kind: project.root.split("/")[0] ?? "",
+                description: readmeFor(project)?.description ?? "",
+                version,
+                unreleased,
+                recent: metric?.commitsLastTwoWeeks ?? null,
+                specs: metric?.specs ?? null,
+                lines,
+                tone: toneClass(coverageTone(lines)),
+                usedBy,
+                compact: [
+                    version,
+                    unreleased ? `+${unreleased} unreleased` : null,
+                    `used by ${usedBy}`,
+                ]
+                    .filter(Boolean)
+                    .join(" · "),
+            };
+        })
+        .toSorted((a, b) => a.root.localeCompare(b.root)),
+);
 
-    return labels.map((label) => ({
-        label,
-        rows: rows.filter((row) => row.category === label),
-    }));
-});
+const shown = computed(() =>
+    rows.value.filter(
+        (row) =>
+            (filter.value === "all" || row.kind === filter.value) &&
+            row.name.toLowerCase().includes(search.value.toLowerCase()),
+    ),
+);
+
+const groups = computed(() =>
+    KINDS.filter((kind) => kind.id !== "all")
+        .map((kind) => ({ ...kind, rows: shown.value.filter((row) => row.kind === kind.id) }))
+        .filter((group) => group.rows.length > 0),
+);
 </script>

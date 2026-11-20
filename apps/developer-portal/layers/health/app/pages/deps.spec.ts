@@ -53,7 +53,7 @@ const serve = (deps: DepsArtifact) => {
 const cells = (wrapper: VueWrapper, name: string) =>
     wrapper
         .findAll("tbody tr")
-        .find((tr) => tr.find("td").text().startsWith(name))!
+        .find((tr) => tr.findAll("td").some((td) => td.text().startsWith(name)))!
         .findAll("td")
         .map((td) => td.text());
 
@@ -63,8 +63,8 @@ describe("dependencies page", () => {
         const wrapper = await mountSuspended(Page);
 
         expect(cells(wrapper, "vue")).toEqual([
-            "vue",
             "high",
+            expect.stringContaining("vue"),
             "Security issue",
             ">=3",
             "app > vue",
@@ -81,6 +81,7 @@ describe("dependencies page", () => {
             "4.0.0",
             "4.0.1",
             "4.1.0",
+            "2",
             "apps/site, apps/blog",
         ]);
     });

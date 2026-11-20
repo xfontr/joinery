@@ -1,11 +1,8 @@
 <template>
     <UDashboardPanel id="workflow-new">
         <template #header>
-            <UDashboardNavbar title="New project">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader :crumbs="[{ label: 'workflows', to: '/workflows' }]" title="New project">
+                <template #actions>
                     <UButton
                         to="/workflows"
                         label="Cancel"
@@ -14,7 +11,7 @@
                         size="sm"
                     />
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
         </template>
 
         <template #body>

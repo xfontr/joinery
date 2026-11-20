@@ -1,14 +1,22 @@
 <template>
     <UDashboardPanel id="project">
         <template #header>
-            <UDashboardNavbar :title="project?.name ?? name" :ui="{ title: 'font-mono' }">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
+            <PageHeader
+                :title="project?.name ?? name"
+                :crumbs="[{ label: 'projects', to: '/projects' }, { label: name }]"
+                :tabs="project ? tabs : []"
+            >
+                <template #title>
+                    <h1 class="truncate font-mono text-2xl font-semibold text-highlighted">
+                        {{ project?.name ?? name }}
+                    </h1>
                 </template>
-                <template #right>
-                    <SnapshotAge :manifest="snapshot?.manifest ?? null" artifact="metrics" />
+                <template v-if="readme?.description" #intro>
+                    <p class="mt-2 max-w-3xl px-4 text-sm text-toned sm:px-6">
+                        {{ readme.description }}
+                    </p>
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
         </template>
 
         <template #body>
@@ -21,98 +29,271 @@
                 :description="`No collected project lives in a folder called ${name}.`"
             />
 
-            <div v-else class="flex flex-col gap-6 lg:flex-row lg:items-start">
-                <UCard variant="flush" class="lg:sticky lg:top-0 lg:order-last lg:w-80 lg:shrink-0">
-                    <template #header>
-                        <h2 class="font-semibold text-highlighted">About</h2>
-                        <p class="font-mono text-xs text-muted">{{ project.root }}</p>
-                    </template>
-
-                    <dl class="divide-y divide-default text-sm">
-                        <div
-                            v-for="fact in facts"
-                            :key="fact.label"
-                            class="flex items-baseline justify-between gap-3 px-4 py-2"
-                        >
-                            <dt class="text-muted">{{ fact.label }}</dt>
-                            <dd class="font-mono tabular-nums" :class="fact.class">
-                                {{ fact.value }}
-                            </dd>
-                        </div>
-
-                        <div v-for="list in relations" :key="list.label" class="px-4 py-2">
-                            <dt class="flex justify-between text-muted">
-                                {{ list.label }}
-                                <span class="font-mono text-xs">{{ list.items.length }}</span>
-                            </dt>
-                            <dd v-if="list.items.length === 0" class="text-muted">None</dd>
-                            <dd v-for="item in list.items" v-else :key="item.name">
-                                <NuxtLink
-                                    :to="item.to"
-                                    class="block truncate font-mono text-xs text-highlighted hover:underline"
+            <div v-else class="grid items-start gap-6 lg:grid-cols-4">
+                <aside class="order-first lg:sticky lg:top-0 lg:order-last">
+                    <WidgetPanel title="About" :meta="project.root">
+                        <dl class="divide-y divide-default text-sm">
+                            <div
+                                v-for="fact in facts"
+                                :key="fact.label"
+                                class="flex items-baseline justify-between gap-3 px-4 py-2"
+                            >
+                                <dt class="text-muted">{{ fact.label }}</dt>
+                                <dd
+                                    class="font-mono tabular-nums"
+                                    :class="fact.class || 'text-highlighted'"
+                                    :data-meter="fact.pct !== undefined || undefined"
+                                    :style="
+                                        fact.pct === undefined ? undefined : { '--pct': fact.pct }
+                                    "
                                 >
-                                    {{ item.name }}
+                                    {{ fact.value }}
+                                </dd>
+                            </div>
+                            <div v-for="list in relations" :key="list.label" class="px-4 py-2.5">
+                                <dt class="flex justify-between text-muted">
+                                    {{ list.label }}
+                                    <span class="font-mono text-xs">{{ list.items.length }}</span>
+                                </dt>
+                                <dd v-if="list.items.length === 0" class="text-dimmed">None</dd>
+                                <dd v-for="item in list.items" v-else :key="item.name">
+                                    <NuxtLink
+                                        :to="item.to"
+                                        class="block truncate font-mono text-xs text-highlighted hover:underline"
+                                    >
+                                        {{ item.name }}
+                                    </NuxtLink>
+                                </dd>
+                            </div>
+                            <div class="px-4 py-2.5">
+                                <dt class="text-muted">Tags</dt>
+                                <dd
+                                    class="flex flex-wrap gap-x-3 font-mono text-xs text-highlighted"
+                                >
+                                    <span v-for="tag in project.tags" :key="tag">{{ tag }}</span>
+                                </dd>
+                            </div>
+                        </dl>
+                    </WidgetPanel>
+                </aside>
+
+                <div class="min-w-0 lg:col-span-3">
+                    <article
+                        v-if="tab === 'readme'"
+                        data-prose
+                        data-readme
+                        class="overflow-x-auto border border-default bg-default px-6 py-5"
+                    >
+                        <ContentRenderer v-if="readme" :value="readme" />
+                        <p v-else class="text-muted">This project has no README.</p>
+                    </article>
+
+                    <WidgetPanel
+                        v-else-if="tab === 'coverage'"
+                        title="Coverage"
+                        :meta="
+                            coverage
+                                ? `Vitest · ${coverage.files} files · collected ${coverageAge}`
+                                : 'Not collected'
+                        "
+                        to="/coverage"
+                    >
+                        <dl v-if="coverageRows.length > 0" class="grid sm:grid-cols-2">
+                            <div
+                                v-for="row in coverageRows"
+                                :key="row.label"
+                                class="flex flex-col gap-2 border-b border-default p-4 sm:odd:border-r"
+                            >
+                                <div class="flex items-baseline justify-between gap-3">
+                                    <dt class="text-sm text-toned first-letter:uppercase">
+                                        {{ row.label }}
+                                    </dt>
+                                    <dd data-figure class="text-2xl leading-none" :class="row.tone">
+                                        {{ row.pct }}%
+                                    </dd>
+                                </div>
+                                <SplitBar
+                                    :parts="[
+                                        { label: 'covered', value: row.covered, tone: 'ink' },
+                                        {
+                                            label: 'not covered',
+                                            value: row.total - row.covered,
+                                            tone: 'soft',
+                                        },
+                                    ]"
+                                />
+                            </div>
+                        </dl>
+                        <p v-else class="px-4 py-8 text-center text-sm text-muted">
+                            No usable coverage report for this project.
+                        </p>
+                    </WidgetPanel>
+
+                    <WidgetPanel
+                        v-else-if="tab === 'deps'"
+                        title="Outdated dependencies"
+                        :meta="`pnpm outdated · collected ${depsAge} · advisories are workspace-wide`"
+                        to="/deps"
+                        :count="outdated.length"
+                    >
+                        <div v-if="outdated.length > 0" data-scroll-x class="overflow-x-auto">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Package</th>
+                                        <th class="numeric">Current</th>
+                                        <th class="numeric hidden sm:table-cell">Wanted</th>
+                                        <th class="numeric">Latest</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="item in outdated" :key="item.name">
+                                        <td class="font-mono">
+                                            {{ item.name }}
+                                            <span v-if="item.isDeprecated" class="tone-bad">
+                                                deprecated
+                                            </span>
+                                        </td>
+                                        <td class="numeric font-mono">{{ item.current }}</td>
+                                        <td class="numeric hidden font-mono sm:table-cell">
+                                            {{ item.wanted }}
+                                        </td>
+                                        <td class="numeric font-mono text-highlighted">
+                                            {{ item.latest }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p v-else class="px-4 py-8 text-center text-sm text-muted">
+                            Everything is current.
+                        </p>
+                    </WidgetPanel>
+
+                    <WidgetPanel
+                        v-else-if="tab === 'issues'"
+                        title="Open issues"
+                        :meta="issuesRead ? `GitHub · labelled ${area}` : 'Reading GitHub…'"
+                        :count="issuesRead ? projectIssues.length : '—'"
+                    >
+                        <p
+                            v-if="projectIssues.length === 0"
+                            class="px-4 py-8 text-center text-sm text-muted"
+                        >
+                            {{
+                                issuesRead
+                                    ? `No open issue is labelled ${area}.`
+                                    : "Reading open issues…"
+                            }}
+                        </p>
+                        <ul v-else class="divide-y divide-default">
+                            <li v-for="issue in projectIssues" :key="issue.number">
+                                <a
+                                    :href="issue.url"
+                                    target="_blank"
+                                    class="flex items-baseline gap-3 px-4 py-2 hover:bg-elevated"
+                                >
+                                    <span class="w-14 shrink-0 font-mono text-xs text-muted">
+                                        #{{ issue.number }}
+                                    </span>
+                                    <span class="min-w-0 flex-1 truncate text-sm text-highlighted">
+                                        {{ issue.title }}
+                                    </span>
+                                    <span class="shrink-0 font-mono text-xs text-muted">
+                                        {{ issue.age }}
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </WidgetPanel>
+
+                    <WidgetPanel
+                        v-else-if="extra"
+                        :title="extra.label"
+                        :meta="`Running in ${name}`"
+                        :count="extra.items.length"
+                        :to="extra.to"
+                    >
+                        <p
+                            v-if="extra.items.length === 0"
+                            class="px-4 py-8 text-center text-sm text-muted"
+                        >
+                            {{ extra.empty }}
+                        </p>
+                        <ul v-else class="divide-y divide-default">
+                            <li v-for="row in extra.items" :key="row.id">
+                                <NuxtLink
+                                    :to="row.to"
+                                    class="flex flex-col gap-2 px-4 py-3 hover:bg-elevated"
+                                >
+                                    <div class="flex items-baseline justify-between gap-3">
+                                        <span class="truncate text-sm font-medium text-highlighted">
+                                            {{ row.title }}
+                                        </span>
+                                        <span
+                                            data-figure
+                                            class="text-xl leading-none text-highlighted"
+                                        >
+                                            {{ row.percent
+                                            }}<span class="text-sm text-muted">%</span>
+                                        </span>
+                                    </div>
+                                    <SplitBar
+                                        :parts="[
+                                            { label: 'done', value: row.done, tone: 'ink' },
+                                            { label: 'to go', value: row.left, tone: 'soft' },
+                                        ]"
+                                    />
                                 </NuxtLink>
-                            </dd>
-                        </div>
-
-                        <div v-if="project.tags.length > 0" class="px-4 py-2">
-                            <dt class="text-muted">Tags</dt>
-                            <dd class="flex flex-wrap gap-x-3 font-mono text-xs text-highlighted">
-                                <span v-for="tag in project.tags" :key="tag">{{ tag }}</span>
-                            </dd>
-                        </div>
-                    </dl>
-
-                    <template #footer>
-                        <UAlert
-                            v-if="live.error"
-                            color="warning"
-                            variant="subtle"
-                            icon="i-lucide-cloud-off"
-                            title="Live deployment status is unavailable"
-                            :description="live.error"
-                            class="mb-3"
-                        />
-                        <div class="flex flex-wrap gap-2">
-                            <UButton
-                                v-for="link in buttons"
-                                :key="link.label"
-                                :to="link.to"
-                                :label="link.label"
-                                :icon="link.icon"
-                                :target="link.external ? '_blank' : undefined"
-                                :external="link.external"
-                                size="xs"
-                                color="neutral"
-                                variant="outline"
-                            />
-                        </div>
-                    </template>
-                </UCard>
-
-                <article
-                    class="min-w-0 flex-1 border border-default bg-default px-6 py-5"
-                    data-prose
-                    data-readme
-                >
-                    <ContentRenderer v-if="readme" :value="readme" />
-                    <p v-else class="text-muted">This project has no README.</p>
-                </article>
+                            </li>
+                        </ul>
+                    </WidgetPanel>
+                </div>
             </div>
         </template>
     </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
+import type { PageTab } from "~/components/AppTabs.vue";
+import type { ProjectTab, ProjectTabRow } from "~/utils/apps";
+
+const BUILT_IN = [
+    { id: "readme", label: "README" },
+    { id: "coverage", label: "Coverage" },
+    { id: "deps", label: "Dependencies" },
+    { id: "issues", label: "Issues" },
+];
+
+const AREA_PREFIX: Record<string, string> = {
+    apps: "app",
+    packages: "package",
+    infrastructure: "infra",
+};
+
+const { projectTabs = {} }: { projectTabs?: Record<string, ProjectTab | undefined> } =
+    useAppConfig();
+const registered = Object.entries(projectTabs).flatMap(([id, entry]) =>
+    entry ? [{ id, ...entry }] : [],
+);
+const TABS = [...BUILT_IN, ...registered.map(({ id, label }) => ({ id, label }))];
+
 const route = useRoute("projects-name");
 const name = computed(() => String(route.params.name));
+const tab = computed(() =>
+    TABS.some((item) => item.id === route.query.tab) ? String(route.query.tab) : "readme",
+);
 
-const { snapshot, projects, live, metricFor, linksFor } = await useCatalog();
+const [{ projects, metricFor }, { data: coverageSnapshot }, { data: deps }] = await Promise.all([
+    useCatalog(),
+    useSnapshot("coverage"),
+    useSnapshot("deps"),
+]);
 
 const project = computed(() =>
     projects.value.find((candidate) => folderOf(candidate.root) === name.value),
 );
+const metric = computed(() => (project.value ? metricFor(project.value) : undefined));
 
 const { data: readme } = await useAsyncData(`project-readme-${name.value}`, () =>
     project.value
@@ -120,80 +301,120 @@ const { data: readme } = await useAsyncData(`project-readme-${name.value}`, () =
         : Promise.resolve(null),
 );
 
-const facts = computed(() => {
-    if (!project.value) return [];
-    const metric = metricFor(project.value);
+const coverage = computed(() =>
+    coverageSnapshot.value?.coverage?.projects.find((item) => item.root === project.value?.root),
+);
+const coverageAge = computed(() => relativeTime(coverageSnapshot.value?.coverage?.generatedAt));
+const coveragePct = computed(() => coverage.value?.lines?.pct ?? null);
 
-    return [
-        { label: "Kind", value: categoryOf(project.value.root), class: "text-highlighted" },
-        {
-            label: "Version",
-            value: metric?.currentVersion ?? "unversioned",
-            class: "text-highlighted",
-        },
-        {
-            label: "Unreleased commits",
-            value: dash(metric?.unreleasedCommits),
-            class: "text-highlighted",
-        },
-        {
-            label: "Line coverage",
-            value: dash(metric?.coverageLinesPct, "%"),
-            class: toneClass(coverageTone(metric?.coverageLinesPct)) || "text-highlighted",
-        },
-        { label: "Specs", value: dash(metric?.specs), class: "text-highlighted" },
-        { label: "Commits", value: dash(metric?.commits), class: "text-highlighted" },
-        {
-            label: "Last two weeks",
-            value: dash(metric?.commitsLastTwoWeeks),
-            class: "text-highlighted",
-        },
-    ];
+const coverageRows = computed(() =>
+    (["lines", "statements", "functions", "branches"] as const).flatMap((key) => {
+        const value = coverage.value?.[key];
+
+        return value ? [{ label: key, ...value, tone: toneClass(coverageTone(value.pct)) }] : [];
+    }),
+);
+
+const depsAge = computed(() => relativeTime(deps.value?.deps?.generatedAt));
+const outdated = computed(
+    () =>
+        deps.value?.deps?.outdated?.filter((item) =>
+            item.dependents.includes(project.value?.root ?? ""),
+        ) ?? [],
+);
+
+const extraRows = await Promise.all(
+    registered.map(
+        async (entry) =>
+            (
+                await useFetch<Record<string, ProjectTabRow[]>>(entry.rows, {
+                    key: `project-tab-${entry.id}`,
+                    default: () => ({}),
+                })
+            ).data,
+    ),
+);
+
+const extras = computed(() =>
+    registered.map((entry, index) => ({
+        ...entry,
+        items: extraRows[index]?.value[name.value] ?? [],
+    })),
+);
+const extra = computed(() => extras.value.find((entry) => entry.id === tab.value) ?? null);
+
+const { data: read } = useIssues();
+const mounted = ref(false);
+onMounted(() => (mounted.value = true));
+const issuesRead = computed(() => mounted.value && Boolean(read.value.fetchedAt));
+
+const area = computed(() => {
+    const kind = project.value?.root.split("/")[0] ?? "";
+
+    return `${AREA_PREFIX[kind] ?? "infra"}:${name.value}`;
 });
+
+const projectIssues = computed(() =>
+    mounted.value
+        ? read.value.issues
+              .filter((issue) => issue.labels.includes(area.value))
+              .map((issue) => ({ ...issue, age: shortAge(issue.updatedAt) }))
+        : [],
+);
+
+const counts = computed<Partial<Record<string, number | string>>>(() => ({
+    coverage: coveragePct.value === null ? undefined : `${coveragePct.value}%`,
+    deps: outdated.value.length,
+    ...(issuesRead.value && { issues: projectIssues.value.length }),
+    ...Object.fromEntries(extras.value.map((entry) => [entry.id, entry.items.length])),
+}));
+
+const tabs = computed((): PageTab[] =>
+    TABS.map((item) => ({
+        label: item.label,
+        to: item.id === "readme" ? route.path : `${route.path}?tab=${item.id}`,
+        active: item.id === tab.value,
+        count: counts.value[item.id],
+    })),
+);
+
+const facts = computed((): { label: string; value: string; class: string; pct?: number }[] => [
+    { label: "Version", value: metric.value?.currentVersion ?? "—", class: "" },
+    {
+        label: "Unreleased",
+        value: metric.value?.unreleasedCommits ? `+${metric.value.unreleasedCommits}` : "—",
+        class: "",
+    },
+    { label: "Commits, 2 wk", value: dash(metric.value?.commitsLastTwoWeeks), class: "" },
+    { label: "Specs", value: dash(metric.value?.specs), class: "" },
+    {
+        label: "Lines covered",
+        value: dash(coveragePct.value, "%"),
+        class: toneClass(coverageTone(coveragePct.value)),
+        ...(coveragePct.value !== null && { pct: coveragePct.value }),
+    },
+    { label: "Changelog", value: metric.value?.hasChangelog ? "yes" : "no", class: "" },
+]);
 
 const pageFor = (packageName: string): string => {
     const found = projects.value.find((candidate) => candidate.name === packageName);
     return found ? `/projects/${folderOf(found.root)}` : "/projects";
 };
 
-const relations = computed(() =>
-    project.value
-        ? [
-              {
-                  label: "Uses",
-                  items: project.value.dependsOn.map((item) => ({ name: item, to: pageFor(item) })),
-              },
-              {
-                  label: "Used by",
-                  items: project.value.dependedOnBy.map((item) => ({
-                      name: item,
-                      to: pageFor(item),
-                  })),
-              },
-          ]
-        : [],
-);
-
-const buttons = computed(() => {
-    if (!project.value) return [];
-    const links = linksFor(project.value);
-
-    return [
-        { label: "Open site", icon: "i-lucide-external-link", to: links.website, external: true },
-        {
-            label: "Docs",
-            icon: "i-lucide-book-open",
-            to: `/wiki/${project.value.root.toLowerCase()}/readme`,
-            external: false,
-        },
-        { label: "API", icon: "i-lucide-braces", to: links.apiDocs, external: true },
-        {
-            label: "Storybook",
-            icon: "i-lucide-panels-top-left",
-            to: links.storybook,
-            external: true,
-        },
-        { label: "Deploys", icon: "i-lucide-rocket", to: links.deploys, external: true },
-    ].filter((link) => link.to);
-});
+const relations = computed(() => [
+    {
+        label: "Depends on",
+        items: [...new Set(project.value?.dependsOn ?? [])].map((item) => ({
+            name: item,
+            to: pageFor(item),
+        })),
+    },
+    {
+        label: "Used by",
+        items: [...new Set(project.value?.dependedOnBy ?? [])].map((item) => ({
+            name: item,
+            to: pageFor(item),
+        })),
+    },
+]);
 </script>

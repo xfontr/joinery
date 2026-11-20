@@ -1,25 +1,21 @@
 import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
-import { ref } from "vue";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { EnvironmentDeployment } from "#layers/github/shared/deployments.ts";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import type { CoverageArtifact } from "#layers/snapshot/shared/types/CoverageArtifact.ts";
+import type { DepsArtifact } from "#layers/snapshot/shared/types/DepsArtifact.ts";
 import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
+import type { OutdatedPackage } from "#layers/snapshot/shared/types/OutdatedPackage.ts";
+import type { ProjectCoverage } from "#layers/snapshot/shared/types/ProjectCoverage.ts";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
-import type { RetiredProject } from "#layers/snapshot/shared/types/RetiredProject.ts";
 import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
+import type { ProjectTabRow } from "~/utils/apps";
 import Page from "./[name].vue";
 
 // An in-memory docs collection, answering the README query the page sends
 const docs = vi.hoisted(() => ({
     readmes: [] as { path: string; title: string; description: string }[],
-}));
-
-// GitHub's API is read straight from the browser, so the github layer's composable is the boundary
-const github = vi.hoisted(() => ({
-    deployments: [] as EnvironmentDeployment[],
-    error: null as string | null,
 }));
 
 mockNuxtImport("queryCollection", () => () => {
@@ -32,9 +28,7 @@ mockNuxtImport("queryCollection", () => () => {
     return query;
 });
 
-mockNuxtImport("useDeployments", () => () => ({
-    data: ref({ deployments: github.deployments, error: github.error }),
-}));
+const ISSUES_API = "https://api.github.com/repos/acme/repo/issues";
 
 const node = (name: string, root: string, links: Partial<ProjectNode> = {}): ProjectNode => ({
     name,
@@ -58,112 +52,236 @@ const metric = (name: string, values: Partial<ProjectMetrics>): ProjectMetrics =
     ...values,
 });
 
+const outdatedPackage = (name: string, dependents: string[]): OutdatedPackage => ({
+    name,
+    current: "1.0.0",
+    wanted: "1.0.1",
+    latest: "2.0.0",
+    isDeprecated: false,
+    dependents,
+});
+
 const UI = node("@monorepo/ui", "packages/UI", {
     dependsOn: ["@monorepo/configs"],
     dependedOnBy: ["@monorepo/developer-portal"],
 });
-const SITE = node("@monorepo/huella-legal", "apps/huella-legal");
-const SCRIPTS = node("@monorepo/scripts", "infrastructure/scripts");
+const CONFIGS = node("@monorepo/configs", "packages/configs");
 
-const serve = (
-    projects: ProjectNode[],
-    { metrics = [], retired = [] }: { metrics?: ProjectMetrics[]; retired?: RetiredProject[] } = {},
-) => {
-    const metricsArtifact = {
-        generatedAt: "2026-11-01T00:00:00Z",
-        commit: "abc",
-        branch: "master",
-        projects: metrics,
-        invariantFindings: [],
-        conventionalCommitRate: null,
-        commitsSinceLastRelease: null,
-    } satisfies MetricsArtifact;
-
+const serve = ({
+    projects = [UI, CONFIGS],
+    metrics = [],
+    coverage = [],
+    outdated = [],
+    workflows = {},
+}: {
+    projects?: ProjectNode[];
+    metrics?: ProjectMetrics[];
+    coverage?: ProjectCoverage[];
+    outdated?: OutdatedPackage[];
+    workflows?: Record<string, ProjectTabRow[]>;
+} = {}) => {
+    serveEndpoint("/api/workflows/areas", () => workflows);
     serveEndpoint("/api/snapshot/projects", (): SnapshotResponse => ({
         manifest: null,
-        projects: { generatedAt: "2026-11-01T00:00:00Z", projects, retired },
+        projects: { generatedAt: "2026-11-01T00:00:00Z", projects, retired: [] },
     }));
     serveEndpoint("/api/snapshot/metrics", (): SnapshotResponse => ({
         manifest: null,
-        metrics: metricsArtifact,
+        metrics: {
+            generatedAt: "2026-11-01T00:00:00Z",
+            commit: "abc",
+            branch: "master",
+            projects: metrics,
+            invariantFindings: [],
+            conventionalCommitRate: null,
+            commitsSinceLastRelease: null,
+        } satisfies MetricsArtifact,
+    }));
+    serveEndpoint("/api/snapshot/coverage", (): SnapshotResponse => ({
+        manifest: null,
+        coverage: {
+            generatedAt: "2026-11-01T00:00:00Z",
+            totals: null,
+            report: false,
+            projects: coverage,
+        } satisfies CoverageArtifact,
+    }));
+    serveEndpoint("/api/snapshot/deps", (): SnapshotResponse => ({
+        manifest: null,
+        deps: {
+            generatedAt: "2026-11-01T00:00:00Z",
+            vulnerabilities: null,
+            totalDependencies: null,
+            advisories: [],
+            outdated,
+        } satisfies DepsArtifact,
     }));
 };
 
-/** Each fact by its label, the count beside a list label left out. */
+/** Each About fact by its label, the count beside a list label left out. */
 const facts = (wrapper: VueWrapper) =>
     Object.fromEntries(
         wrapper
-            .findAll("dl > div")
+            .findAll("aside dl > div")
             .map((fact) => [
                 fact.find("dt").element.firstChild?.textContent?.trim(),
                 fact.findAll("dd").map((dd) => dd.text()),
             ]),
     );
 
-const hrefs = (wrapper: VueWrapper) => wrapper.findAll("a").map((a) => a.attributes("href"));
+/** Each tab's link, whether it is current, and the count beside it. */
+const tabs = (wrapper: VueWrapper) =>
+    wrapper.findAll("nav[aria-label$='sections'] a").map((tab) => ({
+        to: tab.attributes("href"),
+        current: tab.attributes("aria-current") ?? null,
+        count: tab.find("span").exists() ? tab.find("span").text() : null,
+    }));
 
-beforeEach(() => {
+afterEach(() => {
     docs.readmes = [];
-    github.deployments = [];
-    github.error = null;
+    useRuntimeConfig().public.repoUrl = "";
 });
 
 describe("project page", () => {
-    it("links what a project uses and what uses it to their own pages", async () => {
-        serve([UI, node("@monorepo/configs", "packages/configs"), SCRIPTS]);
+    it("links what a project depends on and what uses it to their own pages", async () => {
+        serve();
         const wrapper = await mountSuspended(Page, { route: "/projects/UI" });
 
-        expect(facts(wrapper)["Uses"]).toEqual(["@monorepo/configs"]);
+        expect(facts(wrapper)["Depends on"]).toEqual(["@monorepo/configs"]);
         expect(facts(wrapper)["Used by"]).toEqual(["@monorepo/developer-portal"]);
-        expect(hrefs(wrapper)).toContain("/projects/configs");
+        expect(wrapper.find("a[href='/projects/configs']").exists()).toBe(true);
     });
 
-    it("prints each metric with its unit and a dash where nothing was measured", async () => {
-        serve([UI], { metrics: [metric("@monorepo/ui", { coverageLinesPct: 90, specs: 2 })] });
+    it("prints each fact with its unit and a dash where nothing was measured", async () => {
+        serve({
+            metrics: [
+                metric("@monorepo/ui", { unreleasedCommits: 3, specs: 2, hasChangelog: true }),
+            ],
+            coverage: [
+                {
+                    name: "@monorepo/ui",
+                    root: "packages/UI",
+                    collected: true,
+                    files: 4,
+                    lines: { pct: 90, covered: 90, total: 100 },
+                },
+            ],
+        });
         const wrapper = await mountSuspended(Page, { route: "/projects/UI" });
 
-        expect(facts(wrapper)["Line coverage"]).toEqual(["90%"]);
-        expect(facts(wrapper)["Specs"]).toEqual(["2"]);
-        expect(facts(wrapper)["Commits"]).toEqual(["—"]);
+        expect(facts(wrapper)).toMatchObject({
+            Version: ["—"],
+            Unreleased: ["+3"],
+            "Commits, 2 wk": ["—"],
+            Specs: ["2"],
+            "Lines covered": ["90%"],
+            Changelog: ["yes"],
+        });
     });
 
-    it("links a deployed app to its live site, API docs, Storybook and deploys", async () => {
-        github.deployments = [
-            {
-                environment: "huella-legal",
-                state: "success",
-                url: "https://site.example",
-                updatedAt: "2026-09-20",
+    it("opens on the README and links every other tab with its count", async () => {
+        serve({ outdated: [outdatedPackage("vue", ["packages/UI"])] });
+        const wrapper = await mountSuspended(Page, { route: "/projects/UI" });
+
+        expect(tabs(wrapper)).toEqual([
+            { to: "/projects/UI", current: "page", count: null },
+            { to: "/projects/UI?tab=coverage", current: null, count: null },
+            { to: "/projects/UI?tab=deps", current: null, count: "1" },
+            { to: "/projects/UI?tab=issues", current: null, count: "0" },
+            { to: "/projects/UI?tab=workflows", current: null, count: "0" },
+        ]);
+        expect(wrapper.find("[data-readme]").exists()).toBe(true);
+    });
+
+    it("splits each coverage metric into covered and not covered", async () => {
+        serve({
+            coverage: [
+                {
+                    name: "@monorepo/ui",
+                    root: "packages/UI",
+                    collected: true,
+                    files: 4,
+                    lines: { pct: 75, covered: 30, total: 40 },
+                },
+            ],
+        });
+        const wrapper = await mountSuspended(Page, { route: "/projects/UI?tab=coverage" });
+
+        expect(wrapper.text()).toContain("75%");
+        expect(wrapper.text()).toContain("30 covered");
+        expect(wrapper.text()).toContain("10 not covered");
+    });
+
+    it("lists only the outdated packages this project depends on", async () => {
+        serve({
+            outdated: [
+                outdatedPackage("vue", ["packages/UI"]),
+                outdatedPackage("yaml", ["packages/configs"]),
+            ],
+        });
+        const wrapper = await mountSuspended(Page, { route: "/projects/UI?tab=deps" });
+
+        const rows = wrapper.findAll("tbody tr").map((row) => row.find("td").text());
+        expect(rows).toEqual(["vue"]);
+    });
+
+    it("lists only the open issues labelled with the project's area", async () => {
+        useRuntimeConfig().public.repoUrl = "https://github.com/acme/repo";
+        const issue = (number: number, label: string) => ({
+            number,
+            title: `Issue ${number}`,
+            body: "",
+            html_url: `https://github.com/acme/repo/issues/${number}`,
+            labels: [{ name: label }],
+            assignees: [],
+            created_at: "2026-11-01T00:00:00Z",
+            updated_at: "2026-11-01T00:00:00Z",
+        });
+        serveEndpoint(ISSUES_API, () => [issue(1, "package:UI"), issue(2, "app:huella-legal")]);
+        serve();
+        const wrapper = await mountSuspended(Page, { route: "/projects/UI?tab=issues" });
+
+        await vi.waitFor(() => expect(wrapper.findAll("a[href*='/issues/']").length).toBe(1));
+        expect(wrapper.find("a[href$='/issues/1']").exists()).toBe(true);
+    });
+
+    it("lists the workflows running in this project from the tab the workflows layer adds", async () => {
+        serve({
+            workflows: {
+                UI: [
+                    {
+                        id: "kit",
+                        title: "UI kit",
+                        to: "/workflows/kit",
+                        percent: 25,
+                        done: 1,
+                        left: 3,
+                    },
+                ],
+                configs: [
+                    {
+                        id: "lint",
+                        title: "Lint",
+                        to: "/workflows/lint",
+                        percent: 0,
+                        done: 0,
+                        left: 2,
+                    },
+                ],
             },
-        ];
-        serve([SITE]);
-        const wrapper = await mountSuspended(Page, { route: "/projects/huella-legal" });
+        });
+        const wrapper = await mountSuspended(Page, { route: "/projects/UI?tab=workflows" });
 
-        expect(hrefs(wrapper)).toEqual(
-            expect.arrayContaining([
-                "https://site.example",
-                "https://site.example/_scalar",
-                expect.stringMatching(/\/huella-legal-storybook\/$/),
-                expect.stringMatching(/\/actions\/workflows\/netlify-deployment\.yml$/),
-                "/wiki/apps/huella-legal/readme",
-            ]),
-        );
-    });
-
-    it("drops the live links and says why when GitHub cannot be read", async () => {
-        github.error = "GitHub unavailable";
-        serve([SITE]);
-        const wrapper = await mountSuspended(Page, { route: "/projects/huella-legal" });
-
-        expect(wrapper.text()).toContain("GitHub unavailable");
-        expect(wrapper.find("a[href$='/_scalar']").exists()).toBe(false);
+        expect(wrapper.find("a[href='/workflows/kit']").exists()).toBe(true);
+        expect(wrapper.find("a[href='/workflows/lint']").exists()).toBe(false);
+        expect(wrapper.text()).toContain("3 to go");
     });
 
     it("names the folder it could not find instead of rendering an empty project", async () => {
-        serve([UI]);
+        serve();
         const wrapper = await mountSuspended(Page, { route: "/projects/nowhere" });
 
         expect(wrapper.text()).toContain("nowhere");
-        expect(wrapper.find("dl").exists()).toBe(false);
+        expect(wrapper.find("aside").exists()).toBe(false);
     });
 });
