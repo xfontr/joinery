@@ -19,12 +19,11 @@
             <template #header="{ collapsed }">
                 <NuxtLink
                     v-if="!collapsed"
-                    to="/overview"
-                    class="flex min-w-0 flex-1 items-baseline gap-2"
-                    aria-label="Monorepo developer view"
+                    to="/"
+                    class="min-w-0 flex-1 font-display text-xl text-highlighted italic"
+                    aria-label="Monorepo visitor view"
                 >
-                    <span class="font-display text-xl text-highlighted italic">monorepo</span>
-                    <span class="text-sm text-muted">dev</span>
+                    monorepo
                 </NuxtLink>
                 <UDashboardSidebarCollapse
                     color="neutral"
@@ -34,6 +33,18 @@
             </template>
 
             <template #default="{ collapsed }">
+                <UButton
+                    v-if="collapsed"
+                    to="/"
+                    icon="i-lucide-arrow-left-right"
+                    color="neutral"
+                    variant="ghost"
+                    class="mx-auto text-muted"
+                    aria-label="Switch to the visitor view"
+                    title="Visitor view"
+                />
+                <ViewSwitch v-else current="dev" class="self-start" />
+
                 <UDashboardSearchButton
                     :collapsed
                     color="neutral"
