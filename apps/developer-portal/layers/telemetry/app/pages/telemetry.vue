@@ -56,44 +56,6 @@
                     </div>
                 </WidgetPanel>
 
-                <WidgetPanel
-                    title="Repo scripts"
-                    :meta="`Most run first · failing from ${MIN_RUNS} runs at ${FAILING_RATE * 100}% failed`"
-                    :count="scripts.length"
-                >
-                    <div data-scroll-x class="overflow-x-auto">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Script</th>
-                                    <th class="numeric">Runs</th>
-                                    <th class="numeric hidden sm:table-cell">By agents</th>
-                                    <th class="numeric">Failed</th>
-                                    <th class="numeric">Last run</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="row in scripts" :key="row.name">
-                                    <td class="font-mono text-highlighted">{{ row.name }}</td>
-                                    <td class="numeric font-mono">{{ row.runs }}</td>
-                                    <td class="numeric hidden font-mono sm:table-cell">
-                                        {{ row.agentShare }}
-                                    </td>
-                                    <td
-                                        class="numeric font-mono"
-                                        :class="row.failing ? 'tone-bad' : ''"
-                                    >
-                                        {{ row.failShare }}
-                                    </td>
-                                    <td class="numeric font-mono text-muted" :title="row.lastExact">
-                                        {{ row.lastShort }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </WidgetPanel>
-
                 <TelemetryScriptActivity :usage />
 
                 <TelemetryUsageTriage :usage />
@@ -105,7 +67,6 @@
 </template>
 
 <script setup lang="ts">
-import { FAILING_RATE, MIN_RUNS } from "#layers/telemetry/shared/usage.ts";
 import {
     dailyTotals,
     isFailing,
@@ -136,18 +97,6 @@ const hasRuns = computed(() => Object.keys(usage.value?.scripts ?? {}).length > 
 
 const rows = computed(() => (usage.value ? scriptRows(usage.value) : []));
 const sum = computed(() => sumDays(rows.value));
-
-const scripts = computed(() =>
-    rows.value
-        .toSorted((a, b) => b.runs - a.runs)
-        .map((row) => ({
-            ...row,
-            agentShare: row.runs ? `${percentOf(row.agent, row.runs)}%` : "—",
-            failShare: row.runs ? `${percentOf(row.failures, row.runs)}%` : "—",
-            lastShort: shortAge(row.last),
-            lastExact: row.last ? relativeTime(row.last) : "",
-        })),
-);
 
 const series = ref<string>("runs");
 const view = ref("chart");
@@ -204,7 +153,7 @@ const facts = computed((): PageFact[] => [
         class: isFailing(sum.value) ? "tone-bad" : "",
         series: "failures",
     },
-    { label: "Scripts", value: String(scripts.value.length) },
-    { label: "Never run", value: String(scripts.value.filter((row) => row.runs === 0).length) },
+    { label: "Scripts", value: String(rows.value.length) },
+    { label: "Never run", value: String(rows.value.filter((row) => row.runs === 0).length) },
 ]);
 </script>

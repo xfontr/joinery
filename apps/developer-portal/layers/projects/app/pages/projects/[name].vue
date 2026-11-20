@@ -1,27 +1,22 @@
 <template>
     <UDashboardPanel id="project">
         <template #header>
-            <UDashboardNavbar :as="{ title: 'div' }">
+            <PageHeader
+                :title="project?.name ?? name"
+                :crumbs="[{ label: 'projects', to: '/projects' }, { label: name }]"
+                :tabs="project ? tabs : []"
+            >
                 <template #title>
-                    <div class="flex min-w-0 items-center gap-2">
-                        <nav class="flex shrink-0 items-center gap-2" aria-label="Breadcrumb">
-                            <NuxtLink
-                                to="/projects"
-                                class="font-normal text-muted hover:text-highlighted"
-                            >
-                                Projects
-                            </NuxtLink>
-                            <span aria-hidden="true" class="font-normal text-dimmed">/</span>
-                        </nav>
-                        <h1 class="truncate font-mono text-highlighted">
-                            {{ project?.name ?? name }}
-                        </h1>
-                    </div>
+                    <h1 class="truncate font-mono text-2xl font-semibold text-highlighted">
+                        {{ project?.name ?? name }}
+                    </h1>
                 </template>
-            </UDashboardNavbar>
-            <UDashboardToolbar v-if="project" class="flex-col items-stretch">
-                <AppTabs :tabs :title="project.name" />
-            </UDashboardToolbar>
+                <template v-if="readme?.description" #intro>
+                    <p class="mt-2 max-w-3xl px-4 text-sm text-toned sm:px-6">
+                        {{ readme.description }}
+                    </p>
+                </template>
+            </PageHeader>
         </template>
 
         <template #body>

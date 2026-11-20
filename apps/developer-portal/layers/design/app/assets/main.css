@@ -204,7 +204,7 @@ mark {
     --ui-text: var(--color-paper-100);
     --ui-text-highlighted: var(--color-paper-50);
     --ui-text-inverted: var(--color-paper-950);
-    --ui-border: var(--color-paper-800);
+    --ui-border: var(--color-paper-700);
     --ui-primary: var(--color-terracotta-300);
     --tone-good: #329546;
     --tone-warn: #cb6b0b;

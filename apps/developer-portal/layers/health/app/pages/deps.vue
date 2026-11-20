@@ -18,7 +18,7 @@
                     <SplitBar :parts="severityParts" legend />
                 </div>
                 <p v-if="advisories.length === 0" class="px-4 py-8 text-center text-sm text-muted">
-                    {{ deps?.vulnerabilities ? "No known advisory." : "Not collected." }}
+                    {{ deps?.vulnerabilities ? "No known vulnerabilities." : "Not collected." }}
                 </p>
                 <div v-else data-scroll-x class="overflow-x-auto">
                     <table class="data-table">

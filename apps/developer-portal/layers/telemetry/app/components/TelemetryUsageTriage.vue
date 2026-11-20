@@ -1,47 +1,38 @@
 <template>
     <div class="grid gap-4 lg:grid-cols-2">
-        <UCard>
-            <template #header>
-                <h2 class="font-semibold">Scripts: how often vs how often it fails</h2>
-                <p class="text-xs text-muted">
-                    One dot per script run in the window. Dashed lines are the alert thresholds:
-                    {{ MIN_RUNS }} runs, {{ failingPercent }}% failing.
+        <WidgetPanel
+            title="Scripts: how often vs how often it fails"
+            :meta="`One dot per script · dashed at ${MIN_RUNS} runs and ${failingPercent}% failing`"
+        >
+            <div class="p-4">
+                <TelemetryQuadrantChart
+                    :chart="scripts"
+                    :kinds="CALLER_KINDS"
+                    :quadrants="scriptCorners"
+                    x-label="Runs in the window, log scale"
+                    y-label="Runs that failed"
+                />
+                <p v-if="idle.length > 0" class="mt-4 text-xs text-muted">
+                    Not plotted, no run in the window:
+                    <span class="font-mono">{{ idleList }}</span>
                 </p>
-            </template>
+            </div>
+        </WidgetPanel>
 
-            <TelemetryQuadrantChart
-                :chart="scripts"
-                :kinds="CALLER_KINDS"
-                :quadrants="scriptCorners"
-                x-label="Runs in the window, log scale"
-                y-label="Runs that failed"
-            />
-
-            <p v-if="idle.length > 0" class="mt-4 text-xs text-muted">
-                Not plotted, no run in the window:
-                <span class="font-mono">{{ idleList }}</span>
-            </p>
-        </UCard>
-
-        <UCard>
-            <template #header>
-                <h2 class="font-semibold">
-                    Lint rules: how often it fires vs how often it's switched off
-                </h2>
-                <p class="text-xs text-muted">
-                    Hits on agent edits against <code>eslint-disable</code> comments. Dashed lines:
-                    {{ FOUGHT_DISABLES }} disables, {{ noisyPercent }}% of all hits.
-                </p>
-            </template>
-
-            <TelemetryQuadrantChart
-                :chart="rules"
-                :kinds="FIX_KINDS"
-                :quadrants="ruleCorners"
-                x-label="Hits in the window, log scale"
-                y-label="Disabled inline"
-            />
-        </UCard>
+        <WidgetPanel
+            title="Lint rules: how often it fires vs how often it's switched off"
+            :meta="`Agent-edit hits against eslint-disable · dashed at ${FOUGHT_DISABLES} disables and ${noisyPercent}% of hits`"
+        >
+            <div class="p-4">
+                <TelemetryQuadrantChart
+                    :chart="rules"
+                    :kinds="FIX_KINDS"
+                    :quadrants="ruleCorners"
+                    x-label="Hits in the window, log scale"
+                    y-label="Disabled inline"
+                />
+            </div>
+        </WidgetPanel>
     </div>
 </template>
 

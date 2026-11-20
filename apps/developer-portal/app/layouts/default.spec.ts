@@ -5,6 +5,7 @@ import { ref } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { IssuesRead } from "#layers/github/shared/issues.ts";
 import type { Badges } from "#layers/snapshot/shared/types/Badges.ts";
+import type { MenuRow, RailFigure } from "~/utils/apps";
 import type { SearchSection } from "~/utils/search";
 import Layout from "./default.vue";
 
@@ -16,7 +17,12 @@ mockNuxtImport("useIssues", () => () => ({ data: github.read }));
 const search = vi.hoisted(() => vi.fn((): Promise<SearchSection[]> => Promise.resolve([])));
 mockNuxtImport("queryCollectionSearchSections", () => search);
 
-const MENUS = ["/api/decisions/menu", "/api/audits/menu", "/api/workflows/menu"];
+const MENUS = [
+    "/api/decisions/menu",
+    "/api/audits/menu",
+    "/api/workflows/menu",
+    "/api/projects/menu",
+];
 
 const NEVER_COLLECTED = {
     advisories: 0,
@@ -29,11 +35,17 @@ const NEVER_COLLECTED = {
 
 const serve = ({
     badges = {} as Partial<Badges>,
-    decisions = [] as { label: string; to: string }[],
+    decisions = [] as MenuRow[],
+    projects = [] as MenuRow[],
+    tooling = { value: "—", alert: false } as RailFigure,
 } = {}) => {
     serveEndpoint("/api/badges", () => ({ ...NEVER_COLLECTED, ...badges }));
-    for (const menu of MENUS)
-        serveEndpoint(menu, () => (menu === "/api/decisions/menu" ? decisions : []));
+    serveEndpoint("/api/telemetry/figure", () => tooling);
+    const answers: Record<string, MenuRow[]> = {
+        "/api/decisions/menu": decisions,
+        "/api/projects/menu": projects,
+    };
+    for (const menu of MENUS) serveEndpoint(menu, () => answers[menu] ?? []);
 };
 
 const open = async (route = "/overview") => {
@@ -47,7 +59,7 @@ const rail = (wrapper: VueWrapper) => wrapper.findComponent({ name: "UNavigation
 interface Item {
     label: string;
     to: string;
-    badge?: string;
+    badge?: { label: string; class: string };
     children?: Item[];
 }
 
@@ -71,6 +83,19 @@ const status = (wrapper: VueWrapper) => wrapper.find("footer[aria-label='Status'
 /** Each status figure as its link spells it out in full. */
 const figures = (wrapper: VueWrapper) =>
     wrapper.findAll("footer[aria-label='Status'] a").map((link) => link.attributes("title"));
+
+const KINDS: MenuRow[] = [
+    { label: "All projects", to: "/projects", badge: "2" },
+    {
+        label: "Apps",
+        to: "/projects?kind=apps",
+        badge: "2",
+        children: [
+            { label: "blog", to: "/projects/blog", badge: "40%", coverage: 40 },
+            { label: "site", to: "/projects/site", badge: "—", coverage: null },
+        ],
+    },
+];
 
 const DECISION = { label: "0036 Drop the UI kit", to: "/decisions/0036-ui" };
 
@@ -129,7 +154,7 @@ describe("default layout", () => {
         serve({ decisions: [DECISION] });
         const wrapper = await open();
 
-        expect(page(wrapper, "Decisions").children).toEqual([DECISION]);
+        expect(page(wrapper, "Decisions").children).toEqual([expect.objectContaining(DECISION)]);
         expect(page(wrapper, "Audits").children).toBeUndefined();
     });
 
@@ -137,10 +162,23 @@ describe("default layout", () => {
         serve();
         const wrapper = await open("/projects/scripts");
 
-        expect(rail(wrapper).props("modelValue")).toEqual(["catalog"]);
+        expect(wrapper.find("nav a[href='/graph']").exists()).toBe(true);
+        expect(wrapper.find("nav a[href='/decisions']").exists()).toBe(false);
     });
 
-    it("badges the open issues and the advisories, and nothing at zero", async () => {
+    // The menu hands a nested list's open state to the top level's v-model, which folded the app
+    it("keeps an app unfolded when a page inside it folds its own rows", async () => {
+        serve({ decisions: [DECISION] });
+        const wrapper = await open("/decisions");
+
+        await wrapper.find("nav a[href='/decisions'] [data-slot='linkTrailing']").trigger("click");
+        await flushPromises();
+
+        expect(wrapper.find(`nav a[href='${DECISION.to}']`).exists()).toBe(false);
+        expect(wrapper.find("nav a[href='/audits']").exists()).toBe(true);
+    });
+
+    it("prints each Health page's figure in its tone, and nothing for a figure never collected", async () => {
         github.read = ref<IssuesRead>({
             fetchedAt: "2026-11-18T10:00:00Z",
             error: null,
@@ -157,12 +195,47 @@ describe("default layout", () => {
                 },
             ],
         });
-        serve({ badges: { advisories: 3 } });
+        serve({
+            badges: {
+                advisories: 3,
+                worstSeverity: "high",
+                collected: { branch: "master", commit: "abc1234", at: "2026-11-18T10:00:00Z" },
+            },
+            tooling: { value: "40%", alert: true },
+        });
         const wrapper = await open();
 
-        expect(page(wrapper, "Work in progress").badge).toBe("1");
-        expect(page(wrapper, "Dependencies").badge).toBe("3");
+        expect(page(wrapper, "Work in progress").badge).toEqual({ label: "1", class: "" });
+        expect(page(wrapper, "Dependencies").badge).toEqual({ label: "3 adv.", class: "tone-bad" });
+        expect(page(wrapper, "Tooling usage").badge).toEqual({
+            label: "40% fail",
+            class: "tone-bad",
+        });
         expect(page(wrapper, "Coverage").badge).toBeUndefined();
+    });
+
+    // The lab's rail lists the kinds on the catalog, and a project's siblings on its page
+    it("lists a menu's groups on the page that holds them", async () => {
+        serve({ projects: KINDS });
+        const wrapper = await open("/projects");
+
+        expect(page(wrapper, "Projects").children?.map((row) => row.label)).toEqual([
+            "All projects",
+            "Apps",
+        ]);
+    });
+
+    it("lists a group's members, each in its coverage tone, on a member's own page", async () => {
+        serve({ projects: KINDS });
+        const wrapper = await open("/projects/blog");
+
+        expect(page(wrapper, "Projects").children).toEqual([
+            expect.objectContaining({
+                to: "/projects/blog",
+                badge: { label: "40%", class: "tone-bad" },
+            }),
+            expect.objectContaining({ to: "/projects/site", badge: { label: "—", class: "" } }),
+        ]);
     });
 
     it("prints the snapshot's branch, commit and figures in the status bar", async () => {
@@ -183,6 +256,7 @@ describe("default layout", () => {
         expect(figures(wrapper)).toEqual([
             "coverage: 81% lines",
             "advisories: 2 worst high",
+            "tooling: — failed",
             "issues: — open",
             "docs: 12 1 broken link",
         ]);

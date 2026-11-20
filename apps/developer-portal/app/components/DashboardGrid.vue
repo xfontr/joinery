@@ -64,7 +64,7 @@
 
                 <div
                     :inert="editing"
-                    class="@container flex-1"
+                    class="@container flex-1 *:h-full"
                     :class="editing && 'pointer-events-none'"
                 >
                     <slot :name="widget.id" />

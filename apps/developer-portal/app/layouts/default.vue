@@ -1,5 +1,5 @@
 <template>
-    <UDashboardGroup unit="rem" class="bottom-7">
+    <UDashboardGroup unit="rem">
         <UDashboardSidebar
             id="dashboard"
             resizable
@@ -9,10 +9,11 @@
             :max-size="20"
             :collapsed-size="3.5"
             :ui="{
-                root: 'surface-ink min-h-0 border-e-0',
+                root: 'surface-ink min-h-0 border-e border-default',
                 content: 'surface-ink lg:hidden',
-                body: 'gap-3',
-                footer: 'border-t border-default',
+                header: 'h-14 pr-2 pl-5',
+                body: 'gap-4 px-3 py-0 pb-4',
+                footer: 'border-t border-default px-3',
             }"
         >
             <template #header="{ collapsed }">
@@ -37,11 +38,14 @@
                     :collapsed
                     color="neutral"
                     variant="outline"
-                    class="bg-elevated text-muted ring-default"
+                    size="sm"
+                    class="bg-elevated text-sm font-normal text-muted ring-default"
+                    :ui="{ leadingIcon: 'size-3.5' }"
                 />
 
+                <!-- It hands every nested list's open state to one v-model, so it stays uncontrolled -->
                 <UNavigationMenu
-                    v-model="openApps"
+                    :key="route.path"
                     :items="railItems"
                     :collapsed
                     orientation="vertical"
@@ -52,7 +56,11 @@
                     trailing-trigger
                     popover
                     :ui="{
-                        link: 'text-muted hover:text-highlighted data-active:text-highlighted',
+                        link: 'h-9 gap-2.5 px-2 py-0 font-normal text-muted hover:text-highlighted data-active:font-medium data-active:text-highlighted',
+                        linkLeadingIcon: 'size-4',
+                        linkTrailingIcon: 'size-3.5',
+                        childLink: 'h-8 items-center gap-2 py-0 text-sm',
+                        childLinkIcon: 'size-3.5',
                         linkTrailingBadge:
                             'bg-transparent px-0 font-mono text-xs text-muted ring-0',
                     }"
@@ -66,7 +74,9 @@
                         :label="collapsed ? undefined : 'Theme'"
                         color="neutral"
                         variant="ghost"
+                        size="xs"
                         class="text-muted"
+                        :ui="{ leadingIcon: 'size-3.5' }"
                     />
 
                     <UButton
@@ -75,7 +85,9 @@
                         icon="i-simple-icons-github"
                         color="neutral"
                         variant="ghost"
+                        size="xs"
                         :label="collapsed ? undefined : 'Source'"
+                        :ui="{ leadingIcon: 'size-3.5' }"
                         class="text-muted"
                         :class="!collapsed && 'ml-auto'"
                         aria-label="View source on GitHub"
@@ -94,7 +106,12 @@
         <slot />
     </UDashboardGroup>
 
-    <StatusBar :collected="badges?.collected ?? null" :items="statusItems" />
+    <StatusBar
+        :collected="badges?.collected ?? null"
+        :items="statusItems"
+        :style="{ '--rail': `${railWidth}px` }"
+        class="lg:left-(--rail)"
+    />
 </template>
 
 <script setup lang="ts">
@@ -124,18 +141,25 @@ const openIssues = computed(() =>
         : null,
 );
 
-const routed = <T,>(field: "menu" | "figure", fallback: () => T) =>
-    Object.fromEntries(
-        Object.entries(nav).flatMap(([key, link]) => {
-            const url = link?.[field];
-            return url
-                ? [[key, useFetch<T>(url, { key: `${field}-${key}`, default: fallback }).data]]
-                : [];
-        }),
-    );
+const routesFor = (field: "menu" | "figure"): [string, string][] =>
+    Object.entries(nav).flatMap(([key, link]) => {
+        const url = link?.[field];
+        return url ? [[key, url] as [string, string]] : [];
+    });
 
-const menus = routed<MenuRow[]>("menu", () => []);
-const figures = routed<RailFigure | null>("figure", () => null);
+const menus = Object.fromEntries(
+    routesFor("menu").map(([key, url]) => [
+        key,
+        useFetch<MenuRow[]>(url, { key: `menu-${key}`, default: () => [] }).data,
+    ]),
+);
+
+const figures = Object.fromEntries(
+    routesFor("figure").map(([key, url]) => [
+        key,
+        useFetch<RailFigure>(url, { key: `figure-${key}` }).data,
+    ]),
+);
 
 const tooling = computed(() => figures.telemetry?.value ?? null);
 
@@ -164,23 +188,40 @@ const entryBadges = computed((): Record<string, { label: string; class: string }
 });
 
 const route = useRoute();
+
+const railWidth = ref(0);
+
+// The status bar starts where the rail ends, and the rail's width is only known once it renders
+const observer = import.meta.client
+    ? new ResizeObserver(([entry]) => {
+          railWidth.value = entry?.borderBoxSize[0]?.inlineSize ?? 0;
+      })
+    : null;
+
+// Nuxt UI ids the rail `<storageKey>-sidebar-<id>`, and the component renders more than one root
+onMounted(() => {
+    const rail = document.getElementById("dashboard-sidebar-dashboard");
+    if (rail) observer?.observe(rail);
+});
+onBeforeUnmount(() => observer?.disconnect());
 const here = computed(() => locate(apps, route.path));
 
-const holds = (row: MenuRow): boolean =>
-    row.to === route.fullPath || row.to === route.path || (row.children ?? []).some(holds);
+const holds = (row: MenuRow): boolean => row.to === route.fullPath || row.to === route.path;
 
 const toItem = (row: MenuRow): NavigationMenuItem => ({
     label: row.label,
     icon: row.icon,
     to: row.to,
     active: row.to === route.fullPath,
-    defaultOpen: (row.children ?? []).some(holds),
     badge:
         row.badge === undefined
             ? undefined
             : { label: row.badge, class: toneClass(coverageTone(row.coverage)) },
-    children: row.children?.length ? row.children.map(toItem) : undefined,
 });
+
+/** A menu one level deep at a time: inside a group, its members stand in for the groups. */
+const menuSections = (rows: MenuRow[]): NavigationMenuItem[] =>
+    (rows.find((row) => (row.children ?? []).some(holds))?.children ?? rows).map(toItem);
 
 const railItems = computed((): NavigationMenuItem[] =>
     apps.map((app) => {
@@ -193,10 +234,11 @@ const railItems = computed((): NavigationMenuItem[] =>
             to: first?.to,
             value: app.id,
             active: here.value?.app.id === app.id,
+            defaultOpen: here.value?.app.id === app.id,
             children: single
                 ? undefined
                 : app.entries.map((entry) => {
-                      const children = (menus[entry.key]?.value ?? []).map(toItem);
+                      const children = menuSections(menus[entry.key]?.value ?? []);
 
                       return {
                           label: entry.label,
@@ -213,17 +255,6 @@ const railItems = computed((): NavigationMenuItem[] =>
         };
     }),
 );
-
-/** The app holding the current page stays unfolded; the others fold back on navigation. */
-const openApps = ref<string[]>([]);
-
-// The prerendered HTML has every app folded, so unfolding one before hydration would mismatch.
-const unfoldCurrent = (): void => {
-    openApps.value = here.value ? [here.value.app.id] : [];
-};
-
-onMounted(unfoldCurrent);
-watch(() => route.path, unfoldCurrent);
 
 const statusItems = computed((): StatusItem[] => {
     const lines = badges.value?.lineCoverage ?? null;
