@@ -7,4 +7,12 @@ export default defineAppConfig({
             menu: "/api/workflows/menu",
         },
     },
+    projectTabs: {
+        workflows: {
+            label: "Workflows",
+            rows: "/api/workflows/areas",
+            to: "/workflows",
+            empty: "No workflow runs in this project.",
+        },
+    },
 });

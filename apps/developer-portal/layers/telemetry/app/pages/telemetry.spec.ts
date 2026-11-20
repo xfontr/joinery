@@ -5,6 +5,8 @@ import { describe, expect, it } from "vitest";
 import type { ScriptUsage } from "#layers/snapshot/shared/types/ScriptUsage.ts";
 import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
+import DailyChart from "~/components/DailyChart.vue";
+import PageFacts, { type PageFact } from "~/components/PageFacts.vue";
 import Page from "./telemetry.vue";
 
 // Each panel has its own spec; here only the page's own totals are under test
@@ -51,12 +53,16 @@ const usage = (
     scripts,
 });
 
-const tiles = (wrapper: VueWrapper) =>
+const facts = (wrapper: VueWrapper) =>
     Object.fromEntries(
-        wrapper
-            .findAllComponents({ name: "StatTile" })
-            .map((tile) => [tile.props("label"), String(tile.props("value"))]),
+        (wrapper.findComponent(PageFacts).props("facts") as PageFact[]).map((fact) => [
+            fact.label,
+            fact.value,
+        ]),
     );
+
+const peak = (wrapper: VueWrapper) =>
+    Math.max(...(wrapper.findComponent(DailyChart).props("values") as number[]));
 
 describe("telemetry page", () => {
     it("says nothing has been folded yet instead of showing an empty matrix as a result", async () => {
@@ -64,7 +70,7 @@ describe("telemetry page", () => {
         const wrapper = await mountSuspended(Page, { global });
 
         expect(wrapper.text()).toContain("No runs committed yet");
-        expect(tiles(wrapper)).toEqual({});
+        expect(wrapper.find("table").exists()).toBe(false);
     });
 
     it("totals the window's runs, agent and failure shares, and counts a script with none as idle", async () => {
@@ -82,11 +88,25 @@ describe("telemetry page", () => {
         );
         const wrapper = await mountSuspended(Page, { global });
 
-        expect(tiles(wrapper)).toMatchObject({
+        expect(facts(wrapper)).toEqual({
             Runs: "40",
-            "Run by an agent": "10%",
+            "By agents": "10%",
             Failed: "5%",
-            "Idle scripts": "1/3",
+            Scripts: "3",
+            "Never run": "1",
         });
+    });
+
+    it("draws the series of the figure picked above the chart", async () => {
+        serve(usage({ drift: tally(), map: tally() }));
+        const wrapper = await mountSuspended(Page, { global });
+
+        expect(peak(wrapper)).toBe(20);
+
+        const failed = wrapper.findAll("button[aria-pressed]").find((b) => b.text() === "Failed")!;
+        await failed.trigger("click");
+
+        expect(failed.attributes("aria-pressed")).toBe("true");
+        expect(peak(wrapper)).toBe(2);
     });
 });

@@ -1,18 +1,18 @@
 <template>
     <UDashboardPanel id="audit">
         <template #header>
-            <UDashboardNavbar :title="report?.title ?? page?.title ?? 'Not found'">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader
+                :crumbs="[{ label: 'audits', to: '/audits' }]"
+                :title="report?.title ?? page?.title ?? 'Not found'"
+            >
+                <template #actions>
                     <StatusPill v-if="state" :label="state.label" :tone="state.tone" />
                     <span v-if="report?.commit" class="text-xs text-muted"
                         >read at <code class="font-mono">{{ report.commit }}</code></span
                     >
                     <code class="font-mono text-xs text-dimmed">{{ source }}</code>
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
         </template>
 
         <template #body>

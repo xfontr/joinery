@@ -1,11 +1,8 @@
 <template>
     <UDashboardPanel id="issues">
         <template #header>
-            <UDashboardNavbar title="Work in progress">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader title="Work in progress">
+                <template #actions>
                     <span class="text-xs text-muted">
                         {{ read }}
                     </span>
@@ -19,7 +16,7 @@
                         @click="refresh"
                     />
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
 
             <UDashboardToolbar>
                 <template #left>

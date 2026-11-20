@@ -1,11 +1,14 @@
 <template>
     <UDashboardPanel id="workflow-settings">
         <template #header>
-            <UDashboardNavbar :title="base ? `${base.project.title} · Settings` : 'Settings'">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader
+                :crumbs="[
+                    { label: 'workflows', to: '/workflows' },
+                    { label: id, to: `/workflows/${id}` },
+                ]"
+                :title="base ? `${base.project.title} · Settings` : 'Settings'"
+            >
+                <template #actions>
                     <UButton
                         :to="`/workflows/${id}`"
                         label="Back to the project"
@@ -15,7 +18,7 @@
                         size="sm"
                     />
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
         </template>
 
         <template #body>

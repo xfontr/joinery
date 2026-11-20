@@ -52,7 +52,46 @@ describe("coverage page", () => {
         serve(COVERAGE);
         const wrapper = await mountSuspended(Page);
 
-        expect(row(wrapper, "missing")).toEqual(["missing", "not collected", "—"]);
+        expect(row(wrapper, "missing")).toEqual(["missing", "not collected"]);
+    });
+
+    it("puts the least covered project first, so the gap leads the table", async () => {
+        serve({
+            ...COVERAGE,
+            projects: [
+                COVERAGE.projects[0]!,
+                {
+                    ...COVERAGE.projects[0]!,
+                    name: "thin",
+                    root: "packages/thin",
+                    lines: { total: 100, covered: 40, pct: 40 },
+                },
+            ],
+        });
+        const wrapper = await mountSuspended(Page);
+
+        expect(wrapper.findAll("tbody tr").map((tr) => tr.find("td").text())).toEqual([
+            "thin",
+            "tested",
+        ]);
+    });
+
+    it("links each project to the coverage tab of its own page", async () => {
+        serve(COVERAGE);
+        const wrapper = await mountSuspended(Page);
+
+        expect(wrapper.find("tbody a").attributes("href")).toBe("/projects/tested?tab=coverage");
+    });
+
+    it("heads the table with the workspace totals and the summed file count", async () => {
+        serve(COVERAGE);
+        const wrapper = await mountSuspended(Page);
+        const totals = wrapper
+            .findAll("thead tr")[1]!
+            .findAll("td")
+            .map((td) => td.text());
+
+        expect(totals).toEqual(["Workspace", "80%", "81%", "82%", "83%", "3"]);
     });
 
     it("leaves out the totals when nothing was collected", async () => {

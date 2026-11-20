@@ -1,14 +1,11 @@
 <template>
     <UDashboardPanel id="docs">
         <template #header>
-            <UDashboardNavbar title="Wiki">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader title="Wiki">
+                <template #actions>
                     <span class="text-xs text-muted">{{ count }} pages, read in place</span>
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
         </template>
 
         <template #body>
@@ -18,7 +15,7 @@
                     <WikiNav :sections />
                 </aside>
 
-                <div class="flex min-w-0 flex-1 flex-col gap-6 overflow-y-auto">
+                <div class="flex min-w-0 flex-1 flex-col gap-6 overflow-y-auto *:shrink-0">
                     <div>
                         <h1 class="text-xl font-semibold">The workspace, as it is written</h1>
                         <p class="mt-1 max-w-2xl text-sm text-muted">

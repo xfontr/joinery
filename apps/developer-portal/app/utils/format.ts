@@ -83,3 +83,10 @@ export const shortAge = (iso: string | null | undefined): string => {
 /** "1 broken link", "3 broken links": a count with its noun, for nouns that just take an s. */
 export const counted = (count: number, noun: string): string =>
     `${count} ${noun}${count === 1 ? "" : "s"}`;
+
+/** The last path segment, which names a project's page under `/projects/`. */
+export const folderOf = (root: string): string => root.split("/").at(-1) ?? root;
+
+/** A metric with its unit, or a dash for a project nothing collected it for. */
+export const dash = (value: number | null | undefined, unit = ""): string =>
+    typeof value === "number" ? `${value}${unit}` : "—";

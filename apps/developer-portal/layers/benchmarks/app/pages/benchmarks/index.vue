@@ -1,11 +1,8 @@
 <template>
     <UDashboardPanel id="benchmarks">
         <template #header>
-            <UDashboardNavbar title="Benchmarks">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader title="Benchmarks">
+                <template #actions>
                     <UButton
                         to="/wiki/docs/benchmarks/readme"
                         label="How an entry is written"
@@ -15,7 +12,7 @@
                         size="xs"
                     />
                 </template>
-            </UDashboardNavbar>
+            </PageHeader>
 
             <UDashboardToolbar>
                 <template #left>

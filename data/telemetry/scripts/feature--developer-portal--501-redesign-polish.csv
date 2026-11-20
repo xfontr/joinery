@@ -1,0 +1,9 @@
+at,script,command,target,flags,area,caller,tty,exit,ms
+2026-11-19,ship,,,,repo,claude-code,0,0,229681
+2026-11-19,workflow,file,,,repo,claude-code,0,0,1529
+2026-11-19,workflow,sync,,,repo,claude-code,0,0,2390
+2026-11-19,workflow,next,,,repo,claude-code,0,0,1434
+2026-11-19,map,,,check,repo,claude-code,0,0,146
+2026-11-19,map,,,check,repo,claude-code,0,0,149
+2026-11-19,map,,,check,repo,claude-code,0,0,193
+2026-11-19,issue,pick,,title,developer-portal,claude-code,0,0,14685
