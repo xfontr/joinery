@@ -1,7 +1,7 @@
 <template>
     <template v-if="work">
         <section class="mx-auto flex max-w-6xl flex-col gap-6 px-4 pt-10 pb-12 md:px-10 md:pt-20">
-            <p class="font-mono text-xs text-muted uppercase">A case · {{ work.kind }}</p>
+            <p class="font-mono text-xs text-muted uppercase">Case study · {{ work.kind }}</p>
             <h1 class="font-display text-section text-highlighted md:text-title lg:text-statement">
                 {{ work.title }} <mark>{{ work.mark }}</mark>
             </h1>
@@ -47,7 +47,7 @@
 
         <section class="mx-auto max-w-6xl px-4 pt-16 md:px-10">
             <h2 class="pb-8 font-display text-section text-highlighted">
-                Decided <mark>before</mark> building
+                Key <mark>decisions</mark>
             </h2>
             <ul class="flex flex-col">
                 <li v-for="decision in work.decisions" :key="decision.id">
@@ -94,7 +94,7 @@ const screenshot = computed(() =>
     work.value ? SCREENSHOTS[`../../assets/work/${work.value.screenshot.file}`] : undefined,
 );
 const factsLine = computed(() =>
-    work.value ? `${work.value.facts.join(" · ")}, counted on ${work.value.countedOn}` : "",
+    work.value ? `${work.value.facts.join(" · ")}, as of ${work.value.countedOn}` : "",
 );
 
 if (!work.value) setResponseStatus(404);

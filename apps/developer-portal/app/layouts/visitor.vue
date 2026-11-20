@@ -29,9 +29,11 @@
                 class="flex flex-col gap-2 border-t border-accented pt-8 md:flex-row md:items-baseline md:justify-between"
             >
                 <span class="font-display text-heading text-highlighted">
-                    Want everything? <mark>Open the developer view.</mark>
+                    The <mark>developer view</mark>
                 </span>
-                <span class="text-sm text-muted">Every decision, plan, audit and check, raw.</span>
+                <span class="text-sm text-muted">
+                    Decisions, plans, audits and test results, unfiltered.
+                </span>
             </ULink>
         </footer>
     </div>

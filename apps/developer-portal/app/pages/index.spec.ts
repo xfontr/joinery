@@ -87,15 +87,15 @@ describe("front page", () => {
         const wrapper = await open();
 
         expect(wrapper.findAll("article")).toHaveLength(9);
-        expect(wrapper.text()).toContain("The sites studied before anything was drawn");
-        expect(wrapper.text()).toContain("What the machines check on every change");
+        expect(wrapper.text()).toContain("The sites studied");
+        expect(wrapper.text()).toContain("What gets checked");
         expect(wrapper.find("[data-workflow-glyph]").exists()).toBe(false);
     });
 
     it("counts only switched-on lint rules, and the in-house ones among them", async () => {
         const wrapper = await open({ usage: USAGE });
 
-        expect(wrapper.text()).toContain("2 lint rules on every change, 1 written in-house");
+        expect(wrapper.text()).toContain("2 lint rules, 1 written in-house");
     });
 
     it("counts the benchmarked sites from docs/benchmarks", async () => {

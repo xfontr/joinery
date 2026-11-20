@@ -4,17 +4,16 @@
             Built by <mark>rules.</mark>
         </h1>
         <p class="max-w-2xl text-2xl text-highlighted">
-            Websites for small publications and practices, and the tools that keep them running.
+            Websites for small publications and practices, and the tools that run them.
         </p>
         <p class="max-w-xl text-base text-muted">
-            AI agents do the heavy lifting under rules written by hand, and every decision is made
-            in the open. The result is for the people who read and use these sites, not for the
-            machine.
+            AI agents write most of the code. I write the rules they follow, and every decision is
+            public.
         </p>
     </section>
 
     <section class="mx-auto max-w-6xl px-4 pb-20 md:px-10">
-        <p class="pb-6 font-mono text-xs text-muted uppercase">Five rules, and their proof</p>
+        <p class="pb-6 font-mono text-xs text-muted uppercase">Five rules</p>
         <article
             v-for="(item, index) in principles"
             :key="item.rule"
@@ -25,13 +24,11 @@
                 <h2 class="font-display text-section text-highlighted">{{ item.rule }}</h2>
                 <p class="max-w-xl text-lg">{{ item.line }}</p>
             </div>
-            <ULink :to="item.to" class="flex flex-col gap-1 self-end md:col-span-3">
-                <span class="font-mono text-xs text-muted uppercase">Proof</span>
-                <span
-                    class="text-base text-highlighted underline decoration-primary underline-offset-4"
-                >
-                    {{ item.proof }} →
-                </span>
+            <ULink
+                :to="item.to"
+                class="self-end text-base text-highlighted underline decoration-primary underline-offset-4 md:col-span-3"
+            >
+                {{ item.proof }} →
             </ULink>
         </article>
     </section>
@@ -42,25 +39,22 @@
             class="group grid items-center gap-10 border-t border-accented pt-10 md:grid-cols-12"
         >
             <div class="flex flex-col gap-5 md:col-span-6">
-                <p class="font-mono text-xs text-muted uppercase">Rule 3, in practice</p>
+                <p class="font-mono text-xs text-muted uppercase">Agentic workflows</p>
                 <h2 class="font-display text-section text-highlighted md:text-title">
-                    Every project <mark>runs on a map.</mark>
+                    Project <mark>maps</mark>
                 </h2>
                 <p class="max-w-md text-lg text-default">
-                    One map that people and AI agents work from together. Each block knows what it
-                    waits on, so work starts in the right order.
+                    This one is Huella Legal's. Each block lists what it waits on, and agents start
+                    whatever is free.
                 </p>
                 <span
                     class="font-display text-2xl text-highlighted underline decoration-primary underline-offset-8 group-hover:text-primary"
                 >
-                    See how projects are run →
+                    See the live maps →
                 </span>
             </div>
             <div v-if="glyph" class="flex justify-center md:col-span-6">
-                <WorkflowGlyph
-                    :map="glyph"
-                    label="A real project plan: every block, and what each one waits on"
-                />
+                <WorkflowGlyph :map="glyph" label="Huella Legal's project map" />
             </div>
         </ULink>
     </section>
@@ -68,7 +62,7 @@
     <section id="work" class="bg-muted">
         <div class="mx-auto max-w-6xl px-4 py-20 md:px-10">
             <h2 class="font-display text-section text-highlighted md:text-title">
-                What the rules <mark>made</mark>
+                Sites and <mark>tools</mark>
             </h2>
             <div class="mt-12 grid gap-x-10 gap-y-12 md:grid-cols-3">
                 <article
@@ -96,7 +90,7 @@
                             :to="item.story"
                             class="text-primary underline underline-offset-4"
                         >
-                            Read the story
+                            Read the case study
                         </ULink>
                         <ULink :to="item.href" class="underline underline-offset-4">
                             {{ item.cta }}
@@ -161,19 +155,19 @@ const WORK_LIST = [
         slug: "wp-editor",
         name: "WP Editor",
         kind: "Editing tool",
-        what: "A review desk for site-wide edits to a WordPress site.",
-        stage: "In use, runs on one computer",
+        what: "Claude proposes bulk edits to a WordPress blog. I review each one as a diff before it goes live, and can undo it later.",
+        stage: "In use, runs locally",
         story: null,
-        cta: "Read how it works",
+        cta: "Read the docs",
         href: "/wiki/apps/wp-editor/readme",
         shot: null,
     },
     {
         slug: "portal",
         name: "This portal",
-        kind: "The workshop",
-        what: "The open front door to everything above.",
-        stage: "Being redesigned, starting with this page",
+        kind: "Developer portal",
+        what: "The site you're reading, plus the dashboards I run the repo from.",
+        stage: "Mid-redesign",
         story: null,
         cta: "Open the developer view",
         href: "/overview",
@@ -182,9 +176,9 @@ const WORK_LIST = [
 ];
 
 const DEEPER = [
-    { kicker: "The method", title: "Five rules, and what enforces them", to: "/method" },
-    { kicker: "The workflows", title: "How a project runs on its map", to: "/agentic-workflows" },
-    { kicker: "The work", title: "Every site, case by case", to: "/work" },
+    { kicker: "Method", title: "Five rules, all automated", to: "/method" },
+    { kicker: "Agentic workflows", title: "Live project maps", to: "/agentic-workflows" },
+    { kicker: "Work", title: "Case studies", to: "/work" },
 ];
 
 const [{ data: benchmarks }, { data: usage }, { data: workflows }] = await Promise.all([
@@ -208,36 +202,36 @@ const rules = computed(() => {
 const principles = computed(() => [
     {
         rule: "Look before drawing.",
-        line: "No template. Every design starts from award-juried sites, studied and measured.",
+        line: "Each design starts from a study of award-winning sites.",
         proof: benchmarks.value.length
-            ? `${benchmarks.value.length} sites studied before anything was drawn`
-            : "The sites studied before anything was drawn",
+            ? `${benchmarks.value.length} sites studied`
+            : "The sites studied",
         to: "/decisions/0039-developer-portal-benchmark",
     },
     {
-        rule: "Write the decision down.",
-        line: "Any question that could go either way gets a short answer anyone can read later.",
-        proof: "Will every old link to Huella Legal still work? Yes; here's how",
+        rule: "Write decisions down.",
+        line: "Any call that could go either way gets a short report anyone can read.",
+        proof: "Keeping Huella Legal's old links working",
         to: "/decisions/0028-huella-legal-urls-and-cutover",
     },
     {
         rule: "Plan the whole job.",
-        line: "A project is a map of what has to happen and what waits on what, before the first ticket.",
-        proof: "How every project is planned, just below",
+        line: "Before the first ticket, I map every task and what it waits on.",
+        proof: "The project map, below",
         to: "#workflows",
     },
     {
-        rule: "Let agents build. Let rules decide.",
-        line: "AI agents write the code. Tests, lint rules and three reviewers decide what's merged.",
-        proof: "How the agents are set up",
+        rule: "Let agents write the code.",
+        line: "Tests, lint rules and three review agents decide what gets merged. I step in when they ask.",
+        proof: "Agent setup",
         to: "/wiki/docs/concepts/agent-setup",
     },
     {
-        rule: "Prove it, every time.",
-        line: "Tests, accessibility and the repo's own rules are checked by machines on every change, not promised.",
+        rule: "Check every change.",
+        line: "Tests, accessibility and lint rules run on every change.",
         proof: rules.value
-            ? `${rules.value.enabled} lint rules on every change, ${rules.value.inHouse} written in-house`
-            : "What the machines check on every change",
+            ? `${rules.value.enabled} lint rules, ${rules.value.inHouse} written in-house`
+            : "What gets checked",
         to: "/method#prove",
     },
 ]);

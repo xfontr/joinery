@@ -152,3 +152,14 @@ export const readTemplate = (raw: unknown): { template: Template; problems: stri
 
     return { template, problems: [...reader.problems, ...templateRuleProblems(template)] };
 };
+
+/** Lessons written into the templates, on fixed and repeatable blocks alike. */
+export const lessonCount = (templates: readonly Template[]): number =>
+    templates.reduce(
+        (sum, template) =>
+            [...template.capabilities, ...template.types].reduce(
+                (count, block) => count + block.lessons.length,
+                sum,
+            ),
+        0,
+    );
