@@ -113,7 +113,7 @@ describe("front page", () => {
         const wrapper = await open({ projects: [{ id: "huella-legal", title: "Huella Legal" }] });
 
         const link = wrapper.find("#workflows a");
-        expect(link.attributes("href")).toBe("/how-its-run");
+        expect(link.attributes("href")).toBe("/agentic-workflows");
         expect(link.findAll("[data-workflow-glyph] rect")).toHaveLength(2);
     });
 

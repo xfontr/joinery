@@ -38,7 +38,7 @@
 
     <section id="workflows" class="mx-auto max-w-6xl px-4 pb-20 md:px-10">
         <ULink
-            to="/how-its-run"
+            to="/agentic-workflows"
             class="group grid items-center gap-10 border-t border-accented pt-10 md:grid-cols-12"
         >
             <div class="flex flex-col gap-5 md:col-span-6">
@@ -182,9 +182,9 @@ const WORK_LIST = [
 ];
 
 const DEEPER = [
-    { kicker: "Go deeper", title: "How it's made, rule by rule", to: "/method" },
-    { kicker: "A case", title: "Huella Legal, start to finish", to: `/work/${huella.slug}` },
-    { kicker: "The craft", title: "Careful, and measured", to: "/craft" },
+    { kicker: "The method", title: "Five rules, and what enforces them", to: "/method" },
+    { kicker: "The workflows", title: "How a project runs on its map", to: "/agentic-workflows" },
+    { kicker: "The work", title: "Every site, case by case", to: "/work" },
 ];
 
 const [{ data: benchmarks }, { data: usage }, { data: workflows }] = await Promise.all([
@@ -234,11 +234,11 @@ const principles = computed(() => [
     },
     {
         rule: "Prove it, every time.",
-        line: "Speed, accessibility and behaviour are checked by machines on every change, not promised.",
+        line: "Tests, accessibility and the repo's own rules are checked by machines on every change, not promised.",
         proof: rules.value
             ? `${rules.value.enabled} lint rules on every change, ${rules.value.inHouse} written in-house`
             : "What the machines check on every change",
-        to: "/craft",
+        to: "/method#prove",
     },
 ]);
 

@@ -1,6 +1,6 @@
 <template>
     <section class="mx-auto flex max-w-6xl flex-col gap-6 px-4 pt-10 pb-16 md:px-10 md:pt-20">
-        <p class="font-mono text-xs text-muted uppercase">How projects are run</p>
+        <p class="font-mono text-xs text-muted uppercase">Agentic workflows</p>
         <h1 class="font-display text-section text-highlighted md:text-title lg:text-statement">
             One map. <mark>People and agents.</mark>
         </h1>
@@ -76,7 +76,7 @@
 import { projectMap } from "#layers/workflows/shared/workflows.ts";
 
 definePageMeta({ layout: "visitor" });
-useHead({ title: "How it's run" });
+useHead({ title: "Agentic workflows" });
 
 const STEPS = [
     {

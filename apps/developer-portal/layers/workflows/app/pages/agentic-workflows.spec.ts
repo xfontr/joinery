@@ -3,7 +3,7 @@ import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { assembleWorkflows, type Workflows } from "#layers/workflows/shared/workflows.ts";
-import Page from "./how-its-run.vue";
+import Page from "./agentic-workflows.vue";
 
 const TEMPLATE = {
     id: "website-rebuild",
@@ -31,7 +31,7 @@ const open = async (data: Workflows) => {
     return wrapper;
 };
 
-describe("how it's run page", () => {
+describe("agentic workflows page", () => {
     it("links every project in data/workflows to its own developer page", async () => {
         const wrapper = await open(workflows());
 
