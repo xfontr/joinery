@@ -88,9 +88,17 @@
 
                 <aside
                     v-if="page?.body?.toc?.links?.length"
-                    class="hidden w-56 shrink-0 overflow-y-auto xl:block"
+                    class="hidden w-56 shrink-0 overflow-x-hidden overflow-y-auto xl:block"
                 >
-                    <UContentToc :links="page.body.toc.links" highlight class="bg-transparent" />
+                    <!-- The stock root's negative margins and top padding assume a full-page docs layout -->
+                    <UContentToc
+                        :links="page.body.toc.links"
+                        highlight
+                        :ui="{
+                            root: 'static mx-0 max-h-none bg-transparent px-0 backdrop-blur-none sm:mx-0 sm:px-0',
+                            container: 'lg:py-0',
+                        }"
+                    />
                 </aside>
             </div>
         </template>
