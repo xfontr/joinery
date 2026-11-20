@@ -25,7 +25,7 @@ export type { TicketStatus } from "./types/TicketStatus.ts";
 export type { UnsortedIssue } from "./types/UnsortedIssue.ts";
 export type { WorkflowProblem } from "./types/WorkflowProblem.ts";
 export { dependencyCycle } from "./capability.ts";
-export { readTemplate } from "./template.ts";
+export { lessonCount, readTemplate } from "./template.ts";
 export {
     featuresOf,
     isEnabled,

@@ -4,8 +4,8 @@
 id: new-website
 title: New website
 summary: >-
-  A site started from scratch as a Nuxt app, with Markdown or a CMS behind it. No brand, design
-  system or content to start from; four owner sign-offs — scope, brand, design, go-live.
+  A new site built as a Nuxt app, with Markdown or a CMS for content. The owner signs off four
+  times: scope, brand, design and go-live.
 
 stages:
   - id: plan

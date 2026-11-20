@@ -1,13 +1,11 @@
 <template>
     <section class="mx-auto flex max-w-6xl flex-col gap-6 px-4 pt-10 pb-16 md:px-10 md:pt-20">
-        <p class="font-mono text-xs text-muted uppercase">Agentic workflows</p>
         <h1 class="font-display text-section text-highlighted md:text-title lg:text-statement">
-            One map. <mark>People and agents.</mark>
+            Agentic <mark>workflows</mark>
         </h1>
         <p class="max-w-2xl text-2xl text-highlighted">
-            Every project starts from a template that already knows the job: each block it needs,
-            what each waits on, and the mistakes earlier projects made. The map says what can start
-            now, files the work as tickets, and redraws itself as tickets close.
+            I plan each project as a map of tasks, and AI agents build it ticket by ticket. The maps
+            below are the real ones.
         </p>
     </section>
 
@@ -24,7 +22,7 @@
     <section class="bg-muted">
         <div class="mx-auto flex max-w-6xl flex-col gap-16 px-4 py-20 md:px-10">
             <h2 class="font-display text-section text-highlighted">
-                Every project, <mark>live</mark>
+                Current <mark>projects</mark>
             </h2>
             <article v-for="item in maps" :key="item.id" class="flex flex-col gap-5">
                 <div
@@ -38,7 +36,7 @@
                     :to="`/workflows/${item.id}`"
                     class="self-start text-primary underline underline-offset-4"
                 >
-                    Open it live, ticket by ticket →
+                    Open the live map →
                 </ULink>
             </article>
         </div>
@@ -47,11 +45,10 @@
     <section class="mx-auto max-w-6xl px-4 pt-20 md:px-10">
         <div class="grid gap-6 md:grid-cols-12">
             <h2 class="font-display text-section text-highlighted md:col-span-5">
-                Rules, <mark>paid for once</mark>
+                Lessons from <mark>past projects</mark>
             </h2>
             <p class="self-end text-base md:col-span-6 md:col-start-7">
-                Every rule the maps enforce exists because a real project tripped on it. The ticket
-                numbers are the receipts.
+                Each one cost a real project time. The numbers are the tickets where it happened.
             </p>
         </div>
         <ul class="mt-10 flex flex-col">
@@ -67,7 +64,7 @@
             </li>
         </ul>
         <ULink to="/workflows" class="mt-6 inline-block text-primary underline underline-offset-4">
-            All workflows, templates and settings, in the developer view →
+            Every workflow, in the developer view →
         </ULink>
     </section>
 </template>
@@ -80,47 +77,47 @@ useHead({ title: "Agentic workflows" });
 
 const STEPS = [
     {
-        title: "A template knows the job",
-        body: "A website rebuild already holds every block such a project needs, from the content audit to the domain cutover, with what each one waits on.",
+        title: "Start from a template",
+        body: "A ready-made task list for the job: website rebuild, new website, or custom project.",
     },
     {
-        title: "The map says what can start",
-        body: "Order comes from what each block needs, not from phases. Anything with nothing left to wait on can begin today.",
+        title: "Start what's unblocked",
+        body: "A task starts once everything it depends on is done.",
     },
     {
-        title: "Questions before tickets",
-        body: "Work is filed only once nothing it depends on is undecided. Calls only a person can make are marked as theirs, and wait for them.",
+        title: "Plan, then file",
+        body: "The whole map is agreed before the first ticket goes out.",
     },
     {
-        title: "Agents take what's ready",
-        body: "AI agents pick up open tickets, the ones that unblock the most first. Each closed ticket moves the map forward.",
+        title: "Agents take ready tickets",
+        body: "Claude Code agents pick up open tickets, starting with whichever unblocks the most work.",
     },
     {
-        title: "The next project learns",
-        body: "What went wrong becomes a lesson in the template, with the ticket that taught it, so the next project starts already knowing.",
+        title: "Lessons go back in",
+        body: "When something goes wrong, I log it in a diary, then use the diary to improve the workflows.",
     },
 ];
 
 const RULES = [
     {
-        rule: "Answer the questions before filing the work.",
-        paid: "Build tickets were once filed the night before the final design (#208), and a newsletter provider was swapped after it was wired (#242 → #299).",
+        rule: "Answer questions before filing work.",
+        paid: "Build tickets were filed the night before the final design (#208). A newsletter provider was swapped after it was already wired in (#242 → #299).",
     },
     {
         rule: "Unknowns go first.",
-        paid: "Hosting was decided on paper and changed five times (#186, #244, #302, #377).",
+        paid: "Hosting was picked on paper, then changed five times (#186, #244, #302, #377).",
     },
     {
-        rule: "A change of host is its own decision.",
+        rule: "Changing host is its own decision.",
         paid: "A hosting switch slipped in under a lint ticket and was reverted two days later (#377, #378).",
     },
     {
-        rule: "Deploy work is checked on a real deploy.",
-        paid: "Four bugs only a real deploy could show (#382, #387, #388, #395).",
+        rule: "Test deploy work on a real deploy.",
+        paid: "Four bugs only showed up once the site was deployed (#382, #387, #388, #395).",
     },
     {
         rule: "A blocked ticket can't be picked.",
-        paid: "Otherwise an agent could start from a plan that went stale an hour earlier; the pick command reads the links live and refuses.",
+        paid: "Otherwise an agent could start from a plan that changed an hour ago. The pick command checks GitHub first and refuses.",
     },
 ];
 

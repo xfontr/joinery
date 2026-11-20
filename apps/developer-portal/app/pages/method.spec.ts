@@ -162,7 +162,7 @@ describe("method page", () => {
         const wrapper = await open({ usage: USAGE });
 
         expect(wrapper.get("#prove").text()).toContain(
-            "2 lint rules switched on, 1 of them written in-house.",
+            "2 lint rules on, 1 of them written for this repo.",
         );
     });
 
@@ -171,7 +171,7 @@ describe("method page", () => {
 
         expect(wrapper.text()).not.toContain("sites studied so far");
         expect(wrapper.text()).not.toContain("test files");
-        expect(wrapper.text()).toContain("Lint rules decide what lands");
+        expect(wrapper.text()).toContain("Lint rules, some written for this repo.");
     });
 
     it("links each written-down decision to its developer page", async () => {
@@ -184,5 +184,12 @@ describe("method page", () => {
                 "/decisions/0040-developer-portal-visitor-structure",
             ]),
         );
+    });
+
+    it("ends on a real case, so the rules can be seen applied", async () => {
+        const wrapper = await open();
+
+        const links = wrapper.findAll("a").map((link) => link.attributes("href"));
+        expect(links).toContain("/work/huella-legal");
     });
 });

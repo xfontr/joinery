@@ -1,11 +1,10 @@
 <template>
     <section class="mx-auto flex max-w-6xl flex-col gap-6 px-4 pt-10 pb-12 md:px-10 md:pt-20">
-        <p class="font-mono text-xs text-muted uppercase">Work</p>
         <h1 class="font-display text-section text-highlighted md:text-title lg:text-statement">
-            What the rules <mark>made.</mark>
+            Case <mark>studies</mark>
         </h1>
         <p class="max-w-2xl text-2xl text-highlighted">
-            Each site, case by case: who it serves, what changed, and the decisions behind it.
+            Who each site is for, what changed, and the decisions behind it.
         </p>
     </section>
 
@@ -31,7 +30,7 @@
                 <p class="text-lg">{{ item.line }}</p>
                 <p class="font-mono text-sm text-muted">{{ item.facts.join(" · ") }}</p>
                 <span class="mt-2 text-primary underline underline-offset-4">
-                    Read the case →
+                    Read the case study →
                 </span>
             </div>
         </ULink>
