@@ -1,32 +1,39 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { afterEach, describe, expect, it } from "vitest";
 import Page from "./about.vue";
+import en from "../../i18n/locales/en.json";
 
+const LINKEDIN = "https://www.linkedin.com/in/xifre/";
+const GITHUB = "https://github.com/xfontr";
 const REPO = "https://github.com/acme/repo";
+const VIEWS = ["/graph", "/decisions", "/telemetry", "/agentic-workflows"];
+const POST =
+    "https://portal.spotify.com/blog/portal-by-spotify-cut-my-claude-code-token-usage-by-90";
+
+const hrefs = async () => {
+    const wrapper = await mountSuspended(Page, { route: "/about" });
+
+    return wrapper.findAll("a").map((link) => link.attributes("href"));
+};
 
 afterEach(() => {
     useRuntimeConfig().public.repoUrl = "";
 });
 
 describe("about page", () => {
-    it("links the repository in a new tab when one is configured", async () => {
+    it("links LinkedIn, GitHub and the repository when one is configured", async () => {
         useRuntimeConfig().public.repoUrl = REPO;
-        const wrapper = await mountSuspended(Page, { route: "/about" });
-        const repo = wrapper.find(`a[href='${REPO}']`);
 
-        expect(repo.attributes("target")).toBe("_blank");
+        expect(await hrefs()).toEqual([POST, LINKEDIN, GITHUB, REPO]);
     });
 
     it("leaves the repository out rather than linking nowhere when none is configured", async () => {
-        const wrapper = await mountSuspended(Page, { route: "/about" });
-        const hrefs = wrapper.findAll("a").map((link) => link.attributes("href"));
+        expect(await hrefs()).toEqual([POST, LINKEDIN, GITHUB]);
+    });
 
-        expect(hrefs).toEqual([
-            "https://www.linkedin.com/in/xifre/",
-            "/work",
-            "/method",
-            "/agentic-workflows",
-            "/overview",
-        ]);
+    it("keeps every linked phrase in the copy, so editing one can't drop its link unnoticed", async () => {
+        useNuxtApp().$i18n.mergeLocaleMessage("en", { about: en.about });
+
+        expect(await hrefs()).toEqual(expect.arrayContaining(VIEWS));
     });
 });

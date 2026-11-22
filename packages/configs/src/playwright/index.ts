@@ -30,6 +30,8 @@ export const createConfig = ({
         outputDir: ".playwright",
         forbidOnly: !!process.env.CI,
         fullyParallel: true,
+        // Each worker runs its own Chromium, and parallel agent sessions each start a run
+        workers: process.env.CI ? undefined : 2,
         reporter: "list",
         globalTeardown: fileURLToPath(new URL("./setup/teardown.ts", import.meta.url)),
         use: { baseURL },

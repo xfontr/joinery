@@ -1,32 +1,35 @@
 {
     "about": {
+        "github": "GitHub",
         "head": "About",
-        "lead": "I'm Xifré Font, a senior frontend developer in Barcelona. This repo holds the websites I build and the tooling they share.",
+        "intro": {
+            "end": "about Portal, their developer platform built on Backstage. My first thought was: hold on, with a monorepo this big, I can actually build one for my own stuff. So I did.",
+            "start": "The portal came later, after reading"
+        },
+        "lead": "I'm Xifré Font, a senior frontend developer in Barcelona. Before that I was a lawyer, and founded Huella Legal while practising.",
         "linkedin": "LinkedIn",
-        "look": {
+        "post": "a Spotify post",
+        "repo": "This repo",
+        "story": {
+            "label": "How this repo got here",
             "items": {
-                "developer": {
-                    "detail": "Every decision, audit, test and dependency, as collected from the repo.",
-                    "term": "Developer view"
+                "playground": {
+                    "term": "A playground",
+                    "detail": "I wanted to see what a big monorepo really looks like: **Nx boundaries**, domain-driven design, **hexagonal adapters** for outside vendors like WordPress and the translation tool, and **a lint rule for every convention**, so nothing depends on someone remembering it."
                 },
-                "maps": {
-                    "detail": "How each project is planned before the first ticket.",
-                    "term": "Project maps"
+                "tooling": {
+                    "term": "The tooling",
+                    "detail": "Then came the scripts, to speed up the work and the back-and-forth with AI. And the **decision records (ADRs)**, which I'm a bit proud of: every call has its reason written down, so nothing here is truly arbitrary. The tooling also **reports its own usage**. This way, an unused script gets cut instead of being mindlessly maintained."
                 },
-                "method": {
-                    "detail": "The five rules every project follows, and the check behind each one.",
-                    "term": "Method"
+                "workflows": {
+                    "term": "Workflows",
+                    "detail": "Building Huella Legal end to end taught me which steps come back on every project. I turned that into **workflow templates**, so the next rebuild, or the next site from scratch, starts from what already worked."
                 },
-                "repo": {
-                    "detail": "The code itself.",
-                    "term": "GitHub"
-                },
-                "work": {
-                    "detail": "The two websites, what changed and why.",
-                    "term": "Work"
+                "apps": {
+                    "term": "Real apps",
+                    "detail": "At some point it stopped being just a playground: it was good enough to grow **real apps** on. Huella Legal moved in, then Marina Roustan, and there are more to come."
                 }
-            },
-            "label": "Where to look"
+            }
         },
         "title": "About",
         "titleMark": "this repo"
@@ -146,7 +149,8 @@
         "skipLink": "Skip to content",
         "visitor": {
             "footer": {
-                "builtBy": "Built by Xifré Font",
+                "copyright": "© 2026 Xifré Font",
+                "noTracking": "Nothing here tracks you.",
                 "line": "Every decision, plan, audit and check, raw.",
                 "title": "Want everything?",
                 "titleMark": "Open the developer view."
@@ -171,7 +175,7 @@
             "title": "No such audit"
         },
         "notFound": "Not found",
-        "readAt": "read at {commit}"
+        "provenance": "{source} · read at {commit}"
     },
     "audits": {
         "empty": {
@@ -195,14 +199,9 @@
         },
         "title": "Audits"
     },
-    "auditsTiles": {
+    "auditsFacts": {
         "audits": "Audits",
-        "closed": "{count} closed",
-        "hints": {
-            "fixed": "the fix has landed",
-            "open": "findings still owed work",
-            "wont-fix": "decided against, deliberately"
-        }
+        "provenance": "Read from docs/audits/ · {closed} of {total} closed"
     },
     "auditsToolbar": {
         "everyScope": "Every scope",
@@ -241,17 +240,12 @@
     "benchmarksCard": {
         "screenshot": "{title}, first screen"
     },
+    "benchmarksFacts": {
+        "provenance": "Read from docs/benchmarks/",
+        "sites": "Sites"
+    },
     "benchmarksMeta": {
         "open": "Open site"
-    },
-    "benchmarksTiles": {
-        "hints": {
-            "avoid": "kept as what not to do",
-            "partial": "one or two ideas to take",
-            "strong": "worth studying whole"
-        },
-        "sites": "Sites",
-        "sitesHint": "one file per site"
     },
     "benchmarksToolbar": {
         "everyKind": "Every kind",
@@ -375,17 +369,12 @@
         "supersededBy": "Superseded by {by}",
         "title": "Decisions"
     },
+    "decisionsFacts": {
+        "provenance": "Read from docs/decisions/",
+        "reports": "Reports"
+    },
     "decisionsPreview": {
         "number": "Decision {number}"
-    },
-    "decisionsTiles": {
-        "hints": {
-            "implemented": "the work has landed",
-            "to-implement": "decided, not in the repo yet",
-            "wont-implement": "decided against, deliberately"
-        },
-        "reports": "Reports",
-        "reportsHint": "one file per decision"
     },
     "decisionsToolbar": {
         "everyDecision": "Every decision",
@@ -448,10 +437,10 @@
         "usedBy": "Used by: {list}",
         "uses": "Uses: {list}"
     },
-    "graphNxEmbed": {
-        "frame": "Nx project graph",
-        "lead": "Nx's own graph client, vendored in by the collector rather than redrawn.",
-        "title": "Detailed Nx graph"
+    "graphMap": {
+        "empty": "No projects collected yet.",
+        "lead": "Each arrow points from a project to one it depends on. Select a project to open it.",
+        "title": "Project map"
     },
     "healthAdvisories": {
         "columns": {
@@ -557,36 +546,41 @@
                 "title": "Live project maps"
             }
         },
-        "head": "Built by rules",
-        "intro": "Each one follows the five rules below, and every decision behind them is public.",
-        "lead": "Websites for small publications and practices, and the tools that run them.",
+        "head": "This is a developer platform",
+        "intro": "Every piece below opens, so have a look around.",
+        "lead": "Huh? Let me explain. It's the tooling, rules and agents every app here is built with. Most companies keep theirs behind closed doors, but I'm not a company, so this one's public.",
         "rules": {
             "agents": {
-                "line": "Tests, lint rules and three review agents decide what gets merged. I step in when they ask.",
-                "proof": "How a change gets merged"
+                "line": "Agents take a ticket from plan to merge, with three reviews on the way.",
+                "proof": "How a change gets merged",
+                "title": "Agent pipeline"
             },
             "decide": {
-                "line": "Any call that could go either way gets a short report anyone can read.",
-                "proof": "Keeping Huella Legal's old links working"
+                "line": "Any call that could go either way gets a short write-up anyone can read.",
+                "proof": "Keeping Huella Legal's old links working",
+                "title": "Decision records"
             },
-            "label": "Five rules",
+            "label": "What's inside",
             "look": {
-                "line": "Each design starts from a study of award-winning sites.",
+                "line": "Every design starts from a study of award-winning sites.",
                 "proof": "The sites studied",
-                "proofCount": "{count} sites studied"
+                "proofCount": "{count} sites studied",
+                "title": "UI/UX benchmarking"
             },
             "plan": {
-                "line": "Before the first ticket, I map every task and what it waits on.",
-                "proof": "The project map, below"
+                "line": "Every project is mapped as tickets before the first line of code.",
+                "proof": "The project map, below",
+                "title": "Project maps"
             },
             "prove": {
                 "line": "Tests, accessibility and lint rules run on every change.",
                 "proof": "What gets checked",
-                "proofCount": "{enabled} lint rules, {inHouse} written in-house"
+                "proofCount": "{enabled} lint rules, {inHouse} written in-house",
+                "title": "Automated checks"
             }
         },
-        "title": "Built by",
-        "titleMark": "rules."
+        "title": "This is a",
+        "titleMark": "developer platform."
     },
     "issues": {
         "empty": "No open issues.",
@@ -927,7 +921,7 @@
         "agents": {
             "body": "Every change runs the same {steps} steps from plan to merge, and reviews for architecture, correctness and tests must pass before it lands. Any step can stop and ask me.",
             "more": "How a change gets merged",
-            "title": "Let the checks decide."
+            "title": "Let agents do the legwork."
         },
         "decide": {
             "body": "When a call could go either way, I write a short report: the question, the options, what was picked and why. The next person, or agent, reads it instead of asking again.",

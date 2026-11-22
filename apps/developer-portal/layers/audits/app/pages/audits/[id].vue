@@ -7,18 +7,9 @@
             >
                 <template #actions>
                     <StatusPill v-if="state" :label="state.label" :tone="state.tone" />
-                    <I18nT
-                        v-if="report?.commit"
-                        keypath="audit.readAt"
-                        tag="span"
-                        scope="global"
-                        class="text-xs text-muted"
-                    >
-                        <template #commit>
-                            <code class="font-mono">{{ report.commit }}</code>
-                        </template>
-                    </I18nT>
-                    <code class="font-mono text-xs text-dimmed">{{ source }}</code>
+                </template>
+                <template v-if="report" #intro>
+                    <PageFacts :provenance :facts />
                 </template>
             </PageHeader>
         </template>
@@ -38,16 +29,6 @@
                     />
 
                     <template v-else>
-                        <div v-if="report" class="grid grid-cols-3 gap-3">
-                            <StatTile
-                                v-for="status in FINDING_STATUSES"
-                                :key="status"
-                                :label="$t(`audits.findingStatus.${status}`)"
-                                :value="report.counts[status]"
-                                :tone="findingStatusTone(status)"
-                            />
-                        </div>
-
                         <UPageBody class="mt-0">
                             <ContentRenderer :value="page" />
                         </UPageBody>
@@ -68,6 +49,7 @@
 <script setup lang="ts">
 import type { BreadcrumbItem } from "@nuxt/ui";
 import { FINDING_STATUSES } from "#layers/snapshot/shared/audits.ts";
+import type { PageFact } from "~/types/PageFact";
 
 const route = useRoute();
 const { t } = useI18n();
@@ -94,6 +76,23 @@ const state = computed(
 );
 
 const source = computed(() => report.value?.path ?? `${path.value.slice(1)}.md`);
+
+const provenance = computed(() =>
+    report.value?.commit
+        ? t("audit.provenance", { source: source.value, commit: report.value.commit })
+        : source.value,
+);
+
+const facts = computed((): PageFact[] =>
+    FINDING_STATUSES.map((status) => {
+        const count = report.value?.counts[status] ?? 0;
+        return {
+            label: t(`audits.findingStatus.${status}`),
+            value: String(count),
+            class: count ? toneClass(findingStatusTone(status)) : "",
+        };
+    }),
+);
 
 const crumbs = computed<BreadcrumbItem[]>(() => [
     { label: t("audits.title"), to: "/audits", icon: "i-lucide-scan-search" },

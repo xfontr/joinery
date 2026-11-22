@@ -1,13 +1,13 @@
 <template>
-    <section class="mx-auto flex max-w-6xl flex-col gap-6 px-4 pt-10 pb-16 md:px-10 md:pt-20">
+    <UContainer as="section" class="flex flex-col gap-6 pt-10 pb-16 md:pt-20">
         <h1 class="font-display text-title text-highlighted md:text-statement">
             {{ $t("index.title") }} <mark>{{ $t("index.titleMark") }}</mark>
         </h1>
         <p class="max-w-2xl text-2xl text-highlighted">{{ $t("index.lead") }}</p>
         <p class="max-w-xl text-base text-muted">{{ $t("index.intro") }}</p>
-    </section>
+    </UContainer>
 
-    <section class="mx-auto max-w-6xl px-4 pb-20 md:px-10">
+    <UContainer as="section" class="pb-20">
         <p class="pb-6 font-mono text-xs text-muted uppercase">{{ $t("index.rules.label") }}</p>
         <article
             v-for="(item, index) in principles"
@@ -19,7 +19,7 @@
             <p class="font-display text-title text-primary md:col-span-2">{{ index + 1 }}</p>
             <div class="flex flex-col gap-4 md:col-span-7">
                 <h2 class="font-display text-section text-highlighted" :style="item.carry">
-                    {{ $t(`rules.${item.id}.title`) }}
+                    {{ $t(`index.rules.${item.id}.title`) }}
                 </h2>
                 <p class="max-w-xl text-lg">{{ $t(`index.rules.${item.id}.line`) }}</p>
             </div>
@@ -37,13 +37,13 @@
             <PipelinePreview v-else-if="subject === 'agents'" />
             <ChecksPreview v-else-if="subject === 'prove'" :specs :rules />
         </CursorPreview>
-    </section>
+    </UContainer>
 
     <WorkflowTeaser />
 
     <WorkList />
 
-    <section class="mx-auto grid max-w-6xl gap-6 px-4 pt-20 md:grid-cols-3 md:px-10">
+    <UContainer as="section" class="grid gap-6 pt-20 md:grid-cols-3">
         <ULink
             v-for="item in DEEPER"
             :key="item.id"
@@ -57,7 +57,7 @@
                 {{ $t(`index.deeper.${item.id}.title`) }} →
             </span>
         </ULink>
-    </section>
+    </UContainer>
 </template>
 
 <script setup lang="ts">
@@ -66,7 +66,6 @@ import type { RuleId } from "~/types/RuleId";
 
 definePageMeta({ layout: "visitor" });
 
-/** The decision rule 2 links to and previews. */
 const DECISION = "0028-huella-legal-urls-and-cutover";
 /** The project rule 3 previews, the same one the workflow teaser draws. */
 const PLAN = "huella-legal";
@@ -78,6 +77,7 @@ const PROOFS = {
     agents: "/wiki/docs/concepts/agent-setup",
     prove: "/method#prove",
 } as const satisfies Record<RuleId, string>;
+
 const DEEPER = [
     { id: "method", to: "/method", carry: carried("hero-method") },
     { id: "workflows", to: "/agentic-workflows", carry: carried("hero-workflows") },

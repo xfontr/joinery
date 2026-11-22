@@ -27,6 +27,9 @@
                     >
                         {{ $t(`app.visitor.nav.${item.key}`) }}
                     </ULink>
+                    <ULink to="/about" active-class="text-primary">
+                        {{ $t("app.visitor.nav.about") }}
+                    </ULink>
                 </nav>
                 <ViewSwitch current="visitor" />
             </div>
@@ -47,9 +50,10 @@
                 </span>
                 <span class="text-sm text-muted">{{ $t("app.visitor.footer.line") }}</span>
             </ULink>
-            <ULink to="/about" class="mt-6 inline-block text-sm text-muted hover:text-highlighted">
-                {{ $t("app.visitor.footer.builtBy") }}
-            </ULink>
+            <p class="mt-6 flex justify-between gap-4 text-sm text-muted">
+                <small>{{ $t("app.visitor.footer.copyright") }}</small>
+                <small>{{ $t("app.visitor.footer.noTracking") }}</small>
+            </p>
         </UContainer>
     </div>
 </template>

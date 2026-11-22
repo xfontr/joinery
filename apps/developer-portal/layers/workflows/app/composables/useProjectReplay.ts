@@ -16,9 +16,11 @@ export const useProjectReplay = (base: ComputedRef<ProjectView | undefined>) => 
             new Date(first + index * DAY_MS).toISOString().slice(0, 10),
         );
     });
-    const dayIndex = ref(Number.MAX_SAFE_INTEGER);
-    watch(days, (list) => (dayIndex.value = Math.min(dayIndex.value, list.length - 1)), {
-        immediate: true,
+    const picked = ref<number | null>(null);
+    // Derived on read: the snapshot arrives after setup, so a clamp taken then would stick at -1.
+    const dayIndex = computed({
+        get: () => Math.min(picked.value ?? Number.MAX_SAFE_INTEGER, days.value.length - 1),
+        set: (index: number) => (picked.value = index >= days.value.length - 1 ? null : index),
     });
     const isLatest = computed(() => dayIndex.value >= days.value.length - 1);
     const dayLabel = computed(() => {

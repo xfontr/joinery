@@ -25,4 +25,12 @@ describe("TermList", () => {
             ["Ship", "Merges it."],
         ]);
     });
+
+    it("sets only the marked words of a detail in bold", () => {
+        const items = [{ id: "a", term: "A", detail: "Then came **the scripts**, fast." }];
+        const detail = mount(TermList, { props: { items } }).findAll("li span")[1]!;
+
+        expect(detail.find("strong").text()).toBe("the scripts");
+        expect(detail.text()).toBe("Then came the scripts, fast.");
+    });
 });

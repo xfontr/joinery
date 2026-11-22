@@ -13,6 +13,9 @@
                     />
                     <SnapshotAge :manifest artifact="docs" />
                 </template>
+                <template v-if="reports.length > 0" #intro>
+                    <AuditsFacts :reports />
+                </template>
             </PageHeader>
 
             <AuditsToolbar
@@ -37,7 +40,6 @@
                 />
 
                 <template v-else>
-                    <AuditsTiles :reports />
                     <ListCard
                         :title="$t('audits.list.title')"
                         :note="$t('audits.list.note')"

@@ -12,6 +12,9 @@
                         size="xs"
                     />
                 </template>
+                <template v-if="benchmarks.length > 0" #intro>
+                    <BenchmarksFacts :benchmarks />
+                </template>
             </PageHeader>
 
             <BenchmarksToolbar
@@ -36,7 +39,6 @@
                 />
 
                 <template v-else>
-                    <BenchmarksTiles :benchmarks />
                     <EmptyState v-if="visible.length === 0">
                         {{ $t("benchmarks.noMatch") }}
                     </EmptyState>

@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DecisionOutcome, DecisionStatus } from "#layers/snapshot/shared/decisions.ts";
 import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
 import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
+import type { PageFact } from "~/types/PageFact";
 import Page from "./index.vue";
 
 const artifacts = vi.hoisted(() => ({ docs: null as DocsArtifact | null }));
@@ -56,11 +57,12 @@ const selectOffering = (wrapper: Wrapper, value: string) =>
             (select.props("items") as { value: string }[]).some((item) => item.value === value),
         )!;
 
-const tiles = (wrapper: Wrapper) =>
+const facts = (wrapper: Wrapper) =>
     Object.fromEntries(
-        wrapper
-            .findAllComponents({ name: "StatTile" })
-            .map((tile) => [tile.props("label"), tile.props("value")]),
+        (wrapper.findComponent({ name: "PageFacts" }).props("facts") as PageFact[]).map((fact) => [
+            fact.label,
+            fact.value,
+        ]),
     );
 
 describe("decisions index page", () => {
@@ -70,9 +72,9 @@ describe("decisions index page", () => {
         await wrapper.find("input").setValue("New");
 
         expect(listed(wrapper)).toEqual(["/decisions/0002-new"]);
-        expect(tiles(wrapper)).toMatchObject({
-            "decisions.status.implemented": 1,
-            "decisions.status.to-implement": 1,
+        expect(facts(wrapper)).toMatchObject({
+            "decisions.status.implemented": "1",
+            "decisions.status.to-implement": "1",
         });
     });
 
