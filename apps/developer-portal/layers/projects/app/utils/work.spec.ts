@@ -1,10 +1,11 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
 import { toWork, toWorkCase, type WorkRow } from "./work.ts";
 
 const WORK_DIR = resolve(import.meta.dirname, "../../../../content/work");
+const SCREENSHOT_DIR = resolve(import.meta.dirname, "../assets/work");
 
 const TOOL = {
     path: "/work/wp-editor",
@@ -83,6 +84,10 @@ describe("content/work", () => {
 
     it.each(studies)("%s carries every field its study page prints", (_, row) => {
         expect(toWorkCase(row)).not.toBeNull();
+    });
+
+    it.each(studies)("%s names a screenshot that exists", (_, row) => {
+        expect(existsSync(resolve(SCREENSHOT_DIR, row.screenshot.file))).toBe(true);
     });
 
     it.each(tools)("%s links to somewhere", (_, row) => {

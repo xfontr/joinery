@@ -366,7 +366,7 @@ describe("project page", () => {
         serve();
         const wrapper = await mountSuspended(Page, { route: "/projects/UI?tab=issues" });
 
-        await vi.waitFor(() => expect(wrapper.findAll("a[href*='/issues/']").length).toBe(1));
+        await vi.waitFor(() => expect(wrapper.findAll("a[href*='/issues/']")).toHaveLength(1));
         expect(wrapper.find("a[href$='/issues/1']").exists()).toBe(true);
     });
 

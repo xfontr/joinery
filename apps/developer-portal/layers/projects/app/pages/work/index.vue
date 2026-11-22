@@ -41,5 +41,5 @@ const { data: work } = await useWorkList();
 
 const cases = computed(() => work.value.filter(isStudy));
 
-useHead({ title: t("work.head") });
+useHead({ title: () => t("work.head") });
 </script>
