@@ -34,7 +34,6 @@ describe("drift git adapter", () => {
         expect(diffText("master", "HEAD", "packages/demo")).toBe("diff text");
         expect(lastMdCommitEpochSeconds("packages/demo")).toBe("123");
         expect(gitApi.git).toHaveBeenCalledWith("diff", "--name-only", "master..HEAD");
-        // The `--` keeps git from reading a project path as a ref
         expect(gitApi.git).toHaveBeenCalledWith(
             "diff",
             "--numstat",

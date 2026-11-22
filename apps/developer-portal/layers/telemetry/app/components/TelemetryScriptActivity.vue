@@ -1,15 +1,15 @@
 <template>
     <WidgetPanel
-        title="Repo scripts"
-        :meta="`Most run first · failing from ${MIN_RUNS} runs at ${failingPercent}% failed`"
+        :title="$t('telemetryScriptActivity.title')"
+        :meta="$t('telemetryScriptActivity.meta', { runs: MIN_RUNS, percent: failingPercent })"
         :count="rows.length"
     >
         <ul
             class="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-default px-4 py-2 text-xs text-muted"
         >
-            <li v-for="item in legend" :key="item.label" class="flex items-center gap-1.5">
+            <li v-for="item in legend" :key="item.id" class="flex items-center gap-1.5">
                 <span class="size-2.5 bg-accented/40" :style="item.style" />
-                {{ item.label }}
+                {{ $t(`telemetryScriptActivity.legend.${item.id}`) }}
             </li>
         </ul>
 
@@ -17,7 +17,7 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Script</th>
+                        <th>{{ $t("telemetryScriptActivity.columns.script") }}</th>
                         <th class="hidden w-full md:table-cell">
                             <ol class="flex min-w-xl" aria-hidden="true">
                                 <li
@@ -31,10 +31,14 @@
                                 </li>
                             </ol>
                         </th>
-                        <th class="numeric">Runs</th>
-                        <th class="whitespace-nowrap">By agents</th>
-                        <th class="numeric">Failed</th>
-                        <th class="numeric whitespace-nowrap">Last run</th>
+                        <th class="numeric">{{ $t("telemetryScriptActivity.columns.runs") }}</th>
+                        <th class="whitespace-nowrap">
+                            {{ $t("telemetryScriptActivity.columns.agent") }}
+                        </th>
+                        <th class="numeric">{{ $t("telemetryScriptActivity.columns.failed") }}</th>
+                        <th class="numeric whitespace-nowrap">
+                            {{ $t("telemetryScriptActivity.columns.last") }}
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,7 +67,9 @@
                 </tbody>
                 <tfoot class="border-t border-default">
                     <tr>
-                        <th scope="row" class="text-xs whitespace-nowrap">All scripts</th>
+                        <th scope="row" class="text-xs whitespace-nowrap">
+                            {{ $t("telemetryScriptActivity.all") }}
+                        </th>
                         <td class="hidden md:table-cell">
                             <TelemetryDayStrip :days :usage="totals" :busiest="busiestTotal" />
                         </td>
@@ -96,11 +102,13 @@ interface Props {
 const { usage } = defineProps<Props>();
 
 const legend = [
-    { label: "Runs that day", style: { background: "var(--usage-runs)" } },
-    { label: "Agent", style: { background: "var(--usage-agent)" } },
-    { label: "Person", style: { background: "var(--usage-person)" } },
-    { label: "A run failed", style: { boxShadow: FAILED_MARK } },
+    { id: "runs", style: { background: "var(--usage-runs)" } },
+    { id: "agent", style: { background: "var(--usage-agent)" } },
+    { id: "person", style: { background: "var(--usage-person)" } },
+    { id: "failed", style: { boxShadow: FAILED_MARK } },
 ];
+
+const { t } = useI18n();
 
 const failingPercent = Math.round(FAILING_RATE * 100);
 
@@ -123,7 +131,7 @@ const rows = computed(() =>
         failing: row.failing,
         failed: failedShare(row),
         agentShare: agentShare(row),
-        last: shortAge(row.last),
+        last: shortAge(row.last, t),
         lastExact: row.last ? calendarDay(row.last.slice(0, 10)) : "",
     })),
 );

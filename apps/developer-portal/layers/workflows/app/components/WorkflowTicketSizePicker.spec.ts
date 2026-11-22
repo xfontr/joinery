@@ -1,6 +1,30 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import WorkflowTicketSizePicker from "./WorkflowTicketSizePicker.vue";
+
+const MESSAGES = {
+    ticketSize: {
+        block: {
+            summary: "One ticket per block, or its suggested ones, each PR reviewed by hand",
+            title: "Reviewed",
+        },
+        fast: {
+            summary: "Tickets of up to {width} SP, and the spikes together; sign-offs stay apart",
+            title: "Fast",
+            warning:
+                "Meant for AI-run projects, putting speed over code quality: for internal tools and experiments.",
+        },
+        supervised: {
+            summary:
+                "A stage's build blocks share tickets of up to {width} SP; spikes and sign-offs stay apart",
+            title: "Supervised",
+        },
+    },
+    workflowTicketSizePicker: {
+        legend: "Ticket size",
+        tickets: "tickets | ticket | tickets",
+    },
+};
 
 const mount = () =>
     mountSuspended(WorkflowTicketSizePicker, {
@@ -10,6 +34,10 @@ const mount = () =>
             editable: true,
         },
     });
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowTicketSizePicker", () => {
     it("prices every size in tickets, so the choice is made on the number", async () => {

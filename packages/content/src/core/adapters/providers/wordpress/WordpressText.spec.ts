@@ -28,7 +28,6 @@ describe("countWords", () => {
         expect(countWords("<p>una</p><p>dos</p>")).toBe(2);
     });
 
-    // Huella's bodies carry `<meta charset>`, empty icon spans and alt text, none of which is reading
     it("counts no markup, not even an attribute's words", () => {
         const html =
             '<meta charset="utf-8"><span class="superfontello3-quote"></span>' +

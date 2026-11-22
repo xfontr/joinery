@@ -23,7 +23,10 @@ Under `pnpm dev developer-portal` it reads the working tree live. The deployed s
 
 | Path | What lives there |
 | --- | --- |
-| `app/` | The shell: layout, rail, status bar, Home, and shared parts like `StatTile` and `DashboardGrid` |
+| `app/` | The shell: layouts, Home, the visitor front and method pages, and `app/composables/`, which assemble Home's queue and Health, the rail, the status bar and search from several layers |
+| `app/components/`, `app/types/`, `app/utils/` | The kit: shared parts such as `StatTile`, `PageHero` and `EmptyState`, one type per file, pure helpers |
+| `i18n/locales/en.json` | The interface's copy — see [🔤 Copy](#-copy) |
+| `content/work/` | One markdown file per Work entry — see [🔤 Copy](#-copy) |
 | `layers/` | One Nuxt layer per capability — see [🧱 Layers](#-layers) |
 | `tools/collect/` | The collector that builds the snapshot |
 | `tools/lib/` | Node-only helpers: paths, `git`, the shape checks, the doc-link rewriter |
@@ -32,10 +35,10 @@ Under `pnpm dev developer-portal` it reads the working tree live. The deployed s
 
 | Layer | Kind | What it owns |
 | --- | --- | --- |
-| `snapshot` | Core | The `.report/` store, its types, `useSnapshot` |
+| `snapshot` | Core | The `.report/` artifacts, bundled at build time by one `<name>Artifact()` util each, and their types |
 | `design` | Core | Tokens, shared classes and the Nuxt UI theme |
 | `docs` | Core | Link rewriting and `ProseA` for rendered markdown |
-| `github` | Core | Browser-side reads of GitHub issues and deployments |
+| `github` | Core | Browser-side reads of GitHub issues |
 | `decisions`, `audits`, `benchmarks` | Feature | Each record type's list and pages |
 | `projects` | Feature | Projects, Architecture and What's new |
 | `health` | Feature | Work in progress, Coverage, Dependencies |
@@ -44,8 +47,8 @@ Under `pnpm dev developer-portal` it reads the working tree live. The deployed s
 | `wiki` | Feature | Documentation pages and the nav tree |
 
 The rules match [huella-legal's](../huella-legal/README.md#-structure): the kit (`app/components/`,
-`app/utils/`) uses only itself, cores use themselves and the kit, features also use cores but never
-another feature. `eslint.layerBoundaries` in [`eslint.config.ts`](./eslint.config.ts) enforces it.
+`app/types/`, `app/utils/`) uses only itself, cores use themselves and the kit, features also use
+cores but never another feature. `eslint.layerBoundaries` in [`eslint.config.ts`](./eslint.config.ts) enforces it.
 
 - Cross-layer imports read `#layers/<name>/…`, resolved by Nuxt and, outside it, by the `imports`
   field in [`package.json`](./package.json).
@@ -53,6 +56,18 @@ another feature. `eslint.layerBoundaries` in [`eslint.config.ts`](./eslint.confi
   ([0014](../../docs/decisions/0014-developer-portal-deployment.md)).
 - Each layer declares its rail links under `nav` in its `app/app.config.ts`; [`apps.ts`](./app/utils/apps.ts)
   groups them into Home, Catalog, Docs, Work and Health.
+- A page reads its data through a `use<Page>` composable in its layer and lists its sections, each a
+  component in `components/<page>/` or named for the layer (`wizard/Step.vue` → `WizardStep`).
+
+## 🔤 Copy
+
+The interface's copy is in [`en.json`](./i18n/locales/en.json) through `$t()`, keyed the
+way [huella-legal's are](../huella-legal/README.md#-copy-keys); `rules` holds the five rules both the
+front page and Method number. `/work` and the front page's Work list read their prose from
+[`content/work/*.md`](./content/work) through the `work` collection in
+[`content.config.ts`](./content.config.ts): the frontmatter holds the facts, the body is the case
+study's story, and `caseStudy: false` marks a tool that links straight to its `live` URL.
+Specs see keys, not copy: [`vitest.setup.ts`](./vitest.setup.ts) empties the messages.
 
 ## 📄 What each page reads
 
@@ -88,7 +103,7 @@ layout, which kept it out of every page's payload.
 
 ### GitHub reads
 
-Issues and deployments are fetched unauthenticated from the browser, so the site needs no server or
+Issues are fetched unauthenticated from the browser, so the site needs no server or
 secret. The limit is 60 requests an hour per IP. Board placement (`projectItems`) is GraphQL-only and
 needs a token, so it isn't shown.
 
@@ -99,7 +114,7 @@ GitHub Pages on every push to `master` or by hand: `pnpm test:coverage`, then `c
 `build-static`. Pages must be set to build from GitHub Actions in repo settings. huella-legal's
 Storybook is built into the same artifact under `/huella-legal-storybook/`.
 
-- Every page is as old as the last deploy, except issues and deployments (live) and workflows (as
+- Every page is as old as the last deploy, except issues (live) and workflows (as
   old as the last committed `pnpm workflow:sync`).
 - `NUXT_APP_BASE_URL` and `NUXT_PUBLIC_REPO_URL` are baked in at build time, derived by the workflow.
 - The project overrides its `production` Nx input in [`package.json`](./package.json) so any `*.md`

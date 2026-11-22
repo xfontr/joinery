@@ -136,7 +136,6 @@ const pickIssue = async (
             placeholder: prompt.placeholder,
             maxItems: 12,
             options: issueOptions(canGoBack ? BACK : undefined, issues),
-            // Keep navigation visible only when the issue search is empty.
             filter: (search, { value }) => issueOptionMatches(BACK, value, search),
         }),
     );

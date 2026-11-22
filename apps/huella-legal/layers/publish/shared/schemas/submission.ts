@@ -77,7 +77,6 @@ export const submissionSchema = (message: (issue: SubmissionIssue) => string) =>
                 "",
             ),
             summary: text(message, MAX_SUMMARY_LENGTH),
-            // A `File` in the browser, the multipart part's name and length on the server
             file: v.nullish(
                 v.pipe(
                     v.object({ name: v.string(), size: v.number() }, () => message("fileType")),

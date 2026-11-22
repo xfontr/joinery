@@ -1,3 +1,4 @@
+import type { PageProblem } from "./types/PageProblem.ts";
 import type { TicketSize } from "./types/TicketSize.ts";
 
 /** A page the project adds once, as an extra naming one of its template's page types. */
@@ -38,15 +39,18 @@ export const pageId = (title: string): string => {
 };
 
 /** Why each page can't be written yet, or null; `taken` are the template's own block ids. */
-export const pageProblems = (pages: { title: string }[], taken: Set<string>): (string | null)[] =>
+export const pageProblems = (
+    pages: { title: string }[],
+    taken: Set<string>,
+): (PageProblem | null)[] =>
     pages.map(({ title }, index) => {
         const id = pageId(title);
 
-        if (!title.trim()) return "Name the page, or remove it";
-        if (!id) return "The title has no letters to make an id from";
-        if (taken.has(id)) return `\`${id}\` is already a block of the template`;
+        if (!title.trim()) return { code: "untitled", id };
+        if (!id) return { code: "noId", id };
+        if (taken.has(id)) return { code: "taken", id };
         if (pages.slice(0, index).some((other) => pageId(other.title) === id)) {
-            return "Another page has this name";
+            return { code: "duplicate", id };
         }
         return null;
     });

@@ -1,23 +1,14 @@
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 
-/** Every project with its metrics and README, shared by the catalog and each project page. */
-export const useCatalog = async () => {
-    const [{ data: snapshot }, { data: metricsSnapshot }, { data: readmes }] = await Promise.all([
-        useSnapshot("projects"),
-        useSnapshot("metrics"),
-        useAsyncData("project-readmes", () =>
-            queryCollection("docs").select("path", "title", "description").all(),
-        ),
-    ]);
-    const metrics = computed(
-        () =>
-            new Map(
-                metricsSnapshot.value?.metrics?.projects.map((project) => [
-                    project.name,
-                    project,
-                ]) ?? [],
-            ),
+/** Every project with its metrics and README; `ready` settles once the READMEs load. */
+export const useCatalog = () => {
+    const readmesRead = useAsyncData("project-readmes", () =>
+        queryCollection("docs").select("path", "title", "description").all(),
+    );
+    const readmes = readmesRead.data;
+    const metrics = new Map(
+        metricsArtifact()?.projects.map((project) => [project.name, project]) ?? [],
     );
 
     const readmeByPath = computed(
@@ -29,13 +20,18 @@ export const useCatalog = async () => {
             ),
     );
 
-    const projects = computed(() => snapshot.value?.projects?.projects ?? []);
+    const projects = projectsArtifact()?.projects ?? [];
 
     const metricFor = (project: ProjectNode): ProjectMetrics | undefined =>
-        metrics.value.get(project.name);
+        metrics.get(project.name);
 
     const readmeFor = (project: ProjectNode) =>
         readmeByPath.value.get(`/${project.root.toLowerCase()}/readme`);
 
-    return { projects, metricFor, readmeFor };
+    return {
+        projects,
+        metricFor,
+        readmeFor,
+        ready: readmesRead,
+    };
 };

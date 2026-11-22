@@ -3,19 +3,22 @@ import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { ref } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { IssuesRead } from "#layers/github/shared/issues.ts";
+import type { IssuesRead } from "#layers/github/app/utils/issues.ts";
 import type { Badges } from "#layers/snapshot/shared/types/Badges.ts";
-import type { MenuRow, RailFigure } from "~/utils/apps";
+import type { MenuRow } from "~/types/MenuRow";
+import type { RailFigure } from "~/types/RailFigure";
 import type { SearchSection } from "~/utils/search";
 import Layout from "./default.vue";
+import en from "../../i18n/locales/en.json";
 
-// GitHub is read straight from the browser, so the github layer's composable is the boundary
 const github = vi.hoisted(() => ({ read: null as unknown }));
-mockNuxtImport("useIssues", () => () => ({ data: github.read }));
+mockNuxtImport("useIssues", () => () => ({ data: github.read, shown: github.read }));
 
-// Search reads the docs collection, so a call here means the search data was built
 const search = vi.hoisted(() => vi.fn((): Promise<SearchSection[]> => Promise.resolve([])));
 mockNuxtImport("queryCollectionSearchSections", () => search);
+
+const shell = vi.hoisted(() => ({ badges: null as Badges | null }));
+mockNuxtImport("shellBadges", () => () => shell.badges);
 
 const MENUS = [
     "/api/decisions/menu",
@@ -39,7 +42,7 @@ const serve = ({
     projects = [] as MenuRow[],
     tooling = { value: "—", alert: false } as RailFigure,
 } = {}) => {
-    serveEndpoint("/api/badges", () => ({ ...NEVER_COLLECTED, ...badges }));
+    shell.badges = { ...NEVER_COLLECTED, ...badges };
     serveEndpoint("/api/telemetry/figure", () => tooling);
     const answers: Record<string, MenuRow[]> = {
         "/api/decisions/menu": decisions,
@@ -85,9 +88,9 @@ const figures = (wrapper: VueWrapper) =>
     wrapper.findAll("footer[aria-label='Status'] a").map((link) => link.attributes("title"));
 
 const KINDS: MenuRow[] = [
-    { label: "All projects", to: "/projects", badge: "2" },
+    { labelKey: "app.menu.allProjects", to: "/projects", badge: "2" },
     {
-        label: "Apps",
+        labelKey: "app.menu.kinds.apps",
         to: "/projects?kind=apps",
         badge: "2",
         children: [
@@ -102,6 +105,10 @@ const DECISION = { label: "0036 Drop the UI kit", to: "/decisions/0036-ui" };
 beforeEach(() => {
     github.read = ref<IssuesRead>({ fetchedAt: "", error: null, issues: [] });
     search.mockClear();
+});
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", en);
 });
 
 describe("default layout", () => {
@@ -166,10 +173,9 @@ describe("default layout", () => {
         expect(wrapper.find("nav a[href='/decisions']").exists()).toBe(false);
     });
 
-    // The menu hands a nested list's open state to the top level's v-model, which folded the app
     it("keeps an app unfolded when a page inside it folds its own rows", async () => {
         serve({ decisions: [DECISION] });
-        const wrapper = await open("/decisions");
+        const wrapper = await open(DECISION.to);
 
         await wrapper.find("nav a[href='/decisions'] [data-slot='linkTrailing']").trigger("click");
         await flushPromises();
@@ -214,7 +220,6 @@ describe("default layout", () => {
         expect(page(wrapper, "Coverage").badge).toBeUndefined();
     });
 
-    // The lab's rail lists the kinds on the catalog, and a project's siblings on its page
     it("lists a menu's groups on the page that holds them", async () => {
         serve({ projects: KINDS });
         const wrapper = await open("/projects");
@@ -223,6 +228,15 @@ describe("default layout", () => {
             "All projects",
             "Apps",
         ]);
+    });
+
+    it("leaves a page folded on its own landing, and unfolds it on a page below", async () => {
+        serve({ projects: KINDS });
+        const landing = await open("/projects");
+        const below = await open("/projects/blog");
+
+        expect(landing.find("nav a[href='/projects?kind=apps']").exists()).toBe(false);
+        expect(below.find("nav a[href='/projects/site']").exists()).toBe(true);
     });
 
     it("lists a group's members, each in its coverage tone, on a member's own page", async () => {

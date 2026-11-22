@@ -1,0 +1,51 @@
+import type { AppEntry } from "~/types/AppEntry";
+import type { AppGroup } from "~/types/AppGroup";
+import type { MenuRow } from "~/types/MenuRow";
+import { menuLabel } from "~/utils/menuLabel";
+import { matchPages, searchGroups } from "~/utils/search";
+
+/** ⌘K search over the pages, the projects and the docs; the docs load on first open. */
+export const useShellSearch = (
+    apps: (AppGroup & { entries: AppEntry[] })[],
+    projects: Ref<MenuRow[]> | undefined,
+) => {
+    const { t } = useI18n();
+    const open = ref(false);
+
+    // Deferred to the first open; built here it rides in every prerendered payload (../../README.md).
+    const {
+        data: sections,
+        status,
+        execute,
+    } = useAsyncData("search-sections", () => queryCollectionSearchSections("docs"), {
+        default: () => [],
+        immediate: false,
+        server: false,
+    });
+
+    watch(open, () => {
+        if (open.value && status.value === "idle") void execute();
+    });
+
+    const projectGroup = computed(() => ({
+        id: "projects",
+        label: t("app.search.projects"),
+        ignoreFilter: true,
+        postFilter: matchPages,
+        items: (projects?.value ?? []).flatMap((kind) =>
+            (kind.children ?? []).map((row) => ({
+                label: menuLabel(row, t),
+                suffix: menuLabel(kind, t),
+                to: row.to,
+                icon: "i-lucide-box",
+            })),
+        ),
+    }));
+
+    const groups = computed(() => {
+        const [pages, ...docs] = searchGroups(apps, sections.value, t);
+        return [...(pages ? [pages] : []), projectGroup.value, ...docs];
+    });
+
+    return { open, groups, loading: computed(() => status.value === "pending") };
+};

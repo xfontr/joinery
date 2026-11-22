@@ -6,7 +6,138 @@ import type { SnapshotIssue } from "#layers/workflows/shared/types/SnapshotIssue
 import { assembleWorkflows, type Workflows } from "#layers/workflows/shared/workflows.ts";
 import Page from "./index.vue";
 
-// Writing back is `nuxt dev` only, so the edit composable is the boundary
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
+    },
+    pageHeader: {
+        breadcrumb: "Breadcrumb",
+        wordmark: "monorepo",
+    },
+    workflow: {
+        fallback: "Workflow",
+    },
+    workflowActions: {
+        never: "Never synced — run {setup} then {sync}",
+        settings: "Settings",
+        synced: "Snapshot updated {age}",
+    },
+    workflowActivityStrip: {
+        lastCommit: "Last commit {day}",
+        moved: "{count} capabilities | {count} capability | {count} capabilities",
+        segment: "{stage} · {day} · {moved}",
+        title: "Activity",
+        tooltip: "Capabilities moved per day, from commits tagged with a ticket number",
+    },
+    workflowAlerts: {
+        blank: {
+            description:
+                "Ask Claude to draft its map: it asks what the project is, writes the blocks under {extras} in {file}, and they show here for you to check before anything is filed.",
+            title: "This project has no blocks yet",
+        },
+        reasons: {
+            noLabel: "no {detail} label",
+        },
+        unsorted: {
+            lead: "Not placed yet. Give each one the milestone and a {label} label on GitHub, then sync again.",
+            title: "{count} to organise",
+        },
+    },
+    workflowCapabilityDetail: {
+        headings: {
+            needs: "Needs",
+            tickets: "Tickets",
+            unblocks: "Unblocks",
+        },
+        optional: "Optional",
+        why: {
+            ready: "Nothing open blocks it, so an agent can take it.",
+        },
+    },
+    workflowGraph: {
+        details: "Details for {title}",
+        fit: "Fit the selected path",
+        full: "Full screen",
+        node: "{title}, {state}",
+        relation: {
+            needed: "needed",
+            waits: "waits on it",
+        },
+        zoomIn: "Zoom in",
+        zoomOut: "Zoom out",
+    },
+    workflowGraphSection: {
+        chain: "{status} Longest chain left: {chain}.",
+        status: "{state}. Its path stays lit; click an empty spot for the whole map.",
+        title: "Dependency graph",
+        titleSelected: "Dependency graph · {title}",
+    },
+    workflowLeft: {
+        blocks: "{state} blocks",
+        none: "No blocks yet.",
+        unblocks: "unblocks {count}",
+    },
+    workflowReplay: {
+        label: "Day to replay",
+        title: "Replay",
+        today: "Today",
+    },
+    workflowSkyline: {
+        label: "{title}, {state}",
+        title: "{title} · {state}",
+    },
+    workflowStageCards: {
+        activity: "Active on {days} days, last on {day}",
+        details: "Details for {title}",
+        dot: "#{number} {title} · {status}",
+        progress: "{done} of {total} · {points}",
+        stagePoints: "{done}/{total} SP",
+        summary: "{count} {status}",
+    },
+    workflowSummary: {
+        done: "{done} of {total} done",
+        milestone: "Milestone {milestone}",
+        points: "{done} of {total} SP done",
+        tickets: "{blocks} blocks · {filed} tickets filed · {toFile} to file",
+        unestimated: "{count} unestimated",
+    },
+    workflows: {
+        capabilityState: {
+            "can-file": "Can file now",
+            done: "Done",
+            "in-flight": "In flight",
+            ready: "Ready",
+        },
+        crumb: "workflows",
+        missing: "No project {id} under {folder}.",
+        ticketStatus: {
+            "in-flight": "In flight",
+            ready: "Ready",
+        },
+    },
+};
+
 const editing = vi.hoisted(() => ({ editable: false, edit: vi.fn() }));
 mockNuxtImport("useWorkflowEdit", () => () => editing);
 
@@ -105,6 +236,10 @@ const graphBlock = (wrapper: VueWrapper, title: string) =>
 beforeEach(() => {
     editing.editable = false;
     editing.edit.mockReset();
+});
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
 });
 
 describe("workflow page", () => {

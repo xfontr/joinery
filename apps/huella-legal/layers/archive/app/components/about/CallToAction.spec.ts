@@ -5,7 +5,6 @@ import AboutCallToAction from "./CallToAction.vue";
 const global = { mocks: { $t: (key: string) => `t(${key})` } };
 
 describe("about call to action", () => {
-    // It sits near the bottom of the page, so a draw on load would finish before anyone sees it
     it("holds its fingerprint's draw until it scrolls into view", async () => {
         const wrapper = await mountSuspended(AboutCallToAction, { global });
 

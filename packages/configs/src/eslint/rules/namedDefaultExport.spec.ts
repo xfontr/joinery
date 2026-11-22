@@ -15,9 +15,7 @@ ruleTester.run("named-default-export", namedDefaultExport, {
         "const teardown = () => {};\nexport default teardown;",
         "export default function prepareNuxt() {}",
         "export default class Store {}",
-        // A call names its result through the callee, as Nitro handlers and configs do.
         "export default defineEventHandler(() => 1);",
-        // Config files export literals by convention.
         "export default { extends: [] };",
         "export default [];",
     ],

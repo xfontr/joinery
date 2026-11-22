@@ -19,7 +19,7 @@ export interface Sample {
     textChars: number;
 }
 
-export interface TypeStep {
+interface TypeStep {
     tag: string;
     family: string;
     size: string;
@@ -33,7 +33,7 @@ export interface Weighted {
     weight: number;
 }
 
-export interface BrandSummary {
+interface BrandSummary {
     paper: string;
     ink: string;
     headingInk: string;
@@ -60,7 +60,7 @@ const opaqueHex = (css: string): string | undefined => {
     return formatHex(colour);
 };
 
-export const chroma = (hex: string): number => oklch(hex)?.c ?? 0;
+const chroma = (hex: string): number => oklch(hex)?.c ?? 0;
 
 const tally = (entries: [string | undefined, number][]): Weighted[] => {
     const totals = new Map<string, number>();

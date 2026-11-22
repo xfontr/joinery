@@ -5,7 +5,7 @@ import type { Proposal } from "#shared/types/Proposal.ts";
 import type { RunReport } from "#shared/types/RunReport.ts";
 import type { Settings } from "#shared/types/Settings.ts";
 
-export interface ChangesetView {
+interface ChangesetView {
     changeset: Changeset;
     items: Item[];
     settings: Settings;
@@ -75,7 +75,6 @@ export const useChangeset = (id: string) => {
         const check = async () => {
             const latest = await $fetch<RunReport | null>(`${base}/progress`).catch(() => null);
 
-            // An older run that was interrupted is still incomplete on disk; it isn't this one.
             if (!finished) progress.value = latest && latest.at >= startedAt ? latest : null;
         };
         const poll = setInterval(() => void check(), PROGRESS_POLL_MS);

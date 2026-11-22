@@ -19,7 +19,6 @@ const createNodeConfig = ({ thresholds }: NodeConfigOptions = {}) =>
         test: {
             globals: false,
             exclude: [...configDefaults.exclude, "dist/**/*"],
-            // A no-op in any project without a `nuxt.config.ts`.
             globalSetup: [prepareNuxt],
             setupFiles: [consoleGuard],
             coverage: {

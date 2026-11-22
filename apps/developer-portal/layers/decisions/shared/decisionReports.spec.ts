@@ -5,6 +5,7 @@ import {
     filterDecisions,
     sortDecisions,
     toDecisionReports,
+    toImplement,
 } from "./decisionReports.ts";
 
 const page = (path: string, overrides: Partial<DocPage> = {}): DocPage => ({
@@ -141,5 +142,17 @@ describe("countByStatus", () => {
             implemented: 1,
             "wont-implement": 1,
         });
+    });
+});
+
+describe("toImplement", () => {
+    it("keeps accepted decisions still to land, newest first, and never a superseded one", () => {
+        const reports = toDecisionReports([
+            ...PAGES,
+            page("docs/decisions/0006-older.md", { updatedAt: "2026-04-01T00:00:00Z" }),
+            page("docs/decisions/0007-newer.md", { updatedAt: "2026-05-01T00:00:00Z" }),
+        ]);
+
+        expect(numbersOf(toImplement(reports))).toEqual(["0007", "0006"]);
     });
 });

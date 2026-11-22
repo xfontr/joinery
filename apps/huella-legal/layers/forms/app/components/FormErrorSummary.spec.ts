@@ -2,7 +2,6 @@ import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it } from "vitest";
 import FormErrorSummary from "./FormErrorSummary.vue";
 
-// `<i18n-t>` reads the real i18n instance rather than a `$t` mock, so the spec feeds it messages
 const MESSAGES = {
     formErrorSummary: {
         item: "{field} — {message}",

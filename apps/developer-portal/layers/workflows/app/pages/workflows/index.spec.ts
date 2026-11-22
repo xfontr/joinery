@@ -1,10 +1,58 @@
 import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { SnapshotIssue } from "#layers/workflows/shared/types/SnapshotIssue.ts";
 import { assembleWorkflows, type Workflows } from "#layers/workflows/shared/workflows.ts";
 import Page from "./index.vue";
+
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
+    },
+    pageHeader: {
+        wordmark: "monorepo",
+    },
+    workflowNewProjectCard: {
+        label: "New project",
+    },
+    workflowProblems: {
+        title: "{count} workflow file problems",
+    },
+    workflowProjects: {
+        empty: "No project under {folder} yet.",
+        title: "Projects",
+    },
+    workflowTemplates: {
+        title: "Templates",
+    },
+    workflows: {
+        guide: "How workflows work",
+        intro: "A workflow is a map of every block a kind of project needs and what each one needs first, learned from the ones already shipped. Each project picks its features, files the blocks as GitHub tickets with their blocked-by links, and from then on GitHub says where it stands.",
+        title: "Workflows",
+    },
+};
 
 const TEMPLATE = {
     id: "website-rebuild",
@@ -50,6 +98,10 @@ const open = async (data: Workflows) => {
     await flushPromises();
     return wrapper;
 };
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("workflows page", () => {
     it("puts the project's own done count on its card, never another's", async () => {

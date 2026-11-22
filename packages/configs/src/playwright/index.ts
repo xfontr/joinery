@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import type { PlaywrightTestConfig } from "@playwright/test";
 import { SERVER_CONSOLE_ENV } from "./setup/server.ts";
 
-export interface PlaywrightOptions {
+interface PlaywrightOptions {
     port: number;
     /** Starts the built app; it reads `PORT` and gets `env` on top of the runner's own. */
     command: string;

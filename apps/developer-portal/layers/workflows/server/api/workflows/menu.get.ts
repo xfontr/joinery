@@ -12,5 +12,8 @@ export default defineEventHandler(async () => {
         .slice(0, LIMIT)
         .map(({ project }) => ({ label: project.title, to: `/workflows/${project.id}` }));
 
-    return [...recent, { label: "New project", icon: "i-lucide-plus", to: "/workflows/new" }];
+    return [
+        ...recent,
+        { labelKey: "app.menu.newProject", icon: "i-lucide-plus", to: "/workflows/new" },
+    ];
 });

@@ -53,7 +53,6 @@ describe("toArticleSummary", () => {
 });
 
 describe("the primary category", () => {
-    // 103 of 105 posts have exactly one category; the rest are read by their first
     it("is the first category", () => {
         expect(summarise({ terms: [category("civil"), category("penal")] }).category?.slug).toBe(
             "civil",

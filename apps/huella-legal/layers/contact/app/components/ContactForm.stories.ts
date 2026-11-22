@@ -24,7 +24,6 @@ export const Idle: Story = {};
 
 export const Submitting: Story = holding("submitting");
 
-// Field errors only reach the fields through a submit, which an empty form fails before any request
 export const Invalid: Story = {
     play: async ({ canvas, userEvent }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Enviar mensaje" }));

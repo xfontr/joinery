@@ -91,7 +91,6 @@ describe("resolveDocLink", () => {
         expect(resolveDocLink("./docs/GONE.md", ROOT, isPage)).toBe("repo:docs/GONE%2Emd");
     });
 
-    // @nuxt/content rewrote `repo:CLAUDE.md` to the route `CLAUDE`, and every such link prerendered a 404.
     it("escapes a markdown repo target's extension so the content parser leaves the href alone", () => {
         expect(resolveDocLink("./apps/web/CLAUDE.md", ROOT, isPage)).not.toMatch(/\.md$/);
     });

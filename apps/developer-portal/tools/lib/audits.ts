@@ -1,7 +1,7 @@
 import { FINDING_STATUSES, parseFindings } from "#layers/snapshot/shared/audits.ts";
 import { frontmatterFields } from "./decisions.ts";
 
-export interface AuditProblem {
+interface AuditProblem {
     file: string;
     message: string;
 }

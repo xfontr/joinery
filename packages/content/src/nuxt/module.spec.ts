@@ -52,7 +52,6 @@ describe("content nuxt module", () => {
         expect(install({ vendor, cache }).options.runtimeConfig.content).toMatchObject({ cache });
     });
 
-    // A document addressed by slug stays valid far longer than a list a new entry reorders
     it("holds a document for longer than the list it appears in, by default", () => {
         expect(CACHE_DEFAULTS.item.maxAge).toBeGreaterThan(CACHE_DEFAULTS.list.maxAge);
     });
@@ -68,7 +67,6 @@ describe("content nuxt module", () => {
         ]);
     });
 
-    // Failing the build beats throwing on the first request, which is a page nobody is watching
     describe("when the configured vendor does not exist", () => {
         it.each([
             ["an unregistered name", { name: "contentful", baseURL: "https://wp.test/" }],

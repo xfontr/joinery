@@ -5,7 +5,6 @@ import { useIssues } from "./useIssues.ts";
 
 const nuxt = vi.hoisted(() => ({ options: new Map<string, unknown>() }));
 
-// A spy over the real composable: every read still runs, and its rendering options can be read
 mockNuxtImport("useAsyncData", (original) => (...args: Parameters<typeof original>) => {
     nuxt.options.set(args[0] as string, args[2]);
     return original(...args);
@@ -40,7 +39,6 @@ const use = async (repoUrl = "https://github.com/acme/repo") => {
     const { value } = await withSetup(async () => {
         clearNuxtData("issues");
         const issues = useIssues();
-        // Awaited for the read, and wrapped so the caller keeps the state rather than its result
         await issues;
         return { issues };
     });
@@ -57,7 +55,7 @@ describe("useIssues", () => {
         github(() => []);
         const { data } = (await use("")).issues;
 
-        expect(data.value.error).toContain("no repo to read");
+        expect(data.value.error).toBe("issuesRead.noRepo");
         expect(requests).toEqual([]);
     });
 
@@ -101,5 +99,12 @@ describe("useIssues", () => {
         await use();
 
         expect(nuxt.options.get("issues")).toMatchObject({ server: false });
+    });
+
+    it("shows what was read once mounted, the same issues a render can rely on", async () => {
+        github(() => [githubIssue(1)]);
+        const { shown } = (await use()).issues;
+
+        expect(shown.value.issues.map((issue) => issue.number)).toEqual([1]);
     });
 });

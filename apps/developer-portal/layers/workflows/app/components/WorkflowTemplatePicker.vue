@@ -1,6 +1,6 @@
 <template>
     <fieldset class="flex flex-col gap-3">
-        <legend class="sr-only">Template</legend>
+        <legend class="sr-only">{{ $t("workflowTemplatePicker.legend") }}</legend>
         <label
             v-for="card in cards"
             :key="card.id"
@@ -54,6 +54,7 @@ interface Props {
 const { templates, modelValue } = defineProps<Props>();
 const emit = defineEmits<{ "update:modelValue": [template: string] }>();
 const name = useId();
+const { t } = useI18n();
 
 const cards = computed(() =>
     templates.map((template) => {
@@ -66,7 +67,12 @@ const cards = computed(() =>
                 title: stage.title,
                 color: stageColor(index),
             })),
-            counts: `${blocks} blocks by default · ${tickets.fast}–${tickets.block} tickets · ${points} SP`,
+            counts: t("workflowTemplatePicker.counts", {
+                blocks,
+                fast: tickets.fast,
+                block: tickets.block,
+                points,
+            }),
         };
     }),
 );

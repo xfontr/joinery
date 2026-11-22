@@ -48,7 +48,7 @@ test("the A to Z links each topic to its tag, without the thesis marker", async 
 
 test("the on-page links jump to each section", async ({ page }) => {
     await page
-        .getByRole("navigation", { name: t("categories.sections.label") })
+        .getByRole("navigation", { name: t("subjectsSectionNav.label") })
         .getByRole("link", { name: /temas$/ })
         .click();
 

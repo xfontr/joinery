@@ -1,10 +1,9 @@
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { BenchmarkPage } from "#layers/benchmarks/shared/benchmarks.ts";
+import type { BenchmarkPage } from "#layers/benchmarks/app/utils/benchmarks.ts";
 import Page from "./[id].vue";
 
-// An in-memory docs collection, answering both the gallery list and the page's own lookup
 const docs = vi.hoisted(() => ({ pages: [] as BenchmarkPage[] }));
 
 mockNuxtImport("queryCollection", () => () => {
@@ -19,7 +18,6 @@ mockNuxtImport("queryCollection", () => () => {
     return query;
 });
 
-// Only a server render can set a status; the prerender crawler is what reads it
 const setStatus = vi.hoisted(() => vi.fn());
 mockNuxtImport("setResponseStatus", () => setStatus);
 
@@ -78,7 +76,7 @@ describe("benchmark page", () => {
         const wrapper = await mountSuspended(Page, { global, route: "/benchmarks/super-eight" });
 
         expect(wrapper.findComponent({ name: "StatusPill" }).props("label")).toBe(
-            benchmarkVerdictLabel("partial"),
+            "benchmarks.verdict.partial",
         );
         expect(wrapper.text()).toContain("design studio");
         expect(wrapper.find("a[href='https://example.com/super-eight']").exists()).toBe(true);

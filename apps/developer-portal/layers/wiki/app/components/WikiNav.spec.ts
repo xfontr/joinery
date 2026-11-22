@@ -1,7 +1,7 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
 import WikiNav from "./WikiNav.vue";
-import type { WikiSection } from "#layers/wiki/shared/wiki.ts";
+import type { WikiSection } from "#layers/wiki/app/utils/wiki.ts";
 
 const sections: WikiSection[] = [
     {
@@ -14,7 +14,7 @@ const sections: WikiSection[] = [
                 key: "guides",
                 label: "Guides",
                 entries: [
-                    { path: "/docs/guides/readme", label: "Overview", kind: "doc" },
+                    { path: "/docs/guides/readme", label: "wiki.overview", kind: "doc" },
                     { path: "/docs/guides/first-hour", label: "First hour", kind: "doc" },
                 ],
             },
@@ -29,7 +29,7 @@ const sections: WikiSection[] = [
             {
                 key: "workflows",
                 label: "Workflows",
-                entries: [{ path: "/docs/workflows/readme", label: "Overview", kind: "doc" }],
+                entries: [{ path: "/docs/workflows/readme", label: "wiki.overview", kind: "doc" }],
             },
         ],
     },
@@ -81,6 +81,6 @@ describe("WikiNav", () => {
 
         expect(wrapper.find("a[href='/wiki/docs/workflows/readme']").text()).toBe("Workflows");
         expect(wrapper.findAll("button").map((button) => button.text())).not.toContain("Workflows");
-        expect(wrapper.text()).not.toContain("Overview");
+        expect(wrapper.text()).not.toContain("wiki.overview");
     });
 });

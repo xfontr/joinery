@@ -1,66 +1,17 @@
 <template>
     <div v-if="home">
-        <UContainer>
-            <div
-                class="flex flex-col gap-4 border-b border-default pt-10 pb-8 md:pt-14 lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:pb-10"
-            >
-                <I18nT
-                    keypath="home.hero.title"
-                    tag="h1"
-                    scope="global"
-                    class="max-w-3xl font-serif text-display-sm text-balance text-highlighted md:text-display lg:text-display-lg"
-                >
-                    <template #emphasis>
-                        <em class="text-primary">{{ $t("home.hero.emphasis") }}</em>
-                    </template>
-                </I18nT>
-                <p class="max-w-sm font-serif text-base/relaxed text-muted lg:pb-2 lg:text-right">
-                    {{ $t("home.hero.lead") }}
-                </p>
-            </div>
-        </UContainer>
-
+        <HomeHero />
         <HomeFeatured v-if="home.lead" :lead="home.lead" :latest="home.latest" />
-
-        <UContainer as="section" :aria-labelledby="recentId" class="pb-16 lg:pb-20">
-            <BaseSectionHeading
-                :id="recentId"
-                :title="$t('home.recent.title')"
-                :action="{ label: $t('home.recent.all'), to: { name: 'publications' } }"
-            />
-            <LazySummaryGrid hydrate-on-visible :articles="home.recent" hide-orphan class="mt-8" />
-        </UContainer>
-
+        <HomeRecent :articles="home.recent" />
         <LazyHomeSubjects hydrate-on-visible :subjects="home.subjects" :formats="home.formats" />
-
         <LazyHomeTheses hydrate-on-visible :articles="home.theses" />
-
-        <UContainer as="section" :aria-label="$t('home.publish.label')" class="py-16 lg:py-20">
-            <div
-                class="flex flex-col gap-4 border-t-2 border-inverted pt-5 md:flex-row md:items-center md:justify-between md:gap-10"
-            >
-                <p class="max-w-3xl font-serif text-xl/snug text-highlighted md:text-h3">
-                    {{ $t("home.publish.prompt") }}
-                </p>
-                <UButton
-                    variant="outline"
-                    color="neutral"
-                    :label="$t('home.publish.action')"
-                    trailing-icon="i-lucide-arrow-right"
-                    :to="{ name: 'publish' }"
-                    class="shrink-0 self-start md:self-auto"
-                />
-            </div>
-        </UContainer>
-
+        <HomePublishPrompt />
         <LazyNewsletterBand hydrate-on-visible />
     </div>
 </template>
 
 <script setup lang="ts">
-const { home } = await useHome();
+const home = await useRequiredFetch<Home>("/api/home");
 
 useHead({ titleTemplate: "%s" });
-
-const recentId = useId();
 </script>

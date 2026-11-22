@@ -1,15 +1,82 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
-import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ScriptUsage } from "#layers/snapshot/shared/types/ScriptUsage.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import DailyChart from "~/components/DailyChart.vue";
-import PageFacts, { type PageFact } from "~/components/PageFacts.vue";
+import PageFacts from "~/components/PageFacts.vue";
+import type { PageFact } from "~/types/PageFact";
 import Page from "./telemetry.vue";
 
-// Each panel has its own spec; here only the page's own totals are under test
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
+    },
+    common: {
+        never: "never",
+    },
+    pageHeader: {
+        wordmark: "monorepo",
+    },
+    telemetry: {
+        empty: {
+            body: "Scripts record each run into {git}, and the next commit carries the rows into {folder}. Commit, then run {command}.",
+            title: "No runs committed yet",
+        },
+        facts: {
+            agent: "By agents",
+            failed: "Failed",
+            neverRun: "Never run",
+            runs: "Runs",
+            scripts: "Scripts",
+        },
+        provenance: "Usage log · last {days} days · collected {age}",
+        title: "Tooling usage",
+    },
+    telemetryDaily: {
+        endLabel: "last day",
+        reading: "{average} {unit} a day on average; the busiest day was {day}, with {peak}.",
+        series: {
+            runs: {
+                title: "Runs per day",
+                unit: "runs",
+            },
+        },
+        views: {
+            chart: "Chart",
+            table: "Table",
+        },
+    },
+};
+
+const artifacts = vi.hoisted(() => ({ usage: null as UsageArtifact | null }));
+mockNuxtImport("usageArtifact", () => () => artifacts.usage);
+
+beforeEach(() => {
+    artifacts.usage = null;
+});
+
 const global = {
     stubs: {
         TelemetryScriptActivity: true,
@@ -36,10 +103,7 @@ const tally = (overrides: Partial<ScriptUsage> = {}): ScriptUsage => ({
 });
 
 const serve = (usage: UsageArtifact | null) => {
-    serveEndpoint("/api/snapshot/usage", (): SnapshotResponse => ({
-        manifest: null,
-        usage,
-    }));
+    artifacts.usage = usage;
 };
 
 const usage = (
@@ -63,6 +127,10 @@ const facts = (wrapper: VueWrapper) =>
 
 const peak = (wrapper: VueWrapper) =>
     Math.max(...(wrapper.findComponent(DailyChart).props("values") as number[]));
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("telemetry page", () => {
     it("says nothing has been folded yet instead of showing an empty matrix as a result", async () => {

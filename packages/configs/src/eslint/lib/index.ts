@@ -10,6 +10,7 @@ import layerIsolation from "./layerIsolation.ts";
 import layerBoundaries from "./layerBoundaries.ts";
 import { constTables, constTablesVue } from "./constTables.ts";
 import propsInterface from "./propsInterface.ts";
+import pageLength from "./pageLength.ts";
 import { disableReasons, disableReasonsVue } from "./disableReasons.ts";
 import { defaultExports, defaultExportsVue } from "./defaultExports.ts";
 import templateI18n from "./templateI18n.ts";
@@ -58,6 +59,7 @@ const vueOnly: object[] = [
     layerIsolation,
     constTablesVue,
     propsInterface,
+    pageLength,
     templateI18n,
     templateCalls,
     typeDefinitionsVue,

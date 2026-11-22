@@ -4,7 +4,6 @@ export const CAPABILITY_LABEL_PREFIX = "cap:";
 /** Mirrors `OWNER_LABEL` in apps/developer-portal/layers/workflows/shared/constants.ts. */
 export const OWNER_LABEL = "owner";
 
-/** The one GitHub Project board every issue sits on. */
 export const BOARD = "Monorepo";
 
 /** The board's Number field holding a ticket's Fibonacci complexity estimate. */
@@ -49,7 +48,10 @@ export interface SnapshotIssue {
     complexity: number | null;
 }
 
-/** Read back by `readSnapshot` in apps/developer-portal/layers/workflows/shared/snapshot.ts; change both together. */
+/**
+ * Read back by `readSnapshot` in apps/developer-portal/layers/workflows/shared/snapshot.ts; change
+ * both together.
+ */
 export interface Snapshot {
     syncedAt: string;
     milestone: string;

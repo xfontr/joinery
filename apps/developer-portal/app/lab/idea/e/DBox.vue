@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-export interface BoxFilter {
+interface BoxFilter {
     id: string;
     label: string;
     count?: number;

@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { eachElement, parseFragment, slugify, stringifyNodes, textContent } from "./hast";
 
 describe("parseFragment", () => {
-    // Parsed as a document, a pasted `<meta>` would drag a `<head>` and `<body>` in with it
     it("parses a fragment without wrapping it in a document", () => {
         expect(stringifyNodes(parseFragment('<meta charset="utf-8"><p>Texto</p>').children)).toBe(
             '<meta charset="utf-8"><p>Texto</p>',

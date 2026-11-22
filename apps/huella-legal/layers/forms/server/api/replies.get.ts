@@ -2,7 +2,6 @@ import type { ReplyPace } from "../../shared/types/ReplyPace";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
-// The editors' calendar day, so the notice lasts through the date they set wherever the reader is
 const today = (): string =>
     new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Madrid" }).format(new Date());
 

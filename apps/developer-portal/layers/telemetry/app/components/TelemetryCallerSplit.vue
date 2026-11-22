@@ -12,7 +12,13 @@ interface Props {
 
 const { runs, agent } = defineProps<Props>();
 
-const title = computed(() => (runs ? `${agent} by agents, ${runs - agent} by people` : "No runs"));
+const { t } = useI18n();
+
+const title = computed(() =>
+    runs
+        ? t("telemetryCallerSplit.split", { agent, people: runs - agent })
+        : t("telemetryCallerSplit.none"),
+);
 
 const parts = computed(() =>
     [

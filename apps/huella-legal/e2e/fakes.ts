@@ -11,7 +11,6 @@ import type { WordpressComment } from "./vendors.ts";
 
 export const SUBJECT = fakeTerm({ description: faker.lorem.sentence() });
 
-// The slug the articles layer reads the thesis format from
 const THESIS = fakeTerm({
     resource: "tags",
     slug: "trabajos-de-fin-de-grado",
@@ -27,7 +26,7 @@ const AUTHORS = [fakeAuthor({ bio: faker.lorem.sentence() }), fakeAuthor()];
 
 export const AUTHOR = AUTHORS[0]!;
 
-export const LEAD = fakeEntry({ image: fakeAsset(), authors: AUTHORS });
+const LEAD = fakeEntry({ image: fakeAsset(), authors: AUTHORS });
 
 export const HEADING = faker.lorem.words(2);
 
@@ -88,7 +87,6 @@ export const POSTS: Entry[] = [
     LEAD,
     ESCAPED,
     ARTICLE,
-    // Past one page of twenty, with every format represented
     ...Array.from({ length: 22 }, (_, index) =>
         fakeEntry({
             image: index % 2 === 0 ? fakeAsset() : undefined,
@@ -100,7 +98,6 @@ export const POSTS: Entry[] = [
             authors: [AUTHORS[index % 2] ?? fakeAuthor()],
         }),
     ),
-    // One post each from more authors than the directory's first twelve, so it has more to show
     ...Array.from({ length: 12 }, (_, index) =>
         fakeEntry({
             terms: [SIBLING],
@@ -133,7 +130,6 @@ export const LEGAL = fakeEntry({
 
 export const SOURCE = faker.lorem.sentence();
 
-// Any other page takes the same template, footnotes and closing reference list included
 export const PAGE = fakeEntry({
     slug: "nota-editorial",
     terms: [],
@@ -147,12 +143,11 @@ export const PAGE = fakeEntry({
     },
 });
 
-// The calculator page renders this page's body as its guide, under the app's own heading
 export const GUIDE_HEADING = "Cómo utilizar esta calculadora de intereses";
 export const FORMULA =
     "[(Tipo de interés × Importe) ÷ 365] × Días entre las fechas de inicio y fin";
 
-export const GUIDE = fakeEntry({
+const GUIDE = fakeEntry({
     slug: "calculo-intereses",
     terms: [],
     authors: [],

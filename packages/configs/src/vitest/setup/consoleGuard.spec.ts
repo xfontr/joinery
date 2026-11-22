@@ -55,7 +55,6 @@ describe("console guard", () => {
         expect(result?.state).toBe("pass");
     });
 
-    // Vue logs it the first time any <Suspense> mounts, and every Nuxt app renders inside one
     it("lets Vue's experimental-Suspense notice through", async () => {
         const [result] = await runGuarded(
             'it("suspends", () => { console.info("<Suspense> is an experimental feature and its API will likely change."); });',

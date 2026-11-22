@@ -142,7 +142,6 @@ describe("i18n nuxt module", () => {
         expect(kit.installModule).toHaveBeenCalledWith("@nuxtjs/i18n");
     });
 
-    // Failing the build beats throwing on the first request, which is a page nobody is watching
     describe("when the configured vendor does not exist", () => {
         it.each([
             [

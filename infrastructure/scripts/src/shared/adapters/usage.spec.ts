@@ -4,7 +4,6 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { toLine, type UsageRow } from "../domain/usage.ts";
 
-// A repository whose git is answered from a real temporary folder
 const repo = vi.hoisted(() => ({ root: "", fail: false, branch: "" }));
 
 vi.mock("./git.ts", async () => {

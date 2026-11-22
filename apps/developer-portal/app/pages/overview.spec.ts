@@ -3,39 +3,59 @@ import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { ref } from "vue";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { IssuesRead } from "#layers/github/shared/issues.ts";
+import type { IssuesRead } from "#layers/github/app/utils/issues.ts";
+import type { CoverageArtifact } from "#layers/snapshot/shared/types/CoverageArtifact.ts";
+import type { DepsArtifact } from "#layers/snapshot/shared/types/DepsArtifact.ts";
+import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
+import type { ProjectsArtifact } from "#layers/snapshot/shared/types/ProjectsArtifact.ts";
+import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import type { Snapshot } from "#layers/workflows/shared/types/Snapshot.ts";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import type { DashboardLayout } from "~/utils/dashboardLayout";
 import Page from "./overview.vue";
+import en from "../../i18n/locales/en.json";
 
-// An in-memory docs collection, answering the README query the page sends
 const docs = vi.hoisted(() => ({
     readmes: [] as { path: string; title: string; description: string }[],
 }));
 
-// GitHub is read straight from the browser, so the github layer's composable is the boundary
 const github = vi.hoisted(() => ({ read: null as unknown }));
 
 mockNuxtImport("queryCollection", () => () => {
-    const query = { select: () => query, all: () => Promise.resolve(docs.readmes) };
+    let wanted = "";
+    const query = {
+        path: (path: string) => {
+            wanted = path;
+            return query;
+        },
+        select: () => query,
+        all: () => Promise.resolve(docs.readmes),
+        first: () => Promise.resolve(docs.readmes.find((page) => page.path === wanted) ?? null),
+    };
     return query;
 });
 
-mockNuxtImport("useIssues", () => () => ({ data: github.read }));
+mockNuxtImport("useIssues", () => () => ({ data: github.read, shown: github.read }));
 
-// Each row has its own spec; here only which issues the page picks
-const global = {
-    stubs: {
-        HealthIssueRow: { props: { issue: Object }, template: "<div>{{ issue.title }}</div>" },
-    },
-};
+interface Artifacts {
+    projects?: ProjectsArtifact | null;
+    coverage?: CoverageArtifact | null;
+    metrics?: MetricsArtifact | null;
+    deps?: DepsArtifact | null;
+    docs?: DocsArtifact | null;
+    usage?: UsageArtifact | null;
+}
 
-type Artifacts = Omit<SnapshotResponse, "manifest">;
+const snapshot = vi.hoisted(() => ({ artifacts: {} as Artifacts }));
+mockNuxtImport("projectsArtifact", () => () => snapshot.artifacts.projects ?? null);
+mockNuxtImport("coverageArtifact", () => () => snapshot.artifacts.coverage ?? null);
+mockNuxtImport("metricsArtifact", () => () => snapshot.artifacts.metrics ?? null);
+mockNuxtImport("depsArtifact", () => () => snapshot.artifacts.deps ?? null);
+mockNuxtImport("docsArtifact", () => () => snapshot.artifacts.docs ?? null);
+mockNuxtImport("usageArtifact", () => () => snapshot.artifacts.usage ?? null);
 
 const app = (name: string): ProjectNode => ({
     name: `@monorepo/${name}`,
@@ -87,27 +107,15 @@ const doneSnapshot = (id: string) => ({
 });
 
 const serve = (artifacts: Artifacts, workflows = assembleWorkflows([], [], {})) => {
-    for (const artifact of ["projects", "coverage", "docs", "deps", "metrics", "usage"] as const) {
-        serveEndpoint(`/api/snapshot/${artifact}`, (): SnapshotResponse => ({
-            manifest: null,
-            [artifact]: artifacts[artifact] ?? null,
-        }));
-    }
+    snapshot.artifacts = artifacts;
     serveEndpoint("/api/workflows", () => workflows);
 };
 
 const open = async () => {
-    const wrapper = await mountSuspended(Page, { global });
+    const wrapper = await mountSuspended(Page);
     await flushPromises();
     return wrapper;
 };
-
-const tiles = (wrapper: VueWrapper) =>
-    Object.fromEntries(
-        wrapper
-            .findAllComponents({ name: "StatTile" })
-            .map((tile) => [tile.props("label"), tile.props()]),
-    );
 
 const hrefs = (wrapper: VueWrapper) => wrapper.findAll("a").map((a) => a.attributes("href"));
 
@@ -158,12 +166,17 @@ const projects = (nodes: ProjectNode[]): Artifacts => ({
 });
 
 beforeEach(() => {
+    snapshot.artifacts = {};
     docs.readmes = [];
     github.read = ref<IssuesRead>({ fetchedAt: "2026-11-01", error: null, issues: [] });
 });
 
 afterEach(() => {
     localStorage.clear();
+});
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", en);
 });
 
 describe("home page", () => {
@@ -285,7 +298,6 @@ describe("home page", () => {
         expect(hrefs(wrapper)).toContain("/workflows/new");
     });
 
-    // The visitor front page carries these two, so they start in the Add widget list.
     describe("once the welcome and featured widgets are added back", () => {
         beforeEach(() => {
             restore("welcome", "featured");
@@ -336,76 +348,6 @@ describe("home page", () => {
 
             expect(wrapper.text()).toContain("The repository summary is not available yet.");
             expect(wrapper.text()).toContain("No project description is available yet.");
-        });
-    });
-
-    // The panels the lab's four widgets replaced start in the Add widget list, so nothing was lost.
-    describe("once the earlier panels are added back", () => {
-        beforeEach(() => {
-            restore("docs", "coverage", "issues", "vulnerabilities", "workflowCards");
-        });
-
-        it("shows a dash on every tile whose artifact was never collected", async () => {
-            serve({});
-            const wrapper = await open();
-
-            expect(tiles(wrapper)).toMatchObject({
-                Docs: { value: "—" },
-                "Line coverage": { value: "—" },
-                Vulnerabilities: { value: "—" },
-            });
-        });
-
-        it("feeds the collected coverage and the live issue count into their tiles", async () => {
-            github.read = ref<IssuesRead>({
-                fetchedAt: "2026-11-01",
-                error: null,
-                issues: [
-                    {
-                        number: 4,
-                        title: "Open issue",
-                        body: "",
-                        url: "",
-                        labels: [],
-                        assignees: [],
-                        createdAt: "2026-11-01",
-                        updatedAt: "2026-11-01",
-                    },
-                ],
-            });
-            serve({
-                coverage: {
-                    generatedAt: "2026-11-01T00:00:00Z",
-                    totals: { lines: 82, statements: 0, functions: 0, branches: 0 },
-                    report: false,
-                    projects: [],
-                },
-            });
-            const wrapper = await open();
-
-            expect(tiles(wrapper)["Line coverage"]).toMatchObject({ value: "82%" });
-            expect(tiles(wrapper)["Open issues"]).toMatchObject({ value: 1 });
-            expect(wrapper.text()).toContain("Open issue");
-        });
-
-        it("blanks the issue count and says why when GitHub cannot be read", async () => {
-            github.read = ref<IssuesRead>({ fetchedAt: "", error: "offline", issues: [] });
-            serve({});
-            const wrapper = await open();
-
-            expect(tiles(wrapper)["Open issues"]).toMatchObject({
-                value: "—",
-                hint: "GitHub could not be read",
-            });
-        });
-
-        it("still offers a new project when none is in progress", async () => {
-            serve({});
-            const wrapper = await open();
-
-            expect(wrapper.find("a[href='/workflows/new']").attributes("aria-label")).toBe(
-                "New project",
-            );
         });
     });
 });

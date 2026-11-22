@@ -1,7 +1,7 @@
 import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { CoverageArtifact } from "#layers/snapshot/shared/types/CoverageArtifact.ts";
 import type { DepsArtifact } from "#layers/snapshot/shared/types/DepsArtifact.ts";
 import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
@@ -9,11 +9,144 @@ import type { OutdatedPackage } from "#layers/snapshot/shared/types/OutdatedPack
 import type { ProjectCoverage } from "#layers/snapshot/shared/types/ProjectCoverage.ts";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
-import type { ProjectTabRow } from "~/utils/apps";
+import type { ProjectTabRow } from "~/types/ProjectTabRow";
+import type { ProjectsArtifact } from "#layers/snapshot/shared/types/ProjectsArtifact.ts";
 import Page from "./[name].vue";
 
-// An in-memory docs collection, answering the README query the page sends
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
+    },
+    appTabs: {
+        label: "{app} sections",
+    },
+    common: {
+        metrics: {
+            lines: "lines",
+        },
+        shortAge: {
+            days: "{count} d",
+        },
+    },
+    issuesRead: {
+        noRepo: "NUXT_PUBLIC_REPO_URL is unset, so there is no repo to read.",
+    },
+    pageHeader: {
+        breadcrumb: "Breadcrumb",
+        wordmark: "monorepo",
+    },
+    project: {
+        missing: {
+            description: "No collected project lives in a folder called {name}.",
+            title: "No such project",
+        },
+        noReadme: "This project has no README.",
+        tabs: {
+            coverage: "Coverage",
+            deps: "Dependencies",
+            issues: "Issues",
+            readme: "README",
+        },
+    },
+    projectAbout: {
+        facts: {
+            changelog: "Changelog",
+            lines: "Lines covered",
+            recent: "Commits, 2 wk",
+            specs: "Specs",
+            unreleased: "Unreleased",
+            version: "Version",
+        },
+        no: "no",
+        relations: {
+            dependsOn: "Depends on",
+            usedBy: "Used by",
+        },
+        tags: "Tags",
+        title: "About",
+        yes: "yes",
+    },
+    projectCoverageTab: {
+        meta: "Vitest · {files} files · collected {age}",
+        parts: {
+            covered: "covered",
+            uncovered: "not covered",
+        },
+        title: "Coverage",
+    },
+    projectDepsTab: {
+        columns: {
+            current: "Current",
+            latest: "Latest",
+            package: "Package",
+            wanted: "Wanted",
+        },
+        meta: "pnpm outdated · collected {age} · advisories are workspace-wide",
+        title: "Outdated dependencies",
+    },
+    projectExtraTab: {
+        meta: "Running in {name}",
+        parts: {
+            done: "done",
+            left: "to go",
+        },
+    },
+    projectIssuesTab: {
+        meta: "GitHub · labelled {area}",
+        reading: "Reading GitHub…",
+        readingIssues: "Reading open issues…",
+        title: "Open issues",
+    },
+    projectTabs: {
+        workflows: {
+            empty: "No workflow runs in this project.",
+            label: "Workflows",
+        },
+    },
+    projects: {
+        crumb: "projects",
+    },
+};
+
+const artifacts = vi.hoisted(() => ({
+    coverage: null as CoverageArtifact | null,
+    deps: null as DepsArtifact | null,
+    metrics: null as MetricsArtifact | null,
+    projects: null as ProjectsArtifact | null,
+}));
+mockNuxtImport("coverageArtifact", () => () => artifacts.coverage);
+mockNuxtImport("depsArtifact", () => () => artifacts.deps);
+mockNuxtImport("metricsArtifact", () => () => artifacts.metrics);
+mockNuxtImport("projectsArtifact", () => () => artifacts.projects);
+
+beforeEach(() => {
+    artifacts.coverage = null;
+    artifacts.deps = null;
+    artifacts.metrics = null;
+    artifacts.projects = null;
+});
+
 const docs = vi.hoisted(() => ({
     readmes: [] as { path: string; title: string; description: string }[],
 }));
@@ -81,41 +214,29 @@ const serve = ({
     workflows?: Record<string, ProjectTabRow[]>;
 } = {}) => {
     serveEndpoint("/api/workflows/areas", () => workflows);
-    serveEndpoint("/api/snapshot/projects", (): SnapshotResponse => ({
-        manifest: null,
-        projects: { generatedAt: "2026-11-01T00:00:00Z", projects, retired: [] },
-    }));
-    serveEndpoint("/api/snapshot/metrics", (): SnapshotResponse => ({
-        manifest: null,
-        metrics: {
-            generatedAt: "2026-11-01T00:00:00Z",
-            commit: "abc",
-            branch: "master",
-            projects: metrics,
-            invariantFindings: [],
-            conventionalCommitRate: null,
-            commitsSinceLastRelease: null,
-        } satisfies MetricsArtifact,
-    }));
-    serveEndpoint("/api/snapshot/coverage", (): SnapshotResponse => ({
-        manifest: null,
-        coverage: {
-            generatedAt: "2026-11-01T00:00:00Z",
-            totals: null,
-            report: false,
-            projects: coverage,
-        } satisfies CoverageArtifact,
-    }));
-    serveEndpoint("/api/snapshot/deps", (): SnapshotResponse => ({
-        manifest: null,
-        deps: {
-            generatedAt: "2026-11-01T00:00:00Z",
-            vulnerabilities: null,
-            totalDependencies: null,
-            advisories: [],
-            outdated,
-        } satisfies DepsArtifact,
-    }));
+    artifacts.projects = { generatedAt: "2026-11-01T00:00:00Z", projects, retired: [] };
+    artifacts.metrics = {
+        generatedAt: "2026-11-01T00:00:00Z",
+        commit: "abc",
+        branch: "master",
+        projects: metrics,
+        invariantFindings: [],
+        conventionalCommitRate: null,
+        commitsSinceLastRelease: null,
+    } satisfies MetricsArtifact;
+    artifacts.coverage = {
+        generatedAt: "2026-11-01T00:00:00Z",
+        totals: null,
+        report: false,
+        projects: coverage,
+    } satisfies CoverageArtifact;
+    artifacts.deps = {
+        generatedAt: "2026-11-01T00:00:00Z",
+        vulnerabilities: null,
+        totalDependencies: null,
+        advisories: [],
+        outdated,
+    } satisfies DepsArtifact;
 };
 
 /** Each About fact by its label, the count beside a list label left out. */
@@ -140,6 +261,10 @@ const tabs = (wrapper: VueWrapper) =>
 afterEach(() => {
     docs.readmes = [];
     useRuntimeConfig().public.repoUrl = "";
+});
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
 });
 
 describe("project page", () => {
@@ -241,7 +366,7 @@ describe("project page", () => {
         serve();
         const wrapper = await mountSuspended(Page, { route: "/projects/UI?tab=issues" });
 
-        await vi.waitFor(() => expect(wrapper.findAll("a[href*='/issues/']").length).toBe(1));
+        await vi.waitFor(() => expect(wrapper.findAll("a[href*='/issues/']")).toHaveLength(1));
         expect(wrapper.find("a[href$='/issues/1']").exists()).toBe(true);
     });
 

@@ -1,6 +1,25 @@
-import { WORK } from "./shared/work.ts";
+import { readdirSync, readFileSync } from "node:fs";
+import { basename, resolve } from "node:path";
+import { parse } from "yaml";
+
+const CONTENT = resolve(import.meta.dirname, "../../content/work");
+
+const isCaseStudy = (file: string): boolean => {
+    const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---/.exec(
+        readFileSync(resolve(CONTENT, file), "utf8"),
+    );
+
+    const { caseStudy } = parse(frontmatter?.[1] ?? "") as { caseStudy?: boolean };
+
+    return caseStudy === true;
+};
 
 export default defineNuxtConfig({
-    // Listed rather than crawled, so each work page prerenders whether or not a page links to it.
-    nitro: { prerender: { routes: WORK.map((item) => `/work/${item.slug}`) } },
+    nitro: {
+        prerender: {
+            routes: readdirSync(CONTENT)
+                .filter((file) => file.endsWith(".md") && isCaseStudy(file))
+                .map((file) => `/work/${basename(file, ".md")}`),
+        },
+    },
 });

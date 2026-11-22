@@ -53,33 +53,6 @@ export const work = [
     },
 ];
 
-export const method = [
-    {
-        title: "Look first",
-        body: "Every design starts from award-juried sites, studied and measured, never from a template.",
-        cta: "Read a benchmark",
-        to: "/decisions/0039-developer-portal-benchmark",
-    },
-    {
-        title: "Decide in writing",
-        body: "Before anything is built, the open question gets a short written answer that anyone can read later.",
-        cta: "Browse the decisions",
-        to: "/decisions",
-    },
-    {
-        title: "Plan the whole job",
-        body: "Each project becomes a map of what has to happen, in what order, and what waits on what.",
-        cta: "See a project's plan",
-        to: "/workflows/huella-legal",
-    },
-    {
-        title: "Agents build, rules decide",
-        body: "AI agents write most of the code. Tests, lint rules and three automated reviewers decide what gets merged, and the rules grow from real mistakes.",
-        cta: "How the agents are set up",
-        to: "/docs/docs/concepts/agent-setup",
-    },
-];
-
 /** The method page: each step told at the depth a curious reader will take. */
 export const benchmark = {
     sources:
@@ -249,70 +222,6 @@ export const principles = [
         line: "Speed, accessibility and behaviour are checked by machines on every change, not promised.",
         proof: "Huella Legal scores 100 on Google PageSpeed, on mobile",
         to: "craft",
-    },
-];
-
-/** E: the questions a visitor asks, in the order they ask them. */
-export const questions = [
-    {
-        q: "What is this?",
-        a: "The open workshop behind a handful of websites and the tools that keep them running.",
-    },
-    {
-        q: "What's being made?",
-        a: "A law magazine for students, a psychologist's practice, an editing desk for WordPress, and this portal.",
-    },
-    {
-        q: "How is a whole project run?",
-        a: "On one map that people and AI agents work from together.",
-    },
-    {
-        q: "How does it get made?",
-        a: "Look first, decide in writing, plan the whole job, then let AI agents build under hand-written rules.",
-    },
-    {
-        q: "Can I check?",
-        a: "Yes. Every decision, plan and review is published as it happens.",
-    },
-];
-
-/** F: one real piece of work, from its question to this page. */
-export const journey = [
-    {
-        stop: "A question",
-        text: "How should someone who doesn't write code see this portal?",
-        artefact: "Ticket #474",
-        to: "/decisions/0040-developer-portal-visitor-structure",
-    },
-    {
-        stop: "Look first",
-        text: "Twelve award-juried sites, measured for type, colour and what a reader takes in 30 seconds.",
-        artefact: "Benchmark 0039",
-        to: "/decisions/0039-developer-portal-benchmark",
-    },
-    {
-        stop: "Decide in writing",
-        text: "A 'pick your door' page against landing straight in. Measured, the door cost every visitor a click.",
-        artefact: "Decision 0040",
-        to: "/decisions/0040-developer-portal-visitor-structure",
-    },
-    {
-        stop: "Plan the job",
-        text: "The redesign mapped into twelve blocks, from benchmark to go-live, each knowing what it waits on.",
-        artefact: "The front-door plan",
-        to: "/workflows/developer-portal-front-door",
-    },
-    {
-        stop: "Build and review",
-        text: "Agents build each block; three automated reviewers read it before it merges.",
-        artefact: "The agent pipeline",
-        to: "/docs/docs/concepts/agent-setup",
-    },
-    {
-        stop: "You are here",
-        text: "This page is the design lab that plan asked for.",
-        artefact: "Design lab, #477",
-        to: "/workflows/developer-portal-front-door",
     },
 ];
 

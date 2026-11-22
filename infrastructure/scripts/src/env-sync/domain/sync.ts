@@ -2,7 +2,7 @@ import { parseEnv, type EnvLine } from "./envFile.ts";
 
 export const TRAILING_HEADER = "# Not in .env.example";
 
-export interface Synced {
+interface Synced {
     lines: string[];
     added: string[];
     trailing: string[];

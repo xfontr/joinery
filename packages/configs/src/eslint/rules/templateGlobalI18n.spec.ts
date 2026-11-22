@@ -16,7 +16,6 @@ ruleTester.run("template-global-i18n", templateGlobalI18n, {
     valid: [
         { code: '<template><p>{{ $t("title") }}</p></template>', filename: "x.vue" },
         { code: "<template><p>{{ $n(total) }}</p></template>", filename: "x.vue" },
-        // `useHead` and friends still need the binding in `<script>`.
         {
             code: '<script setup lang="ts">\nconst title = t("title");\n</script>',
             filename: "x.vue",

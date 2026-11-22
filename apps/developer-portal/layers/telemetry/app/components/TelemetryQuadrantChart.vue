@@ -87,9 +87,13 @@ interface Props {
     quadrants: readonly { corner: Corner; label: string; bad?: boolean }[];
     xLabel: string;
     yLabel: string;
+    /** The copy key a point's tooltip is worded with, given its `name` and `detail`. */
+    pointKey: string;
 }
 
-const { chart, kinds, quadrants, xLabel, yLabel } = defineProps<Props>();
+const { chart, kinds, quadrants, xLabel, yLabel, pointKey } = defineProps<Props>();
+
+const { t } = useI18n();
 
 /** Past this share of the width a point's name goes on its left, so it never runs off the plot. */
 const LABEL_FLIP = 60;
@@ -134,7 +138,7 @@ const thresholds = computed(() => ({
 const dots = computed(() =>
     chart.points.map((point) => ({
         name: point.name,
-        title: point.title,
+        title: t(pointKey, { name: point.name, ...point.detail }),
         labelled: point.labelled,
         dot: { left: pct(point.x), bottom: pct(point.y), ...fill(kinds[point.kind]) },
         label:

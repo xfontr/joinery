@@ -1,10 +1,89 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
-import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DepsArtifact } from "#layers/snapshot/shared/types/DepsArtifact.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import Page from "./deps.vue";
+
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
+    },
+    common: {
+        severity: {
+            critical: "critical",
+            high: "high",
+            low: "low",
+            moderate: "moderate",
+        },
+    },
+    deps: {
+        facts: {
+            dependencies: "Dependencies",
+            outdated: "Outdated",
+        },
+        provenance: "pnpm audit and pnpm outdated · collected {age}",
+        title: "Dependencies",
+    },
+    healthAdvisories: {
+        columns: {
+            advisory: "Advisory",
+            package: "Package",
+            patched: "Patched",
+            severity: "Severity",
+            via: "Pulled in via",
+        },
+        meta: "Every finding pnpm audit reports, over the whole workspace lockfile",
+        none: "No known vulnerabilities.",
+        notCollected: "Not collected.",
+        title: "Advisories",
+    },
+    healthOutdated: {
+        columns: {
+            current: "Current",
+            latest: "Latest",
+            package: "Package",
+            projects: "Projects",
+            usedBy: "Used by",
+            wanted: "Wanted",
+        },
+        deprecated: "deprecated",
+        meta: "pnpm outdated -r · wanted is what the range in package.json already allows",
+        notCollected: "Not collected.",
+        title: "Outdated",
+        upToDate: "Everything is on its wanted version.",
+    },
+    pageHeader: {
+        wordmark: "monorepo",
+    },
+};
+
+const artifacts = vi.hoisted(() => ({ deps: null as DepsArtifact | null }));
+mockNuxtImport("depsArtifact", () => () => artifacts.deps);
+
+beforeEach(() => {
+    artifacts.deps = null;
+});
 
 const NONE = { info: 0, low: 0, moderate: 0, high: 0, critical: 0 };
 
@@ -44,10 +123,7 @@ const UNCOLLECTED = {
 } satisfies DepsArtifact;
 
 const serve = (deps: DepsArtifact) => {
-    serveEndpoint("/api/snapshot/deps", (): SnapshotResponse => ({
-        manifest: null,
-        deps,
-    }));
+    artifacts.deps = deps;
 };
 
 const cells = (wrapper: VueWrapper, name: string) =>
@@ -56,6 +132,10 @@ const cells = (wrapper: VueWrapper, name: string) =>
         .find((tr) => tr.findAll("td").some((td) => td.text().startsWith(name)))!
         .findAll("td")
         .map((td) => td.text());
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("dependencies page", () => {
     it("lists each advisory with its module, severity, fix and the chain that pulls it in", async () => {
@@ -93,7 +173,6 @@ describe("dependencies page", () => {
         expect(cells(wrapper, "nuxt")[0]).toContain("deprecated");
     });
 
-    // A failed audit and a clean one are different facts, and only the data tells them apart
     it("says an audit that never ran was not collected, never that nothing was found", async () => {
         serve(UNCOLLECTED);
         const wrapper = await mountSuspended(Page);

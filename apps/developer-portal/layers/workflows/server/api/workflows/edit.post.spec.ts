@@ -22,7 +22,6 @@ beforeEach(() => {
 });
 
 describe("workflow edit route", () => {
-    // Vitest runs without `nuxt dev`, which is exactly the deployed site's position.
     it("answers 404 outside nuxt dev rather than writing a file", async () => {
         await expect(route({})).rejects.toMatchObject({ statusCode: 404 });
         expect(workflows.applyEdit).not.toHaveBeenCalled();

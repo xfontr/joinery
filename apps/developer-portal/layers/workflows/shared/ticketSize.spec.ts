@@ -209,17 +209,18 @@ describe("receiptOf", () => {
 
     it("lists the core, each feature on with what sits inside it, and each page", () => {
         expect(
-            receiptOf(priced, {}, pages).map(({ label, detail, points, nested }) => [
+            receiptOf(priced, {}, pages).map(({ id, label, type, points, nested }) => [
+                id,
                 label,
-                detail,
+                type,
                 points,
                 nested,
             ]),
         ).toEqual([
-            ["Core build", null, 8, false],
-            ["Blog", null, 5, false],
-            ["Comments", null, 3, true],
-            ["Services", "Custom page", 5, false],
+            ["core", "", null, 8, false],
+            ["blog", "Blog", null, 5, false],
+            ["comments", "Comments", null, 3, true],
+            ["page-0", "Services", "Custom page", 5, false],
         ]);
     });
 
@@ -272,10 +273,10 @@ describe("receiptOf setups", () => {
         const rows = receiptOf(blogs, {}, pages);
         const extras = pages.map((page) => typedExtra(blogs.types[0]!, page));
 
-        expect(rows.map(({ detail, points }) => [detail, points])).toEqual([
-            [null, 0],
-            ["Blog + comments, with Comments setup", 21],
-            ["Blog + comments", 13],
+        expect(rows.map(({ type, setup, points }) => [type, setup, points])).toEqual([
+            [null, [], 0],
+            ["Blog + comments", ["Comments setup"], 21],
+            ["Blog + comments", [], 13],
         ]);
         expect(estimateOf(blogs, {}, extras).points).toBe(34);
     });

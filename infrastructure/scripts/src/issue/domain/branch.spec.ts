@@ -11,7 +11,6 @@ describe("slugify", () => {
         expect(slugify(title)).toBe(expected);
     });
 
-    // The branch-title prompt rejects anything that slugs to nothing, so this is what it checks.
     it("collapses a title with no letters or digits to an empty string, rather than to a lone dash", () => {
         expect(slugify("--- ??? ---")).toBe("");
         expect(slugify("-".repeat(100_000))).toBe("");
@@ -19,8 +18,6 @@ describe("slugify", () => {
 });
 
 describe("branchName", () => {
-    // `.husky/pre-push` only accepts ^(hotfix|fix|feature|release)/[^/]+/[0-9]+-.+, and the
-    // issue number right after the area is what git.ts matches on to find the branch again.
     it("puts the type first, the area second, and the issue number first after that, so the push gate and the resume lookup both match", () => {
         expect(branchName("feature", "huella-legal", 42, "Add dashboards for spaces")).toBe(
             "feature/huella-legal/42-add-dashboards-for-spaces",

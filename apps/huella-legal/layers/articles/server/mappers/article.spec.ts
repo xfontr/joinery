@@ -24,7 +24,6 @@ describe("toArticle", () => {
         });
     });
 
-    // The canonical address keeps WordPress's trailing slash, so a citation never costs a redirect
     it.each(["https://revista.test", "https://revista.test/"])(
         "cites the post at its permalink on %s",
         (url) => {

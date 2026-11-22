@@ -10,7 +10,7 @@ import {
     ATTR_SERVICE_VERSION,
 } from "@opentelemetry/semantic-conventions";
 
-export interface NodeTelemetryConfig {
+interface NodeTelemetryConfig {
     url: string;
     instanceId: string;
     token: string;

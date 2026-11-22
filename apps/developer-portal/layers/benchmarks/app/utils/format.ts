@@ -1,9 +1,5 @@
-import type { BenchmarkVerdict } from "#layers/benchmarks/shared/types/BenchmarkVerdict.ts";
-import { BENCHMARK_VERDICT_LABELS } from "#layers/benchmarks/shared/benchmarks.ts";
-import type { Tone } from "~/utils/format.ts";
-
-export const benchmarkVerdictLabel = (verdict: BenchmarkVerdict): string =>
-    BENCHMARK_VERDICT_LABELS[verdict];
+import type { BenchmarkVerdict } from "#layers/benchmarks/app/types/BenchmarkVerdict.ts";
+import type { Tone } from "~/types/Tone";
 
 const VERDICT_TONES = {
     strong: "good",

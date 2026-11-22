@@ -8,7 +8,6 @@ stubNitro();
 
 const { assertChallenge } = await import("./turnstile");
 
-// The shape `$fetch` rejects with: siteverify's JSON body arrives as `data`
 const rejected = (statusCode: number, data: unknown) =>
     Object.assign(new Error("fetch failed"), { statusCode, data });
 

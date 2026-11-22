@@ -2,7 +2,7 @@ import { CAPABILITY_LABEL_PREFIX, OWNER_LABEL, type SnapshotIssue } from "./snap
 
 type Kind = "build" | "spike" | "owner";
 
-export const TICKET_SIZES = ["block", "supervised", "fast"] as const;
+const TICKET_SIZES = ["block", "supervised", "fast"] as const;
 export type TicketSize = (typeof TICKET_SIZES)[number];
 
 /** The part of a template or extra capability filing reads; the portal's invariants validate the rest. */
@@ -167,7 +167,7 @@ export const readMap = (template: unknown, project: unknown): WorkflowMap => {
     };
 };
 
-export interface PlannedTicket {
+interface PlannedTicket {
     title: string;
     body: string;
     labels: string[];
@@ -175,7 +175,7 @@ export interface PlannedTicket {
     complexity: number | null;
 }
 
-export type Filing = { ok: true; tickets: PlannedTicket[] } | { ok: false; reason: string };
+type Filing = { ok: true; tickets: PlannedTicket[] } | { ok: false; reason: string };
 
 export const KIND_LABELS = { build: "enhancement", spike: "spike", owner: OWNER_LABEL } as const;
 
@@ -307,8 +307,6 @@ export const planFiling = (map: WorkflowMap, issues: SnapshotIssue[], ids: strin
     const blocks = map.blocks.filter(({ id }) => inside.has(id));
     const kinds = new Set(blocks.map(({ kind }) => kind));
 
-    // A spike's answer reshapes later tickets and an owner block is closed by the owner, so
-    // neither shares a ticket with build work.
     if (ids.length > 1 && (kinds.size > 1 || kinds.has("owner"))) {
         return {
             ok: false,
@@ -346,7 +344,6 @@ export const planFiling = (map: WorkflowMap, issues: SnapshotIssue[], ids: strin
                 body: bodyOf(only, draft.criteria),
                 labels: labels(blocks),
                 blockedBy: links,
-                // Each suggested ticket would otherwise carry the whole block's estimate.
                 complexity: drafts.length === 1 ? only.complexity : null,
             })),
         };
@@ -369,7 +366,7 @@ export const planFiling = (map: WorkflowMap, issues: SnapshotIssue[], ids: strin
 };
 
 /** The points a shared ticket holds before the next block wraps onto a new one. */
-export const TICKET_WIDTH = { supervised: 13, fast: 21 } as const;
+const TICKET_WIDTH = { supervised: 13, fast: 21 } as const;
 
 /** Puts each block after the ones it needs from the same group, keeping template order otherwise. */
 const inDependencyOrder = (group: Block[], needs: Map<string, string[]>): Block[] => {

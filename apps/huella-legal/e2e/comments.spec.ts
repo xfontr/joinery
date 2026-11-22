@@ -10,7 +10,6 @@ const PATH = `/${ARTICLE.slug}/`;
 const section = (page: Page) => page.getByRole("region", { name: "2 comentarios" });
 
 const write = async (page: Page, settled: () => Promise<void>) => {
-    // The newsletter band below the article has an email field of its own
     const form = page.locator("#comentarios");
 
     // CI's runner can type before hydration, which a server-rendered form then drops on submit
@@ -73,7 +72,6 @@ test("a reply is held for moderation and confirmed in place of the form", async 
 });
 
 test.describe("a refused comment", () => {
-    // Chrome logs every response that fails, and this one fails on purpose
     test.use({ allowedConsole: [/the server responded with a status of 409\b/] });
 
     test("tells the reader they already sent it, keeping what they wrote", async ({ page }) => {

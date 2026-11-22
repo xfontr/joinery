@@ -12,7 +12,6 @@ const ES = { meta: { title: "Huella Legal" }, shared: { health: "Salud" } };
 
 const server = setupServer(...tolgeeHandlers(BASE_URL, { "es-ES": ES }));
 
-// The real provider on the real client, so the fake is held to what TolgeeProvider parses
 const provider = () =>
     createProvider(
         {

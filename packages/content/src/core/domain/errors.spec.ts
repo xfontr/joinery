@@ -11,7 +11,6 @@ import {
 } from "./errors";
 
 describe("UpstreamError", () => {
-    // The caller's request is what these two diagnose, so relaying them says something true
     it.each([400, 404])(
         "passes a %i through as the answer to the request that caused it",
         (status) => {
@@ -22,8 +21,6 @@ describe("UpstreamError", () => {
         },
     );
 
-    // Our own credentials are what an upstream 401 rejects — inviting the client to retry with different
-    // ones would be a lie, and a 429 aimed at our IP is not the client's quota either
     it.each([401, 403, 429, 500, 502, 503])(
         "reports a %i as a gateway failure of ours",
         (status) => {
@@ -39,7 +36,6 @@ describe("UpstreamError", () => {
         expect(error.statusMessage).toBe("Upstream request failed");
     });
 
-    // statusMessage reaches the client, and the vendor endpoint is not the client's business
     it("never repeats the transport's message, which carries the vendor URL", () => {
         const cause = new Error("connect ECONNREFUSED https://wp.internal/wp-json/wp/v2/posts");
 
@@ -79,7 +75,6 @@ describe("content errors", () => {
         expect(new UndefinedVendorError(undefined, ["wordpress"]).statusCode).toBe(500);
     });
 
-    // One restart per missing variable is the thing worth avoiding
     it("reports unusable vendor config as an internal error, listing every problem at once", () => {
         const error = new MisconfiguredVendorError("WordpressProvider", [
             "baseURL is not an absolute URL",
@@ -122,7 +117,6 @@ describe("content errors", () => {
     });
 });
 
-// One instanceof at the edge has to catch anything the package raises, or a status is invented twice
 describe("every error", () => {
     it.each([
         new UpstreamError(404),

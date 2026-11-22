@@ -33,7 +33,6 @@ describe("translationsKey", () => {
         expect(translationsKey(staging, "en-GB")).not.toBe(translationsKey(internal, "en-GB"));
     });
 
-    // Hashed whole rather than listed, so this holds without translationsKey being edited
     it("keys off every field of the vendor config, so a field added to it cannot be forgotten here", () => {
         const scoped = { ...internal, environment: "staging" } as unknown as VendorConfig;
 
@@ -54,7 +53,6 @@ describe("translationsKey", () => {
         );
     });
 
-    // Nitro strips every non-word character out of the key, so anything else here is silently lost
     it("is word characters only, so the key that is stored is the key that was built", () => {
         const vendor: VendorConfig = {
             name: "tolgee",
@@ -68,8 +66,6 @@ describe("translationsKey", () => {
         expect(escapeKey(key)).toBe(key);
     });
 
-    // Compared after that strip, not before: two base URLs differing only in punctuation used to
-    // collapse onto one entry
     it("survives the strip, so punctuation is not what keeps two documents apart", () => {
         const a: VendorConfig = { ...internal, baseURL: "https://a.test/" };
         const b: VendorConfig = { ...internal, baseURL: "https://at.est/" };

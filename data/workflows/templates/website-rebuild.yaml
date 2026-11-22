@@ -3,8 +3,8 @@
 id: website-rebuild
 title: Website rebuild
 summary: >-
-  An existing site, usually WordPress, rebuilt as a Nuxt app on the same brand. Three owner sign-offs
-  — scope, design, go-live — hold back only the blocks that need them; everything else flows.
+  An existing site, usually WordPress, rebuilt as a Nuxt app on the same brand. The owner signs off
+  three times: scope, design and go-live.
 
 stages:
   - id: discovery

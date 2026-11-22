@@ -16,8 +16,6 @@ describe("assertComplete", () => {
         expect(() => assertComplete([{ name: "@monorepo/ui", data: {} }])).not.toThrow();
     });
 
-    // Rendering a report that's quietly missing a project is the exact failure this guards
-    // against — the error has to name it, not just say "incomplete".
     it("names every project missing a report rather than stopping at the first", () => {
         expect(() =>
             assertComplete([
@@ -38,8 +36,6 @@ describe("assertAbsolutePaths", () => {
         ).not.toThrow();
     });
 
-    // A relative key from one project and an identically-named relative key from another would
-    // merge into a single wrong entry instead of two — this is what stops that silently.
     it("throws naming the project when a key is a relative path", () => {
         expect(() =>
             assertAbsolutePaths("@monorepo/ui", { "src/index.ts": fileCoverage("src/index.ts") }),

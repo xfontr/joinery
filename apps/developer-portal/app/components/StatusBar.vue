@@ -1,14 +1,16 @@
 <template>
     <footer
-        class="fixed inset-x-0 bottom-0 z-40 flex h-7 items-center justify-between gap-4 border-t border-default pr-3 font-mono text-xs surface-ink text-muted"
-        aria-label="Status"
+        class="absolute inset-x-0 bottom-0 z-40 flex h-7 items-center justify-between gap-4 border-t border-default pr-3 font-mono text-xs surface-ink text-muted"
+        :aria-label="$t('statusBar.label')"
     >
         <p class="flex h-full min-w-0 items-center gap-2">
             <span
                 class="flex h-full max-w-56 min-w-0 items-center gap-1.5 bg-primary px-3 font-medium text-inverted"
             >
                 <UIcon name="i-lucide-git-branch" class="size-3 shrink-0" />
-                <span class="truncate">{{ collected?.branch ?? "never collected" }}</span>
+                <span class="truncate">{{
+                    collected?.branch ?? $t("statusBar.neverCollected")
+                }}</span>
             </span>
             <span v-if="collected" class="hidden truncate sm:inline">
                 {{ provenance }}
@@ -24,7 +26,13 @@
                 <NuxtLink
                     :to="item.to"
                     class="flex items-baseline gap-1.5 hover:text-highlighted"
-                    :title="`${item.label}: ${item.value} ${item.detail}`"
+                    :title="
+                        $t('statusBar.title', {
+                            label: item.label,
+                            value: item.value,
+                            detail: item.detail,
+                        })
+                    "
                 >
                     <span>{{ item.label }}</span>
                     <span class="font-medium" :class="toneClass(item.tone) || 'text-highlighted'">
@@ -38,16 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Tone } from "~/utils/format";
-
-export interface StatusItem {
-    id: string;
-    label: string;
-    value: string;
-    detail: string;
-    tone: Tone;
-    to: string;
-}
+import type { StatusItem } from "~/types/StatusItem";
 
 interface Props {
     collected: { branch: string; commit: string; at: string } | null;
@@ -56,7 +55,14 @@ interface Props {
 
 const { collected, items } = defineProps<Props>();
 
+const { t } = useI18n();
+
 const provenance = computed(() =>
-    collected ? `@${collected.commit.slice(0, 7)} · collected ${relativeTime(collected.at)}` : "",
+    collected
+        ? t("statusBar.collected", {
+              commit: collected.commit.slice(0, 7),
+              age: relativeTime(collected.at, t),
+          })
+        : "",
 );
 </script>

@@ -1,10 +1,68 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
-import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { CoverageArtifact } from "#layers/snapshot/shared/types/CoverageArtifact.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import Page from "./coverage.vue";
+
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
+    },
+    common: {
+        metrics: {
+            branches: "branches",
+            functions: "functions",
+            lines: "lines",
+            statements: "statements",
+        },
+    },
+    coverage: {
+        provenance: "Vitest coverage · {collected} of {total} projects · collected {age}",
+        title: "Coverage",
+    },
+    healthCoverageReport: {
+        empty: "No HTML report copied in. Run {test} from the workspace root, then {collect}.",
+        frame: "Coverage report",
+        meta: "The merged report pnpm test:coverage renders, copied in by the collector",
+        open: "Open full",
+        title: "Line-by-line report",
+    },
+    healthCoverageTable: {
+        columns: {
+            files: "Files",
+            project: "Project",
+        },
+        meta: "Sorted by line coverage, lowest first",
+        notCollected: "not collected",
+        note: "The workspace figure is weighted by size, not averaged across projects — an average lets one large well-tested package hide a small untested one.",
+        title: "Coverage by project",
+        workspace: "Workspace",
+    },
+    pageHeader: {
+        wordmark: "monorepo",
+    },
+};
 
 const COVERAGE = {
     generatedAt: "2026-11-01T00:00:00Z",
@@ -25,11 +83,11 @@ const COVERAGE = {
     ],
 } satisfies CoverageArtifact;
 
+const artifacts = vi.hoisted(() => ({ coverage: null as CoverageArtifact | null }));
+mockNuxtImport("coverageArtifact", () => () => artifacts.coverage);
+
 const serve = (coverage: CoverageArtifact) => {
-    serveEndpoint("/api/snapshot/coverage", (): SnapshotResponse => ({
-        manifest: null,
-        coverage,
-    }));
+    artifacts.coverage = coverage;
 };
 
 const row = (wrapper: VueWrapper, project: string) =>
@@ -39,6 +97,10 @@ const row = (wrapper: VueWrapper, project: string) =>
         .findAll("td")
         .map((td) => td.text());
 
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
+
 describe("coverage page", () => {
     it("shows each collected project's four metrics and its file count", async () => {
         serve(COVERAGE);
@@ -47,7 +109,6 @@ describe("coverage page", () => {
         expect(row(wrapper, "tested")).toEqual(["tested", "91%", "90%", "89%", "88%", "3"]);
     });
 
-    // Absent is its own state: a 0% or a blank would read as a measured result
     it("marks a project with no report uncollected instead of giving it a percentage", async () => {
         serve(COVERAGE);
         const wrapper = await mountSuspended(Page);

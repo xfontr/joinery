@@ -1,3 +1,4 @@
+import type { Challenge } from "../types/Challenge";
 import type { FormError, FormErrorWithId, FormInputEvents } from "@nuxt/ui";
 import { useErrorSummary } from "./useErrorSummary";
 

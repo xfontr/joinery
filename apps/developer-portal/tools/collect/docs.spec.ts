@@ -126,7 +126,6 @@ describe("hrefsIn", () => {
         ]);
     });
 
-    // A span that wraps is common in hard-wrapped prose, and pairing its closing tick with the next link's opening one loses that link.
     it("pairs a code span that wraps a line, but never lets one run past a blank line", () => {
         expect(
             hrefsIn("the `pnpm install\n--prod` in the [`Dockerfile`](./docker/Dockerfile)"),

@@ -124,8 +124,6 @@ export const projectView = (
         if (openTickets.length === 0) {
             if (capability.kind === "owner" && open.length === 0) return "waiting-on-you";
 
-            // Decide before you file: an open spike or owner block holds filing back, and a build
-            // block holds it back only until it has tickets to link to.
             const holding = open.filter(
                 (need) => byId.get(need)?.kind !== "build" || (live.get(need) ?? []).length === 0,
             );
@@ -159,7 +157,6 @@ export const projectView = (
 
     const scores = (id: string) => byId.has(id) && enabled.get(id) === true && !settledFor(id);
 
-    // A ticket shared by several blocks splits its estimate between them, so totals never count it twice.
     const pointsOf = (capability: Capability): Points => {
         if (!scores(capability.id)) return NO_POINTS;
 
@@ -251,37 +248,34 @@ export const projectView = (
         ]),
     ) as Record<CapabilityState, number>;
 
-    const unsorted: UnsortedIssue[] = issues.flatMap((issue) => {
+    const unsorted: UnsortedIssue[] = issues.flatMap((issue): UnsortedIssue[] => {
         if (issue.caps.length === 0) {
-            return [{ issue, reason: `no ${CAPABILITY_LABEL_PREFIX} label` }];
+            return [{ issue, reason: "noLabel", detail: CAPABILITY_LABEL_PREFIX }];
         }
 
         const group = template.groups.find(({ id }) => issue.caps.includes(id));
         if (group) {
-            return [
-                { issue, reason: `${group.id} is a group; label one of its capabilities instead` },
-            ];
+            return [{ issue, reason: "group", detail: group.id }];
         }
 
         const unknown = issue.caps.filter((cap) => !viewById.has(cap));
         if (unknown.length > 0) {
-            return [{ issue, reason: `unknown capability ${unknown.join(", ")}` }];
+            return [{ issue, reason: "unknown", detail: unknown.join(", ") }];
         }
 
-        // A closed ticket on a capability later dropped is history, not something left to place.
         if (issue.state === "open" && issue.caps.every((cap) => !enabled.get(cap))) {
-            return [{ issue, reason: "its capability is switched off" }];
+            return [{ issue, reason: "off", detail: "" }];
         }
 
         return [];
     });
 
-    // Once everything switched on is delivered, an area issue outside the milestone is maintenance.
     const strays: UnsortedIssue[] =
         asOf === null && left.length > 0
             ? (snapshot?.noMilestone ?? []).map((issue) => ({
                   issue,
-                  reason: "not in the milestone",
+                  reason: "noMilestone",
+                  detail: "",
               }))
             : [];
 

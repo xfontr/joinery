@@ -8,7 +8,7 @@ export interface PackageSource {
     readError?: string;
 }
 
-export interface PackageReport {
+interface PackageReport {
     packageName: string;
     errors: string[];
     skipped: string[];

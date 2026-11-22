@@ -21,8 +21,6 @@ describe("projectRootFor", () => {
         expect(projectRootFor(file)).toBe(expected);
     });
 
-    // The exact-duplication and structural-assertion layers in 0002 already own root-level files —
-    // this heuristic isn't a second, looser version of either.
     it("maps a repo-root file to no project, so README.md and CLAUDE.md never trip this heuristic", () => {
         expect(projectRootFor("README.md")).toBeUndefined();
     });
@@ -98,7 +96,6 @@ describe("isStale", () => {
         expect(isStale(now - 10 * 24 * 60 * 60 * 1000, now)).toBe(false);
     });
 
-    // A project with no markdown file at all is at least as much a drift signal as an old one.
     it("treats a project with no markdown commit at all as stale", () => {
         expect(isStale(undefined, now)).toBe(true);
     });

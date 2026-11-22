@@ -27,7 +27,7 @@
                     <span class="flex items-center gap-2">
                         <span class="font-semibold">{{ card.title }}</span>
                         <UBadge
-                            :label="`${card.points} SP`"
+                            :label="$t('workflowFeaturePicker.points', { points: card.points })"
                             color="neutral"
                             variant="subtle"
                             size="sm"
@@ -50,13 +50,20 @@
                     <UBadge
                         v-for="block in card.blocks"
                         :key="block.title"
-                        :label="`${block.title} · ${block.complexity ?? 0} SP`"
+                        :label="
+                            $t('workflowFeaturePicker.block', {
+                                title: block.title,
+                                points: block.complexity ?? 0,
+                            })
+                        "
                         color="neutral"
                         variant="subtle"
                         size="sm"
                     />
                 </template>
-                <span v-if="card.needs">Needs {{ card.needs }}</span>
+                <span v-if="card.needs">
+                    {{ $t("workflowFeaturePicker.needs", { feature: card.needs }) }}
+                </span>
             </span>
         </button>
     </div>

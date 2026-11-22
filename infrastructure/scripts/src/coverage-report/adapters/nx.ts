@@ -21,7 +21,6 @@ const nx = (args: string[]): Promise<string> =>
         const directory = mkdtempSync(join(tmpdir(), "coverage-report-nx-"));
         const output = join(directory, "project.json");
         const file = openSync(output, "w");
-        // The child must use system tools only, so workspace binaries cannot alter the coverage run.
         const child = spawn(process.execPath, [nxPath, ...args], {
             env: { ...process.env, PATH },
             stdio: ["ignore", file, "pipe"],

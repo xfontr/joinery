@@ -12,12 +12,12 @@ export default vitest.createNuxtConfig({
         "app/utils/coverHeight.spec.ts",
         "app/utils/initials.spec.ts",
         "layers/articles/app/utils/bylineAuthors.spec.ts",
+        "layers/articles/app/utils/citationMeta.spec.ts",
         "layers/articles/app/utils/formatKeys.spec.ts",
         "layers/interest/app/{schemas,utils}/**/*.spec.ts",
         "layers/tracking/app/utils/consentTranslation.spec.ts",
     ],
     setupFiles: ["./vitest.setup.ts"],
-    // None of these ship: Storybook mocks; Playwright covers pages
     coverageExclude: ["**/app/pages/**", "**/__mocks__/**"],
     thresholds: { lines: 97, statements: 97, functions: 95, branches: 93 },
 });

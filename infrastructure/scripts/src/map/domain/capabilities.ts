@@ -8,7 +8,7 @@ export interface Capability {
 }
 
 /** Omit commands already exposed by the root so the map stays focused on project-specific capabilities. */
-export const STANDARD_TARGETS = ["lint", "typecheck", "test", "test:dev", "test:coverage", "build"];
+const STANDARD_TARGETS = ["lint", "typecheck", "test", "test:dev", "test:coverage", "build"];
 
 export interface ProjectScripts {
     root: string;
@@ -96,7 +96,6 @@ export const documentedBy = (
     { kind, source, token }: Capability,
     docs: Doc[],
 ): string | undefined => {
-    // Ranking alone sent skills to whichever doc happened to name them, even a dated audit.
     if (
         kind === "skill" &&
         docs.some((doc) => doc.path === SKILL_INDEX && mentions(doc.text, token))
@@ -104,17 +103,14 @@ export const documentedBy = (
         return SKILL_INDEX;
     }
 
-    return (
-        docs
-            // Exclude a skill's own SKILL.md or every skill would cite itself.
-            .filter((doc) => doc.path !== source && mentions(doc.text, token))
-            .sort(
-                (a, b) =>
-                    audience(a.path) - audience(b.path) ||
-                    sharedPrefix(b.path, source) - sharedPrefix(a.path, source) ||
-                    a.path.split("/").length - b.path.split("/").length ||
-                    a.path.localeCompare(b.path),
-            )
-            .at(0)?.path
-    );
+    return docs
+        .filter((doc) => doc.path !== source && mentions(doc.text, token))
+        .sort(
+            (a, b) =>
+                audience(a.path) - audience(b.path) ||
+                sharedPrefix(b.path, source) - sharedPrefix(a.path, source) ||
+                a.path.split("/").length - b.path.split("/").length ||
+                a.path.localeCompare(b.path),
+        )
+        .at(0)?.path;
 };

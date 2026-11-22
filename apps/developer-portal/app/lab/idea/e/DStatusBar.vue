@@ -51,8 +51,10 @@
 import { NuxtLink } from "#components";
 import { useSignals } from "./signals";
 
-const { signals, manifest } = await useSignals();
+const { signals, manifest } = useSignals();
 
-const age = computed(() => relativeTime(manifest.value?.generatedAt));
-const commit = computed(() => manifest.value?.commit.slice(0, 7) ?? "");
+const { t } = useI18n();
+
+const age = computed(() => relativeTime(manifest?.generatedAt, t));
+const commit = computed(() => manifest?.commit.slice(0, 7) ?? "");
 </script>

@@ -1,13 +1,18 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DecisionOutcome, DecisionStatus } from "#layers/snapshot/shared/decisions.ts";
 import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
+import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import Page from "./[id].vue";
 
-// An in-memory docs collection, answering the page's own lookup
+const artifacts = vi.hoisted(() => ({ docs: null as DocsArtifact | null }));
+mockNuxtImport("docsArtifact", () => () => artifacts.docs);
+
+beforeEach(() => {
+    artifacts.docs = null;
+});
+
 const docs = vi.hoisted(() => ({
     entries: [] as { path: string; title: string; body?: unknown }[],
 }));
@@ -18,7 +23,6 @@ mockNuxtImport("queryCollection", () => () => ({
     }),
 }));
 
-// Only a server render can set a status; the prerender crawler is what reads it
 const setStatus = vi.hoisted(() => vi.fn());
 mockNuxtImport("setResponseStatus", () => setStatus);
 
@@ -46,7 +50,6 @@ const report = (
     brokenLinks: [],
 });
 
-// The report list is fetched without `await`, so it lands after the first render
 const open = async (route: string) => {
     const wrapper = await mountSuspended(Page, { global, route });
     await flushPromises();
@@ -63,18 +66,15 @@ beforeEach(() => {
         { path: "/docs/decisions/0002-second", title: "Second" },
         { path: "/docs/decisions/0003-third", title: "Third" },
     ];
-    serveEndpoint("/api/snapshot/docs", (): SnapshotResponse => ({
-        manifest: null,
-        docs: {
-            generatedAt: "2026-11-01T00:00:00Z",
-            pages: [
-                report("0001-first", "implemented", "accepted"),
-                report("0002-second", "to-implement", "superseded", "0003-third.md"),
-                report("0003-third", "implemented", "accepted"),
-            ],
-            brokenLinkCount: 0,
-        },
-    }));
+    artifacts.docs = {
+        generatedAt: "2026-11-01T00:00:00Z",
+        pages: [
+            report("0001-first", "implemented", "accepted"),
+            report("0002-second", "to-implement", "superseded", "0003-third.md"),
+            report("0003-third", "implemented", "accepted"),
+        ],
+        brokenLinkCount: 0,
+    };
 });
 
 describe("decision detail page", () => {
@@ -96,7 +96,7 @@ describe("decision detail page", () => {
         expect(pills(wrapper)).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({ to: "/decisions/0003-third" }),
-                expect.objectContaining({ label: "To implement" }),
+                expect.objectContaining({ label: "decisions.status.to-implement" }),
             ]),
         );
     });
@@ -121,7 +121,7 @@ describe("decision detail page", () => {
     it("says there is no such report instead of rendering an empty one", async () => {
         const wrapper = await open("/decisions/missing");
 
-        expect(wrapper.text()).toContain("No such report");
+        expect(wrapper.text()).toContain("decision.missing.title");
     });
 
     it("loads the new report when the route changes under it", async () => {

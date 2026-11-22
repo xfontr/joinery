@@ -1,14 +1,84 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
+import type { ProjectsArtifact } from "#layers/snapshot/shared/types/ProjectsArtifact.ts";
 import Page from "./index.vue";
 
-// An in-memory docs collection, answering the README query the page sends
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
+    },
+    pageHeader: {
+        breadcrumb: "Breadcrumb",
+        wordmark: "monorepo",
+    },
+    projects: {
+        crumb: "projects",
+        kinds: {
+            all: "All projects",
+            apps: "Apps",
+            infrastructure: "Infrastructure",
+            packages: "Packages",
+        },
+        row: {
+            unreleased: "+{count} unreleased",
+            usedBy: "used by {count}",
+        },
+    },
+    projectsList: {
+        empty: "No projects collected yet.",
+        filter: "Filter projects",
+        noMatch: "No project matches “{search}”.",
+    },
+    projectsTable: {
+        columns: {
+            lines: "Lines covered",
+            project: "Project",
+            recent: "Commits, 2 wk",
+            specs: "Specs",
+            unreleased: "Unreleased",
+            usedBy: "Used by",
+            version: "Version",
+        },
+    },
+};
+
+const artifacts = vi.hoisted(() => ({
+    metrics: null as MetricsArtifact | null,
+    projects: null as ProjectsArtifact | null,
+}));
+mockNuxtImport("metricsArtifact", () => () => artifacts.metrics);
+mockNuxtImport("projectsArtifact", () => () => artifacts.projects);
+
+beforeEach(() => {
+    artifacts.metrics = null;
+    artifacts.projects = null;
+});
+
 const docs = vi.hoisted(() => ({
     readmes: [] as { path: string; title: string; description: string }[],
 }));
@@ -53,22 +123,16 @@ const SITE = node("@monorepo/huella-legal", "apps/huella-legal");
 const SCRIPTS = node("@monorepo/scripts", "infrastructure/scripts");
 
 const serve = (projects: ProjectNode[], metrics: ProjectMetrics[] = []) => {
-    serveEndpoint("/api/snapshot/projects", (): SnapshotResponse => ({
-        manifest: null,
-        projects: { generatedAt: "2026-11-01T00:00:00Z", projects, retired: [] },
-    }));
-    serveEndpoint("/api/snapshot/metrics", (): SnapshotResponse => ({
-        manifest: null,
-        metrics: {
-            generatedAt: "2026-11-01T00:00:00Z",
-            commit: "abc",
-            branch: "master",
-            projects: metrics,
-            invariantFindings: [],
-            conventionalCommitRate: null,
-            commitsSinceLastRelease: null,
-        } satisfies MetricsArtifact,
-    }));
+    artifacts.projects = { generatedAt: "2026-11-01T00:00:00Z", projects, retired: [] };
+    artifacts.metrics = {
+        generatedAt: "2026-11-01T00:00:00Z",
+        commit: "abc",
+        branch: "master",
+        projects: metrics,
+        invariantFindings: [],
+        conventionalCommitRate: null,
+        commitsSinceLastRelease: null,
+    } satisfies MetricsArtifact;
 };
 
 /** Each project row's link and its cells, the group header rows left out. */
@@ -88,6 +152,10 @@ beforeEach(() => {
     docs.readmes = [
         { path: "/packages/ui/readme", title: "UI kit", description: "Shared interface pieces." },
     ];
+});
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
 });
 
 describe("catalog page", () => {
