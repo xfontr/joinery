@@ -203,6 +203,7 @@ button:not(:disabled) {
 
     --ui-primary: var(--color-terracotta-600);
     --ui-radius: 0.125rem;
+    --ui-container: 72rem;
     --radius-xs: 0.125rem;
     --radius-sm: 0.125rem;
     --radius-md: 0.125rem;

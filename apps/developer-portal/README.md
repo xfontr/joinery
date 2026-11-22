@@ -165,6 +165,7 @@ view alike, set on `:root` so Nuxt UI's overlays take it too. Nothing is set und
 | `text-statement`, `title`, `section`, `heading` | The display steps; with `text-2xl`, `base`, `sm` and `xs` they make the scale's eight |
 | `--ui-primary` | Terracotta 600 in light, 300 in dark |
 | `--tone-*` | The status colours, re-picked for these surfaces with the `dataviz` validator |
+| `UContainer` | Every visitor band's measure: 72 rem wide (`--ui-container`), 16 px gutter, 40 px from `md` |
 | `surface-ink` | A fill that stays dark in both modes, such as the developer rail, with its own tones |
 | `<mark>` | A marked word takes the accent in italic |
 | `data-figure` | A count or percentage that leads a panel: tabular, semibold |

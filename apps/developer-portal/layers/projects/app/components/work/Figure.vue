@@ -1,5 +1,5 @@
 <template>
-    <figure class="mx-auto max-w-6xl px-4 pb-16 md:px-10">
+    <UContainer as="figure" class="pb-16">
         <img
             :src="screenshot"
             :alt="work.screenshot.alt"
@@ -16,7 +16,7 @@
                 {{ work.live.label }}
             </ULink>
         </figcaption>
-    </figure>
+    </UContainer>
 </template>
 
 <script setup lang="ts">

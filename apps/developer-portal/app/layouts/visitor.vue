@@ -1,7 +1,8 @@
 <template>
     <div data-identity class="flex min-h-screen flex-col">
-        <header
-            class="mx-auto flex w-full max-w-6xl flex-wrap items-baseline justify-between gap-x-6 gap-y-2 px-4 py-6 md:px-10"
+        <UContainer
+            as="header"
+            class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 py-6"
         >
             <ULink to="/" class="font-display text-2xl text-highlighted italic">
                 {{ $t("app.visitor.wordmark") }}
@@ -26,13 +27,13 @@
                 </nav>
                 <ViewSwitch current="visitor" />
             </div>
-        </header>
+        </UContainer>
 
         <main class="flex-1">
             <slot />
         </main>
 
-        <footer class="mx-auto w-full max-w-6xl px-4 py-16 md:px-10">
+        <UContainer as="footer" class="py-16">
             <ULink
                 to="/overview"
                 class="flex flex-col gap-2 border-t border-accented pt-8 md:flex-row md:items-baseline md:justify-between"
@@ -46,6 +47,6 @@
             <ULink to="/about" class="mt-6 inline-block text-sm text-muted hover:text-highlighted">
                 {{ $t("app.visitor.footer.builtBy") }}
             </ULink>
-        </footer>
+        </UContainer>
     </div>
 </template>

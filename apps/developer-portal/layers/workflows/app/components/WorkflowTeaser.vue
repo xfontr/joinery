@@ -1,5 +1,5 @@
 <template>
-    <section id="workflows" class="mx-auto max-w-6xl px-4 pb-20 md:px-10">
+    <UContainer as="section" id="workflows" class="pb-20">
         <ULink
             to="/agentic-workflows"
             class="group grid items-center gap-10 border-t border-accented pt-10 md:grid-cols-12"
@@ -23,7 +23,7 @@
                 <WorkflowGlyph :map="glyph" :label="$t('workflowTeaser.glyphLabel')" />
             </div>
         </ULink>
-    </section>
+    </UContainer>
 </template>
 
 <script setup lang="ts">

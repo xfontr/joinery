@@ -1,6 +1,6 @@
 <template>
     <section class="bg-muted">
-        <div class="mx-auto flex max-w-6xl flex-col gap-16 px-4 py-20 md:px-10">
+        <UContainer class="flex flex-col gap-16 py-20">
             <h2 class="font-display text-section text-highlighted">
                 {{ $t("agenticWorkflows.projects.title") }}
                 <mark>{{ $t("agenticWorkflows.projects.titleMark") }}</mark>
@@ -20,7 +20,7 @@
                     {{ $t("agenticWorkflows.projects.open") }} →
                 </ULink>
             </article>
-        </div>
+        </UContainer>
     </section>
 </template>
 
