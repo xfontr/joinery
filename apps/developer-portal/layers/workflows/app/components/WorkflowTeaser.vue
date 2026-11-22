@@ -27,15 +27,8 @@
 </template>
 
 <script setup lang="ts">
-import { GLYPH_MAP, projectMap } from "#layers/workflows/shared/workflows.ts";
-
 /** The project whose plan the teaser draws; its copy names it too. */
 const PLAN = "huella-legal";
 
-const { data: workflows } = await useWorkflows();
-
-const glyph = computed(() => {
-    const view = workflows.value.projects.find((project) => project.project.id === PLAN);
-    return view ? projectMap(view, GLYPH_MAP) : null;
-});
+const { data: glyph } = await useWorkflowGlyph(PLAN);
 </script>

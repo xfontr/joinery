@@ -3,14 +3,11 @@
 </template>
 
 <script setup lang="ts">
-import { GLYPH_MAP, projectMap } from "#layers/workflows/shared/workflows.ts";
-import type { ProjectView } from "#layers/workflows/shared/workflows.ts";
+import type { ProjectMap } from "#layers/workflows/shared/workflows.ts";
 
 interface Props {
-    view: ProjectView;
+    map: ProjectMap;
 }
 
-const { view } = defineProps<Props>();
-
-const map = computed(() => projectMap(view, GLYPH_MAP));
+const { map } = defineProps<Props>();
 </script>

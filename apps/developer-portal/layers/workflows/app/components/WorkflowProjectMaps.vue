@@ -25,19 +25,16 @@
 </template>
 
 <script setup lang="ts">
-import { projectMap } from "#layers/workflows/shared/workflows.ts";
-
 const { t } = useI18n();
-const { data } = await useWorkflows();
+const { data: projects } = await useWorkflowMaps();
 
 const maps = computed(() =>
-    data.value.projects.map((view) => {
-        const map = projectMap(view);
+    projects.value.map(({ id, title, map }) => {
         const blocks = t("agenticWorkflows.projects.blocks", map.blocks);
         return {
-            id: view.project.id,
-            title: view.project.title,
-            label: t("agenticWorkflows.projects.mapLabel", { title: view.project.title }),
+            id,
+            title,
+            label: t("agenticWorkflows.projects.mapLabel", { title }),
             map,
             counts: map.tickets
                 ? t("agenticWorkflows.projects.tickets", { blocks, ...map.tickets })
