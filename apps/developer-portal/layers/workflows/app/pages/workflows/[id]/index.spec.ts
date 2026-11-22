@@ -6,7 +6,6 @@ import type { SnapshotIssue } from "#layers/workflows/shared/types/SnapshotIssue
 import { assembleWorkflows, type Workflows } from "#layers/workflows/shared/workflows.ts";
 import Page from "./index.vue";
 
-// Writing back is `nuxt dev` only, so the edit composable is the boundary
 const editing = vi.hoisted(() => ({ editable: false, edit: vi.fn() }));
 mockNuxtImport("useWorkflowEdit", () => () => editing);
 

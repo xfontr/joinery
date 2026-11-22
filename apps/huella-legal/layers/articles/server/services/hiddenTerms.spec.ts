@@ -34,7 +34,6 @@ describe("isListed", () => {
         expect(isListed(toArticleSummary(fakeEntry({ terms: [OTHER] })))).toBe(true);
     });
 
-    // An empty list is how the env var switches hiding off
     it("lists everything once the list is emptied", () => {
         nitro.hiddenTerms = [];
 

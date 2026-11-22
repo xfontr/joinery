@@ -24,7 +24,6 @@ export default [
         // The plugin is only registered for these, so a rule set outside them fails on any `.js`.
         files: ["**/*.vue", "**/*.ts"],
         rules: {
-            // Plain CSS classes from main.css and the hooks a component's scoped style hangs off
             "better-tailwindcss/no-unknown-classes": [
                 "error",
                 {
@@ -42,10 +41,10 @@ export default [
         },
     },
     {
-        // The design lab is a dev-only mock deleted once the views are built, so it keeps its own picks.
         files: ["app/lab/**/*.{vue,ts}", "app/pages/lab/**/*.{vue,ts}"],
         rules: {
             "better-tailwindcss/no-restricted-classes": ["error", { restrict: [bracketedValue] }],
+            "@intlify/vue-i18n/no-raw-text": "off",
         },
     },
 
@@ -81,8 +80,6 @@ export default [
     },
 
     // `pnpm exec nx collect @monorepo/developer-portal` vendors Nx's graph client and Istanbul's HTML
-    // report in here to be served as-is. Minified third-party output, not source — and the shared
-    // `**/coverage` ignore only catches half of it. Linting the rest reports a third of a million
-    // errors in files nobody in this repo wrote.
+    // report in here, minified; the shared `**/coverage` ignore only catches half of it.
     { ignores: ["public/embed/**"] },
 ];

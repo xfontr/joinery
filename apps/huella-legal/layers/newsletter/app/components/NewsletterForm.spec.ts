@@ -34,7 +34,6 @@ const newsletter = vi.hoisted(() => ({
 
 const challenge = vi.hoisted(() => vi.fn());
 
-// The real challenge mounts Cloudflare's widget, so only its slot contract with the form is kept
 const FormChallenge = slotStub({ challenge });
 
 vi.mock("../composables/useNewsletter", () => ({ useNewsletter: () => newsletter }));

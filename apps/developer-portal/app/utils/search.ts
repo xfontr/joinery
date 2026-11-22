@@ -51,7 +51,6 @@ export const searchGroups = (
     for (const section of sections) {
         const [path = "", anchor] = section.id.split("#");
 
-        // The doc's own h1 repeats the row the doc already has, under the same title.
         if (anchor !== undefined && section.level === 1) continue;
 
         const owner = owners

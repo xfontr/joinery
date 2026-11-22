@@ -124,8 +124,6 @@ export const projectView = (
         if (openTickets.length === 0) {
             if (capability.kind === "owner" && open.length === 0) return "waiting-on-you";
 
-            // Decide before you file: an open spike or owner block holds filing back, and a build
-            // block holds it back only until it has tickets to link to.
             const holding = open.filter(
                 (need) => byId.get(need)?.kind !== "build" || (live.get(need) ?? []).length === 0,
             );
@@ -159,7 +157,6 @@ export const projectView = (
 
     const scores = (id: string) => byId.has(id) && enabled.get(id) === true && !settledFor(id);
 
-    // A ticket shared by several blocks splits its estimate between them, so totals never count it twice.
     const pointsOf = (capability: Capability): Points => {
         if (!scores(capability.id)) return NO_POINTS;
 
@@ -268,7 +265,6 @@ export const projectView = (
             return [{ issue, reason: `unknown capability ${unknown.join(", ")}` }];
         }
 
-        // A closed ticket on a capability later dropped is history, not something left to place.
         if (issue.state === "open" && issue.caps.every((cap) => !enabled.get(cap))) {
             return [{ issue, reason: "its capability is switched off" }];
         }
@@ -276,7 +272,6 @@ export const projectView = (
         return [];
     });
 
-    // Once everything switched on is delivered, an area issue outside the milestone is maintenance.
     const strays: UnsortedIssue[] =
         asOf === null && left.length > 0
             ? (snapshot?.noMilestone ?? []).map((issue) => ({

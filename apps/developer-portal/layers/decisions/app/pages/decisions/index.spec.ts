@@ -38,7 +38,6 @@ const OLD = report("0001-old", "to-implement", "superseded", "Old", "2026-09-19"
 
 type Wrapper = VueWrapper;
 
-// The report list is fetched without `await`, so it lands after the first render
 const open = async (pages: DocPage[] = [NEW, OLD]) => {
     artifacts.docs = { generatedAt: "2026-11-01T00:00:00Z", pages, brokenLinkCount: 0 };
     const wrapper = await mountSuspended(Page);

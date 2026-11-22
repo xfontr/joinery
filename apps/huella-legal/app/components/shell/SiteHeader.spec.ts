@@ -84,7 +84,6 @@ describe("site header", () => {
 
         await wrapper.find("[data-slot='toggle']").trigger("click");
 
-        // UHeader imports its slideover lazily, so the dialog lands after a module load, not a tick.
         const dialog = await vi.waitFor(() => {
             const found = document.body.querySelector("[role='dialog']");
             expect(found).not.toBeNull();

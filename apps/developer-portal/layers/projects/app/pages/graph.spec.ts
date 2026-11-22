@@ -55,7 +55,6 @@ const serve = (projects: ProjectNode[], metrics: MetricsArtifact = METRICS) => {
     artifacts.metrics = metrics;
 };
 
-// A group's heading is the only name it has, so it locates the group the way a reader would
 const group = (wrapper: VueWrapper, heading: string) =>
     wrapper
         .findAll("h3")

@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createPageError } from "./createPageError";
 
-// Shaped like ofetch's FetchError, wrapped the way useAsyncData wraps it before it reaches error.value
 const fetchFailure = (fields: {
     statusCode?: number;
     statusMessage?: string;

@@ -71,7 +71,6 @@ export const filterAudits = (reports: AuditReport[], filter: AuditReportFilter):
 
 export type AuditSort = "newest" | "oldest" | "most-open";
 
-// ISO dates, so a string compare is a chronological one; the id breaks a same-day tie.
 const newestFirst = (a: AuditReport, b: AuditReport): number => b.id.localeCompare(a.id);
 
 export const sortAudits = (reports: AuditReport[], sort: AuditSort): AuditReport[] =>

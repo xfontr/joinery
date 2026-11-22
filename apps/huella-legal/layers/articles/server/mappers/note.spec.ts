@@ -28,7 +28,6 @@ describe("extractNotes", () => {
         ]);
     });
 
-    // Ordinals such as 30.<sup>a</sup> and stray reference numbers are the only <sup>s in the corpus
     it("leaves every other shape as written", () => {
         const source =
             "<p>El dolo<sup>1</sup>, en la 30.<sup>a</sup> edición.</p><p><sup>1</sup> ROXIN.</p>";
@@ -36,7 +35,6 @@ describe("extractNotes", () => {
         expect(extract(source)).toEqual({ notes: [], html: source });
     });
 
-    // A reference with no note to land on would be a dead link
     it("leaves `_ftn` references alone when the post has no notes to answer them", () => {
         expect(extract(TEXT).html).toBe(TEXT);
     });

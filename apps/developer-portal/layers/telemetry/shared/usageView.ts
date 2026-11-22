@@ -245,7 +245,6 @@ export const ruleQuadrants = (lint: LintUsage): Quadrants<FixKind> => {
         .sort(([, a], [, b]) => b.recent - a.recent || b.disabled - a.disabled);
     const decades = decadesFor(Math.max(noisyAt, ...shown.map(([, usage]) => usage.recent)));
     const topDisabled = Math.max(FOUGHT_DISABLES * 2, ...shown.map(([, usage]) => usage.disabled));
-    // Four steps of a whole number each, so every tick is an integer.
     const yMax = Math.ceil(topDisabled / 4) * 4;
 
     return {

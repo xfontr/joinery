@@ -155,7 +155,6 @@ describe("collectMetrics", () => {
         expect(result.projects).toHaveLength(2);
     });
 
-    // A package waiting on its first release has no tag, which is exactly the case the "Never released" alert is for.
     it("counts an untagged release project's whole history as unreleased, but never an app nx release skips", async () => {
         const withApp = [
             ...projects,

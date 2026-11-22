@@ -2,7 +2,6 @@ import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it, vi } from "vitest";
 import ProjectsWelcome from "./ProjectsWelcome.vue";
 
-// The root README the docs collection answers with, or null for a workspace without one
 const docs = vi.hoisted(() => ({ readme: null as { title: string; description: string } | null }));
 
 mockNuxtImport("queryCollection", () => () => {

@@ -75,7 +75,6 @@ export const useChangeset = (id: string) => {
         const check = async () => {
             const latest = await $fetch<RunReport | null>(`${base}/progress`).catch(() => null);
 
-            // An older run that was interrupted is still incomplete on disk; it isn't this one.
             if (!finished) progress.value = latest && latest.at >= startedAt ? latest : null;
         };
         const poll = setInterval(() => void check(), PROGRESS_POLL_MS);

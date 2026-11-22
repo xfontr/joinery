@@ -42,7 +42,6 @@ const COLUMNS = [
     { key: "legal", links: ["legalNotice", "privacy", "cookies"] },
 ] as const satisfies readonly { key: string; links: readonly NavKey[] }[];
 
-// The calculator stays off every other page's network, even when a pointer crosses its footer link
 const UNPREFETCHED: ReadonlySet<NavKey> = new Set(["interestCalculator"]);
 
 // The legacy layer forwards these to WordPress, so the client router must leave them to the server
@@ -80,7 +79,6 @@ export const useSiteNav = (cookiePreferences: CookiePreferences) => {
     const sections = computed<NavigationMenuItem[]>(() => {
         const here = withTrailingSlash(route.path);
 
-        // A link to an anchor names a place on a page, never the page being read.
         const currentOf = (to: RouteLocationRaw): Current => {
             const { path, hash } = router.resolve(to);
 

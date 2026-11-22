@@ -307,8 +307,6 @@ export const planFiling = (map: WorkflowMap, issues: SnapshotIssue[], ids: strin
     const blocks = map.blocks.filter(({ id }) => inside.has(id));
     const kinds = new Set(blocks.map(({ kind }) => kind));
 
-    // A spike's answer reshapes later tickets and an owner block is closed by the owner, so
-    // neither shares a ticket with build work.
     if (ids.length > 1 && (kinds.size > 1 || kinds.has("owner"))) {
         return {
             ok: false,
@@ -346,7 +344,6 @@ export const planFiling = (map: WorkflowMap, issues: SnapshotIssue[], ids: strin
                 body: bodyOf(only, draft.criteria),
                 labels: labels(blocks),
                 blockedBy: links,
-                // Each suggested ticket would otherwise carry the whole block's estimate.
                 complexity: drafts.length === 1 ? only.complexity : null,
             })),
         };

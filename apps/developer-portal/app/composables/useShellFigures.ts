@@ -62,7 +62,6 @@ const toolingFigure = (tooling: RailFigure | null, to: string): ShellFigure => {
 };
 
 const issuesFigure = (read: IssuesRead, to: string): ShellFigure => {
-    // GitHub is read in the browser, so the prerendered HTML can't know the count.
     const open = read.fetchedAt && !read.error ? read.issues.length : null;
 
     return {

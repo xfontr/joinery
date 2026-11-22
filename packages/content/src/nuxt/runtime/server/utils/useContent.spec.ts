@@ -17,7 +17,6 @@ const nitro = vi.hoisted(() => ({
 
 const transport = vi.hoisted(() => ({ create: vi.fn(), raw: vi.fn() }));
 
-// Each cached function records the key Nitro would store it under, then runs uncached
 vi.mock("nitropack/runtime", () => ({
     defineCachedFunction: (fn: (...args: unknown[]) => unknown, options: CacheOptions) => {
         nitro.caches[options.name!] = options;
@@ -167,7 +166,6 @@ describe("useContent", () => {
         expect(transport.raw).not.toHaveBeenCalled();
     });
 
-    // Unset env vars used to reach the vendor as an empty base URL and come back as a 502
     it("500s unset vendor config, naming what is missing instead of blaming the vendor", async () => {
         nitro.vendor = { name: "wordpress", baseURL: "" };
 
@@ -196,7 +194,6 @@ describe("useContent", () => {
         });
     });
 
-    // Our own credentials are what an upstream 401 rejects, so it must never invite a retry with others
     it.each([401, 403, 500])(
         "reports an upstream %i as a gateway failure of ours",
         async (status) => {
@@ -232,7 +229,6 @@ describe("useContent", () => {
     });
 });
 
-// Key derivation itself lives in core and is covered by core/contentKey.spec.ts
 describe("the list cache", () => {
     it("keys off the vendor, the resource and the normalised query", async () => {
         await useContent(EVENT).listEntries("posts", { page: 2, perPage: 6 });
@@ -281,7 +277,6 @@ describe("the list cache", () => {
 });
 
 describe("the item cache", () => {
-    // The slug is the whole identity of a single document, so nothing else can fragment it
     it("keys off the vendor, the resource and the trimmed slug", async () => {
         await useContent(EVENT).getEntry("posts", " hello-world ");
 

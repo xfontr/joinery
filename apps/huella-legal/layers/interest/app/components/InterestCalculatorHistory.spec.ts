@@ -127,7 +127,6 @@ describe("interest calculator history", () => {
         const wrapper = await mountHistory();
         const concept = wrapper.get("tbody input");
 
-        // setValue fires input and then change, which is what committing the field does
         await concept.setValue("Mayo");
 
         expect(wrapper.emitted("rename")).toEqual([["a", "Mayo"]]);

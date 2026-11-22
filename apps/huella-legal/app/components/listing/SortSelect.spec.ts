@@ -32,7 +32,6 @@ describe("sort select", () => {
         expect(wrapper.find("[role=combobox]").text()).toContain("oldest");
     });
 
-    // "Más antiguas" agrees with publicaciones; comments need "Más antiguos"
     it("words the control and its options with the copy it is given", async () => {
         const wrapper = await mountSuspended(SortSelect, {
             props: {

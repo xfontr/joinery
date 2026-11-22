@@ -29,7 +29,6 @@ describe("subjects grid", () => {
         ]);
     });
 
-    // The page's own "En esta página" links target it
     it("labels the section by a heading at #areas", async () => {
         const wrapper = await mountSuspended(SubjectsGrid, { props, global });
 

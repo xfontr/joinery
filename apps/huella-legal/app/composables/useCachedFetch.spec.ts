@@ -14,7 +14,6 @@ registerEndpoint("/api/cached-fetch-spec", () => {
 const mountReader = async (page?: number) => {
     const { value, wrapper } = await withSetup(async () => {
         const request = useCachedFetch("/api/cached-fetch-spec", { query: { page } });
-        // Awaited for the read, and wrapped so the caller keeps the request rather than its result
         await request;
 
         return { request };

@@ -30,7 +30,6 @@ describe("home subjects", () => {
         ]);
     });
 
-    // A bare number after the name reads as part of it to a screen reader
     it("speaks each count as a number of publications", async () => {
         const wrapper = await mountSuspended(HomeSubjects, { props, global });
 

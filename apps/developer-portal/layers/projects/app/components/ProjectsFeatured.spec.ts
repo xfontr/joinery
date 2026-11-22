@@ -18,7 +18,6 @@ beforeEach(() => {
     artifacts.projects = null;
 });
 
-// An in-memory docs collection holding the READMEs the catalog reads
 const docs = vi.hoisted(() => ({
     readmes: [] as { path: string; title: string; description: string }[],
 }));

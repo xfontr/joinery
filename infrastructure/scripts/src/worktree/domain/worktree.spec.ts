@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { isEnvFile, parseWorktrees, preparedLine } from "./worktree.ts";
 
-// Shape of `git worktree list --porcelain`, including a detached and a locked entry.
 const PORCELAIN = `worktree /repo
 HEAD cb796bce
 branch refs/heads/master

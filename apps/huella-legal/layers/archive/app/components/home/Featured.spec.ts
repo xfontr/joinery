@@ -44,7 +44,6 @@ describe("home featured", () => {
         expect(title.attributes("href")).toBe("/la-teoria-juridica-del-delito/");
     });
 
-    // The lead image is the page's largest paint, so it must not wait for the lazy loader
     it("asks for the lead image first", async () => {
         const wrapper = await mount({ lead: LEAD, latest: LATEST });
 

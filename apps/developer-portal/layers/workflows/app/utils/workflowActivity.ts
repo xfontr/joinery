@@ -29,7 +29,7 @@ export interface ProjectActivity {
     lastDay: string | null;
 }
 
-/** Calendar days are compared in UTC, so a day lands in the same week on the server and in the browser. */
+/** Calendar days are compared in UTC, so a day lands in the same week on server and browser. */
 const time = (day: string): number => Date.parse(`${day}T00:00:00Z`);
 
 const mondayOf = (day: string): number => {
@@ -40,8 +40,9 @@ const mondayOf = (day: string): number => {
 const isoDay = (at: number): string => new Date(at).toISOString().slice(0, 10);
 
 /**
- * Commit activity over one shared timeline for a whole project; null when no commit names any of its tickets.
- * A replayed view passes the synced project's activity as `frame`, so it keeps that timeline and scale.
+ * Commit activity over one shared timeline for a whole project; null when no commit names any of
+ * its tickets. A replayed view passes the synced project's activity as `frame`, so it keeps that
+ * timeline and scale.
  */
 export const projectActivity = (
     view: ProjectView,

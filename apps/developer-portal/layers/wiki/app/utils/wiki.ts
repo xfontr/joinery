@@ -43,7 +43,7 @@ const EXCLUDED = [
     /\/template$/,
 ];
 
-/** The workspace layout the root README enforces — three project areas, each its own wiki section. */
+/** Each project area is its own wiki section. */
 const PROJECT_AREAS = ["apps", "packages", "infrastructure"] as const;
 
 const SECTION_ORDER = ["workspace", "docs", ...PROJECT_AREAS, "agents"] as const;
@@ -114,10 +114,9 @@ interface Placed {
     entry: WikiEntry;
 }
 
-/** A generic label for a README — the group name already says the project; the real title is still the page's own heading. */
+/** A generic label for a README, since its group already names the project. */
 const labelWithin = (root: string, path: string, title: string): string => {
     const raw = segmentsOf(path.slice(root.length));
-    // `src` is where the code lives, not a taxonomy a reader navigates by — a nested README's own directory names it.
     const rest = raw[0] === "src" ? raw.slice(1) : raw;
     const file = rest.at(-1) ?? "";
     const directory = rest.slice(0, -1).join("/");
@@ -167,8 +166,6 @@ const place = (page: WikiPage): Placed => {
         };
     }
 
-    // Anything left sits under apps/, packages/ or infrastructure/, so its own top segment names
-    // the section — the workspace layout is what keeps that assumption safe.
     const area = segments[0] as SectionId;
     const group = segments[1] ?? area;
     const root = `/${segments.slice(0, 2).join("/")}`;
@@ -181,12 +178,11 @@ const place = (page: WikiPage): Placed => {
     };
 };
 
-/** Overview first, then everything else by label — the order you would read them. */
+/** Overview first, then everything else by label. */
 const rankEntry = (entry: WikiEntry): number => (entry.label === "Overview" ? 0 : 1);
 
 const rankGroup = (section: SectionId, key: string): number => {
     if (section === "docs") {
-        // `docs` itself is the tree's own front matter and sorts above its subdirectories.
         if (key === "docs") return -1;
 
         const index = DOCS_GROUPS.indexOf(key);

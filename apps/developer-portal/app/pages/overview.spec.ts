@@ -17,12 +17,10 @@ import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import type { DashboardLayout } from "~/utils/dashboardLayout";
 import Page from "./overview.vue";
 
-// An in-memory docs collection, answering the README queries the Home panels send
 const docs = vi.hoisted(() => ({
     readmes: [] as { path: string; title: string; description: string }[],
 }));
 
-// GitHub is read straight from the browser, so the github layer's composable is the boundary
 const github = vi.hoisted(() => ({ read: null as unknown }));
 
 mockNuxtImport("queryCollection", () => () => {
@@ -295,7 +293,6 @@ describe("home page", () => {
         expect(hrefs(wrapper)).toContain("/workflows/new");
     });
 
-    // The visitor front page carries these two, so they start in the Add widget list.
     describe("once the welcome and featured widgets are added back", () => {
         beforeEach(() => {
             restore("welcome", "featured");

@@ -40,7 +40,6 @@ describe("legacy middleware", () => {
         expect(request(path)).toEqual({ location: `https://cms.revista.test${path}`, status: 301 });
     });
 
-    // Before cutover WordPress still answers on `www`, so forwarding there would loop
     it("keeps the path of a WordPress installed below the root", () => {
         nitro.wordpress = "https://cms.revista.test/wordpress/";
 

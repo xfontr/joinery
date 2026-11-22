@@ -14,7 +14,6 @@ describe("useErrorSummary", () => {
         ]);
     });
 
-    // A row without an input id would render a link to nowhere
     it("leaves out errors with no field or no input to link to", () => {
         const { errors, list } = useErrorSummary(label);
 

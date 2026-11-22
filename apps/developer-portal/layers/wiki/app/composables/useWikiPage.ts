@@ -31,7 +31,6 @@ export const useWikiPage = () => {
             : []),
     ]);
 
-    // Within the group, not the collection's order: adjacent files on disk are often unrelated.
     const around = computed(() => {
         const entries = here.value?.group.entries ?? [];
         const { previous, next } = neighbours(

@@ -39,7 +39,7 @@ export const useIssues = () => {
 
     const state = useAsyncData<IssuesRead>("issues", () => read(repoUrl), {
         default: () => NO_ISSUES,
-        server: false, // A baked issue list would ship as old as the deploy.
+        server: false,
     });
 
     const mounted = ref(false);

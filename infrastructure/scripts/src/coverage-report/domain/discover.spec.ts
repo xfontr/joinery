@@ -21,8 +21,6 @@ describe("toReports", () => {
         ]);
     });
 
-    // A target with no declared output isn't a project to skip quietly — nx.json changing shape is
-    // exactly the case this script is meant to survive by erroring loudly instead of merging wrong.
     it("throws naming the project when test:coverage declares no output", () => {
         expect(() =>
             toReports([{ name: "@monorepo/ui", root: "packages/ui", outputs: [] }]),

@@ -13,7 +13,6 @@ ruleTester.run("lookup-table-shape", lookupTableShape, {
     valid: [
         "const LABELS = { draft: 1, live: 2 } as const satisfies Record<Status, number>;",
         "export const LABELS = { draft: 1 } as const satisfies Record<Status, number>;",
-        // Keys nobody can list are left alone.
         "const cache: Record<string, number> = {};",
         "const byId: Partial<Record<number, User>> = {};",
         "const build = () => { const local: Record<Status, number> = { draft: 1 }; };",

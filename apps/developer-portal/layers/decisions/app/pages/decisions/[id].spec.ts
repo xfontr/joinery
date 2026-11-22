@@ -13,7 +13,6 @@ beforeEach(() => {
     artifacts.docs = null;
 });
 
-// An in-memory docs collection, answering the page's own lookup
 const docs = vi.hoisted(() => ({
     entries: [] as { path: string; title: string; body?: unknown }[],
 }));
@@ -24,7 +23,6 @@ mockNuxtImport("queryCollection", () => () => ({
     }),
 }));
 
-// Only a server render can set a status; the prerender crawler is what reads it
 const setStatus = vi.hoisted(() => vi.fn());
 mockNuxtImport("setResponseStatus", () => setStatus);
 
@@ -52,7 +50,6 @@ const report = (
     brokenLinks: [],
 });
 
-// The report list is fetched without `await`, so it lands after the first render
 const open = async (route: string) => {
     const wrapper = await mountSuspended(Page, { global, route });
     await flushPromises();

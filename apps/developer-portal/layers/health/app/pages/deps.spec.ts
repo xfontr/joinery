@@ -95,7 +95,6 @@ describe("dependencies page", () => {
         expect(cells(wrapper, "nuxt")[0]).toContain("deprecated");
     });
 
-    // A failed audit and a clean one are different facts, and only the data tells them apart
     it("says an audit that never ran was not collected, never that nothing was found", async () => {
         serve(UNCOLLECTED);
         const wrapper = await mountSuspended(Page);

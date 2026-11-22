@@ -16,26 +16,22 @@ describe("contentKey", () => {
         expect(contentKey(vendor, "posts")).not.toBe(contentKey(vendor, "pages"));
     });
 
-    // Whatever picks the document lives outside `options`, so the base URL tells deployments apart
     it("separates two deployments of the same vendor", () => {
         const staging: VendorConfig = { ...vendor, baseURL: "https://staging.wp.test/" };
 
         expect(contentKey(staging, "posts")).not.toBe(contentKey(vendor, "posts"));
     });
 
-    // Nitro turns a key into a filesystem path or a KV entry, so config is hashed rather than listed
     it("hashes the vendor config instead of spelling it out", () => {
         expect(contentKey(vendor, "posts")).not.toContain("wp.test");
     });
 
-    // `options` carries credentials only: two tokens for one site fetch the same document
     it("shares an entry across credentials, so rotating a token keeps the cache", () => {
         const rotated = { ...vendor, options: { token: "s3cret" } } as unknown as VendorConfig;
 
         expect(contentKey(rotated, "posts")).toBe(contentKey(vendor, "posts"));
     });
 
-    // Nitro strips every non-word character out of the key, so anything else here is silently lost
     it("is word characters only, so the key that is stored is the key that was built", () => {
         const query = { slug: "a/b?c#d", search: "100% of it" };
         const key = contentKey(vendor, "posts", query);
@@ -82,8 +78,6 @@ describe("contentKey", () => {
             );
         });
 
-        // Compared after Nitro's strip, not before: a key that only separates its axes with
-        // characters the strip deletes reads as canonical here and collides in storage
         it.each([
             [
                 "one axis spelled into another axis's value",

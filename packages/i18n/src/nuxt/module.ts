@@ -48,7 +48,6 @@ export default defineNuxtModule<TranslationsConfig>({
         const resolver = createResolver(import.meta.url);
         const name = resolvedOptions.vendor?.name;
 
-        // Fails at build time rather than deferring to the first translation request
         if (!isVendorName(name)) throw new UndefinedVendorError(name, VENDOR_NAMES);
 
         const locales = getLocaleCodes(nuxt);

@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { DashboardLayout, WidgetDefinition } from "~/utils/dashboardLayout";
 import DashboardGrid from "./DashboardGrid.vue";
 
-// Toasts render in the app's toaster, which a component mount doesn't have
 const toast = vi.hoisted(() => ({ add: vi.fn() }));
 mockNuxtImport("useToast", () => () => toast);
 

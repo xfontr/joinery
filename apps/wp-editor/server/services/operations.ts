@@ -34,7 +34,6 @@ import type { Store } from "../adapters/store.ts";
 import type { WordPress } from "../adapters/wordpress.ts";
 import { toSnapshot } from "../adapters/wordpress.ts";
 
-// WordPress erroring this many articles in a row usually means the host is blocking us.
 const MAX_FAILURES_IN_A_ROW = 3;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -228,7 +227,6 @@ export const review = {
             (changeset) => changeset.status === "open" && changeset.id !== id,
         );
 
-        // Rejecting the last pending item may have closed this changeset; undoing it reopens it.
         const reopens = !state.applied && changesets.find((c) => c.id === id)?.status === "closed";
 
         if (other && reopens) {
@@ -278,7 +276,6 @@ export const repull = async (store: Store, wp: WordPress, id: string, key: ItemK
     const { type, id: postId } = keyOf(key);
     const item = await requireItem(store, id, key);
 
-    // A restore record is what an earlier changeset's restore checks drift against.
     if (item.state.applied) throw new Refusal("Applied items can't be re-pulled.");
 
     await store.writeBase(id, key, toSnapshot(await wp.get(type, postId)));
@@ -503,7 +500,6 @@ export const restoreItem = async (store: Store, wp: WordPress, id: string, key: 
     const modifiedGmt = landed
         ? live.modified_gmt
         : (await wp.update(type, postId, base)).modified_gmt;
-    // Back in review, so sending it out again takes a fresh confirm.
     const next: ItemState = { ...state, level: "seen", restored: { at: now(), modifiedGmt } };
 
     await store.writeState(id, key, next);

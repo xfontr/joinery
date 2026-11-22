@@ -6,7 +6,6 @@ import { ARTICLE, COOKIES, LEGAL, PAGE, PRIVACY, PUBLISHING_GUIDE, SOURCE } from
 
 const PATH = `/${LEGAL.slug}/`;
 
-// Not the margins, since an article's title sits closer to the kicker a page doesn't have
 const TYPE_STYLES = ["font-family", "font-size", "line-height", "max-width", "color"];
 
 const readStyles = (page: Page, selector: string, properties: readonly string[]) =>
@@ -89,7 +88,6 @@ test("renders any other page on the same template, its notes and sources include
     );
 });
 
-// There is no lab design for this template, so the article's prose is the reference
 test("sets its text exactly as an article's prose", async ({ page }) => {
     await page.goto(`/${ARTICLE.slug}/`);
     const article = await proseStyles(page);

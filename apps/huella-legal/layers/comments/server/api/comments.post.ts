@@ -2,7 +2,6 @@ import { newCommentSchema } from "../../shared/schemas/comment";
 import type { CommentRequest } from "../../shared/types/CommentRequest";
 import { createComment } from "../adapters/wordpress";
 
-// The client words each issue code, since the server has no locale
 const schema = newCommentSchema((issue) => issue);
 
 export default defineEventHandler(async (event): Promise<void> => {

@@ -21,7 +21,6 @@ describe("toCitationMeta", () => {
         expect(authors.map(({ content }) => content)).toEqual(AUTHORS.map(({ name }) => name));
     });
 
-    // 23:30 UTC is already the next day in Madrid, where the byline prints it
     it("dates the article the day its byline shows, in Scholar's slashed format", () => {
         expect(toCitationMeta(ARTICLE, JOURNAL)).toContainEqual({
             name: "citation_publication_date",

@@ -10,11 +10,9 @@ import type { RailFigure } from "~/types/RailFigure";
 import type { SearchSection } from "~/utils/search";
 import Layout from "./default.vue";
 
-// GitHub is read straight from the browser, so the github layer's composable is the boundary
 const github = vi.hoisted(() => ({ read: null as unknown }));
 mockNuxtImport("useIssues", () => () => ({ data: github.read, shown: github.read }));
 
-// Search reads the docs collection, so a call here means the search data was built
 const search = vi.hoisted(() => vi.fn((): Promise<SearchSection[]> => Promise.resolve([])));
 mockNuxtImport("queryCollectionSearchSections", () => search);
 
@@ -170,7 +168,6 @@ describe("default layout", () => {
         expect(wrapper.find("nav a[href='/decisions']").exists()).toBe(false);
     });
 
-    // The menu hands a nested list's open state to the top level's v-model, which folded the app
     it("keeps an app unfolded when a page inside it folds its own rows", async () => {
         serve({ decisions: [DECISION] });
         const wrapper = await open(DECISION.to);
@@ -218,7 +215,6 @@ describe("default layout", () => {
         expect(page(wrapper, "Coverage").badge).toBeUndefined();
     });
 
-    // The lab's rail lists the kinds on the catalog, and a project's siblings on its page
     it("lists a menu's groups on the page that holds them", async () => {
         serve({ projects: KINDS });
         const wrapper = await open("/projects");

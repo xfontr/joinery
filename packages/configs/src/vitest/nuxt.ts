@@ -63,7 +63,10 @@ const defineNuxtProject = async (root: string, test: object) => {
     return withEnv({ JITI_MODULE_CACHE: "0" }, () => defineVitestProject({ root, test }));
 };
 
-/** A `node` project for `server/`, `shared/`, `modules/` and `tools/`, and `nuxt` and `nuxt-isolated` projects for `app/`, in the root and every layer. */
+/**
+ * A `node` project for `server/`, `shared/`, `modules/` and `tools/`, and `nuxt` and
+ * `nuxt-isolated` projects for `app/`, in the root and every layer.
+ */
 const createNuxtConfig = async ({
     root,
     nodeSpecs = [],

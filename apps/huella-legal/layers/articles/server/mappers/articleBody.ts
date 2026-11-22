@@ -96,7 +96,6 @@ export interface Origins {
 
 const bareHost = (url: URL): string => url.hostname.replace(/^www\./, "");
 
-// Post HTML still names the pre-cutover host, where every image cost a function call and a 301
 const rehostImages = (tree: Root, { siteUrl, wordpressUrl }: Origins): void => {
     const site = bareHost(new URL(siteUrl));
     const wordpress = wordpressUrl.endsWith("/") ? wordpressUrl : `${wordpressUrl}/`;

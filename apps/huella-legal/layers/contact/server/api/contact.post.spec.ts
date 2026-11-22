@@ -52,7 +52,6 @@ describe("POST /api/contact", () => {
         );
     });
 
-    // A bot told it failed would retry; one told it succeeded moves on
     it("answers a filled honeypot like a reader, spending no verification and sending nothing", async () => {
         nitro.body.mockResolvedValue({ ...VALID, honeypot: "https://spam.test" });
 

@@ -15,7 +15,6 @@ const user: WordpressUser = {
     simple_local_avatar: { media_id: 40, full: "https://wp.test/uploads/ana.jpg" },
 };
 
-// Trimmed from the shape Yoast SEO attaches to every post, term and user
 const yoast = {
     title: "Hello – World - Site",
     description: "A hand-written description.",
@@ -68,7 +67,6 @@ describe("toWordpressQuery", () => {
         expect(toWordpressQuery()).toMatchObject({ per_page: 10 });
     });
 
-    // WordPress returns a 400 above its own ceiling rather than clamping itself
     it("clamps per_page to what WordPress accepts", () => {
         expect(toWordpressQuery({ perPage: 500 })).toMatchObject({ per_page: 100 });
     });
@@ -98,8 +96,6 @@ describe("toPage", () => {
         ).toMatchObject({ perPage: 100 });
     });
 
-    // A proxy or plugin can drop these headers or rewrite them into something non-numeric. The empty
-    // string matters on its own: Number("") is 0, which would report a populated list as empty.
     it.each<Record<string, string>>([
         {},
         { "x-wp-total": "" },
@@ -179,7 +175,6 @@ describe("toEntry", () => {
         });
     });
 
-    // WordPress reports GMT without a zone designator, so an unsuffixed timestamp parses as local time
     it.each([
         ["2026-01-02T03:04:05", "2026-01-02T03:04:05Z"],
         ["2026-01-02T03:04:05Z", "2026-01-02T03:04:05Z"],
@@ -198,7 +193,6 @@ describe("toEntry", () => {
         expect(toEntry({ ...entry, excerpt: undefined }).excerpt).toBeUndefined();
     });
 
-    // An inaccessible featured image embeds as a REST error object instead of a media item
     it("drops a featured image that came back without a url", () => {
         const result = toEntry({ ...entry, _embedded: { "wp:featuredmedia": [{ id: 9 }] } });
 
@@ -220,7 +214,6 @@ describe("toEntry", () => {
         });
     });
 
-    // An entry embeds every taxonomy the site defines, including custom ones the domain has no name for
     it("drops a taxonomy the domain cannot name, rather than guessing one", () => {
         const result = toEntry({
             ...entry,
@@ -253,7 +246,6 @@ describe("toEntry authors", () => {
         },
     );
 
-    // `avatar_urls` holds a hashless default-Gravatar URL for every author without an upload
     it("never takes a Gravatar placeholder for an avatar", () => {
         const withGravatar = {
             ...user,
@@ -367,7 +359,6 @@ describe("toTerm", () => {
         });
     });
 
-    // Falls back to what the caller asked for, so a custom taxonomy is never relabelled as a tag
     it("keeps the requested resource when the taxonomy is one the domain cannot name", () => {
         expect(toTerm({ ...term, taxonomy: "quarter" }, "categories").resource).toBe("categories");
     });

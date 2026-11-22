@@ -13,7 +13,6 @@ const FORMAT_SLUGS = {
 
 export const isTopic = ({ slug }: Category): boolean => slug !== FORMAT_SLUGS.thesisTag;
 
-// A post carrying more than one marker takes the first rule that matches
 const toFormat = (tagSlugs: string[]): ArticleSummary["format"] => {
     if (tagSlugs.includes(FORMAT_SLUGS.thesisTag)) return "tfg-tfm";
     if (tagSlugs.some((slug) => slug.startsWith(FORMAT_SLUGS.caseCommentTagPrefix)))
@@ -43,7 +42,6 @@ const toAuthor = (author: ContentAuthor): Author => ({
 const toReadingMinutes = (wordCount = 0): number =>
     Math.max(1, Math.ceil(wordCount / WORDS_PER_MINUTE));
 
-// WordPress closes an excerpt it generated itself with a bracketed ellipsis
 const toExcerpt = (excerpt?: RichText): string | undefined => {
     if (!excerpt) return undefined;
 

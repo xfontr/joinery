@@ -18,7 +18,6 @@ export default vitest.createNuxtConfig({
         "layers/tracking/app/utils/consentTranslation.spec.ts",
     ],
     setupFiles: ["./vitest.setup.ts"],
-    // None of these ship: Storybook mocks; Playwright covers pages
     coverageExclude: ["**/app/pages/**", "**/__mocks__/**"],
     thresholds: { lines: 97, statements: 97, functions: 95, branches: 93 },
 });

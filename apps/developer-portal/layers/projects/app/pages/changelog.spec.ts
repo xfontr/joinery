@@ -12,7 +12,6 @@ beforeEach(() => {
     artifacts.metrics = null;
 });
 
-// An in-memory docs collection, answering the two query shapes the page sends
 const docs = vi.hoisted(() => ({
     changelogs: [] as { path: string; title: string }[],
     pages: {} as Record<string, { title: string }>,

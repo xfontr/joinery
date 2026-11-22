@@ -3,7 +3,6 @@ import type { VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import Page from "./index.vue";
 
-// An in-memory docs collection holding the benchmark folder
 const docs = vi.hoisted(() => ({ pages: [] as Record<string, string>[] }));
 
 mockNuxtImport("queryCollection", () => () => {

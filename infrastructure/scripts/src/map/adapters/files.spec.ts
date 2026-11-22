@@ -52,7 +52,6 @@ describe("map filesystem adapter", () => {
         ]);
     });
 
-    // A package with no description or no nx block still needs a layout line and table lookups.
     it("defaults a missing description and missing nx tags instead of skipping the project", () => {
         mkdirSync(join(directory, "packages", "ui"), { recursive: true });
         writeFileSync(

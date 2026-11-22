@@ -222,7 +222,6 @@ export const restoreBlocker = (
     if (later) return `Restore it in changeset ${later.changeset.id} first; it is applied there.`;
     if (landed) return null;
 
-    // A later changeset's restore is the tool's own write, so it moves the expected timestamp too.
     const writes = [
         own.state.applied!,
         ...stack.slice(index + 1).map(({ item }) => item?.state.restored),

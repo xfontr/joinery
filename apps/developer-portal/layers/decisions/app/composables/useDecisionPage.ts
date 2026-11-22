@@ -18,7 +18,6 @@ export const useDecisionPage = () => {
         () => reports.value.find((candidate) => candidate.id === id.value) ?? null,
     );
 
-    // By number, the order the decisions were made, however the list was last sorted.
     const around = computed(() => {
         const ordered = sortDecisions(reports.value, "oldest");
         const { previous, next } = neighbours(

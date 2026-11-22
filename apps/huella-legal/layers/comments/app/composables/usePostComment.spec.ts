@@ -25,7 +25,6 @@ mockNuxtImport(
 
 const challenge = vi.fn((send: (token: string) => Promise<unknown>) => send("tok")) as Challenge;
 
-// The shape `$fetch` rejects with: the route's `createError` arrives as the body, under `data`
 const rejected = (statusCode: number, data?: unknown) =>
     Object.assign(new Error("fetch failed"), {
         statusCode,

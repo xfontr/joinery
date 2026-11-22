@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import plugin from "./navDirection.client";
 
-// Mimics Vue Router: a push runs `beforeEach` on the old entry, a popstate on the entry it lands on
 const install = () => {
     let before = () => {};
     let after = () => {};

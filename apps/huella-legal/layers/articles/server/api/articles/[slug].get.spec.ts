@@ -27,7 +27,6 @@ beforeEach(() => {
 });
 
 describe("GET /api/articles/:slug", () => {
-    // The post stays readable at its permalink; only the hidden terms are kept off the page
     it("serves a post with a hidden category and tag, leaving both off the page", async () => {
         const visible = fakeTerm({ resource: "tags", slug: "civil" });
         nitro.getEntry.mockResolvedValue({
@@ -45,7 +44,6 @@ describe("GET /api/articles/:slug", () => {
         expect(article.tags.map(({ slug }) => slug)).toEqual(["civil"]);
     });
 
-    // Left encoded, an accented slug would reach WordPress encoded twice and match nothing
     it("reads the post named by the route, its slug decoded", async () => {
         await handler({});
 

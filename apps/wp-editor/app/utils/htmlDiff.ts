@@ -23,7 +23,6 @@ const tokenEnd = (
     find: ReturnType<typeof finderIn>,
     findFolded: ReturnType<typeof finderIn>,
 ): number | undefined => {
-    // Raw-text elements are one token so a highlight never lands inside CSS or JS.
     RAW_TEXT.lastIndex = at;
     const raw = RAW_TEXT.exec(html);
     if (raw?.[1]) {

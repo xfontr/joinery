@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { WORK } from "#layers/projects/shared/work.ts";
 import Page from "./[app].vue";
 
-// Only a server render can set a status; the prerender crawler is what reads it
 const setStatus = vi.hoisted(() => vi.fn());
 mockNuxtImport("setResponseStatus", () => setStatus);
 

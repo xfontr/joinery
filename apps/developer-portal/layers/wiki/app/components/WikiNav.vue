@@ -93,24 +93,18 @@ const { sections, current = "" } = defineProps<Props>();
 const holdsCurrent = (group: WikiGroup): boolean =>
     group.entries.some((entry) => entry.path === current);
 
-/**
- * Every group here — a project, or a docs subdirectory — is that directory's own README first and
- * whatever else it holds after, so the group label doubles as a link to it. Without this, a project
- * a reader isn't already inside is a name they can only toggle open, never go to.
- */
 /** A group that is only its README is a link, not a folder holding one page called "Overview". */
 const soleEntry = (group: WikiGroup): WikiEntry | null =>
     group.entries.length === 1 ? (group.entries[0] ?? null) : null;
 
+/** Every group lists its directory's own README first, so the group label doubles as a link to it. */
 const overviewPath = (group: WikiGroup): string | null =>
     group.entries.find((entry) => entry.label === "Overview")?.path ?? null;
 
-/** Every group starts folded except the one the reader is already inside — that one has to show where they are. */
 const opensByDefault = (group: WikiGroup): boolean => holdsCurrent(group);
 
-// Records which groups a click has flipped away from their default, rather than which are open —
-// so a group that opens itself because it holds the current page still folds on a click, and one
-// left alone keeps tracking `holdsCurrent` as the reader navigates rather than freezing at load.
+// Which groups a click flipped away from their default, not which are open, so a group left alone
+// keeps tracking `holdsCurrent` as the reader navigates.
 const toggled = ref(new Set<string>());
 
 const isOpen = (section: WikiSection, group: WikiGroup): boolean => {

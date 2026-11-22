@@ -25,8 +25,6 @@ const toPerPage = (perPage?: number): number =>
 
 export const toWordpressQuery = (query?: Query): RequestOptions["query"] => ({
     page: query?.page,
-    // Always sent, so the perPage a Page reports is the one that was requested rather than
-    // whatever WordPress happens to default to
     per_page: toPerPage(query?.perPage),
     slug: query?.slug,
     search: query?.search,
@@ -71,7 +69,6 @@ const toSEO = (yoast?: WordpressYoast): SEO | undefined => {
 
 export const toTerm = (term: WordpressTerm, resource: TermResource): Term => ({
     id: String(term.id),
-    // Falls back to what the caller asked for, so a custom taxonomy is never relabelled as a tag
     resource: TAXONOMIES[term.taxonomy] ?? resource,
     slug: term.slug,
     name: toPlainText(term.name),
@@ -79,7 +76,6 @@ export const toTerm = (term: WordpressTerm, resource: TermResource): Term => ({
     seo: toSEO(term.yoast_head_json),
 });
 
-// An entry embeds every taxonomy the site defines, including custom ones the domain has no name for
 const toEmbeddedTerm = (term: WordpressTerm): Term[] => {
     const resource = TAXONOMIES[term.taxonomy];
 
@@ -98,7 +94,6 @@ const toAvatar = (user: WordpressUser): Asset | undefined => {
     };
 };
 
-// An embed with no id or name is not a user, so it is dropped rather than rendered as a blank byline
 const toAuthor = (user: WordpressUser): Author[] => {
     if (user.id === undefined || !user.name) return [];
 

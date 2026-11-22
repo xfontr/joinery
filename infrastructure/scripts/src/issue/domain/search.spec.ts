@@ -8,7 +8,6 @@ const ISSUE = {
 };
 
 describe("matchesIssue", () => {
-    // The picker prints `#63`, so both spellings are what someone types to find it again.
     it.each([["63"], ["#63"]])("finds an issue by its number typed as %j", (search) => {
         expect(matchesIssue(ISSUE, search)).toBe(true);
     });
@@ -17,8 +16,6 @@ describe("matchesIssue", () => {
         expect(matchesIssue(ISSUE, "CLONE")).toBe(true);
     });
 
-    // Otherwise narrowing a board to its decisions needs a second prompt, which is the filter this
-    // deliberately doesn't have.
     it("finds it by a label, so a board narrows to one kind of work without another prompt", () => {
         expect(matchesIssue(ISSUE, "decision")).toBe(true);
     });
@@ -27,7 +24,6 @@ describe("matchesIssue", () => {
         expect(matchesIssue(ISSUE, "storybook")).toBe(false);
     });
 
-    // The prompt calls this for every row on every keystroke, including the first render.
     it("keeps every row while the search box is empty", () => {
         expect(matchesIssue(ISSUE, "   ")).toBe(true);
     });
@@ -40,7 +36,6 @@ describe("matchesLabel", () => {
         expect(matchesLabel(LABEL, "wont")).toBe(true);
     });
 
-    // Half of GitHub's default labels are remembered by meaning rather than spelling.
     it("finds a label by its description, so meaning works when the name doesn't come to mind", () => {
         expect(matchesLabel(LABEL, "not be worked")).toBe(true);
     });

@@ -55,7 +55,6 @@ const step = async <T>(
 const collectProjects = async (generatedAt: string) => {
     const graph = await collectGraph(generatedAt);
 
-    // Deleted projects are history the page can do without, so a git failure here only empties them.
     const retired = await tryRun(() => collectRetired(graph.projects));
     if (!retired.ok) printError(`✗ retired projects — ${retired.error}`);
 
@@ -73,7 +72,6 @@ const main = async (): Promise<void> => {
         git(["rev-parse", "--abbrev-ref", "HEAD"]).then((out) => out.trim()),
     ]);
 
-    // Written last so its presence means the run finished, however many collectors failed.
     const writeManifest = () =>
         write("manifest", {
             schemaVersion: SCHEMA_VERSION,
@@ -83,7 +81,6 @@ const main = async (): Promise<void> => {
             artifacts: run.artifacts,
         } satisfies Manifest);
 
-    // Coverage and metrics are both keyed off the graph's project list, so without it the run stops.
     const graph = await step(
         run,
         "projects",

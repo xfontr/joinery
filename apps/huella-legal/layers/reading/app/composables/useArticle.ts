@@ -9,7 +9,6 @@ export const useArticle = async () => {
         },
     );
 
-    // Read in the browser, so a prerendered article never shows a stale thread
     const { data: comments } = useCachedFetch<ArticleComments>(
         `/api/articles/${route.params.slug}/comments`,
         {

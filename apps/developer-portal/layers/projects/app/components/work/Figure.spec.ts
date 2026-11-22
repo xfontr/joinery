@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import { workFor } from "#layers/projects/shared/work.ts";
 import Figure from "./Figure.vue";
 
-// A real entry, so its screenshot file exists in the layer's assets.
 const WORK_ITEM = workFor("huella-legal");
 
 describe("WorkFigure", () => {

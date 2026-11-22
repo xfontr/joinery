@@ -1,7 +1,6 @@
 import type { ArticleSummary } from "../../shared/types/ArticleSummary";
 import type { Category } from "../../shared/types/Category";
 
-// One list for categories and tags, since WordPress keeps their slugs apart only per taxonomy
 export const isHiddenTerm = ({ slug }: Pick<Category, "slug">): boolean =>
     useRuntimeConfig().articles.hiddenTerms.includes(slug);
 

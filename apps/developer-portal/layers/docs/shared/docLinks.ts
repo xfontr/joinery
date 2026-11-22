@@ -1,8 +1,5 @@
 import { toCollectionPath } from "./docPages.ts";
 
-// A link in these docs points at a file and is correct on GitHub, which reads them first — so it is
-// fixed here rather than in the markdown.
-
 /** Produced here, consumed by `ProseA`, which alone knows the forge's URL. */
 export const REPO_SCHEME = "repo:";
 

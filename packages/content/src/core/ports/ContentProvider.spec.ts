@@ -44,7 +44,6 @@ const page = <T>(...items: T[]): Page<T> => ({
     totalPages: 1,
 });
 
-// A vendor with no options overrides nothing, and the base still checks what every vendor shares
 class BareProvider extends ContentProvider {
     override listEntries(): Promise<Page<Entry>> {
         return Promise.resolve(page<Entry>());
@@ -71,7 +70,6 @@ const entry = {
 const term = { id: "1", resource: "categories", slug: "news", name: "News" } as Term;
 
 describe("ContentProvider", () => {
-    // The registry reads each vendor's options type off this, so it has to stay public
     it("exposes the vendor config to its subclasses and to the registry", () => {
         const provider = build();
 
@@ -79,7 +77,6 @@ describe("ContentProvider", () => {
         expect(provider.options).toEqual({ problems: [] });
     });
 
-    // Declared as an object, so a vendor that takes none must not hand its provider `undefined`
     it("exposes empty options rather than none, for the vendor that has none", () => {
         expect(new BareProvider({ baseURL: BASE_URL }, http).options).toEqual({});
     });
@@ -91,7 +88,6 @@ describe("ContentProvider", () => {
     });
 
     describe("when the vendor config cannot work", () => {
-        // An unset env var would otherwise become a relative fetch and come back as a 502
         it.each(["", "   ", "cms.test", "/blog"])(
             "refuses to exist with %o as its base URL, whatever the vendor",
             (baseURL) => {
@@ -109,7 +105,6 @@ describe("ContentProvider", () => {
             );
         });
 
-        // One restart per missing variable is the thing worth avoiding
         it("reports every problem at once, the shared ones and the vendor's own", () => {
             expect(() => build(["options.token is empty"], "")).toThrow(
                 /baseURL is not an absolute URL, options.token is empty/,
@@ -139,8 +134,6 @@ describe("ContentProvider", () => {
         });
     });
 
-    // A slug lookup is a one-item list on every CMS, so this is what a vendor inherits until it has
-    // a native single-document endpoint
     describe("getEntry", () => {
         it("asks for a single entry by slug and unwraps it", async () => {
             listEntries.mockResolvedValue(page(entry));

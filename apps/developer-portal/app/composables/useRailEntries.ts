@@ -37,7 +37,6 @@ export const useRailEntries = (
                 : { label: row.badge, class: toneClass(coverageTone(row.coverage)) },
     });
 
-    // A menu one level deep at a time: inside a group, its members stand in for the groups.
     const menuSections = (rows: MenuRow[]): NavigationMenuItem[] =>
         (rows.find((row) => (row.children ?? []).some(holds))?.children ?? rows).map(toItem);
 
@@ -63,9 +62,7 @@ export const useRailEntries = (
                               icon: entry.icon,
                               to: entry.to,
                               value: entry.key,
-                              // Router matching alone leaves `/projects` dark on `/projects/<name>`.
                               active: here.value?.entry.key === entry.key,
-                              // An app's link lands on its first entry, which would unfold along with it
                               defaultOpen:
                                   here.value?.entry.key === entry.key && route.path !== entry.to,
                               badge: figures.value[entry.key]?.badge,

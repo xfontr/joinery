@@ -22,7 +22,6 @@ describe("TolgeeProvider", () => {
         });
     });
 
-    // The config claims a locale the project does not hold — a mismatch on our side, not a vendor failure
     it("refuses to invent a locale Tolgee answered without", async () => {
         const get = vi
             .fn()
@@ -38,7 +37,6 @@ describe("TolgeeProvider", () => {
         await expect(provider.getTranslations("en-GB")).rejects.toThrow(/"en-GB".*Tolgee/);
     });
 
-    // An unset TRANSLATIONS_VENDOR_OPTIONS_TOKEN would otherwise reach Tolgee and come back as a 502
     it.each([{ token: "" }, { token: "  " }, undefined])(
         "refuses to exist without a token (%o)",
         (options) => {

@@ -10,7 +10,6 @@ const warn = (action: string, name: string, key: string, error: unknown): void =
     console.warn(`[blobs] Could not ${action} ${name}/${key}`, error);
 };
 
-// A deploy store dies with its deploy, so a value saved by older code never reaches newer code
 const openStore = (name: string): Store | undefined => {
     try {
         return getDeployStore(name);

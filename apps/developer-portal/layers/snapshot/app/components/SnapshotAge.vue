@@ -45,11 +45,6 @@ const { manifest, artifact, source } = defineProps<Props>();
 
 const status = computed(() => (artifact ? manifest?.artifacts[artifact] : undefined));
 
-/**
- * Every page that reads the snapshot shows this. A report whose age is not on the page is a report
- * that quietly starts lying — and `.report/` is gitignored, so on a fresh clone the honest answer
- * is "never collected".
- */
 const failed = computed(() => status.value?.ok === false);
 const collected = computed(() => relativeTime(status.value?.generatedAt ?? manifest?.generatedAt));
 </script>
