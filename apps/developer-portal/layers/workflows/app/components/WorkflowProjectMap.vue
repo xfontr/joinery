@@ -24,7 +24,8 @@
             </li>
         </ol>
 
-        <div class="hidden overflow-x-auto md:block">
+        <!-- A map wider than the page scrolls, so a keyboard has to be able to reach it -->
+        <div tabindex="0" role="region" :aria-label="label" class="hidden overflow-x-auto md:block">
             <svg
                 :width="map.width"
                 :height="map.height"

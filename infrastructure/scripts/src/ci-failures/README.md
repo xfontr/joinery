@@ -10,7 +10,7 @@ pnpm ci:failures 287      # any PR, by number, URL or branch
 
 Exits 1 while any check is failing; pending checks don't count.
 
-## 🗂 Structure
+## Structure
 
 ```
 main.ts               checks → group → one report per failed check
@@ -20,7 +20,7 @@ adapters/files.ts     saves the untrimmed log to the OS temp dir
 domain/checks.ts      grouping, reading job ids and Sonar PRs from links, log-prefix stripping
 ```
 
-## 🔗 What each kind of check prints
+## What each kind of check prints
 
 | Check | Prints |
 | --- | --- |

@@ -8,10 +8,16 @@
                 size="sm"
                 class="w-56"
             />
-            <USelect v-model="status" :items="STATUSES" value-key="value" size="sm" class="w-40" />
+            <USelect
+                v-model="status"
+                :items="statusItems"
+                value-key="value"
+                size="sm"
+                class="w-40"
+            />
             <USelect
                 v-model="decision"
-                :items="OUTCOMES"
+                :items="outcomeItems"
                 value-key="value"
                 size="sm"
                 class="w-40"
@@ -24,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import type { DecisionSort } from "#layers/decisions/shared/decisionReports.ts";
+import { DECISION_SORTS, type DecisionSort } from "#layers/decisions/shared/decisionReports.ts";
 import {
     DECISION_OUTCOMES,
     DECISION_STATUSES,
@@ -37,19 +43,21 @@ const status = defineModel<DecisionStatus | "all">("status", { required: true })
 const decision = defineModel<DecisionOutcome | "all">("decision", { required: true });
 const sort = defineModel<DecisionSort>("sort", { required: true });
 
-const SORTS: DecisionSort[] = ["newest", "oldest", "updated", "status"];
-
 const { t } = useI18n();
 
-const STATUSES = [
-    { label: t("decisionsToolbar.everyStatus"), value: "all" },
-    ...DECISION_STATUSES.map((value) => ({ label: t(`decisions.status.${value}`), value })),
-];
+const statusItems = computed(() =>
+    filterItems(t("decisionsToolbar.everyStatus"), DECISION_STATUSES, (value) =>
+        t(`decisions.status.${value}`),
+    ),
+);
 
-const OUTCOMES = [
-    { label: t("decisionsToolbar.everyDecision"), value: "all" },
-    ...DECISION_OUTCOMES.map((value) => ({ label: t(`decisions.outcome.${value}`), value })),
-];
+const outcomeItems = computed(() =>
+    filterItems(t("decisionsToolbar.everyDecision"), DECISION_OUTCOMES, (value) =>
+        t(`decisions.outcome.${value}`),
+    ),
+);
 
-const sortItems = SORTS.map((value) => ({ label: t(`decisionsToolbar.sorts.${value}`), value }));
+const sortItems = computed(() =>
+    DECISION_SORTS.map((value) => ({ label: t(`decisionsToolbar.sorts.${value}`), value })),
+);
 </script>

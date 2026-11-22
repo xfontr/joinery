@@ -1,11 +1,12 @@
 <template>
     <PageHero
+        carry="hero-workflows"
         :title="$t('agenticWorkflows.title')"
         :mark="$t('agenticWorkflows.titleMark')"
         :lead="$t('agenticWorkflows.lead')"
     />
 
-    <section class="mx-auto max-w-6xl px-4 pb-20 md:px-10">
+    <UContainer as="section" class="pb-20">
         <ol class="grid gap-10 border-t border-accented pt-10 md:grid-cols-5">
             <li v-for="(step, index) in STEPS" :key="step" class="flex flex-col gap-3">
                 <span class="font-display text-section text-primary">{{ index + 1 }}</span>
@@ -15,11 +16,11 @@
                 <span class="text-base">{{ $t(`agenticWorkflows.steps.${step}.body`) }}</span>
             </li>
         </ol>
-    </section>
+    </UContainer>
 
     <WorkflowProjectMaps />
 
-    <section class="mx-auto max-w-6xl px-4 pt-20 md:px-10">
+    <UContainer as="section" class="pt-20">
         <div class="grid gap-6 md:grid-cols-12">
             <h2 class="font-display text-section text-highlighted md:col-span-5">
                 {{ $t("agenticWorkflows.lessons.title") }}
@@ -46,7 +47,7 @@
         <ULink to="/workflows" class="mt-6 inline-block text-primary underline underline-offset-4">
             {{ $t("agenticWorkflows.lessons.all") }} →
         </ULink>
-    </section>
+    </UContainer>
 </template>
 
 <script setup lang="ts">
@@ -63,5 +64,5 @@ const LESSONS = [
 
 const { t } = useI18n();
 
-useHead({ title: t("agenticWorkflows.head") });
+useSeoMeta({ title: t("agenticWorkflows.head"), description: t("agenticWorkflows.lead") });
 </script>

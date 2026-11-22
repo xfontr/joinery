@@ -25,10 +25,10 @@ pnpm workflow:drop harbour-notes --yes          # close untouched tickets of an 
 
 `file` refuses a block that's off, settled, already filed, or waiting on an open `spike`/`owner`
 block or an unfiled `build` block. A project's `ticketSize` bundles blocks as
-[the workflows README](../../../../docs/workflows/README.md#-ticket-size) describes; a bundle files
+[the workflows README](../../../../docs/workflows/README.md#ticket-size) describes; a bundle files
 whole.
 
-## 🗂 Structure
+## Structure
 
 ```
 index.ts            dispatches setup | sync | next | file | drop
@@ -38,7 +38,7 @@ adapters/files.ts   project and template YAML, the snapshot
 domain/             snapshot mapping, ticket status and queues, labels, filing and bundles
 ```
 
-## 🔗 Rules written twice
+## Rules written twice
 
 The portal can't import this package, so these live in both places. Each pair's specs share one table
 of cases, so changing one copy fails a spec.

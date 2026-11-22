@@ -7,7 +7,7 @@ decision: accepted
 # 🧭 Huella Legal's e2e runs in-app in one pinned image, and coverage gates `test`
 
 > **Screenshot baselines were removed in #241.** Everything below about baselines describes the
-> setup that was dropped; the rest stands. See [Baselines removed](#-baselines-removed).
+> setup that was dropped; the rest stands. See [Baselines removed](#baselines-removed).
 
 ## Context
 
@@ -130,7 +130,7 @@ vendor, and that is its only e2e cost.
 - Every action in `ci.yml` is pinned by SHA with a version comment. `actions/upload-artifact` is
   the first new one, and it follows suit.
 
-## 🧹 Baselines removed
+## Baselines removed
 
 #241 dropped every `toHaveScreenshot`, the PNGs under `e2e/__screenshots__/`, and the preset's
 `snapshotPathTemplate` and `ignoreSnapshots`. The specs' behaviour and axe assertions, the pinned

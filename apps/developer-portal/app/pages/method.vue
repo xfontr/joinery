@@ -1,5 +1,6 @@
 <template>
     <PageHero
+        carry="hero-method"
         :title="$t('method.title')"
         :mark="$t('method.titleMark')"
         :lead="$t('method.lead')"
@@ -42,7 +43,7 @@
         <MethodChecks :specs :rules />
     </RuleSection>
 
-    <section v-if="example" class="mx-auto max-w-6xl px-4 pt-6 md:px-10">
+    <UContainer v-if="example" as="section" class="pt-6">
         <ULink
             :to="`/work/${example.slug}`"
             class="group flex flex-col gap-2 border-t border-accented pt-10"
@@ -55,14 +56,12 @@
             </span>
             <span class="text-lg">{{ $t("method.example.line") }}</span>
         </ULink>
-    </section>
+    </UContainer>
 </template>
 
 <script setup lang="ts">
 import { isStudy } from "#layers/projects/app/utils/work.ts";
 import { specTotal } from "#layers/snapshot/app/utils/metrics.ts";
-import { ruleCounts } from "#layers/telemetry/shared/lintUsage.ts";
-import { lessonCount } from "#layers/workflows/shared/workflows.ts";
 
 definePageMeta({ layout: "visitor" });
 
@@ -72,10 +71,9 @@ const DECISIONS = {
     board: "0035-one-board-area-labels",
     visitor: "0040-developer-portal-visitor-structure",
 } as const;
-const PIPELINE = ["pick", "plan", "build", "review", "polish", "ship"] as const;
 
 const { t } = useI18n();
-useHead({ title: t("method.head") });
+useSeoMeta({ title: t("method.head"), description: t("method.lead") });
 
 const decisionItems = Object.entries(DECISIONS).map(([key, id]) => ({
     id,
@@ -88,11 +86,8 @@ const pipeline = PIPELINE.map((id) => ({
     detail: t(`method.agents.pipeline.${id}.does`),
 }));
 
-const [{ data: benchmarks }, { data: workflows }, { data: work }] = await Promise.all([
-    useBenchmarks(),
-    useWorkflows(),
-    useWorkList(),
-]);
+const [{ data: benchmarks }, { data: workflows }, { data: work }, { data: rules }] =
+    await Promise.all([useBenchmarks(), useWorkflowTemplates(), useWorkList(), useRuleCounts()]);
 const example = computed(() =>
     work.value.filter(isStudy).find((entry) => entry.slug === "huella-legal"),
 );
@@ -100,12 +95,13 @@ const decisions = useDecisionReports();
 
 const sites = computed(() => benchmarks.value.map((item) => item.title).join(" · "));
 const templates = computed(() =>
-    workflows.value.templates
-        .filter((template) => template.capabilities.length)
-        .map(({ id, title, summary }) => ({ id, term: title, detail: summary })),
+    workflows.value.templates.map(({ id, title, summary }) => ({
+        id,
+        term: title,
+        detail: summary,
+    })),
 );
 const specs = specTotal(metricsArtifact()?.projects);
-const rules = ruleCounts(usageArtifact()?.lint);
 
-const lessons = computed(() => lessonCount(workflows.value.templates));
+const lessons = computed(() => workflows.value.lessons);
 </script>

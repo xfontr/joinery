@@ -9,7 +9,7 @@ pnpm dev developer-portal  # skip the picker (the label "Developer Portal" works
 pnpm dev huella            # not an exact name: opens the picker with "huella" typed
 ```
 
-## 🗂 Structure
+## Structure
 
 ```
 index.ts             installs if needed, then imports the rest dynamically
@@ -19,7 +19,7 @@ adapters/pnpm.ts     the install check, the install, the dev run
 domain/projects.ts   rows, their order, and matching a typed name
 ```
 
-## 📋 How it works
+## How it works
 
 - The list is `nx show projects --with-target dev`, so a project appears by adding a `dev` script —
   nothing else to register. `@monorepo/scripts` itself is left out.

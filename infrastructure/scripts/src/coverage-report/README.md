@@ -7,7 +7,7 @@ Merges every project's `coverage-final.json` into one HTML report at the workspa
 | --- | --- |
 | `pnpm test:coverage` (root) | `nx run-many -t test:coverage`, then merge and render `coverage/index.html` |
 
-## 🗂 Structure
+## Structure
 
 ```
 index.ts              hands main to run()
@@ -18,7 +18,7 @@ domain/discover.ts    nx's project + output shape → the coverage-final.json pa
 domain/merge.ts       loaded reports → one CoverageMap, refusing a partial merge
 ```
 
-## ✅ What it refuses to do
+## What it refuses to do
 
 It never renders a partial report: if any project with a `test:coverage` target has no
 `coverage-final.json`, it exits 1 naming it. That's why the root script uses `run-many`, never

@@ -3,7 +3,7 @@
 `pnpm issue:ship` pushes the current branch, opens a PR (or reuses the open one), arms GitHub
 auto-merge, then waits for the checks and prints how it went. No flags, no prompts.
 
-## 🗂 Structure
+## Structure
 
 ```
 main.ts              push → PR → auto-merge → watch → report
@@ -13,7 +13,7 @@ domain/report.ts     the final line
 domain/checks.ts     recognises gh's "no checks reported" message
 ```
 
-## ⚙️ Behaviour
+## Behaviour
 
 - Merging goes through `gh pr merge --auto`, so it only happens once the required checks pass.
   `MERGE_METHOD` in [`main.ts`](./main.ts) is `merge`.
@@ -22,7 +22,7 @@ domain/checks.ts     recognises gh's "no checks reported" message
   checks pass, `waitForMerge` polls up to 60 s before reporting "merge queued".
 - Uncommitted changes are left out, as with `git push`.
 
-## 🔑 Requirements
+## Requirements
 
 `gh` logged in with push access, and the repo's *Allow auto-merge* setting on. Without it the run
 stops with the PR open and nothing armed.

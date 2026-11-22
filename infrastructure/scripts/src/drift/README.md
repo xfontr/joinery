@@ -8,7 +8,7 @@ pnpm docs:drift                                              # merge-base(HEAD, 
 DOCS_DRIFT_BASE=<sha> DOCS_DRIFT_HEAD=<sha> pnpm docs:drift  # any range
 ```
 
-## 🗂 Structure
+## Structure
 
 ```
 main.ts             the range, the per-project loop, the prompt, the issue
@@ -16,7 +16,7 @@ adapters/git.ts     changed files, diff stats and text, last markdown commit
 domain/detect.ts    the warn decision and its thresholds
 ```
 
-## 🚦 When it warns
+## When it warns
 
 Either condition is enough, for a project the range touches:
 

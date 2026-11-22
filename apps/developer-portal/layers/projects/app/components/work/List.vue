@@ -1,6 +1,6 @@
 <template>
     <section id="work" class="bg-muted">
-        <div class="mx-auto max-w-6xl px-4 py-20 md:px-10">
+        <UContainer class="py-20">
             <h2 class="font-display text-section text-highlighted md:text-title">
                 {{ $t("workList.title") }} <mark>{{ $t("workList.titleMark") }}</mark>
             </h2>
@@ -13,8 +13,11 @@
                 >
                     <img
                         v-if="item.shot"
-                        :src="item.shot"
+                        v-bind="item.shot"
+                        sizes="(min-width: 48rem) 66vw, 100vw"
+                        loading="lazy"
                         :alt="item.shotAlt"
+                        :style="carried(`work-shot-${item.slug}`)"
                         width="1440"
                         height="900"
                         class="w-full border border-default md:col-span-2 md:row-span-6"
@@ -22,7 +25,12 @@
                     <p class="font-mono text-xs text-muted uppercase">
                         {{ item.kind }} · {{ item.stage }}
                     </p>
-                    <h3 class="font-display text-heading text-highlighted">{{ item.name }}</h3>
+                    <h3
+                        class="font-display text-heading text-highlighted"
+                        :style="carried(`work-title-${item.slug}`)"
+                    >
+                        {{ item.name }}
+                    </h3>
                     <p class="text-base">{{ item.what }}</p>
                     <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm">
                         <ULink
@@ -38,7 +46,7 @@
                     </div>
                 </article>
             </div>
-        </div>
+        </UContainer>
     </section>
 </template>
 

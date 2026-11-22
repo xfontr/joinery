@@ -6,7 +6,7 @@ gets got wrong anyway. Shared checks live in scripts and CI; Claude additionally
 [`.claude/settings.json`](./.claude/settings.json), two `PostToolUse` hooks for earlier feedback
 and a `PreToolUse` guard that keeps agents off live systems.
 
-## ✍️ Style
+## Style
 
 - 4-space indent, double quotes, semicolons, 100 columns. Prettier enforces it as an ESLint rule
   through `@monorepo/configs`, so `pnpm exec eslint --fix`, run from the project's directory since
@@ -15,10 +15,10 @@ and a `PreToolUse` guard that keeps agents off live systems.
   settings turn it off and leave formatting to the ESLint extension.
 - `package.json` files are 2-space because pnpm rewrites them that way. Leave them alone.
 - **A comment carries one fact that isn't in the code, in one sentence.** See
-  [💬 Comments](#-comments).
+  [💬 Comments](#comments).
 - Same rule for docs. When writing or editing markdown, follow the `house-docs` skill.
 
-## 💬 Comments
+## Comments
 
 Default to none. **A comment carries one fact that isn't in the code, in one sentence.** The rule is
 not "a comment must justify its line" — that one is satisfied by writing a better argument, which is
@@ -53,7 +53,7 @@ how `infrastructure/scripts` reached one comment line per four lines of code.
 `packages/content` and `apps/huella-legal` sit at 4–6% comment lines and are the calibration; a file
 far outside that is worth opening. The `comment-cleanup` skill runs the pass.
 
-## 🚫 Things that look reasonable and are wrong here
+## Things that look reasonable and are wrong here
 
 - **Never add a build step to a package.** `packages/*` export raw TypeScript/Vue source; consumers
   compile them. No `build` script, no `dist/`, no `tsup`/`unbuild`, no `main`/`types` fields — the
@@ -77,7 +77,7 @@ far outside that is worth opening. The `comment-cleanup` skill runs the pass.
   do not want them suggested, offered, prepared for or asked about. Answer the question or change
   the code and stop there — an unprompted "want me to branch off and apply this?" is noise, not
   helpfulness. Act on any of it only when asked in those words; the branch and commit rules under
-  [⌨️ Commands](#️-commands) are reference for when that happens, not a prompt to bring it up.
+  [⌨️ Commands](#commands) are reference for when that happens, not a prompt to bring it up.
   A `/ship-issue` run is that ask, and only its ship step acts on it.
 - **Never invent structure the repo already solves.** A new file or folder copies the closest
   existing precedent — a huella-legal layer, a developer-portal folder, a scripts
@@ -94,7 +94,7 @@ far outside that is worth opening. The `comment-cleanup` skill runs the pass.
   they want one, but never write it on your own judgement. A `/ship-issue` run on a `spike` ticket
   is that ask.
 
-## 📦 Dependencies
+## Dependencies
 
 - **Prefer a maintained library to hand-rolled code.** For a solved problem — parsing, decoding,
   escaping, validation, dates — add the package to the project that needs it, without asking. A new
@@ -109,7 +109,7 @@ far outside that is worth opening. The `comment-cleanup` skill runs the pass.
   bump something to fix one package.
 - Everything else: a version range in the package that needs it.
 
-## ⌨️ Commands
+## Commands
 
 `pnpm lint | typecheck | test | build` at the root run against **affected** projects only — what
 changed since `master`, same as CI and the pre-push hook.
@@ -155,7 +155,7 @@ the traps in it.
 - A fresh clone gets no hooks until `pnpm quick-start` runs, because lifecycle scripts are banned
   and `husky` has no `prepare` script to install itself.
 
-## 🔗 The two places that must agree
+## The two places that must agree
 
 The root README's tag tables and workspace-layout block sit between `<!-- docs:map:… -->` markers
 and are rendered by `pnpm docs:map` from
@@ -177,7 +177,7 @@ the symptom is `lint` failing to parse every file rather than anything mentionin
 [`0015`](./docs/decisions/0015-nuxt-prepare-wiring.md) has the measurements and
 [`0024`](./docs/decisions/0024-nuxt-prepare-test-edge.md) why `test` has the edge again.
 
-## 🛠️ Skills
+## Skills
 
 | Skill | Use it when |
 | --- | --- |
@@ -198,4 +198,4 @@ the symptom is `lint` failing to parse every file rather than anything mentionin
 | `configs-new-rule` | Adding, changing or scoping a lint rule in `@monorepo/configs`, or turning a review finding into one |
 | `wp-bulk-edit` | A site-wide content pass on the blog through `@monorepo/wp-editor`: open a changeset, write proposals in batches, validate |
 | `project-workflow` | Starting, ticketing, organising or reporting on an effort tracked in [`docs/workflows/`](./docs/workflows/README.md) — a site rebuild, a launch |
-| `ship-issue` | Taking issues to merged PRs unattended, as `/ship-issue <numbers>`. A saved workflow in [`.claude/workflows/`](./.claude/workflows/ship-issue.js), not a skill; see [agent setup](./docs/concepts/agent-setup.md#-the-ship-issue-pipeline) |
+| `ship-issue` | Taking issues to merged PRs unattended, as `/ship-issue <numbers>`. A saved workflow in [`.claude/workflows/`](./.claude/workflows/ship-issue.js), not a skill; see [agent setup](./docs/concepts/agent-setup.md#the-ship-issue-pipeline) |

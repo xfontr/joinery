@@ -50,7 +50,7 @@ case "$rel" in
             echo "Keep-test: a line says something in the workflow worked or went wrong." >&2
             echo "A line that reads as neither is deleted, not retyped." >&2
             echo "What the work found goes in the decision report or the commit." >&2
-            echo "See docs/workflows/README.md#-diary." >&2
+            echo "See docs/workflows/README.md#diary." >&2
             exit 2
         fi
         ;;

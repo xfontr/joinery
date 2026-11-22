@@ -40,8 +40,8 @@ describe("resolveDocLink", () => {
     });
 
     it("keeps an anchor, which names a heading on the page it just resolved", () => {
-        expect(resolveDocLink("./README.md#-numbering", DECISION, isPage)).toBe(
-            "/wiki/docs/decisions/readme#-numbering",
+        expect(resolveDocLink("./README.md#numbering", DECISION, isPage)).toBe(
+            "/wiki/docs/decisions/readme#numbering",
         );
     });
 

@@ -6,21 +6,13 @@
             :hint="$t('benchmarksTiles.sitesHint')"
             icon="i-lucide-bookmark"
         />
-        <StatTile
-            v-for="tile in tiles"
-            :key="tile.verdict"
-            :label="tile.label"
-            :value="tile.value"
-            :hint="tile.hint"
-            :tone="tile.tone"
-        />
+        <StatTile v-for="{ verdict, ...tile } in tiles" :key="verdict" v-bind="tile" />
     </div>
 </template>
 
 <script setup lang="ts">
-import { countByVerdict } from "#layers/benchmarks/app/utils/benchmarks.ts";
+import { BENCHMARK_VERDICTS, countByVerdict } from "#layers/benchmarks/app/utils/benchmarks.ts";
 import type { Benchmark } from "#layers/benchmarks/app/types/Benchmark.ts";
-import type { BenchmarkVerdict } from "#layers/benchmarks/app/types/BenchmarkVerdict.ts";
 
 interface Props {
     benchmarks: Benchmark[];
@@ -28,14 +20,12 @@ interface Props {
 
 const { benchmarks } = defineProps<Props>();
 
-const TILES: BenchmarkVerdict[] = ["strong", "partial", "avoid"];
-
 const { t } = useI18n();
 
 const counts = computed(() => countByVerdict(benchmarks));
 
 const tiles = computed(() =>
-    TILES.map((verdict) => ({
+    BENCHMARK_VERDICTS.map((verdict) => ({
         verdict,
         hint: t(`benchmarksTiles.hints.${verdict}`),
         label: t(`benchmarks.verdict.${verdict}`),

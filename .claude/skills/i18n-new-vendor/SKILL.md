@@ -5,7 +5,7 @@ description: Add a TMS vendor to @monorepo/i18n — a TranslationProvider subcla
 
 # Adding a translations vendor
 
-The steps are in the [Vendors section](../../../packages/i18n/README.md#-vendors) of the package README. Follow
+The steps are in the [Vendors section](../../../packages/i18n/README.md#vendors) of the package README. Follow
 them; this file is what the prose can't enforce.
 [`TolgeeProvider.ts`](../../../packages/i18n/src/core/adapters/providers/TolgeeProvider.ts) is the example with
 options, [`InternalProvider.ts`](../../../packages/i18n/src/core/adapters/providers/InternalProvider.ts) the one

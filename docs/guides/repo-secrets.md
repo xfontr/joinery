@@ -3,7 +3,7 @@
 Five GitHub Actions secrets nothing in the repo provisions. A missing one rarely names itself, so
 read the symptom column first.
 
-## 🗂 The secrets
+## The secrets
 
 | Secret | Used by | Token | Symptom when missing |
 | --- | --- | --- | --- |
@@ -21,7 +21,7 @@ gh secret set <NAME> --repo <owner>/<repo>
 
 Then re-run the failed workflow run.
 
-## 🧾 Notes per token
+## Notes per token
 
 | Secret | Note |
 | --- | --- |

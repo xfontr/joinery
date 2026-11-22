@@ -62,7 +62,7 @@ with two entry points and optional peers. 2-space indent, because pnpm rewrites 
   files and types go inside the project.
 - **Exactly two Nx tags**, `type:<kind>` and `scope:<area>`. They live here, not in a
   `project.json` — there are none in this workspace. Pick `<kind>` from the
-  [root README's tag table](../../../README.md#-architecture--boundaries): a vendor wrapper is
+  [root README's tag table](../../../README.md#architecture--boundaries): a vendor wrapper is
   `type:integration`, like `content` and `i18n`. Every project needs exactly one `scope:*` tag too,
   since the scope rules bind it the moment it is tagged: `scope:shared` for a package any app may
   use, otherwise the app or area it belongs to.
@@ -116,7 +116,7 @@ directory:
 2. Add the new tag to the `onlyDependOnLibsWithTags` of whatever is allowed to consume it — usually
    `type:app` alone. A new scope gets `["scope:<area>", "scope:shared"]` and joins no other list.
 3. Run `pnpm docs:map`. It renders the tag and scope tables in the
-   [root README](../../../README.md#-architecture--boundaries) from `boundaries.ts` and every
+   [root README](../../../README.md#architecture--boundaries) from `boundaries.ts` and every
    project's `nx.tags`; never edit them by hand.
 
 ## 6. The root README

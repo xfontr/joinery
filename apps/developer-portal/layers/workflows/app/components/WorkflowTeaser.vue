@@ -1,5 +1,5 @@
 <template>
-    <section id="workflows" class="mx-auto max-w-6xl px-4 pb-20 md:px-10">
+    <UContainer as="section" id="workflows" class="pb-20">
         <ULink
             to="/agentic-workflows"
             class="group grid items-center gap-10 border-t border-accented pt-10 md:grid-cols-12"
@@ -23,19 +23,12 @@
                 <WorkflowGlyph :map="glyph" :label="$t('workflowTeaser.glyphLabel')" />
             </div>
         </ULink>
-    </section>
+    </UContainer>
 </template>
 
 <script setup lang="ts">
-import { GLYPH_MAP, projectMap } from "#layers/workflows/shared/workflows.ts";
-
 /** The project whose plan the teaser draws; its copy names it too. */
 const PLAN = "huella-legal";
 
-const { data: workflows } = await useWorkflows();
-
-const glyph = computed(() => {
-    const view = workflows.value.projects.find((project) => project.project.id === PLAN);
-    return view ? projectMap(view, GLYPH_MAP) : null;
-});
+const { data: glyph } = await useWorkflowGlyph(PLAN);
 </script>

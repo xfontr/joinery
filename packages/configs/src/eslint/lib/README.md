@@ -4,7 +4,7 @@ Every file here is one ESLint concern, exported as a config object. [`index.ts`]
 them in two arrays: `shared`, which [`node.ts`](../node.ts) and [`vue.ts`](../vue.ts) both spread,
 and `vueOnly`, which only `vue.ts` adds. A rule belongs in this folder when it
 applies to **every** project the package touches; a rule for one flavour goes in the factory that
-composes it instead — see the [package README](../../../README.md#-what-the-eslint-factories-bundle).
+composes it instead — see the [package README](../../../README.md#what-the-eslint-factories-bundle).
 `routeMeta.ts`, `tailwind.ts`, `i18nKeys.ts`, `layerBoundaries.ts` and `pureDomain.ts` are composed by
 no factory: a project opts in by appending `eslint.routeMeta`, `eslint.tailwind(entryPoint)`,
 `eslint.i18nKeys(localeGlob)`, `eslint.layerBoundaries({ cores, kit })` or `eslint.pureDomain`
@@ -15,13 +15,13 @@ A rule no plugin ships lives in [`../rules`](../rules) as a `monorepo/<name>` ru
 object from [`rules/index.ts`](../rules/index.ts): ESLint throws `Cannot redefine plugin` when two
 different objects under one name meet on a file.
 
-## 🗂 What's here
+## What's here
 
 | File | What it configures |
 | --- | --- |
 | [`index.ts`](./index.ts) | The `shared` and `vueOnly` lists the factories spread, in order. A plugin preset that needs no local customization is composed straight here instead of getting its own file |
-| [`boundaries.ts`](./boundaries.ts) | `@nx/enforce-module-boundaries` and the `depConstraints` table — the enforced copy of the Nx tag table; `pnpm docs:map` renders the readable one into the [root README](../../../../../README.md#-architecture--boundaries) |
-| [`coreIsolation.ts`](./coreIsolation.ts) | `no-restricted-imports` under `**/src/core/**`, keeping the framework-agnostic half of `content`/`i18n` free of the Nuxt and Nitro runtime — the list is in the [package README](../../../README.md#-what-the-eslint-factories-bundle) |
+| [`boundaries.ts`](./boundaries.ts) | `@nx/enforce-module-boundaries` and the `depConstraints` table — the enforced copy of the Nx tag table; `pnpm docs:map` renders the readable one into the [root README](../../../../../README.md#architecture--boundaries) |
+| [`coreIsolation.ts`](./coreIsolation.ts) | `no-restricted-imports` under `**/src/core/**`, keeping the framework-agnostic half of `content`/`i18n` free of the Nuxt and Nitro runtime — the list is in the [package README](../../../README.md#what-the-eslint-factories-bundle) |
 | [`pureDomain.ts`](./pureDomain.ts) | `no-restricted-imports` and `no-restricted-globals` under `**/domain/**`, keeping a `domain/` folder free of `fs`, subprocesses, `process`, `@clack/prompts` and `adapters/`. Opt-in, appended by `infrastructure/scripts` |
 | [`layerIsolation.ts`](./layerIsolation.ts) | `no-restricted-imports` under `app/` and `server/`, keeping Nuxt's browser-facing layers free of the Node-only `tools/` layer |
 | [`constTables.ts`](./constTables.ts) | `monorepo/lookup-table-shape`: `constTables` for `**/*.ts` and `constTablesVue` for `**/*.vue` (Vue configs only). A module-scope lookup table keyed by a closed union is `UPPER_SNAKE = { … } as const satisfies Record<K, V>` — never annotated, never `Partial`. `Record<string, …>` and `Record<number, …>` are left alone |
@@ -53,7 +53,7 @@ different objects under one name meet on a file.
 | [`i18nKeys.ts`](./i18nKeys.ts) | `@intlify/vue-i18n/no-missing-keys` under `**/*.vue` and `**/*.ts` outside specs, stories and `e2e/`: every static `t()`/`$t()` key exists in the locale files the app names. Opt-in: an app with `@nuxtjs/i18n` spreads `eslint.i18nKeys(localeGlob)` |
 | [`vitest.ts`](./vitest.ts) | `@vitest/eslint-plugin`'s `recommended` rules, globals and `typecheck: true`, scoped to `**/*.spec.ts`, plus `vitest/no-restricted-matchers` banning `toHaveBeenNthCalledWith` and snapshots, and `monorepo/no-implementation-details`: a spec reads what a component renders, never `wrapper.vm` (bar `vm.$emit`) |
 
-## 🚫 What doesn't belong here
+## What doesn't belong here
 
 A file earns its place by **customizing** a plugin's config — a `files` glob, a merged or
 overridden rule, a `settings` block — or by switching on a rule from [`../rules`](../rules), as

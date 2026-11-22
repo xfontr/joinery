@@ -3,7 +3,7 @@
 Where each kind of file lives and what it's called, across projects. A rule only one project follows
 stays in that project's README.
 
-## 🎯 Target names
+## Target names
 
 Plugin-inferred targets are namespaced. Every project's `package.json` scripts publish the stable
 names over them, and everything that runs a project calls only the stable names.
@@ -18,7 +18,7 @@ names over them, and everything that runs a project calls only the stable names.
 [`nx.json`](../../nx.json) names every inferred target and hangs caching on the stable names, so
 hooks, CI and `pnpm check` never need to know which tool a project uses.
 
-## 📦 Package manifests
+## Package manifests
 
 | Rule | Why |
 | --- | --- |
@@ -26,7 +26,7 @@ hooks, CI and `pnpm check` never need to know which tool a project uses.
 | The directory name is the package name, `@monorepo/<dirname>` | The [`new-package`](../../.claude/skills/new-package/SKILL.md) skill has the rest of the manifest |
 | Release tags are `@monorepo/<name>@<version>` | `nx release` derives the next version from the last one, per [versioning](./versioning.md) |
 
-## 🧩 Nuxt apps
+## Nuxt apps
 
 | Kind of file | Convention | Why |
 | --- | --- | --- |
@@ -35,7 +35,7 @@ hooks, CI and `pnpm check` never need to know which tool a project uses.
 | View-model type | `shared/types/<Name>.ts` when `app/` and `server/` both use it, else that side's `types/`; PascalCase, one exported type per file. A constant a type derives from (`typeof KINDS[number]`) goes in `shared/constants.ts` | The file tree is the type index, and an import names exactly what it uses |
 | Type a route answers with | In `shared/types/`, never exported from the route file | An `app/` file importing it from `server/api/` makes the browser bundle depend on a server route |
 | Component in a layer | Never a bare name at the layer's `app/components/` root. A component there carries its layer's name, singular or plural (`NewsletterBand`, `WorkflowStageCards`), or sits in a folder naming what it belongs to and drops that prefix from the file (`article/Byline.vue` registers `ArticleByline`). Nuxt Content's `content/` overrides keep the names Nuxt Content looks for (`ProseA`) | A bare name says nothing about who owns it, and Nuxt collapses a repeated prefix where Storybook doesn't, so `article/ArticleByline.vue` would register under two names |
-| Imports between and within layers | Per app: the [developer-portal README](../../apps/developer-portal/README.md#-layers) and the [huella-legal README](../../apps/huella-legal/README.md) | Each app resolves them differently, so neither rule generalises |
+| Imports between and within layers | Per app: the [developer-portal README](../../apps/developer-portal/README.md#layers) and the [huella-legal README](../../apps/huella-legal/README.md) | Each app resolves them differently, so neither rule generalises |
 
 `infrastructure/scripts` is not a Nuxt app and keeps each type beside the function that produces
 it, per [0004](../decisions/0004-scripts-architecture.md).

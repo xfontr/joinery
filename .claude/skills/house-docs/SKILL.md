@@ -1,6 +1,6 @@
 ---
 name: house-docs
-description: The documentation voice for this repo — short, scannable READMEs, emoji headings, tables over prose. Use when writing or editing any markdown here: a README, a CLAUDE.md, a module doc, or a new section in an existing one.
+description: The documentation voice for this repo — short, scannable READMEs, one emoji on the title, tables over prose. Use when writing or editing any markdown here: a README, a CLAUDE.md, a module doc, or a new section in an existing one.
 ---
 
 # Writing docs here
@@ -20,7 +20,8 @@ code, ADRs and git history; a doc earns its place by holding what those can't sh
 
 - Title: one emoji, then the name — `# 📦 @monorepo/<name>` for a package.
 - Open with one or two sentences: what it is and what it's for. No badges, no feature list.
-- `##` headings carry an emoji and are sentence case. Use only the sections the thing needs.
+- `##` and deeper headings are plain text in sentence case, no emoji: the title carries the only one.
+  Use only the sections the thing needs.
 - Hard-wrap at roughly 100 columns.
 
 ## Length

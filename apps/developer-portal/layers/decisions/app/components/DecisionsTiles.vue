@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { countByStatus, type DecisionReport } from "#layers/decisions/shared/decisionReports.ts";
-import type { DecisionStatus } from "#layers/snapshot/shared/decisions.ts";
+import { DECISION_STATUSES } from "#layers/snapshot/shared/decisions.ts";
 
 interface Props {
     reports: DecisionReport[];
@@ -27,14 +27,12 @@ interface Props {
 
 const { reports } = defineProps<Props>();
 
-const TILES: DecisionStatus[] = ["to-implement", "implemented", "wont-implement"];
-
 const { t } = useI18n();
 
 const counts = computed(() => countByStatus(reports));
 
 const tiles = computed(() =>
-    TILES.map((status) => ({
+    DECISION_STATUSES.map((status) => ({
         status,
         hint: t(`decisionsTiles.hints.${status}`),
         label: t(`decisions.status.${status}`),

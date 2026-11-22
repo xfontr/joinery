@@ -7,7 +7,7 @@ The portal's Benchmarks page, under Design, shows them as a gallery. An entry de
 not a verdict for one project. What a project takes from it belongs
 in that project's decision report, such as [0039](../decisions/0039-developer-portal-benchmark.md).
 
-## 🗂 Structure
+## Structure
 
 One file per site, named after its URL in kebab case: `linear-app-method.md` for
 `linear.app/method`. Copy [`TEMPLATE.md`](./TEMPLATE.md).
@@ -29,7 +29,7 @@ entry.
 | `used-for` | The projects whose benchmark drew on it, by folder name, e.g. `developer-portal` |
 | `analysed` | The date of the captures. Older than six months, re-check the site before relying on it |
 
-## 🏷 Vocabulary
+## Vocabulary
 
 Values come from these lists only. A new value is added here first.
 
@@ -63,7 +63,7 @@ Values come from these lists only. A new value is added here first.
 | `photo-led` | Photography carries the page |
 | `motion-led` | Content depends on motion, WebGL or interaction |
 
-## 🔍 Finding entries
+## Finding entries
 
 The frontmatter is the index, so `grep` it:
 

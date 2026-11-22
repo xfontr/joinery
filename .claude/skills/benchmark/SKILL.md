@@ -117,7 +117,7 @@ The result is a decision report: follow the `decision-report` skill. The synthes
 lead; the per-site reviews stay in the library and the report links each entry rather than
 copying it.
 
-## 📚 Lessons
+## Lessons
 
 - **#472.** References were picked from memory, mostly famous developer portfolios; the user
   rejected six of ten. Of that first pass, rauno.me, linear.app/method, primer.style and

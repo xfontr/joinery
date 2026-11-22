@@ -7,7 +7,7 @@ Raw TypeScript, tagged `type:config`: it depends on nothing in the workspace. `a
 extends no tsconfig preset (it references Nuxt's generated ones), so a compiler option added here
 doesn't reach it.
 
-## 🗂️ Layout
+## Layout
 
 One folder per tool under `src/`, each sorted the same way:
 
@@ -20,7 +20,7 @@ One folder per tool under `src/`, each sorted the same way:
 ESLint has `lib/` (one file per concern, mapped in [`lib/README.md`](./src/eslint/lib/README.md))
 and `rules/` (in-house `monorepo/*` rules, each with a `RuleTester` spec).
 
-## 🚀 Usage
+## Usage
 
 ```ts
 import { eslint, vitest } from "@monorepo/configs";
@@ -35,7 +35,7 @@ export default vitest.createNodeConfig(); // or createVueConfig(viteConfig) / cr
 
 `tsconfig/base.json` is strict plus `noUncheckedIndexedAccess`; every consumer extends `node.json`.
 
-## 🧪 Vitest
+## Vitest
 
 - Coverage runs on `test:coverage`, never `test`. A project needs `@vitest/coverage-v8` in its own
   `devDependencies`. `COVERAGE_THRESHOLDS=off` disables thresholds (the portal deploy sets it).
@@ -44,6 +44,8 @@ export default vitest.createNodeConfig(); // or createVueConfig(viteConfig) / cr
   `vi.spyOn(console, "warn").mockImplementation(() => {})` and assert on the spy.
 - [`prepareNuxt.mjs`](./src/vitest/setup/prepareNuxt.mjs) runs `nuxi prepare` when a Nuxt project
   has no `.nuxt` yet.
+- This package's own `test:e2e` runs its `browser` Vitest project, the specs that launch
+  Playwright; `test` and `test:coverage` leave them out.
 
 ### Nuxt apps
 
@@ -66,7 +68,7 @@ projects, each covering the app root and every `layers/*`:
 - The test boot builds into `node_modules/.cache/nuxt-vitest`, never `.nuxt`, and runs with
   `JITI_MODULE_CACHE=0`. Both prevent failures that take down every `nx` command.
 
-## 🎭 Playwright
+## Playwright
 
 ```ts
 export default playwright.createConfig({ port, command, env });
@@ -83,7 +85,7 @@ export default playwright.createConfig({ port, command, env });
   [`utils/i18n`](./src/playwright/utils/i18n.ts) (`createT`, `rawKeysIn`).
 - `@playwright/test` must stay a `catalog:` entry; a second resolved copy fails every spec.
 
-## 🧰 What the ESLint factories bundle
+## What the ESLint factories bundle
 
 Every factory includes Prettier as a lint rule (100 columns, 4 spaces, double quotes), type-checked
 `typescript-eslint` (not for Nuxt `.vue` files), `@nx/enforce-module-boundaries`, SonarJS, regexp
