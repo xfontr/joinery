@@ -6,7 +6,8 @@ import type { ScriptUsage } from "#layers/snapshot/shared/types/ScriptUsage.ts";
 import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import DailyChart from "~/components/DailyChart.vue";
-import PageFacts, { type PageFact } from "~/components/PageFacts.vue";
+import PageFacts from "~/components/PageFacts.vue";
+import type { PageFact } from "~/types/PageFact";
 import Page from "./telemetry.vue";
 
 // Each panel has its own spec; here only the page's own totals are under test
