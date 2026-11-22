@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-22T13:06:53.742Z",
+    "syncedAt": "2026-11-22T16:52:26.673Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -268,7 +268,12 @@
             ],
             "createdAt": "2026-11-18T18:58:39Z",
             "closedAt": null,
-            "activity": [],
+            "activity": [
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22"
+            ],
             "blockedBy": [
                 {
                     "number": 489,
@@ -347,6 +352,24 @@
             "pr": false,
             "owner": false,
             "complexity": 3
+        },
+        {
+            "number": 504,
+            "title": "Visitor area ready for production",
+            "url": "https://github.com/xfontr/monorepo/issues/504",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "production-readiness"
+            ],
+            "createdAt": "2026-11-22T16:52:15Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 13
         }
     ],
     "noMilestone": []
