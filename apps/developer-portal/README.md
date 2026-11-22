@@ -150,8 +150,7 @@ semantic roles and Tailwind's scale; ESLint rejects bracketed values.
 The three status colours were validated as a set for contrast and colour-blind separation. Re-run
 the `dataviz` skill's validator before changing one.
 
-ESLint also rejects raw palette classes (`bg-slate-500`, `text-white`) everywhere except the design
-lab under `app/lab/` and `app/pages/lab/`.
+ESLint also rejects raw palette classes (`bg-slate-500`, `text-white`) everywhere.
 
 ### 🪟 The identity
 
@@ -170,6 +169,7 @@ view alike, set on `:root` so Nuxt UI's overlays take it too. Nothing is set und
 | `<mark>` | A marked word takes the accent in italic |
 | `data-figure` | A count or percentage that leads a panel: tabular, semibold |
 | `data-scroll-x` | A row or table that scrolls sideways fades at its right edge |
+| `data-view-switch` | The view switch; its current pill carries the view transition between visitor and developer |
 | `data-prose`, `data-readme` | Rendered markdown keeps a 72-character measure; a README drops its own `#` title |
 
 Every text role clears 4.5:1 on every surface. Each cell is light / dark:

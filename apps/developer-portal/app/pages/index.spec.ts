@@ -1,7 +1,7 @@
 import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { LintRuleUsage } from "#layers/snapshot/shared/types/LintRuleUsage.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
@@ -122,6 +122,10 @@ beforeEach(() => {
     });
 });
 
+afterEach(() => {
+    vi.unstubAllGlobals();
+});
+
 describe("front page", () => {
     it("states every proof without a number when nothing was ever collected", async () => {
         const wrapper = await open();
@@ -155,5 +159,22 @@ describe("front page", () => {
         const links = wrapper.findAll("a").map((link) => link.attributes("href"));
         expect(links).toContain("/overview");
         expect(links).not.toContain("/");
+    });
+
+    it.each([
+        { pointerType: "mouse", previewed: true },
+        { pointerType: "touch", previewed: false },
+    ])("previews a rule under a $pointerType: $previewed", async ({ pointerType, previewed }) => {
+        vi.stubGlobal("matchMedia", (query: string) => ({
+            matches: true,
+            media: query,
+            addEventListener: () => {},
+            removeEventListener: () => {},
+        }));
+        const wrapper = await open();
+
+        await wrapper.find("article").trigger("pointerenter", { pointerType });
+
+        expect(wrapper.find("[data-cursor-preview]").exists()).toBe(previewed);
     });
 });

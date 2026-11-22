@@ -13,6 +13,8 @@
             v-for="(item, index) in principles"
             :key="item.id"
             class="grid gap-4 border-t border-accented py-10 md:grid-cols-12"
+            @pointerenter="hover(item.id, $event)"
+            @pointerleave="hovered = null"
         >
             <p class="font-display text-title text-primary md:col-span-2">{{ index + 1 }}</p>
             <div class="flex flex-col gap-4 md:col-span-7">
@@ -28,6 +30,13 @@
                 {{ item.proof }} →
             </ULink>
         </article>
+        <CursorPreview v-slot="{ subject }" :subject="hovered">
+            <BenchmarksPreview v-if="subject === 'look'" :benchmarks />
+            <DecisionsPreview v-else-if="subject === 'decide' && example" :report="example" />
+            <WorkflowPreview v-else-if="subject === 'plan' && plan" :view="plan" />
+            <PipelinePreview v-else-if="subject === 'agents'" />
+            <ChecksPreview v-else-if="subject === 'prove'" :specs :rules />
+        </CursorPreview>
     </section>
 
     <WorkflowTeaser />
@@ -52,14 +61,20 @@
 </template>
 
 <script setup lang="ts">
+import { specTotal } from "#layers/snapshot/app/utils/metrics.ts";
 import { ruleCounts } from "#layers/telemetry/shared/lintUsage.ts";
 import type { RuleId } from "~/types/RuleId";
 
 definePageMeta({ layout: "visitor" });
 
+/** The decision rule 2 links to and previews. */
+const DECISION = "0028-huella-legal-urls-and-cutover";
+/** The project rule 3 previews, the same one the workflow teaser draws. */
+const PLAN = "huella-legal";
+
 const PROOFS = {
-    look: "/decisions/0039-developer-portal-benchmark",
-    decide: "/decisions/0028-huella-legal-urls-and-cutover",
+    look: "/benchmarks",
+    decide: `/decisions/${DECISION}`,
     plan: "#workflows",
     agents: "/wiki/docs/concepts/agent-setup",
     prove: "/method#prove",
@@ -73,8 +88,21 @@ const DEEPER = [
 const { t } = useI18n();
 useHead({ title: t("index.head") });
 
-const { data: benchmarks } = await useBenchmarks();
+const [{ data: benchmarks }, { data: workflows }] = await Promise.all([
+    useBenchmarks(),
+    useWorkflows(),
+]);
 const rules = ruleCounts(usageArtifact()?.lint);
+const specs = specTotal(metricsArtifact()?.projects);
+const decisions = useDecisionReports();
+
+const example = computed(() => decisions.value.find((report) => report.id === DECISION));
+const plan = computed(() => workflows.value.projects.find((view) => view.project.id === PLAN));
+
+const hovered = ref<RuleId | null>(null);
+const hover = (id: RuleId, event: PointerEvent) => {
+    if (event.pointerType === "mouse") hovered.value = id;
+};
 
 const counted = computed((): Partial<Record<RuleId, string>> => {
     return {
