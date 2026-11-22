@@ -1,5 +1,5 @@
 <template>
-    <section aria-labelledby="temas">
+    <UContainer as="section" aria-labelledby="temas" class="py-16 lg:py-20">
         <h2 id="temas" class="scroll-mt-6 text-kicker">
             {{ $t("subjectsTopics.title") }}
         </h2>
@@ -42,7 +42,7 @@
                 </ul>
             </section>
         </div>
-    </section>
+    </UContainer>
 </template>
 
 <script setup lang="ts">
