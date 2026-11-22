@@ -102,7 +102,7 @@ far outside that is worth opening. The `comment-cleanup` skill runs the pass.
   reason to keep it short.
 - Internal: `"@monorepo/x": "workspace:*"`. Every project also has `@monorepo/configs` in
   `devDependencies`.
-- Shared third-party (nuxt, vue, vite, typescript, vitest, playwright, eslint, node types, hono):
+- Shared third-party (nuxt, vue, typescript, vitest, playwright, eslint, node types, hono):
   `"catalog:"`,
   pinned once in `pnpm-workspace.yaml`. Adding or bumping a catalog entry is an Nx `sharedGlobals`
   input — it invalidates every project's cache, which is intended but worth knowing before you
@@ -149,9 +149,9 @@ the traps in it.
 - Pre-push runs lint, test and typecheck **in the working tree**, not the pushed commits, so an
   uncommitted fix can pass a push whose commits are red. Only the `TODO`/`FIXME` scan is range-based.
 - CI runs lint, typecheck, **`test:coverage`** (so thresholds bite), **`build`** and `test:e2e`, plus
-  `pnpm docs:map --check` and `pnpm invariants:check`, so a green push is not yet a green pipeline —
-  `apps/huella-legal` typechecks on build, which is where most of that difference shows up. Both
-  checks also run in pre-commit.
+  `pnpm docs:map --check`, `pnpm invariants:check` and `pnpm unused:check`, so a green push is not
+  yet a green pipeline — `apps/huella-legal` typechecks on build, which is where most of that
+  difference shows up. The first two also run in pre-commit, the third in pre-push.
 - A fresh clone gets no hooks until `pnpm quick-start` runs, because lifecycle scripts are banned
   and `husky` has no `prepare` script to install itself.
 

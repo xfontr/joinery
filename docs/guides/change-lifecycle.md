@@ -31,6 +31,8 @@ capitalised. `feat: add thing` passes; `feat: Add thing` doesn't.
 3. `pnpm audit`, warning only.
 4. Lint, test and typecheck on affected projects — **in the working tree**, so uncommitted changes
    count.
+5. `pnpm unused:check` on the whole workspace, since an export goes unused when its last importer
+   changes, not itself.
 
 ## 4. Ship
 
@@ -51,6 +53,7 @@ the PR, arms auto-merge and waits for checks.
 | Step | Scope | Already run locally? |
 | --- | --- | --- |
 | `docs:map --check`, `invariants:check` | Whole workspace | Yes, pre-commit |
+| `unused:check` | Whole workspace | Yes, pre-push |
 | `lint`, `typecheck`, `test:coverage`, `build` | Affected | Lint, typecheck and test (without coverage) at pre-push |
 | `test:e2e` | Affected, in parallel with `checks` and not required | No |
 | Dependency review | The PR's diff | `pnpm audit`, roughly |

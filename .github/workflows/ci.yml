@@ -34,6 +34,9 @@ jobs:
               env:
                   INVARIANTS_BASE: ${{ github.event_name == 'pull_request' && env.NX_BASE || '' }}
 
+            # Whole-workspace too: an export goes unused when its last importer changes, not itself
+            - run: pnpm unused:check
+
             # Coverage rather than plain tests, so a project falling below its thresholds fails here
             - run: pnpm exec nx affected --base="$NX_BASE" --head="$NX_HEAD" -t lint typecheck test:coverage build
               env:

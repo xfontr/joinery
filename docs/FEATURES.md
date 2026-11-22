@@ -33,6 +33,7 @@ and are documented once in the [root README](../README.md#-getting-started).
 | `pnpm docs:drift` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm docs:map` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm invariants:check` | [`package.json`](../package.json) | [`README.md`](../README.md) |
+| `pnpm unused:check` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm usage:flush` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm env:sync` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm workflow:setup` | [`package.json`](../package.json) | [`docs/workflows/README.md`](../docs/workflows/README.md) |

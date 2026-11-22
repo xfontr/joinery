@@ -27,6 +27,7 @@
         "docs:drift": "pnpm --silent --dir infrastructure/scripts cli src/drift/index.ts",
         "docs:map": "pnpm --silent --dir infrastructure/scripts cli src/map/index.ts",
         "invariants:check": "pnpm --silent --dir infrastructure/scripts cli src/invariants/index.ts",
+        "unused:check": "nx run-many -t nuxt-prepare --outputStyle=static-failures-only && knip --no-progress",
         "usage:flush": "pnpm --silent --dir infrastructure/scripts cli src/usage/index.ts",
         "env:sync": "pnpm --silent --dir infrastructure/scripts cli src/env-sync/index.ts",
         "workflow:setup": "pnpm --silent --dir infrastructure/scripts cli src/workflow/index.ts setup",
@@ -48,6 +49,7 @@
         "@nx/vite": "24.0.5",
         "@nx/vitest": "24.0.5",
         "husky": "^9.1.7",
+        "knip": "^6.47.0",
         "nx": "24.0.5"
     }
 }

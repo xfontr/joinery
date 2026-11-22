@@ -5,6 +5,9 @@ The gate for repo rules that hold whoever makes the edit: no lifecycle script, n
 one-sided `shared/` file in a Nuxt app. Runs in
 `pre-commit`, CI, the Claude edit hook (with `--base=HEAD`) and the developer portal's collector.
 
+It runs on every edit, so a check belongs here only if it's fast. A whole-repo rule that takes
+seconds, such as no unused exports, goes in `pnpm unused:check`, which runs at pre-push and in CI.
+
 | Command | What it does |
 | --- | --- |
 | `pnpm invariants:check` | Check every manifest and package contract; warn about docs drift |
