@@ -1,29 +1,35 @@
 <template>
     <WidgetPanel
-        title="Advisories"
-        meta="Every finding pnpm audit reports, over the whole workspace lockfile"
+        :title="$t('healthAdvisories.title')"
+        :meta="$t('healthAdvisories.meta')"
         :count="advisories.length"
     >
         <div class="border-b border-default px-4 py-3">
             <SplitBar :parts legend />
         </div>
         <EmptyState v-if="advisories.length === 0">
-            {{ counts ? "No known vulnerabilities." : "Not collected." }}
+            {{ counts ? $t("healthAdvisories.none") : $t("healthAdvisories.notCollected") }}
         </EmptyState>
         <div v-else data-scroll-x class="overflow-x-auto">
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Severity</th>
-                        <th>Package</th>
-                        <th class="hidden md:table-cell">Advisory</th>
-                        <th class="numeric">Patched</th>
-                        <th class="hidden lg:table-cell">Pulled in via</th>
+                        <th>{{ $t("healthAdvisories.columns.severity") }}</th>
+                        <th>{{ $t("healthAdvisories.columns.package") }}</th>
+                        <th class="hidden md:table-cell">
+                            {{ $t("healthAdvisories.columns.advisory") }}
+                        </th>
+                        <th class="numeric">{{ $t("healthAdvisories.columns.patched") }}</th>
+                        <th class="hidden lg:table-cell">
+                            {{ $t("healthAdvisories.columns.via") }}
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="item in rows" :key="item.id">
-                        <td class="font-mono text-xs" :class="item.tone">{{ item.severity }}</td>
+                        <td class="font-mono text-xs" :class="item.tone">
+                            {{ item.severityLabel }}
+                        </td>
                         <td>
                             <span class="block font-mono">{{ item.moduleName }}</span>
                             <a
@@ -72,18 +78,21 @@ interface Props {
 
 const { advisories, counts } = defineProps<Props>();
 
+const { t } = useI18n();
+
 const rows = computed(() =>
     advisories.map((item) => ({
         ...item,
+        severityLabel: t(`common.severity.${item.severity}`),
         tone: toneClass(severityTone(item.severity)),
         via: item.paths.join(", "),
     })),
 );
 
 const parts = computed((): SplitPart[] => [
-    { label: "critical", value: counts?.critical ?? 0, tone: "bad" },
-    { label: "high", value: counts?.high ?? 0, tone: "bad" },
-    { label: "moderate", value: counts?.moderate ?? 0, tone: "warn" },
-    { label: "low", value: counts?.low ?? 0, tone: "soft" },
+    { label: t("common.severity.critical"), value: counts?.critical ?? 0, tone: "bad" },
+    { label: t("common.severity.high"), value: counts?.high ?? 0, tone: "bad" },
+    { label: t("common.severity.moderate"), value: counts?.moderate ?? 0, tone: "warn" },
+    { label: t("common.severity.low"), value: counts?.low ?? 0, tone: "soft" },
 ]);
 </script>

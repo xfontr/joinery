@@ -1,6 +1,6 @@
 <template>
     <span v-if="words !== null" class="text-xs text-muted">
-        {{ words }} words · updated {{ updated }}
+        {{ $t("docSource.meta", { words, updated }) }}
     </span>
     <code class="font-mono text-xs text-dimmed">{{ source }}</code>
 </template>
@@ -16,5 +16,7 @@ interface Props {
 
 const { source, words = null, updatedAt = null } = defineProps<Props>();
 
-const updated = computed(() => relativeTime(updatedAt));
+const { t } = useI18n();
+
+const updated = computed(() => relativeTime(updatedAt, t));
 </script>

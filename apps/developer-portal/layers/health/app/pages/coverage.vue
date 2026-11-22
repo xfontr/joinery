@@ -1,7 +1,7 @@
 <template>
     <UDashboardPanel id="coverage">
         <template #header>
-            <PageHeader title="Coverage">
+            <PageHeader :title="$t('coverage.title')">
                 <template #intro>
                     <PageFacts :provenance :facts />
                 </template>

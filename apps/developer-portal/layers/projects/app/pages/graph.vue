@@ -1,7 +1,7 @@
 <template>
     <UDashboardPanel id="graph">
         <template #header>
-            <PageHeader title="Project graph">
+            <PageHeader :title="$t('graph.title')">
                 <template #actions>
                     <SnapshotAge :manifest artifact="projects" />
                 </template>

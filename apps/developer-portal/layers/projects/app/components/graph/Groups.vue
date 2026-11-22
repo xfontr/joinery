@@ -1,11 +1,8 @@
 <template>
     <section class="flex flex-col gap-3">
         <div>
-            <h2 class="text-xl font-semibold">How the pieces fit</h2>
-            <p class="mt-1 text-sm text-muted">
-                The repository groups applications, shared building blocks, and the tooling that
-                supports them.
-            </p>
+            <h2 class="text-xl font-semibold">{{ $t("graphGroups.title") }}</h2>
+            <p class="mt-1 text-sm text-muted">{{ $t("graphGroups.lead") }}</p>
         </div>
 
         <div class="grid gap-4 xl:grid-cols-3">
@@ -15,7 +12,7 @@
                 </template>
 
                 <p v-if="group.projects.length === 0" class="text-sm text-muted">
-                    No projects in this group.
+                    {{ $t("graphGroups.none") }}
                 </p>
 
                 <div v-else class="flex flex-col gap-4">
@@ -43,13 +40,13 @@
 
                         <div class="flex flex-col gap-0.5 text-xs text-muted">
                             <div v-if="project.uses">
-                                <span class="text-dimmed">Uses:</span> {{ project.uses }}
+                                {{ $t("graphGroups.uses", { list: project.uses }) }}
                             </div>
                             <div v-if="project.usedBy">
-                                <span class="text-dimmed">Used by:</span> {{ project.usedBy }}
+                                {{ $t("graphGroups.usedBy", { list: project.usedBy }) }}
                             </div>
                             <p v-if="!project.uses && !project.usedBy" class="text-dimmed">
-                                No project relationships recorded.
+                                {{ $t("graphGroups.noRelations") }}
                             </p>
                         </div>
                     </div>
@@ -76,14 +73,16 @@ const withEdges = computed(() =>
     })),
 );
 
+const { t } = useI18n();
+
 const groups = computed(() => {
     const under = (prefix: string) =>
         withEdges.value.filter((project) => project.root.startsWith(prefix));
     return [
-        { label: "Applications", projects: under("apps/") },
-        { label: "Shared building blocks", projects: under("packages/") },
+        { label: t("graphGroups.groups.apps"), projects: under("apps/") },
+        { label: t("graphGroups.groups.packages"), projects: under("packages/") },
         {
-            label: "Repository tooling",
+            label: t("graphGroups.groups.tooling"),
             projects: withEdges.value.filter(
                 ({ root }) => !root.startsWith("apps/") && !root.startsWith("packages/"),
             ),

@@ -18,8 +18,18 @@
                     :class="[capability.state, capability.id === highlight && 'is-highlighted']"
                     :aria-pressed="capability.id === highlight"
                     :style="{ '--state': capabilityColor(capability.state) }"
-                    :title="`${capability.title} · ${capabilityStateLabel(capability.state)}`"
-                    :aria-label="`${capability.title}, ${capabilityStateLabel(capability.state)}`"
+                    :title="
+                        $t('workflowSkyline.title', {
+                            title: capability.title,
+                            state: $t(`workflows.capabilityState.${capability.state}`),
+                        })
+                    "
+                    :aria-label="
+                        $t('workflowSkyline.label', {
+                            title: capability.title,
+                            state: $t(`workflows.capabilityState.${capability.state}`),
+                        })
+                    "
                     @click.stop="(emit('select-stage', stage.id), emit('select', capability.id))"
                 />
             </div>

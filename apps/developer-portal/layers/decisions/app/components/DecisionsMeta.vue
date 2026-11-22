@@ -21,21 +21,23 @@ interface Props {
 
 const { report, source } = defineProps<Props>();
 
+const { t } = useI18n();
+
 const supersession = computed(() => {
     const by = report?.decision === "superseded" ? report.supersededBy : null;
 
     return by
         ? {
-              label: decisionOutcomeLabel("superseded"),
+              label: t("decisions.outcome.superseded"),
               to: `/decisions/${by.replace(/\.md$/, "")}`,
-              hint: `Superseded by ${by}`,
+              hint: t("decisions.supersededBy", { by }),
           }
         : null;
 });
 
 const status = computed(() =>
     report?.status
-        ? { label: decisionStatusLabel(report.status), tone: decisionStatusTone(report.status) }
+        ? { label: t(`decisions.status.${report.status}`), tone: decisionStatusTone(report.status) }
         : null,
 );
 </script>

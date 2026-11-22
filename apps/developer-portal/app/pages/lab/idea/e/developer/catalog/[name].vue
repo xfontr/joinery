@@ -269,8 +269,10 @@ const metric = computed(() => metrics?.projects.find((item) => item.root === pro
 const coverage = computed(() =>
     coverageSnapshot?.projects.find((item) => item.root === project.value?.root),
 );
-const coverageAge = computed(() => relativeTime(coverageSnapshot?.generatedAt));
-const depsAge = computed(() => relativeTime(deps?.generatedAt));
+const { t } = useI18n();
+
+const coverageAge = computed(() => relativeTime(coverageSnapshot?.generatedAt, t));
+const depsAge = computed(() => relativeTime(deps?.generatedAt, t));
 
 const { data: readme } = await useAsyncData(
     () => `lab-e-readme-${folder.value}`,

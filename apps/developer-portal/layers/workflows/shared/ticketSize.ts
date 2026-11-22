@@ -10,7 +10,7 @@ import type { Template } from "./types/Template.ts";
 import type { TicketSize } from "./types/TicketSize.ts";
 
 /** The points a shared ticket holds before the next block wraps onto a new one. */
-const TICKET_WIDTH = { supervised: 13, fast: 21 } as const;
+export const TICKET_WIDTH = { supervised: 13, fast: 21 } as const;
 
 /** Puts each block after the ones it needs from the same group, keeping template order otherwise. */
 const inDependencyOrder = (group: Capability[], needs: Map<string, string[]>): Capability[] => {
@@ -262,7 +262,8 @@ export const receiptOf = (
     const row = ({ id, title, points }: (typeof on)[number], nested: boolean): ReceiptRow => ({
         id,
         label: title,
-        detail: null,
+        type: null,
+        setup: [],
         points,
         nested,
     });
@@ -270,8 +271,9 @@ export const receiptOf = (
     return [
         {
             id: "core",
-            label: "Core build",
-            detail: null,
+            label: "",
+            type: null,
+            setup: [],
             points: complexityOf(core),
             nested: false,
         },
@@ -283,14 +285,11 @@ export const receiptOf = (
             ]),
         ...pages.map(({ type, title }, index) => {
             const { points, setup } = costs[index] ?? { points: 0, setup: [] };
-            const typeTitle = template.types.find(({ id }) => id === type)?.title ?? null;
-
             return {
                 id: `page-${index}`,
-                label: title || "Unnamed page",
-                detail: [typeTitle, ...setup.map((block) => `with ${block.title}`)]
-                    .filter(Boolean)
-                    .join(", "),
+                label: title,
+                type: template.types.find(({ id }) => id === type)?.title ?? null,
+                setup: setup.map((block) => block.title),
                 points,
                 nested: false,
             };
@@ -300,23 +299,3 @@ export const receiptOf = (
 
 /** What a template files with its defaults on. */
 export const templateEstimate = (template: Template) => estimateOf(template);
-
-export const TICKET_SIZE_LABELS = {
-    block: {
-        title: "Reviewed",
-        summary: "One ticket per block, or its suggested ones, each PR reviewed by hand",
-        warning: null,
-    },
-    supervised: {
-        title: "Supervised",
-        summary: `A stage's build blocks share tickets of up to ${TICKET_WIDTH.supervised} SP; spikes and sign-offs stay apart`,
-        warning:
-            "Meant for AI-run projects: a ticket bundles several blocks, so no one reviews each block's code by hand.",
-    },
-    fast: {
-        title: "Fast",
-        summary: `Tickets of up to ${TICKET_WIDTH.fast} SP, and the spikes together; sign-offs stay apart`,
-        warning:
-            "Meant for AI-run projects, putting speed over code quality: for internal tools and experiments.",
-    },
-} as const satisfies Record<TicketSize, { title: string; summary: string; warning: string | null }>;

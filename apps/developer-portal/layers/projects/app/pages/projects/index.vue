@@ -12,9 +12,9 @@
                     <UInput
                         v-model="search"
                         icon="i-lucide-search"
-                        placeholder="Filter projects"
+                        :placeholder="$t('projectsList.filter')"
                         size="sm"
-                        aria-label="Filter projects"
+                        :aria-label="$t('projectsList.filter')"
                     />
                 </template>
             </PageHeader>
@@ -23,7 +23,7 @@
         <template #body>
             <ProjectsTable :groups :headed="filter === 'all'">
                 <template #empty>
-                    {{ search ? `No project matches “${search}”.` : "No projects collected yet." }}
+                    {{ search ? $t("projectsList.noMatch", { search }) : $t("projectsList.empty") }}
                 </template>
             </ProjectsTable>
         </template>

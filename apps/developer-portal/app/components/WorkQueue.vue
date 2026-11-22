@@ -1,8 +1,8 @@
 <template>
     <WidgetPanel
         v-model:filter="kind"
-        title="Work queue"
-        meta="What's open across issues, decisions, audits, releases and docs"
+        :title="$t('workQueue.title')"
+        :meta="$t('workQueue.meta')"
         :count="shown.length"
         :filters
         :all
@@ -56,13 +56,15 @@ const { rows, issuesRead, issuesError } = defineProps<Props>();
 const PAGE_SIZE = 8;
 
 const FILTERS = [
-    { value: "all", label: "All", to: null },
-    { value: "issues", label: "Issues", to: "/issues" },
-    { value: "decisions", label: "Decisions", to: "/decisions" },
-    { value: "audits", label: "Audits", to: "/audits" },
-    { value: "releases", label: "Releases", to: "/projects" },
-    { value: "attention", label: "Attention", to: null },
-] as const satisfies { value: QueueKind | "all"; label: string; to: string | null }[];
+    { value: "all", to: null },
+    { value: "issues", to: "/issues" },
+    { value: "decisions", to: "/decisions" },
+    { value: "audits", to: "/audits" },
+    { value: "releases", to: "/projects" },
+    { value: "attention", to: null },
+] as const satisfies { value: QueueKind | "all"; to: string | null }[];
+
+const { t } = useI18n();
 
 const kind = ref("all");
 
@@ -79,17 +81,21 @@ const badgeFor = (value: QueueKind | "all"): number | undefined => {
 };
 
 const filters = computed(() =>
-    FILTERS.map(({ value, label }) => ({ value, label, badge: badgeFor(value) })),
+    FILTERS.map(({ value }) => ({
+        value,
+        label: t(`workQueue.filters.${value}`),
+        badge: badgeFor(value),
+    })),
 );
 
 const all = computed(() => {
     const to = FILTERS.find((filter) => filter.value === kind.value)?.to ?? null;
-    return shown.value.length > PAGE_SIZE && to ? { label: `All ${shown.value.length}`, to } : null;
+    return shown.value.length > PAGE_SIZE && to
+        ? { label: t("workQueue.all", { count: shown.value.length }), to }
+        : null;
 });
 
 const empty = computed(() =>
-    kind.value === "issues" && issuesError
-        ? "GitHub could not be read from this browser."
-        : "Nothing open here.",
+    kind.value === "issues" && issuesError ? t("workQueue.githubError") : t("workQueue.empty"),
 );
 </script>

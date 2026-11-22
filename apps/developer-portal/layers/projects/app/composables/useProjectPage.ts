@@ -3,24 +3,32 @@ import type { PageTab } from "~/types/PageTab";
 import type { ProjectTab } from "~/types/ProjectTab";
 import type { ProjectTabRow } from "~/types/ProjectTabRow";
 
-const BUILT_IN = [
-    { id: "readme", label: "README" },
-    { id: "coverage", label: "Coverage" },
-    { id: "deps", label: "Dependencies" },
-    { id: "issues", label: "Issues" },
-];
+const BUILT_IN = ["readme", "coverage", "deps", "issues"];
 
 /**
  * Everything a project page shows but its README, with the tabs other layers add through
  * `projectTabs`. Every read starts here and `ready` settles once the tabs' routes answer.
  */
 export const useProjectPage = () => {
+    const { t } = useI18n();
     const { projectTabs = {} }: { projectTabs?: Record<string, ProjectTab | undefined> } =
         useAppConfig();
     const registered = Object.entries(projectTabs).flatMap(([id, entry]) =>
-        entry ? [{ id, ...entry }] : [],
+        entry
+            ? [
+                  {
+                      id,
+                      ...entry,
+                      label: t(`projectTabs.${id}.label`),
+                      empty: t(`projectTabs.${id}.empty`),
+                  },
+              ]
+            : [],
     );
-    const all = [...BUILT_IN, ...registered.map(({ id, label }) => ({ id, label }))];
+    const all = [
+        ...BUILT_IN.map((id) => ({ id, label: t(`project.tabs.${id}`) })),
+        ...registered.map(({ id, label }) => ({ id, label })),
+    ];
 
     const route = useRoute("projects-name");
     const name = computed(() => String(route.params.name));
@@ -65,7 +73,7 @@ export const useProjectPage = () => {
         area: area.value,
         list: read.value.issues
             .filter((issue) => issue.labels.includes(area.value))
-            .map((issue) => ({ ...issue, age: shortAge(issue.updatedAt) })),
+            .map((issue) => ({ ...issue, age: shortAge(issue.updatedAt, t) })),
     }));
 
     const counts = computed((): Partial<Record<string, number | string>> => ({
@@ -99,9 +107,9 @@ export const useProjectPage = () => {
         ),
         projects,
         coverage,
-        coverageAge: relativeTime(coverageSnapshot?.generatedAt),
+        coverageAge: relativeTime(coverageSnapshot?.generatedAt, t),
         outdated,
-        depsAge: relativeTime(deps?.generatedAt),
+        depsAge: relativeTime(deps?.generatedAt, t),
         extra,
         issues,
         ready: Promise.all(extraReads),

@@ -2,8 +2,8 @@
     <UDashboardPanel id="benchmark">
         <template #header>
             <PageHeader
-                :crumbs="[{ label: 'benchmarks', to: '/benchmarks' }]"
-                :title="benchmark?.title ?? page?.title ?? 'Not found'"
+                :crumbs="[{ label: $t('benchmark.crumb'), to: '/benchmarks' }]"
+                :title="benchmark?.title ?? page?.title ?? $t('benchmark.notFound')"
             >
                 <template #actions>
                     <BenchmarksMeta :benchmark :source />
@@ -20,8 +20,8 @@
                     color="neutral"
                     variant="subtle"
                     icon="i-lucide-file-question"
-                    title="No such benchmark"
-                    :description="`Nothing under docs/benchmarks/ matches ${id}.`"
+                    :title="$t('benchmark.missing.title')"
+                    :description="$t('benchmark.missing.description', { id })"
                 />
 
                 <template v-else>
@@ -31,7 +31,11 @@
 
                     <USeparator class="my-4" />
 
-                    <NeighbourLinks v-bind="around" before="Previous" after="Next" />
+                    <NeighbourLinks
+                        v-bind="around"
+                        :before="$t('benchmark.previous')"
+                        :after="$t('benchmark.next')"
+                    />
                 </template>
             </div>
         </template>

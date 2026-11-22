@@ -2,8 +2,8 @@
     <UDashboardPanel id="workflow">
         <template #header>
             <PageHeader
-                :crumbs="[{ label: 'workflows', to: '/workflows' }]"
-                :title="base?.project.title ?? 'Workflow'"
+                :crumbs="[{ label: $t('workflows.crumb'), to: '/workflows' }]"
+                :title="base?.project.title ?? $t('workflow.fallback')"
             >
                 <template #actions>
                     <WorkflowActions
@@ -16,10 +16,7 @@
         </template>
 
         <template #body>
-            <EmptyState v-if="!base || !view">
-                No project <code class="font-mono">{{ id }}</code> under
-                <code class="font-mono">data/workflows/projects/</code>.
-            </EmptyState>
+            <WorkflowMissing v-if="!base || !view" :id />
 
             <div v-else class="flex flex-col gap-6">
                 <WorkflowSummary :view :selected="selectedId" :blank @select="select" />
@@ -63,6 +60,8 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n();
+
 const {
     id,
     base,
@@ -87,7 +86,7 @@ const selectedActivity = computed(() =>
     selected.value ? activity.value?.capabilities[selected.value.id] : null,
 );
 
-useHead({ title: () => base.value?.project.title ?? "Workflow" });
+useHead({ title: () => base.value?.project.title ?? t("workflow.fallback") });
 
 await ready;
 </script>

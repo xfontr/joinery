@@ -10,8 +10,13 @@
                 {{ stage.title }}
             </h2>
             <p class="text-sm text-muted tabular-nums">
-                {{ stage.progress.done }} of {{ stage.progress.total }} ·
-                {{ pointsText }}
+                {{
+                    $t("workflowStageCards.progress", {
+                        done: stage.progress.done,
+                        total: stage.progress.total,
+                        points: pointsText,
+                    })
+                }}
             </p>
         </header>
 
@@ -44,11 +49,16 @@
                         {{ capability.title }}
                     </span>
                     <span class="text-xs font-semibold">
-                        <span class="text-(--state)">{{
-                            capabilityStateLabel(capability.state)
-                        }}</span>
+                        <span class="text-(--state)">
+                            {{ $t(`workflows.capabilityState.${capability.state}`) }}
+                        </span>
                         <span v-if="capability.points.total > 0" class="text-muted tabular-nums">
-                            · {{ formatPoints(capability.points.total) }} SP
+                            ·
+                            {{
+                                $t("workflowStageCards.points", {
+                                    points: formatPoints(capability.points.total),
+                                })
+                            }}
                         </span>
                     </span>
                     <span class="mt-auto -mr-5 flex flex-wrap items-end gap-1.5 pt-2">
@@ -70,7 +80,13 @@
                                 :key="issue.number"
                                 class="size-2.5 rounded-full"
                                 :style="{ background: stateColor(ticketStatus(issue)) }"
-                                :title="`#${issue.number} ${issue.title} · ${ticketStatusLabel(ticketStatus(issue))}`"
+                                :title="
+                                    $t('workflowStageCards.dot', {
+                                        number: issue.number,
+                                        title: issue.title,
+                                        status: $t(`workflows.ticketStatus.${ticketStatus(issue)}`),
+                                    })
+                                "
                             />
                         </span>
                         <WorkflowActivitySpark
@@ -89,7 +105,7 @@
                     variant="ghost"
                     size="xs"
                     class="absolute top-3 right-3 rounded-full"
-                    :aria-label="`Details for ${capability.title}`"
+                    :aria-label="$t('workflowStageCards.details', { title: capability.title })"
                     @click="emit('details', capability.id)"
                 />
             </li>
@@ -123,19 +139,28 @@ const emit = defineEmits<{ select: [capability: string]; details: [capability: s
 /** Past this many tickets the dots stack in two rows, so the activity line keeps their row. */
 const TWO_ROWS_FROM = 5;
 
+const { t } = useI18n();
+
 const color = computed(() => stageColor(index));
-const pointsText = computed(
-    () => `${formatPoints(stage.points.done)}/${formatPoints(stage.points.total)} SP`,
+const pointsText = computed(() =>
+    t("workflowStageCards.stagePoints", {
+        done: formatPoints(stage.points.done),
+        total: formatPoints(stage.points.total),
+    }),
 );
 
 /** The dots' colours as words, so their meaning isn't left to hovering each one. */
 const ticketSummary = (issues: SnapshotIssue[]): string => {
     const counts = new Map<string, number>();
     for (const issue of issues) {
-        const label = ticketStatusLabel(ticketStatus(issue));
+        const label = t(`workflows.ticketStatus.${ticketStatus(issue)}`);
         counts.set(label, (counts.get(label) ?? 0) + 1);
     }
-    return [...counts].map(([label, count]) => `${count} ${label.toLowerCase()}`).join(", ");
+    return [...counts]
+        .map(([label, count]) =>
+            t("workflowStageCards.summary", { count, status: label.toLocaleLowerCase() }),
+        )
+        .join(", ");
 };
 
 /** A switched-off block isn't part of this project, so it has no card. */
@@ -157,7 +182,10 @@ const activityOf = computed(() =>
                     capability.id,
                     {
                         weeks: found.days > 0 ? found.weeks : null,
-                        label: `Active on ${found.days} days, last on ${found.lastDay ? calendarDay(found.lastDay) : "never"}`,
+                        label: t("workflowStageCards.activity", {
+                            days: found.days,
+                            day: found.lastDay ? calendarDay(found.lastDay) : t("common.never"),
+                        }),
                     },
                 ],
             ];

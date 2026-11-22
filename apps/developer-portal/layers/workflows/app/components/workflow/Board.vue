@@ -73,9 +73,14 @@ const emit = defineEmits<{
 }>();
 const day = defineModel<number>("day", { required: true });
 
+const { t } = useI18n();
+
 const picked = computed(() =>
     selected
-        ? { color: capabilityColor(selected.state), state: capabilityStateLabel(selected.state) }
+        ? {
+              color: capabilityColor(selected.state),
+              state: t(`workflows.capabilityState.${selected.state}`),
+          }
         : null,
 );
 

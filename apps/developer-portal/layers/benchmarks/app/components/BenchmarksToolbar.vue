@@ -4,7 +4,7 @@
             <UInput
                 v-model="search"
                 icon="i-lucide-search"
-                placeholder="Search site or verdict…"
+                :placeholder="$t('benchmarksToolbar.search')"
                 size="sm"
                 class="w-56"
             />
@@ -29,13 +29,15 @@ const search = defineModel<string>("search", { required: true });
 const verdict = defineModel<BenchmarkVerdict | "all">("verdict", { required: true });
 const kind = defineModel<string>("kind", { required: true });
 
+const { t } = useI18n();
+
 const VERDICTS = [
-    { label: "Every verdict", value: "all" },
-    ...BENCHMARK_VERDICTS.map((value) => ({ label: benchmarkVerdictLabel(value), value })),
+    { label: t("benchmarksToolbar.everyVerdict"), value: "all" },
+    ...BENCHMARK_VERDICTS.map((value) => ({ label: t(`benchmarks.verdict.${value}`), value })),
 ];
 
 const kindItems = computed(() => [
-    { label: "Every kind", value: "all" },
+    { label: t("benchmarksToolbar.everyKind"), value: "all" },
     ...kinds.map((value) => ({ label: benchmarkKindLabel(value), value })),
 ]);
 </script>

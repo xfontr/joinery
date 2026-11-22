@@ -30,8 +30,10 @@ const { report } = defineProps<Props>();
 const settled = computed(() => report.findings.length - report.counts.open);
 // An audit with no findings still draws an empty bar rather than dividing by zero.
 const scale = computed(() => Math.max(report.findings.length, 1));
+const { t } = useI18n();
+
 const state = computed(() => ({
-    label: auditStateLabel(report.state),
+    label: t(`audits.state.${report.state}`),
     tone: auditStateTone(report.state),
 }));
 </script>

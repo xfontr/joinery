@@ -333,13 +333,15 @@ const severityParts = computed((): SplitPart[] => [
     { label: "low", value: counts.value?.low ?? 0, tone: "soft" },
 ]);
 
+const { t } = useI18n();
+
 const scripts = computed(() =>
     (usage ? scriptRows(usage).toSorted((a, b) => b.runs - a.runs) : []).map((row) => ({
         ...row,
         agentShare: row.runs ? `${percentOf(row.agent, row.runs)}%` : "—",
         failShare: row.runs ? `${percentOf(row.failures, row.runs)}%` : "—",
         lastShort: shortAge(row.last),
-        lastExact: row.last ? relativeTime(row.last) : "",
+        lastExact: row.last ? relativeTime(row.last, t) : "",
     })),
 );
 
@@ -390,11 +392,11 @@ const chart = computed(() => {
 
 const provenance = computed(() => {
     if (tab.value === "coverage")
-        return `Vitest coverage · ${collected.value} of ${coverageRows.value.length} projects · collected ${relativeTime(coverage?.generatedAt)}`;
+        return `Vitest coverage · ${collected.value} of ${coverageRows.value.length} projects · collected ${relativeTime(coverage?.generatedAt, t)}`;
     if (tab.value === "deps")
-        return `pnpm audit and pnpm outdated · collected ${relativeTime(deps?.generatedAt)}`;
+        return `pnpm audit and pnpm outdated · collected ${relativeTime(deps?.generatedAt, t)}`;
 
-    return `Usage log · last ${WINDOW_DAYS} days · collected ${relativeTime(usage?.generatedAt)}`;
+    return `Usage log · last ${WINDOW_DAYS} days · collected ${relativeTime(usage?.generatedAt, t)}`;
 });
 
 interface Fact {

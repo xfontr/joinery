@@ -4,7 +4,7 @@
         data-scroll-x
         data-tabs
         class="mt-3 flex h-10 items-stretch gap-1 overflow-x-auto px-2 sm:px-4"
-        :aria-label="`${label} sections`"
+        :aria-label="$t('appTabs.label', { app: label })"
     >
         <NuxtLink
             v-for="tab in shown"
@@ -41,8 +41,9 @@ const { tabs, title } = defineProps<Props>();
 
 const { nav }: { nav: Record<string, NavLink | undefined> } = useAppConfig();
 const route = useRoute();
+const { t } = useI18n();
 
-const found = computed(() => locate(appEntries(nav), route.path));
+const found = computed(() => locate(appEntries(nav, t), route.path));
 
 const label = computed(() => title ?? found.value?.app.label ?? "");
 

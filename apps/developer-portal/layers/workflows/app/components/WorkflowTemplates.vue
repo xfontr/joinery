@@ -1,7 +1,7 @@
 <template>
     <UCollapsible as="section" class="flex flex-col gap-3">
         <UButton
-            label="Templates"
+            :label="$t('workflowTemplates.title')"
             color="neutral"
             variant="ghost"
             trailing-icon="i-lucide-chevron-down"

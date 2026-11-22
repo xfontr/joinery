@@ -4,13 +4,17 @@
         color="info"
         variant="subtle"
         icon="i-lucide-map"
-        title="This project has no blocks yet"
+        :title="$t('workflowAlerts.blank.title')"
     >
         <template #description>
-            Ask Claude to draft its map: it asks what the project is, writes the blocks under
-            <code class="font-mono">extras</code> in
-            <code class="font-mono">data/workflows/projects/{{ project }}.yaml</code>, and they show
-            here for you to check before anything is filed.
+            <I18nT keypath="workflowAlerts.blank.description" scope="global">
+                <template #extras>
+                    <code class="font-mono">{{ EXTRAS }}</code>
+                </template>
+                <template #file>
+                    <code class="font-mono">{{ `data/workflows/projects/${project}.yaml` }}</code>
+                </template>
+            </I18nT>
         </template>
     </UAlert>
 
@@ -19,7 +23,7 @@
         color="warning"
         variant="subtle"
         icon="i-lucide-triangle-alert"
-        title="This project's files have problems"
+        :title="$t('workflowAlerts.problems')"
     >
         <template #description>
             <ul class="list-disc pl-4">
@@ -33,17 +37,17 @@
         color="warning"
         variant="subtle"
         icon="i-lucide-inbox"
-        :title="`${unsorted.length} to organise`"
+        :title="$t('workflowAlerts.unsorted.title', { count: unsorted.length })"
     >
         <template #description>
-            <p>
-                Not placed yet. Give each one the milestone and a
-                <code class="font-mono">cap:&lt;capability&gt;</code> label on GitHub, then sync
-                again.
-            </p>
+            <I18nT keypath="workflowAlerts.unsorted.lead" tag="p" scope="global">
+                <template #label>
+                    <code class="font-mono">{{ CAP_LABEL }}</code>
+                </template>
+            </I18nT>
             <ul class="mt-2 flex flex-col gap-1">
                 <li
-                    v-for="{ issue, reason } in unsorted"
+                    v-for="{ issue, reason, detail } in unsorted"
                     :key="issue.number"
                     class="flex items-center gap-3"
                 >
@@ -51,7 +55,9 @@
                         #{{ issue.number }}
                     </a>
                     <span class="min-w-0 flex-1 truncate text-default">{{ issue.title }}</span>
-                    <span class="text-xs">{{ reason }}</span>
+                    <span class="text-xs">
+                        {{ $t(`workflowAlerts.reasons.${reason}`, { detail }) }}
+                    </span>
                 </li>
             </ul>
         </template>
@@ -70,4 +76,7 @@ interface Props {
 }
 
 const { project, blank, problems, unsorted } = defineProps<Props>();
+
+const EXTRAS = "extras";
+const CAP_LABEL = "cap:<capability>";
 </script>

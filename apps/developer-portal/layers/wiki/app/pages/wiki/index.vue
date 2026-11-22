@@ -1,9 +1,9 @@
 <template>
     <UDashboardPanel id="docs">
         <template #header>
-            <PageHeader title="Wiki">
+            <PageHeader :title="$t('wiki.title')">
                 <template #actions>
-                    <span class="text-xs text-muted">{{ count }} pages, read in place</span>
+                    <span class="text-xs text-muted">{{ $t("wiki.count", { count }) }}</span>
                 </template>
             </PageHeader>
         </template>
@@ -17,13 +17,15 @@
 
                 <div class="flex min-w-0 flex-1 flex-col gap-6 overflow-y-auto *:shrink-0">
                     <div>
-                        <h1 class="text-xl font-semibold">The workspace, as it is written</h1>
-                        <p class="mt-1 max-w-2xl text-sm text-muted">
-                            Every markdown file in the repo, rendered from where it lives. The
-                            README you edit for GitHub is the page you read here, so the two cannot
-                            drift. Press
-                            <UKbd value="meta" /><UKbd value="K" /> to search all of it.
-                        </p>
+                        <h1 class="text-xl font-semibold">{{ $t("wiki.heading") }}</h1>
+                        <I18nT
+                            keypath="wiki.lead"
+                            tag="p"
+                            scope="global"
+                            class="mt-1 max-w-2xl text-sm text-muted"
+                        >
+                            <template #keys><UKbd value="meta" /><UKbd value="K" /></template>
+                        </I18nT>
                     </div>
 
                     <WikiStart :known />

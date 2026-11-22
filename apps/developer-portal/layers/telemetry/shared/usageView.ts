@@ -163,7 +163,8 @@ interface Point<Kind extends string> {
     /** Percent from the bottom. */
     y: number;
     kind: Kind;
-    title: string;
+    /** The figures a tooltip names, beside the point's `name`. */
+    detail: Record<string, number>;
     labelled: boolean;
 }
 
@@ -225,7 +226,7 @@ export const scriptQuadrants = (rows: ScriptRow[]): Quadrants<CallerMix> => {
                 x: logAt(row.runs, decades),
                 y: (failed / yMax) * 100,
                 kind: callerMix(row),
-                title: `${row.name} · ${row.runs} runs · ${Math.round(failed * 100)}% failed · ${row.agent} by agents`,
+                detail: { runs: row.runs, failed: Math.round(failed * 100), agent: row.agent },
                 labelled: true,
             };
         }),
@@ -258,7 +259,7 @@ export const ruleQuadrants = (lint: LintUsage): Quadrants<FixKind> => {
             x: logAt(usage.recent, decades),
             y: (usage.disabled / yMax) * 100,
             kind: usage.recent > 0 && usage.fixable === usage.recent ? "auto" : "manual",
-            title: `${name} · ${usage.recent} hits · ${usage.fixable} auto-fixed · disabled ${usage.disabled}×`,
+            detail: { hits: usage.recent, fixed: usage.fixable, disabled: usage.disabled },
             labelled:
                 index < NAMED_BUSIEST ||
                 usage.disabled >= FOUGHT_DISABLES ||

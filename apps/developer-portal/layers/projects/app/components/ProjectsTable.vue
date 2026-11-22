@@ -3,13 +3,23 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Project</th>
-                    <th class="numeric hidden md:table-cell">Version</th>
-                    <th class="numeric hidden md:table-cell">Unreleased</th>
-                    <th class="numeric hidden md:table-cell">Commits, 2 wk</th>
-                    <th class="numeric hidden md:table-cell">Specs</th>
-                    <th class="numeric">Lines covered</th>
-                    <th class="numeric hidden md:table-cell">Used by</th>
+                    <th>{{ $t("projectsTable.columns.project") }}</th>
+                    <th class="numeric hidden md:table-cell">
+                        {{ $t("projectsTable.columns.version") }}
+                    </th>
+                    <th class="numeric hidden md:table-cell">
+                        {{ $t("projectsTable.columns.unreleased") }}
+                    </th>
+                    <th class="numeric hidden md:table-cell">
+                        {{ $t("projectsTable.columns.recent") }}
+                    </th>
+                    <th class="numeric hidden md:table-cell">
+                        {{ $t("projectsTable.columns.specs") }}
+                    </th>
+                    <th class="numeric">{{ $t("projectsTable.columns.lines") }}</th>
+                    <th class="numeric hidden md:table-cell">
+                        {{ $t("projectsTable.columns.usedBy") }}
+                    </th>
                 </tr>
             </thead>
             <tbody v-for="group in groups" :key="group.id">

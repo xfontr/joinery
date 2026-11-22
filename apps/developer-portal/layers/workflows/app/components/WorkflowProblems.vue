@@ -4,7 +4,7 @@
         color="warning"
         variant="subtle"
         icon="i-lucide-triangle-alert"
-        :title="`${problems.length} workflow file problems`"
+        :title="$t('workflowProblems.title', { count: problems.length })"
     >
         <template #description>
             <ul class="list-disc pl-4">

@@ -5,6 +5,7 @@ export type { CapabilityView } from "./types/CapabilityView.ts";
 export type { Feature } from "./types/Feature.ts";
 export type { Kind } from "./types/Kind.ts";
 export type { ProjectView } from "./types/ProjectView.ts";
+export type { PageProblem } from "./types/PageProblem.ts";
 export type { ReceiptRow } from "./types/ReceiptRow.ts";
 export type { ReviewRow } from "./types/ReviewRow.ts";
 export type { ReusePlan } from "./types/ReusePlan.ts";
@@ -21,14 +22,14 @@ export { featuresOf, readProject, typedExtra } from "./project.ts";
 export { dropPlan, replayRange, ticketStatus } from "./ticket.ts";
 export { projectView } from "./projectView.ts";
 export { activeProjects, projectCard } from "./projectCard.ts";
-export { formatPoints, pointsLine } from "./complexity.ts";
+export { formatPoints } from "./complexity.ts";
 export {
     draftProject,
     estimateOf,
     pageCosts,
     receiptOf,
     templateEstimate,
-    TICKET_SIZE_LABELS,
+    TICKET_WIDTH,
 } from "./ticketSize.ts";
 export {
     PROJECT_ID,

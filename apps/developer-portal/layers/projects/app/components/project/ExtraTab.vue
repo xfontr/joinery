@@ -1,7 +1,7 @@
 <template>
     <WidgetPanel
         :title="tab.label"
-        :meta="`Running in ${name}`"
+        :meta="$t('projectExtraTab.meta', { name })"
         :count="tab.items.length"
         :to="tab.to"
     >
@@ -30,19 +30,21 @@ import type { ProjectTabRow } from "~/types/ProjectTabRow";
 import type { SplitPart } from "~/types/SplitPart";
 
 interface Props {
-    tab: ProjectTab & { items: ProjectTabRow[] };
+    tab: ProjectTab & { label: string; empty: string; items: ProjectTabRow[] };
     /** The project's folder. */
     name: string;
 }
 
 const { tab, name } = defineProps<Props>();
 
+const { t } = useI18n();
+
 const rows = computed(() =>
     tab.items.map((row) => ({
         ...row,
         parts: [
-            { label: "done", value: row.done, tone: "ink" },
-            { label: "to go", value: row.left, tone: "soft" },
+            { label: t("projectExtraTab.parts.done"), value: row.done, tone: "ink" },
+            { label: t("projectExtraTab.parts.left"), value: row.left, tone: "soft" },
         ] satisfies SplitPart[],
     })),
 );

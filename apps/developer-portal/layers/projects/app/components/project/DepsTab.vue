@@ -1,7 +1,7 @@
 <template>
     <WidgetPanel
-        title="Outdated dependencies"
-        :meta="`pnpm outdated · collected ${age} · advisories are workspace-wide`"
+        :title="$t('projectDepsTab.title')"
+        :meta="$t('projectDepsTab.meta', { age })"
         to="/deps"
         :count="outdated.length"
     >
@@ -9,17 +9,21 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Package</th>
-                        <th class="numeric">Current</th>
-                        <th class="numeric hidden sm:table-cell">Wanted</th>
-                        <th class="numeric">Latest</th>
+                        <th>{{ $t("projectDepsTab.columns.package") }}</th>
+                        <th class="numeric">{{ $t("projectDepsTab.columns.current") }}</th>
+                        <th class="numeric hidden sm:table-cell">
+                            {{ $t("projectDepsTab.columns.wanted") }}
+                        </th>
+                        <th class="numeric">{{ $t("projectDepsTab.columns.latest") }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="item in outdated" :key="item.name">
                         <td class="font-mono">
                             {{ item.name }}
-                            <span v-if="item.isDeprecated" class="tone-bad">deprecated</span>
+                            <span v-if="item.isDeprecated" class="tone-bad">
+                                {{ $t("projectDepsTab.deprecated") }}
+                            </span>
                         </td>
                         <td class="numeric font-mono">{{ item.current }}</td>
                         <td class="numeric hidden font-mono sm:table-cell">{{ item.wanted }}</td>
@@ -28,7 +32,7 @@
                 </tbody>
             </table>
         </div>
-        <EmptyState v-else>Everything is current.</EmptyState>
+        <EmptyState v-else>{{ $t("projectDepsTab.current") }}</EmptyState>
     </WidgetPanel>
 </template>
 

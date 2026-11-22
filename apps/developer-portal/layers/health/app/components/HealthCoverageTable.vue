@@ -1,24 +1,32 @@
 <template>
-    <WidgetPanel title="Coverage by project" meta="Sorted by line coverage, lowest first">
+    <WidgetPanel :title="$t('healthCoverageTable.title')" :meta="$t('healthCoverageTable.meta')">
         <EmptyState v-if="rows.length === 0">
-            Not collected. Run <code class="font-mono">pnpm test:coverage</code>, then collect.
+            <I18nT keypath="healthCoverageTable.empty" scope="global">
+                <template #command>
+                    <code class="font-mono">{{ TEST }}</code>
+                </template>
+            </I18nT>
         </EmptyState>
         <div v-else data-scroll-x class="overflow-x-auto">
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Project</th>
+                        <th>{{ $t("healthCoverageTable.columns.project") }}</th>
                         <th
                             v-for="metric in COVERAGE_METRICS"
                             :key="metric"
                             class="numeric first-letter:uppercase"
                         >
-                            {{ metric }}
+                            {{ $t(`common.metrics.${metric}`) }}
                         </th>
-                        <th class="numeric hidden sm:table-cell">Files</th>
+                        <th class="numeric hidden sm:table-cell">
+                            {{ $t("healthCoverageTable.columns.files") }}
+                        </th>
                     </tr>
                     <tr class="bg-default">
-                        <td class="font-medium text-highlighted">Workspace</td>
+                        <td class="font-medium text-highlighted">
+                            {{ $t("healthCoverageTable.workspace") }}
+                        </td>
                         <td
                             v-for="cell in totalCells"
                             :key="cell.key"
@@ -59,15 +67,14 @@
                         </template>
                         <!-- Absent is its own state. Not 0%, and certainly not 100%. -->
                         <td v-else colspan="5" class="numeric font-mono text-dimmed">
-                            not collected
+                            {{ $t("healthCoverageTable.notCollected") }}
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <p class="border-t border-default px-4 py-3 text-xs text-muted">
-            The workspace figure is weighted by size, not averaged across projects — an average lets
-            one large well-tested package hide a small untested one.
+            {{ $t("healthCoverageTable.note") }}
         </p>
     </WidgetPanel>
 </template>
@@ -82,6 +89,8 @@ interface Props {
 }
 
 const { projects, totals } = defineProps<Props>();
+
+const TEST = "pnpm test:coverage";
 
 const rows = computed(() =>
     projects

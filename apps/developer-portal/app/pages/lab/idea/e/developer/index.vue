@@ -342,8 +342,10 @@ const emptyText = computed(() => {
 const decisionCounts = computed(() => countByStatus(decisionReports.value));
 const auditTotals = computed(() => countAll(auditReports.value));
 
-const collectedAge = computed(() => relativeTime(metricsSnapshot?.generatedAt));
-const usageAge = computed(() => relativeTime(usage?.generatedAt));
+const { t } = useI18n();
+
+const collectedAge = computed(() => relativeTime(metricsSnapshot?.generatedAt, t));
+const usageAge = computed(() => relativeTime(usage?.generatedAt, t));
 
 const scripts = computed(() => (usage ? scriptRows(usage) : []));
 const days = computed(() => (usage ? shownDays(usage) : []));

@@ -7,7 +7,7 @@ const COPY_ATTRIBUTES = [
     "label",
     "placeholder",
     "title",
-    "/^(empty|lead|meta|note|provenance)/",
+    "/^(action|empty|help|hint|kicker|lead|mark|meta|note|provenance)/",
 ];
 
 const i18nKeys = (localeDir: string): object => ({

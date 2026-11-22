@@ -11,9 +11,11 @@
             >
                 <div class="truncate font-mono text-sm">{{ entry.name }}</div>
                 <div class="flex items-center gap-2 text-xs text-dimmed">
-                    <span v-if="entry.version">v{{ entry.version }}</span>
+                    <span v-if="entry.version">
+                        {{ $t("changelogList.version", { version: entry.version }) }}
+                    </span>
                     <span v-if="entry.unreleased > 0" class="tone-warn">
-                        +{{ entry.unreleased }} unreleased
+                        {{ $t("changelogList.unreleased", { count: entry.unreleased }) }}
                     </span>
                 </div>
             </button>

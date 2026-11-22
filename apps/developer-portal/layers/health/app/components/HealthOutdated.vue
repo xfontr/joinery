@@ -1,29 +1,37 @@
 <template>
     <WidgetPanel
-        title="Outdated"
-        meta="pnpm outdated -r · wanted is what the range in package.json already allows"
+        :title="$t('healthOutdated.title')"
+        :meta="$t('healthOutdated.meta')"
         :count="rows.length"
     >
         <EmptyState v-if="rows.length === 0">
-            {{ outdated ? "Everything is on its wanted version." : "Not collected." }}
+            {{ outdated ? $t("healthOutdated.upToDate") : $t("healthOutdated.notCollected") }}
         </EmptyState>
         <div v-else data-scroll-x class="overflow-x-auto">
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Package</th>
-                        <th class="numeric">Current</th>
-                        <th class="numeric hidden sm:table-cell">Wanted</th>
-                        <th class="numeric">Latest</th>
-                        <th class="numeric hidden sm:table-cell">Projects</th>
-                        <th class="hidden lg:table-cell">Used by</th>
+                        <th>{{ $t("healthOutdated.columns.package") }}</th>
+                        <th class="numeric">{{ $t("healthOutdated.columns.current") }}</th>
+                        <th class="numeric hidden sm:table-cell">
+                            {{ $t("healthOutdated.columns.wanted") }}
+                        </th>
+                        <th class="numeric">{{ $t("healthOutdated.columns.latest") }}</th>
+                        <th class="numeric hidden sm:table-cell">
+                            {{ $t("healthOutdated.columns.projects") }}
+                        </th>
+                        <th class="hidden lg:table-cell">
+                            {{ $t("healthOutdated.columns.usedBy") }}
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="item in rows" :key="item.name">
                         <td class="font-mono">
                             {{ item.name }}
-                            <span v-if="item.isDeprecated" class="tone-bad">deprecated</span>
+                            <span v-if="item.isDeprecated" class="tone-bad">
+                                {{ $t("healthOutdated.deprecated") }}
+                            </span>
                         </td>
                         <td class="numeric font-mono">{{ item.current }}</td>
                         <td class="numeric hidden font-mono sm:table-cell">{{ item.wanted }}</td>

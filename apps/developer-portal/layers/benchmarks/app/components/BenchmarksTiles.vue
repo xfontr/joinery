@@ -1,9 +1,9 @@
 <template>
     <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatTile
-            label="Sites"
+            :label="$t('benchmarksTiles.sites')"
             :value="benchmarks.length"
-            hint="one file per site"
+            :hint="$t('benchmarksTiles.sitesHint')"
             icon="i-lucide-bookmark"
         />
         <StatTile
@@ -28,19 +28,17 @@ interface Props {
 
 const { benchmarks } = defineProps<Props>();
 
-const TILES: { verdict: BenchmarkVerdict; hint: string }[] = [
-    { verdict: "strong", hint: "worth studying whole" },
-    { verdict: "partial", hint: "one or two ideas to take" },
-    { verdict: "avoid", hint: "kept as what not to do" },
-];
+const TILES: BenchmarkVerdict[] = ["strong", "partial", "avoid"];
+
+const { t } = useI18n();
 
 const counts = computed(() => countByVerdict(benchmarks));
 
 const tiles = computed(() =>
-    TILES.map(({ verdict, hint }) => ({
+    TILES.map((verdict) => ({
         verdict,
-        hint,
-        label: benchmarkVerdictLabel(verdict),
+        hint: t(`benchmarksTiles.hints.${verdict}`),
+        label: t(`benchmarks.verdict.${verdict}`),
         value: counts.value[verdict],
         tone: benchmarkVerdictTone(verdict),
     })),

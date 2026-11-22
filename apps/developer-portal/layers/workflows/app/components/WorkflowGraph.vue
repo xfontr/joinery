@@ -10,7 +10,7 @@
             ]"
             :role="expanded ? 'dialog' : undefined"
             :aria-modal="expanded || undefined"
-            :aria-label="expanded ? 'Dependency graph' : undefined"
+            :aria-label="expanded ? $t('workflowGraph.label') : undefined"
             @pointerdown="press"
             @pointermove="move"
             @pointerup="release"
@@ -83,7 +83,12 @@
                                 : 'border-(--state)'
                         "
                         :aria-pressed="node.id === focus"
-                        :aria-label="`${node.capability.title}, ${capabilityStateLabel(node.capability.state)}`"
+                        :aria-label="
+                            $t('workflowGraph.node', {
+                                title: node.capability.title,
+                                state: $t(`workflows.capabilityState.${node.capability.state}`),
+                            })
+                        "
                         @click="click(node.id)"
                     >
                         <span
@@ -102,9 +107,9 @@
                             <span class="truncate">{{ node.capability.title }}</span>
                         </span>
                         <span class="truncate text-xs font-medium text-(--state)">
-                            {{ capabilityStateLabel(node.capability.state) }}
+                            {{ $t(`workflows.capabilityState.${node.capability.state}`) }}
                             <span v-if="relation[node.id]" class="text-muted">
-                                · {{ relation[node.id] }}</span
+                                · {{ $t(`workflowGraph.relation.${relation[node.id]}`) }}</span
                             >
                         </span>
                     </button>
@@ -114,7 +119,7 @@
                         variant="ghost"
                         size="xs"
                         class="absolute top-1/2 right-1.5 -translate-y-1/2 rounded-full"
-                        :aria-label="`Details for ${node.capability.title}`"
+                        :aria-label="$t('workflowGraph.details', { title: node.capability.title })"
                         @click="details(node.id)"
                     />
                 </div>
@@ -130,7 +135,7 @@
                     color="neutral"
                     variant="outline"
                     size="sm"
-                    :aria-label="expanded ? 'Exit full screen' : 'Full screen'"
+                    :aria-label="expanded ? $t('workflowGraph.exitFull') : $t('workflowGraph.full')"
                     @click="expanded = !expanded"
                 />
                 <UButton
@@ -138,7 +143,7 @@
                     color="neutral"
                     variant="outline"
                     size="sm"
-                    aria-label="Zoom in"
+                    :aria-label="$t('workflowGraph.zoomIn')"
                     @click="zoomBy(1.25)"
                 />
                 <UButton
@@ -146,7 +151,7 @@
                     color="neutral"
                     variant="outline"
                     size="sm"
-                    aria-label="Zoom out"
+                    :aria-label="$t('workflowGraph.zoomOut')"
                     @click="zoomBy(0.8)"
                 />
                 <UButton
@@ -154,7 +159,7 @@
                     color="neutral"
                     variant="outline"
                     size="sm"
-                    aria-label="Fit the selected path"
+                    :aria-label="$t('workflowGraph.fit')"
                     @click="fit(true)"
                 />
             </div>

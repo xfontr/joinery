@@ -1,7 +1,7 @@
 <template>
     <div class="flex min-w-48 flex-1 flex-col gap-1">
         <span class="flex items-baseline justify-between gap-x-4 text-xs text-dimmed">
-            <span class="font-semibold text-muted">Replay</span>
+            <span class="font-semibold text-muted">{{ $t("workflowReplay.title") }}</span>
             <output class="tabular-nums">{{ label }}</output>
         </span>
         <span class="flex h-6 items-center gap-2">
@@ -11,10 +11,10 @@
                 :max="lastDay"
                 size="xs"
                 class="flex-1"
-                aria-label="Day to replay"
+                :aria-label="$t('workflowReplay.label')"
             />
             <UButton
-                label="Today"
+                :label="$t('workflowReplay.today')"
                 color="neutral"
                 variant="ghost"
                 size="xs"

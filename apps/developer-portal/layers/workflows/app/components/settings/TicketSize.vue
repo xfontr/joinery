@@ -1,8 +1,5 @@
 <template>
-    <SettingsSection
-        title="Ticket size"
-        hint="How many blocks share a ticket when filed. It can't change once one is."
-    >
+    <SettingsSection :title="$t('settingsTicketSize.title')" :hint="$t('settingsTicketSize.hint')">
         <WorkflowTicketSizePicker v-model="size" :counts :editable />
     </SettingsSection>
 </template>

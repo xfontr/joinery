@@ -1,7 +1,7 @@
 <template>
     <StatTile
         class="h-full"
-        label="Projects"
+        :label="$t('projectsTile.label')"
         :value="count"
         :hint
         :tone="findings > 0 ? 'warn' : 'neutral'"
@@ -13,5 +13,6 @@
 <script setup lang="ts">
 const count = projectsArtifact()?.projects.length ?? 0;
 const findings = metricsArtifact()?.invariantFindings.length ?? 0;
-const hint = counted(findings, "invariant finding");
+const { t } = useI18n();
+const hint = t("projectsTile.findings", findings);
 </script>

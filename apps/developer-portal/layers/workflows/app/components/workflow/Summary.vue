@@ -4,13 +4,20 @@
             <WorkflowProgressMeter :percent="view.progress.percent" size="lg" class="max-w-md" />
             <div class="min-w-0">
                 <p class="text-lg font-semibold">
-                    {{ view.progress.done }} of {{ view.progress.total }} done
+                    {{
+                        $t("workflowSummary.done", {
+                            done: view.progress.done,
+                            total: view.progress.total,
+                        })
+                    }}
                 </p>
                 <p class="text-sm tabular-nums">{{ points }}</p>
                 <p class="text-sm text-muted">{{ view.project.summary }}</p>
                 <p class="mt-0.5 flex flex-wrap gap-x-3 text-xs text-dimmed">
                     <span>{{ view.template.title }}</span>
-                    <span>Milestone {{ view.project.milestone }}</span>
+                    <span>
+                        {{ $t("workflowSummary.milestone", { milestone: view.project.milestone }) }}
+                    </span>
                     <span class="tabular-nums">{{ tickets }}</span>
                     <code v-if="view.project.area" class="font-mono">{{ view.project.area }}</code>
                 </p>
@@ -21,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { pointsLine, type ProjectView } from "#layers/workflows/shared/workflows.ts";
+import { formatPoints, type ProjectView } from "#layers/workflows/shared/workflows.ts";
 
 interface Props {
     view: ProjectView;
@@ -32,9 +39,25 @@ interface Props {
 const { view, selected, blank } = defineProps<Props>();
 const emit = defineEmits<{ select: [capability: string] }>();
 
-const points = computed(() => pointsLine(view.points));
+const { t } = useI18n();
+
+const points = computed(() => {
+    const { done, total, estimated, unestimated } = view.points;
+
+    return [
+        t("workflowSummary.points", { done: formatPoints(done), total: formatPoints(total) }),
+        estimated > 0 ? t("workflowSummary.estimated", { points: formatPoints(estimated) }) : "",
+        unestimated > 0 ? t("workflowSummary.unestimated", { count: unestimated }) : "",
+    ]
+        .filter(Boolean)
+        .join(" · ");
+});
 const tickets = computed(() => {
     const { progress, tickets: count, project } = view;
-    return `${progress.total} blocks · ${count.filed} tickets filed · ${count.toFile[project.ticketSize]} to file`;
+    return t("workflowSummary.tickets", {
+        blocks: progress.total,
+        filed: count.filed,
+        toFile: count.toFile[project.ticketSize],
+    });
 });
 </script>

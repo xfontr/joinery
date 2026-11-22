@@ -1,8 +1,5 @@
 <template>
-    <SettingsSection
-        title="Features"
-        hint="Leaving one out takes its blocks out of the map; whatever needed them waits on what they needed."
-    >
+    <SettingsSection :title="$t('settingsFeatures.title')" :hint="$t('settingsFeatures.hint')">
         <WorkflowFeaturePicker :features :editable @toggle="(id, on) => emit('toggle', id, on)" />
     </SettingsSection>
 </template>

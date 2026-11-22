@@ -1,11 +1,13 @@
 <template>
     <WidgetPanel
-        title="Open issues"
-        :meta="read ? `GitHub · labelled ${area}` : 'Reading GitHub…'"
+        :title="$t('projectIssuesTab.title')"
+        :meta="read ? $t('projectIssuesTab.meta', { area }) : $t('projectIssuesTab.reading')"
         :count="read ? issues.length : '—'"
     >
         <EmptyState v-if="issues.length === 0">
-            {{ read ? `No open issue is labelled ${area}.` : "Reading open issues…" }}
+            {{
+                read ? $t("projectIssuesTab.none", { area }) : $t("projectIssuesTab.readingIssues")
+            }}
         </EmptyState>
         <ul v-else class="divide-y divide-default">
             <li v-for="issue in issues" :key="issue.number">

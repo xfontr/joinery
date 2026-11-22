@@ -1,5 +1,5 @@
 <template>
-    <WidgetPanel title="About" :meta="project.root">
+    <WidgetPanel :title="$t('projectAbout.title')" :meta="project.root">
         <dl class="divide-y divide-default text-sm">
             <div
                 v-for="fact in facts"
@@ -21,7 +21,9 @@
                     {{ list.label }}
                     <span class="font-mono text-xs">{{ list.items.length }}</span>
                 </dt>
-                <dd v-if="list.items.length === 0" class="text-dimmed">None</dd>
+                <dd v-if="list.items.length === 0" class="text-dimmed">
+                    {{ $t("projectAbout.none") }}
+                </dd>
                 <dd v-for="item in list.items" v-else :key="item.name">
                     <NuxtLink
                         :to="item.to"
@@ -32,7 +34,7 @@
                 </dd>
             </div>
             <div class="px-4 py-2.5">
-                <dt class="text-muted">Tags</dt>
+                <dt class="text-muted">{{ $t("projectAbout.tags") }}</dt>
                 <dd class="flex flex-wrap gap-x-3 font-mono text-xs text-highlighted">
                     <span v-for="tag in project.tags" :key="tag">{{ tag }}</span>
                 </dd>
@@ -55,21 +57,26 @@ interface Props {
 
 const { project, metric, projects, coveragePct } = defineProps<Props>();
 
+const { t } = useI18n();
+
 const facts = computed((): { label: string; value: string; class?: string; pct?: number }[] => [
-    { label: "Version", value: metric?.currentVersion ?? "—" },
+    { label: t("projectAbout.facts.version"), value: metric?.currentVersion ?? "—" },
     {
-        label: "Unreleased",
+        label: t("projectAbout.facts.unreleased"),
         value: metric?.unreleasedCommits ? `+${metric.unreleasedCommits}` : "—",
     },
-    { label: "Commits, 2 wk", value: dash(metric?.commitsLastTwoWeeks) },
-    { label: "Specs", value: dash(metric?.specs) },
+    { label: t("projectAbout.facts.recent"), value: dash(metric?.commitsLastTwoWeeks) },
+    { label: t("projectAbout.facts.specs"), value: dash(metric?.specs) },
     {
-        label: "Lines covered",
+        label: t("projectAbout.facts.lines"),
         value: dash(coveragePct, "%"),
         class: toneClass(coverageTone(coveragePct)) || undefined,
         ...(coveragePct !== null && { pct: coveragePct }),
     },
-    { label: "Changelog", value: metric?.hasChangelog ? "yes" : "no" },
+    {
+        label: t("projectAbout.facts.changelog"),
+        value: metric?.hasChangelog ? t("projectAbout.yes") : t("projectAbout.no"),
+    },
 ]);
 
 const pageFor = (packageName: string): string => {
@@ -81,7 +88,7 @@ const linked = (names: string[]) =>
     [...new Set(names)].map((item) => ({ name: item, to: pageFor(item) }));
 
 const relations = computed(() => [
-    { label: "Depends on", items: linked(project.dependsOn) },
-    { label: "Used by", items: linked(project.dependedOnBy) },
+    { label: t("projectAbout.relations.dependsOn"), items: linked(project.dependsOn) },
+    { label: t("projectAbout.relations.usedBy"), items: linked(project.dependedOnBy) },
 ]);
 </script>

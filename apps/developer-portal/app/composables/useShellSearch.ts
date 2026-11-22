@@ -8,6 +8,7 @@ export const useShellSearch = (
     apps: (AppGroup & { entries: AppEntry[] })[],
     projects: Ref<MenuRow[]> | undefined,
 ) => {
+    const { t } = useI18n();
     const open = ref(false);
 
     // Deferred to the first open; built here it rides in every prerendered payload (../../README.md).
@@ -27,7 +28,7 @@ export const useShellSearch = (
 
     const projectGroup = computed(() => ({
         id: "projects",
-        label: "Projects",
+        label: t("app.search.projects"),
         ignoreFilter: true,
         postFilter: matchPages,
         items: (projects?.value ?? []).flatMap((kind) =>
@@ -41,7 +42,7 @@ export const useShellSearch = (
     }));
 
     const groups = computed(() => {
-        const [pages, ...docs] = searchGroups(apps, sections.value);
+        const [pages, ...docs] = searchGroups(apps, sections.value, t);
         return [...(pages ? [pages] : []), projectGroup.value, ...docs];
     });
 

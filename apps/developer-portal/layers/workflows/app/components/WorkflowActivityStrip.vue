@@ -2,9 +2,9 @@
     <figure class="flex max-w-sm flex-col gap-1">
         <figcaption
             class="flex flex-wrap items-baseline justify-between gap-x-4 text-xs text-dimmed"
-            title="Capabilities moved per day, from commits tagged with a ticket number"
+            :title="$t('workflowActivityStrip.tooltip')"
         >
-            <span class="font-semibold text-muted">Activity</span>
+            <span class="font-semibold text-muted">{{ $t("workflowActivityStrip.title") }}</span>
             <span class="tabular-nums">{{ lastCommit }}</span>
         </figcaption>
 
@@ -45,6 +45,8 @@ interface Props {
 
 const { activity, stages } = defineProps<Props>();
 
+const { t } = useI18n();
+
 const track = useTemplateRef("track");
 
 /** Days keep a fixed width, so a timeline longer than the strip scrolls and opens on its latest day. */
@@ -59,7 +61,9 @@ watch(
 );
 
 const lastCommit = computed(() =>
-    activity.lastDay ? `Last commit ${calendarDay(activity.lastDay)}` : "No commits yet",
+    activity.lastDay
+        ? t("workflowActivityStrip.lastCommit", { day: calendarDay(activity.lastDay) })
+        : t("workflowActivityStrip.noCommits"),
 );
 
 /** A month gets a label on its first day, or at the start when at least a week of it is shown. */
@@ -85,7 +89,11 @@ const columns = computed(() =>
                           stage: stage.id,
                           color: stageColor(stageIndex),
                           share: (moved / activity.busiest) * 100,
-                          label: `${stage.title} · ${calendarDay(day)} · ${moved} ${moved === 1 ? "capability" : "capabilities"}`,
+                          label: t("workflowActivityStrip.segment", {
+                              stage: stage.title,
+                              day: calendarDay(day),
+                              moved: t("workflowActivityStrip.moved", moved),
+                          }),
                       },
                   ];
         }),

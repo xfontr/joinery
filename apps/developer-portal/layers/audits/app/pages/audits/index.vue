@@ -1,11 +1,11 @@
 <template>
     <UDashboardPanel id="audits">
         <template #header>
-            <PageHeader title="Audits">
+            <PageHeader :title="$t('audits.title')">
                 <template #actions>
                     <UButton
                         to="/wiki/docs/audits/readme"
-                        label="How an audit is written"
+                        :label="$t('audits.guide')"
                         icon="i-lucide-ruler"
                         color="neutral"
                         variant="ghost"
@@ -26,25 +26,21 @@
 
         <template #body>
             <div class="flex flex-col gap-4">
-                <p class="max-w-3xl text-sm text-muted">
-                    Audits record what a static read of one project found wrong at one commit. Each
-                    finding keeps its own status, so an audit is worked down over time rather than
-                    fixed in one go.
-                </p>
+                <p class="max-w-3xl text-sm text-muted">{{ $t("audits.intro") }}</p>
 
                 <CollectionEmpty
                     v-if="reports.length === 0"
                     icon="i-lucide-scan-search"
                     folder="docs/audits/"
                     skill="audit-report"
-                    each="them, one dated file per audit"
+                    :each="$t('audits.empty.each')"
                 />
 
                 <template v-else>
                     <AuditsTiles :reports />
                     <ListCard
-                        title="Every audit, and how much of it is left"
-                        note="Progress counts fixed and won't-fix findings, read from each audit's own Status column."
+                        :title="$t('audits.list.title')"
+                        :note="$t('audits.list.note')"
                         :shown="visible.length"
                         :total="reports.length"
                     >

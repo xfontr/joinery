@@ -14,7 +14,7 @@
                 <template #content>
                     <ul
                         class="flex max-h-80 w-72 flex-col overflow-y-auto p-1"
-                        :aria-label="`${group.label} blocks`"
+                        :aria-label="$t('workflowLeft.blocks', { state: group.label })"
                     >
                         <li v-for="block in group.blocks" :key="block.id">
                             <button
@@ -28,7 +28,7 @@
                                     v-if="block.unblockCount > 0"
                                     class="shrink-0 text-xs text-muted tabular-nums"
                                 >
-                                    unblocks {{ block.unblockCount }}
+                                    {{ $t("workflowLeft.unblocks", { count: block.unblockCount }) }}
                                 </span>
                             </button>
                         </li>
@@ -37,8 +37,8 @@
             </UPopover>
         </li>
     </ul>
-    <p v-else-if="blank" class="text-sm text-muted">No blocks yet.</p>
-    <p v-else class="text-sm text-muted">Everything switched on is done.</p>
+    <p v-else-if="blank" class="text-sm text-muted">{{ $t("workflowLeft.none") }}</p>
+    <p v-else class="text-sm text-muted">{{ $t("workflowLeft.done") }}</p>
 </template>
 
 <script setup lang="ts">
@@ -55,6 +55,8 @@ interface Props {
 const { blocks, selected, blank } = defineProps<Props>();
 const emit = defineEmits<{ select: [capability: string] }>();
 
+const { t } = useI18n();
+
 const groups = computed(() => {
     const byState = new Map<CapabilityState, CapabilityView[]>();
     for (const block of blocks) {
@@ -65,7 +67,7 @@ const groups = computed(() => {
         state,
         blocks: members,
         color: capabilityColor(state),
-        label: capabilityStateLabel(state).toLowerCase(),
+        label: t(`workflows.capabilityState.${state}`).toLocaleLowerCase(),
     }));
 });
 

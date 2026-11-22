@@ -9,6 +9,7 @@ export const useWorkflows = () =>
 /** Only `nuxt dev` has a server to write through; the static build offers the file as a download. */
 export const useWorkflowEdit = () => {
     const toast = useToast();
+    const { t } = useI18n();
 
     const editable = import.meta.dev;
 
@@ -19,7 +20,8 @@ export const useWorkflowEdit = () => {
             return true;
         } catch (cause) {
             const message =
-                (cause as { statusMessage?: string } | null)?.statusMessage ?? "The edit failed";
+                (cause as { statusMessage?: string } | null)?.statusMessage ??
+                t("workflowEdit.failed");
             toast.add({ title: message, color: "error", icon: "i-lucide-triangle-alert" });
             return false;
         }

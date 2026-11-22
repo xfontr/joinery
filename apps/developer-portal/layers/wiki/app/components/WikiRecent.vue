@@ -1,15 +1,16 @@
 <template>
     <UCard variant="flush">
         <template #header>
-            <h2 class="font-semibold">Recently changed</h2>
-            <p class="mt-1 text-xs text-muted">
-                From the last commit that touched each file, not from a page view.
-            </p>
+            <h2 class="font-semibold">{{ $t("wikiRecent.title") }}</h2>
+            <p class="mt-1 text-xs text-muted">{{ $t("wikiRecent.note") }}</p>
         </template>
 
         <EmptyState v-if="recent.length === 0">
-            Nothing collected yet — run
-            <code class="font-mono">pnpm exec nx collect @monorepo/developer-portal</code>.
+            <I18nT keypath="wikiRecent.empty" scope="global">
+                <template #command>
+                    <code class="font-mono">{{ COLLECT }}</code>
+                </template>
+            </I18nT>
         </EmptyState>
 
         <div v-else class="divide-y divide-default">
@@ -39,6 +40,10 @@ interface Props {
 
 const { pages, known } = defineProps<Props>();
 
+const COLLECT = "pnpm exec nx collect @monorepo/developer-portal";
+
+const { t } = useI18n();
+
 const recent = computed(() =>
     pages
         .filter((page) => page.updatedAt !== null && known.has(toCollectionPath(page.path)))
@@ -48,7 +53,7 @@ const recent = computed(() =>
             path: page.path,
             to: `/wiki${toCollectionPath(page.path)}`,
             icon: kindIcon(page.kind),
-            updated: relativeTime(page.updatedAt),
+            updated: relativeTime(page.updatedAt, t),
         })),
 );
 </script>

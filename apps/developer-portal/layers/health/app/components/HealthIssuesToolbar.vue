@@ -4,7 +4,7 @@
             <UInput
                 v-model="search"
                 icon="i-lucide-search"
-                placeholder="Search issues…"
+                :placeholder="$t('healthIssuesToolbar.search')"
                 size="sm"
                 class="w-56"
             />
@@ -28,8 +28,10 @@ const { issues } = defineProps<Props>();
 const search = defineModel<string>("search", { required: true });
 const label = defineModel<string>("label", { required: true });
 
+const { t } = useI18n();
+
 const items = computed(() => [
-    { label: "Every label", value: "all" },
+    { label: t("healthIssuesToolbar.everyLabel"), value: "all" },
     ...labelsOf(issues).map((name) => ({ label: name, value: name })),
 ]);
 </script>

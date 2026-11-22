@@ -1,17 +1,22 @@
 <template>
     <WidgetPanel v-model:filter="view" :title="chart.title" :filters="VIEWS">
         <div v-if="view === 'chart'" class="px-4 pt-5 pb-4">
-            <DailyChart :days :values="chart.values" :unit="chart.unit" end-label="last day" />
+            <DailyChart
+                :days
+                :values="chart.values"
+                :unit="chart.unit"
+                :end-label="$t('telemetryDaily.endLabel')"
+            />
             <p class="mt-4 text-sm text-toned">{{ chart.reading }}</p>
         </div>
         <div v-else class="max-h-96 overflow-y-auto">
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Day</th>
-                        <th class="numeric">Runs</th>
-                        <th class="numeric">By agents</th>
-                        <th class="numeric">Failed</th>
+                        <th>{{ $t("telemetryDaily.columns.day") }}</th>
+                        <th class="numeric">{{ $t("telemetryDaily.columns.runs") }}</th>
+                        <th class="numeric">{{ $t("telemetryDaily.columns.agent") }}</th>
+                        <th class="numeric">{{ $t("telemetryDaily.columns.failed") }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -41,20 +46,18 @@ interface Props {
 
 const { usage, series } = defineProps<Props>();
 
+const { t } = useI18n();
+
 const VIEWS = [
-    { value: "chart", label: "Chart" },
-    { value: "table", label: "Table" },
+    { value: "chart", label: t("telemetryDaily.views.chart") },
+    { value: "table", label: t("telemetryDaily.views.table") },
 ];
 
-const SERIES = {
-    runs: { title: "Runs per day", unit: "runs" },
-    agent: { title: "Agent runs per day", unit: "agent runs" },
-    failures: { title: "Failed runs per day", unit: "failed runs" },
-} as const satisfies Record<string, { title: string; unit: string }>;
+const SERIES = ["runs", "agent", "failures"] as const;
 
-type Series = keyof typeof SERIES;
+type Series = (typeof SERIES)[number];
 
-const isSeries = (value: string): value is Series => Object.hasOwn(SERIES, value);
+const isSeries = (value: string): value is Series => (SERIES as readonly string[]).includes(value);
 
 const view = ref("chart");
 
@@ -75,7 +78,8 @@ const dayRows = computed(() =>
 
 const chart = computed(() => {
     const key: Series = isSeries(series) ? series : "runs";
-    const { title, unit } = SERIES[key];
+    const title = t(`telemetryDaily.series.${key}.title`);
+    const unit = t(`telemetryDaily.series.${key}.unit`);
     const values = days.value.map((_, index) => daily.value[index]?.[key] ?? 0);
     const total = values.reduce((acc, value) => acc + value, 0);
     const peak = Math.max(0, ...values);
@@ -88,8 +92,13 @@ const chart = computed(() => {
         values,
         reading:
             total === 0
-                ? `No ${unit} in the window.`
-                : `${average} ${unit} a day on average; the busiest day was ${calendarDay(peakDay)}, with ${peak}.`,
+                ? t("telemetryDaily.readingNone", { unit })
+                : t("telemetryDaily.reading", {
+                      average,
+                      unit,
+                      day: calendarDay(peakDay),
+                      peak,
+                  }),
     };
 });
 </script>

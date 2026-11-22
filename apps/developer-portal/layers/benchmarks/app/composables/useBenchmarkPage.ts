@@ -4,6 +4,7 @@ import { BENCHMARKS_PATH } from "#layers/benchmarks/app/utils/benchmarks.ts";
 /** One benchmark's rendered page and its gallery neighbours; `ready` settles once both load. */
 export const useBenchmarkPage = () => {
     const route = useRoute();
+    const { t } = useI18n();
     const id = computed(() => (typeof route.params.id === "string" ? route.params.id : ""));
     const path = computed(() => `${BENCHMARKS_PATH}${id.value}`);
 
@@ -28,7 +29,7 @@ export const useBenchmarkPage = () => {
     });
 
     const crumbs = computed<BreadcrumbItem[]>(() => [
-        { label: "Benchmarks", to: "/benchmarks", icon: "i-lucide-bookmark" },
+        { label: t("benchmarks.title"), to: "/benchmarks", icon: "i-lucide-bookmark" },
         { label: benchmark.value?.title ?? id.value },
     ]);
 
