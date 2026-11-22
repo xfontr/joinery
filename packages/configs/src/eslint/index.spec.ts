@@ -203,4 +203,16 @@ describe("eslint factories", () => {
         expect(severity(kit?.["monorepo/layer-boundaries"])).toBe(2);
         expect(shell?.["monorepo/layer-boundaries"]).toBeUndefined();
     });
+    it("caps the blocks of a page, in a layer too, but not a lab page or a component", async () => {
+        const config = createNuxtConfig();
+        const page = await resolve(config, "app/pages/index.vue");
+        const layerPage = await resolve(config, "layers/archive/app/pages/authors/[slug].vue");
+        const lab = await resolve(config, "app/pages/lab/idea/index.vue");
+        const component = await resolve(config, "app/components/home/Hero.vue");
+
+        expect(severity(page?.["vue/max-lines-per-block"])).toBe(2);
+        expect(severity(layerPage?.["vue/max-lines-per-block"])).toBe(2);
+        expect(lab?.["vue/max-lines-per-block"]).toBeUndefined();
+        expect(component?.["vue/max-lines-per-block"]).toBeUndefined();
+    });
 });
