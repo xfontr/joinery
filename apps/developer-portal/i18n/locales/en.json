@@ -143,6 +143,7 @@
             "projects": "Projects",
             "wiki": "Wiki"
         },
+        "skipLink": "Skip to content",
         "visitor": {
             "footer": {
                 "builtBy": "Built by Xifré Font",
@@ -407,6 +408,12 @@
     },
     "docSource": {
         "meta": "{words} words · updated {updated}"
+    },
+    "error": {
+        "back": "Back to the front page",
+        "head": "Error {status}",
+        "notFound": "No such page",
+        "server": "Something went wrong"
     },
     "graph": {
         "title": "Project graph"
