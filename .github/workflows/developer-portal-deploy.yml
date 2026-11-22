@@ -14,13 +14,11 @@ concurrency:
     cancel-in-progress: false
 
 jobs:
-    build:
+    deploy:
         runs-on: ubuntu-latest
-        permissions:
-            contents: read
-            # Narrower is untested: `configure-pages` documents no read-only path, and a wrong
-            # guess here only fails on a real run.
-            pages: write
+        environment:
+            name: developer-portal
+            url: https://xfontr-monorepo.pages.dev
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:
@@ -31,9 +29,6 @@ jobs:
 
             - uses: ./.github/actions/install
 
-            - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
-              id: pages
-
             # The collector reads coverage that only a whole-workspace run writes. Thresholds gate PRs,
             # so one project's dip never stops the portal from deploying.
             - run: pnpm test:coverage
@@ -43,8 +38,7 @@ jobs:
 
             - run: pnpm exec nx collect @monorepo/developer-portal
 
-            # Pages serves one artifact, so Storybook is built beneath developer-portal rather than
-            # deploying a second artifact that would replace the dashboard. The script, not a bare
+            # Built beneath developer-portal so one deploy carries both. The script, not a bare
             # `storybook build`, because it runs `nuxi prepare` first.
             - name: Build Huella Legal Storybook
               run: pnpm --filter @monorepo/huella-legal run build:storybook --output-dir ../developer-portal/public/huella-legal-storybook
@@ -58,19 +52,8 @@ jobs:
               env:
                   NUXT_PUBLIC_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
 
-            - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+            - uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3
               with:
-                  path: apps/developer-portal/.output/public
-
-    deploy:
-        needs: build
-        runs-on: ubuntu-latest
-        permissions:
-            pages: write
-            id-token: write
-        environment:
-            name: developer-portal
-            url: ${{ steps.deployment.outputs.page_url }}
-        steps:
-            - id: deployment
-              uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: fb3cf13b48ae51ed991e8f95c68d173b
+                  command: pages deploy apps/developer-portal/.output/public --project-name=xfontr-monorepo --branch=master

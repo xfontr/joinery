@@ -25,7 +25,7 @@ Under `pnpm dev developer-portal` it reads the working tree live. The deployed s
 | Path | What lives there |
 | --- | --- |
 | `app/` | The shell: layouts, Home, the visitor front and method pages, and `app/composables/`, which assemble Home's queue and Health, the rail, the status bar and search from several layers |
-| `app/components/`, `app/types/`, `app/utils/` | The kit: shared parts such as `StatTile`, `PageHero` and `EmptyState`, one type per file, pure helpers |
+| `app/components/`, `app/types/`, `app/utils/` | The kit: shared parts such as `PageFacts`, `PageHeader` and `EmptyState`, one type per file, pure helpers |
 | `i18n/locales/en.json` | The interface's copy — see [🔤 Copy](#copy) |
 | `content/work/` | One markdown file per Work entry — see [🔤 Copy](#copy) |
 | `layers/` | One Nuxt layer per capability — see [🧱 Layers](#layers) |
@@ -111,15 +111,19 @@ needs a token, so it isn't shown.
 ## The deployed site is a snapshot
 
 [`developer-portal-deploy.yml`](../../.github/workflows/developer-portal-deploy.yml) publishes to
-GitHub Pages on every push to `master` or by hand: `pnpm test:coverage`, then `collect`, then
-`build-static`. Pages must be set to build from GitHub Actions in repo settings. huella-legal's
-Storybook is built into the same artifact under `/huella-legal-storybook/`.
+the `xfontr-monorepo` Cloudflare Pages project, [xfontr-monorepo.pages.dev](https://xfontr-monorepo.pages.dev),
+on every push to `master` or by hand: `pnpm test:coverage`, then `collect`, then `build-static`,
+then `wrangler pages deploy` with the `CLOUDFLARE_API_TOKEN` repo secret. Cloudflare only hosts:
+the build runs in Actions, and the site has no Functions. huella-legal's Storybook is built into
+the same output under `/huella-legal-storybook/`.
 
 - Every page is as old as the last deploy, except issues (live) and workflows (as
   old as the last committed `pnpm workflow:sync`).
 - The site is served from the root of `SITE_URL` in [`nuxt.config.ts`](./nuxt.config.ts), which
   canonical, sitemap and share-image URLs are built on.
 - `NUXT_PUBLIC_REPO_URL` is baked in at build time, derived by the workflow.
+- Cloudflare Pages rejects any file over 25 MiB, which is why the Architecture map is drawn from
+  `projects.json` rather than Nx's exported graph viewer.
 - The project overrides its `production` Nx input in [`package.json`](./package.json) so any `*.md`
   or `data/workflows/` change makes it affected, and a `runtime` input over
   [`snapshotStamp.ts`](./tools/lib/snapshotStamp.ts) hashes the gitignored `.report/`.
@@ -160,7 +164,7 @@ semantic roles and Tailwind's scale; ESLint rejects bracketed values.
 | --- | --- | --- |
 | `--tone-good`, `-warn`, `-bad` | [`main.css`](./layers/design/app/assets/main.css) | The three status colours; [`toneClass`](./app/utils/format.ts) maps a `Tone` to its class |
 | `.data-table`, `.numeric` | `main.css` | Every table |
-| `.embedded-report` | `main.css` | The frame around the coverage report and Nx graph |
+| `.embedded-report` | `main.css` | The frame around the coverage report |
 | `variant="flush"` on `UCard` | [`app.config.ts`](./layers/design/app/app.config.ts) | A card with no body padding |
 | `--state-*`, `--stage-*` | [`workflows.css`](./layers/workflows/app/assets/workflows.css) | Workflow colours, kept with that feature |
 | `--usage-*` | [`telemetry.css`](./layers/telemetry/app/assets/telemetry.css) | Tooling-usage colours, kept with that feature |

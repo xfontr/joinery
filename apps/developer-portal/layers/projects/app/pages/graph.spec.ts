@@ -55,10 +55,10 @@ const MESSAGES = {
         usedBy: "Used by: {list}",
         uses: "Uses: {list}",
     },
-    graphNxEmbed: {
-        frame: "Nx project graph",
-        lead: "Nx's own graph client, vendored in by the collector rather than redrawn.",
-        title: "Detailed Nx graph",
+    graphMap: {
+        empty: "No projects collected yet.",
+        lead: "Each arrow points from a project to one it depends on.",
+        title: "Project map",
     },
     pageHeader: {
         wordmark: "monorepo",
@@ -170,11 +170,12 @@ describe("graph page", () => {
         );
     });
 
-    it("embeds the Nx graph under the app's base path", async () => {
-        serve([]);
+    it("draws the project map from the collected graph instead of embedding a viewer", async () => {
+        serve([node("apps/site", { dependsOn: ["ui"] }), node("packages/ui")]);
         const wrapper = await mountSuspended(Page);
 
-        expect(wrapper.find("iframe").attributes("src")).toContain("/embed/graph/index.html");
+        expect(wrapper.find("iframe").exists()).toBe(false);
+        expect(wrapper.find("a[href='/projects/site']").exists()).toBe(true);
     });
 
     it("dates the page by the projects snapshot and surfaces invariant findings", async () => {

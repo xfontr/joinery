@@ -75,7 +75,8 @@ export default playwright.createConfig({ port, command, env });
 ```
 
 - Chromium at 390, 768 and 1280 px. Tag a test `@desktop` (≥ 1024 px), `@mobile` (below) or
-  `@any-width` (first width only, for `request`/`<head>`-only tests). Tests run fully parallel.
+  `@any-width` (first width only, for `request`/`<head>`-only tests). Tests run fully parallel, on
+  two workers locally and Playwright's default in CI.
 - Specs import `test` from `@monorepo/configs/playwright/utils/test`, never `@playwright/test`
   (lint enforces it). Any browser console output fails the test unless `allowedConsole` matches it;
   `page.goto` waits for hydration.

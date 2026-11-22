@@ -15,12 +15,12 @@ const view = (id: string, area: string, done: number, total: number) => ({
 });
 
 describe("workflows by area route", () => {
-    it("groups every workflow under the folder it runs in, with what is done and what is left", async () => {
+    it("keys each workflow by its area label's folder, with what is done and what is left", async () => {
         workflows.loadWorkflows.mockResolvedValue({
             projects: [
-                view("a", "huella-legal", 1, 4),
-                view("b", "UI", 2, 2),
-                view("c", "huella-legal", 0, 3),
+                view("a", "app:huella-legal", 1, 4),
+                view("b", "package:ui", 2, 2),
+                view("c", "app:huella-legal", 0, 3),
             ],
         });
 
@@ -29,7 +29,7 @@ describe("workflows by area route", () => {
                 { id: "a", title: "Project a", to: "/workflows/a", percent: 25, done: 1, left: 3 },
                 { id: "c", title: "Project c", to: "/workflows/c", percent: 0, done: 0, left: 3 },
             ],
-            UI: [
+            ui: [
                 { id: "b", title: "Project b", to: "/workflows/b", percent: 100, done: 2, left: 0 },
             ],
         });

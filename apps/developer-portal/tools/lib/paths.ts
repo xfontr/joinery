@@ -21,7 +21,6 @@ export const MERGED_COVERAGE_DIR = resolve(WORKSPACE_ROOT, "coverage");
  */
 const PUBLIC_DIR = resolve(PROJECT_ROOT, "public");
 const EMBED_DIR = resolve(PUBLIC_DIR, "embed");
-export const GRAPH_DIR = resolve(EMBED_DIR, "graph");
 export const COVERAGE_DIR = resolve(EMBED_DIR, "coverage");
 
 export const SCHEMA_VERSION = 1;

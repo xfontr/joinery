@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-22T22:44:01.572Z",
+    "syncedAt": "2026-11-22T22:56:42.195Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -261,14 +261,18 @@
             "number": 490,
             "title": "Go live",
             "url": "https://github.com/xfontr/monorepo/issues/490",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "go-live"
             ],
             "createdAt": "2026-11-18T18:58:39Z",
-            "closedAt": null,
+            "closedAt": "2026-11-22T22:56:42.195Z",
             "activity": [
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
                 "2026-11-22",
                 "2026-11-22",
                 "2026-11-22",
