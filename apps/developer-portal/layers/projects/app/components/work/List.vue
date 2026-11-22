@@ -13,7 +13,9 @@
                 >
                     <img
                         v-if="item.shot"
-                        :src="item.shot"
+                        v-bind="item.shot"
+                        sizes="(min-width: 48rem) 66vw, 100vw"
+                        loading="lazy"
                         :alt="item.shotAlt"
                         :style="carried(`work-shot-${item.slug}`)"
                         width="1440"
