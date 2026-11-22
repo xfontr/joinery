@@ -1,38 +1,31 @@
 import { isFailing, scriptRows, sumDays } from "#layers/telemetry/shared/usageView.ts";
 import type { PageFact } from "~/types/PageFact";
 
-/** The usage snapshot and the header facts drawn from it; `ready` settles once it loads. */
+/** The usage snapshot and the header facts drawn from it. */
 export const useTelemetryPage = () => {
-    const snapshot = useSnapshot("usage");
-    const usage = computed(() => snapshot.data.value?.usage ?? null);
+    const usage = usageArtifact();
+    const rows = usage ? scriptRows(usage) : [];
+    const sum = sumDays(rows);
 
-    const rows = computed(() => (usage.value ? scriptRows(usage.value) : []));
-    const sum = computed(() => sumDays(rows.value));
+    const share = (part: number): string => (sum.runs ? `${percentOf(part, sum.runs)}%` : "—");
 
-    const share = (part: number): string =>
-        sum.value.runs ? `${percentOf(part, sum.value.runs)}%` : "—";
-
-    const facts = computed((): PageFact[] => [
-        { label: "Runs", value: String(sum.value.runs), series: "runs" },
-        { label: "By agents", value: share(sum.value.agent), series: "agent" },
+    const facts: PageFact[] = [
+        { label: "Runs", value: String(sum.runs), series: "runs" },
+        { label: "By agents", value: share(sum.agent), series: "agent" },
         {
             label: "Failed",
-            value: share(sum.value.failures),
-            class: isFailing(sum.value) ? "tone-bad" : "",
+            value: share(sum.failures),
+            class: isFailing(sum) ? "tone-bad" : "",
             series: "failures",
         },
-        { label: "Scripts", value: String(rows.value.length) },
-        { label: "Never run", value: String(rows.value.filter((row) => row.runs === 0).length) },
-    ]);
+        { label: "Scripts", value: String(rows.length) },
+        { label: "Never run", value: String(rows.filter((row) => row.runs === 0).length) },
+    ];
 
     return {
         usage,
-        hasRuns: computed(() => Object.keys(usage.value?.scripts ?? {}).length > 0),
-        provenance: computed(
-            () =>
-                `Usage log · last ${usage.value?.windowDays ?? "—"} days · collected ${relativeTime(usage.value?.generatedAt)}`,
-        ),
+        hasRuns: Object.keys(usage?.scripts ?? {}).length > 0,
+        provenance: `Usage log · last ${usage?.windowDays ?? "—"} days · collected ${relativeTime(usage?.generatedAt)}`,
         facts,
-        ready: snapshot,
     };
 };

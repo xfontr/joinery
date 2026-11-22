@@ -10,7 +10,6 @@ export const useWikiPage = () => {
     const route = useRoute();
     const path = computed(() => `/${slugOf(route.params.slug).join("/")}`.toLowerCase());
 
-    const snapshot = useSnapshot("docs");
     const wiki = useWiki();
     const sections = wiki.data;
     const content = useAsyncData(
@@ -46,9 +45,7 @@ export const useWikiPage = () => {
 
     const meta = computed(
         () =>
-            snapshot.data.value?.docs?.pages.find(
-                (doc) => toCollectionPath(doc.path) === path.value,
-            ) ?? null,
+            docsArtifact()?.pages.find((doc) => toCollectionPath(doc.path) === path.value) ?? null,
     );
 
     return {
@@ -63,6 +60,6 @@ export const useWikiPage = () => {
         brokenLinks: computed(
             () => meta.value?.brokenLinks.map((link) => link.href).join(", ") ?? "",
         ),
-        ready: Promise.all([snapshot, wiki, content]),
+        ready: Promise.all([wiki, content]),
     };
 };

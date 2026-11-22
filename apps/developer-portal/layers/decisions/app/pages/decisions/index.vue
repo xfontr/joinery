@@ -56,7 +56,5 @@
 </template>
 
 <script setup lang="ts">
-const { manifest, reports, status, decision, search, sort, visible, ready } = useDecisionList();
-
-await ready;
+const { manifest, reports, status, decision, search, sort, visible } = useDecisionList();
 </script>

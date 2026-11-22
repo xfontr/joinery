@@ -3,10 +3,16 @@ import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { LintRuleUsage } from "#layers/snapshot/shared/types/LintRuleUsage.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import Page from "./index.vue";
+
+const artifacts = vi.hoisted(() => ({ usage: null as UsageArtifact | null }));
+mockNuxtImport("usageArtifact", () => () => artifacts.usage);
+
+beforeEach(() => {
+    artifacts.usage = null;
+});
 
 const docs = vi.hoisted(() => ({ benchmarks: [] as { path: string; title: string }[] }));
 
@@ -61,7 +67,7 @@ const open = async ({
     usage = null as UsageArtifact | null,
     projects = [] as { id: string; title: string }[],
 } = {}) => {
-    serveEndpoint("/api/snapshot/usage", (): SnapshotResponse => ({ manifest: null, usage }));
+    artifacts.usage = usage;
     serveEndpoint("/api/workflows", () =>
         assembleWorkflows(
             [{ file: "website-rebuild.yaml", ok: true, value: TEMPLATE }],

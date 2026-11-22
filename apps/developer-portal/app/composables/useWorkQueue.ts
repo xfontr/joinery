@@ -12,8 +12,8 @@ export const useWorkQueue = () => {
     const { shown: issues } = useIssues();
     const decisions = useDecisionReports();
     const audits = useAuditReports();
-    const { data: metrics } = useSnapshot("metrics");
-    const { data: docs } = useSnapshot("docs");
+    const metrics = metricsArtifact();
+    const docs = docsArtifact();
 
     const rows = computed((): Record<QueueKind, QueueRow[]> => ({
         issues: sortIssues(issues.value.issues).map((issue) => ({
@@ -38,7 +38,7 @@ export const useWorkQueue = () => {
             meta: `${report.counts.open} of ${report.findings.length} open`,
             to: `/audits/${report.id}`,
         })),
-        releases: unreleased(metrics.value?.metrics?.projects).map((project) => ({
+        releases: unreleased(metrics?.projects).map((project) => ({
             key: `release-${project.root}`,
             id: `+${project.unreleasedCommits}`,
             title: project.name,
@@ -46,14 +46,14 @@ export const useWorkQueue = () => {
             to: `/projects/${folderOf(project.root)}`,
         })),
         attention: [
-            ...(metrics.value?.metrics?.invariantFindings ?? []).map((finding) => ({
+            ...(metrics?.invariantFindings ?? []).map((finding) => ({
                 key: `finding-${finding.id}`,
                 id: "invariant",
                 title: finding.title,
                 meta: finding.detail,
                 to: null,
             })),
-            ...brokenPages(docs.value?.docs).map((page) => ({
+            ...brokenPages(docs).map((page) => ({
                 key: `docs-${page.path}`,
                 id: "link",
                 title: page.path,

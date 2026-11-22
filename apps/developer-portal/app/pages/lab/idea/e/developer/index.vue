@@ -197,19 +197,11 @@ interface QueueRow {
 const editing = ref(false);
 const kind = ref<string>("all");
 
-const [
-    { data: metricsSnapshot },
-    { data: docsSnapshot },
-    { data: coverage },
-    { data: deps },
-    { data: usage },
-] = await Promise.all([
-    useSnapshot("metrics"),
-    useSnapshot("docs"),
-    useSnapshot("coverage"),
-    useSnapshot("deps"),
-    useSnapshot("usage"),
-]);
+const metricsSnapshot = metricsArtifact();
+const docsSnapshot = docsArtifact();
+const coverage = coverageArtifact();
+const deps = depsArtifact();
+const usage = usageArtifact();
 
 const { data: read } = useIssues();
 const mounted = ref(false);
@@ -260,7 +252,7 @@ const auditRows = computed((): QueueRow[] =>
 );
 
 const releaseRows = computed((): QueueRow[] =>
-    (metricsSnapshot.value?.metrics?.projects ?? [])
+    (metricsSnapshot?.projects ?? [])
         .filter((project) => (project.unreleasedCommits ?? 0) > 0)
         .toSorted((a, b) => (b.unreleasedCommits ?? 0) - (a.unreleasedCommits ?? 0))
         .map((project) => ({
@@ -274,7 +266,7 @@ const releaseRows = computed((): QueueRow[] =>
 );
 
 const attentionRows = computed((): QueueRow[] => [
-    ...(metricsSnapshot.value?.metrics?.invariantFindings ?? []).map((finding) => ({
+    ...(metricsSnapshot?.invariantFindings ?? []).map((finding) => ({
         key: `finding-${finding.id}`,
         kind: "attention" as const,
         id: "invariant",
@@ -282,7 +274,7 @@ const attentionRows = computed((): QueueRow[] => [
         meta: finding.detail,
         to: `${BASE}/health`,
     })),
-    ...(docsSnapshot.value?.docs?.pages ?? [])
+    ...(docsSnapshot?.pages ?? [])
         .filter((page) => page.brokenLinks.length > 0)
         .map((page) => ({
             key: `docs-${page.path}`,
@@ -350,18 +342,18 @@ const emptyText = computed(() => {
 const decisionCounts = computed(() => countByStatus(decisionReports.value));
 const auditTotals = computed(() => countAll(auditReports.value));
 
-const collectedAge = computed(() => relativeTime(metricsSnapshot.value?.metrics?.generatedAt));
-const usageAge = computed(() => relativeTime(usage.value?.usage?.generatedAt));
+const collectedAge = computed(() => relativeTime(metricsSnapshot?.generatedAt));
+const usageAge = computed(() => relativeTime(usage?.generatedAt));
 
-const scripts = computed(() => (usage.value?.usage ? scriptRows(usage.value.usage) : []));
-const days = computed(() => (usage.value?.usage ? shownDays(usage.value.usage) : []));
+const scripts = computed(() => (usage ? scriptRows(usage) : []));
+const days = computed(() => (usage ? shownDays(usage) : []));
 const runsPerDay = computed(() => dailyTotals(scripts.value).map((day) => day.runs));
 
 const healthLines = computed(() => {
-    const lines = coverage.value?.coverage?.totals?.lines ?? null;
-    const counts = deps.value?.deps?.vulnerabilities ?? null;
+    const lines = coverage?.totals?.lines ?? null;
+    const counts = deps?.vulnerabilities ?? null;
     const tooling = sumDays(scripts.value);
-    const docs = docsSnapshot.value?.docs ?? null;
+    const docs = docsSnapshot ?? null;
 
     return [
         {
@@ -377,7 +369,7 @@ const healthLines = computed(() => {
         },
         {
             label: "Advisories",
-            value: counts ? String(deps.value?.deps?.advisories.length ?? 0) : "—",
+            value: counts ? String(deps?.advisories.length ?? 0) : "—",
             class: counts?.critical || counts?.high ? "tone-bad" : "",
             to: `${BASE}/health?tab=deps`,
             legend: true,

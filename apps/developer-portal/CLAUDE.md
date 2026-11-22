@@ -6,8 +6,9 @@ See [README.md](./README.md) for what each page reads, the snapshot and the depl
   `@nuxt/content` at the workspace root. Never copy a doc into this app; a link that breaks here is
   fixed in [`layers/docs/shared/docLinks.ts`](./layers/docs/shared/docLinks.ts), not by rewriting the doc.
 - **Every page renders with no `.report/`.** It is gitignored, so "never collected" is a fresh
-  clone's state. [`layers/snapshot/server/utils/store.ts`](./layers/snapshot/server/utils/store.ts) returns `null` for a missing
-  artifact; keep that rather than throwing.
+  clone's state. The [`<name>Artifact()`](./layers/snapshot/app/utils/) utils and
+  [`store.ts`](./layers/snapshot/server/utils/store.ts) return `null` for a missing artifact; keep
+  that rather than throwing.
 - **A capability is a Nuxt layer under `layers/`**, and `app/` is only the shell. The
   [README](./README.md#-layers) has the table: `design`, `snapshot`, `docs` and `github` are the
   cores, and a feature uses those and the shell's parts, never another feature. A new page joins

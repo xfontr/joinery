@@ -1,7 +1,7 @@
 import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { CoverageArtifact } from "#layers/snapshot/shared/types/CoverageArtifact.ts";
 import type { DepsArtifact } from "#layers/snapshot/shared/types/DepsArtifact.ts";
 import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
@@ -9,9 +9,27 @@ import type { OutdatedPackage } from "#layers/snapshot/shared/types/OutdatedPack
 import type { ProjectCoverage } from "#layers/snapshot/shared/types/ProjectCoverage.ts";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import type { ProjectTabRow } from "~/types/ProjectTabRow";
+import type { ProjectsArtifact } from "#layers/snapshot/shared/types/ProjectsArtifact.ts";
 import Page from "./[name].vue";
+
+const artifacts = vi.hoisted(() => ({
+    coverage: null as CoverageArtifact | null,
+    deps: null as DepsArtifact | null,
+    metrics: null as MetricsArtifact | null,
+    projects: null as ProjectsArtifact | null,
+}));
+mockNuxtImport("coverageArtifact", () => () => artifacts.coverage);
+mockNuxtImport("depsArtifact", () => () => artifacts.deps);
+mockNuxtImport("metricsArtifact", () => () => artifacts.metrics);
+mockNuxtImport("projectsArtifact", () => () => artifacts.projects);
+
+beforeEach(() => {
+    artifacts.coverage = null;
+    artifacts.deps = null;
+    artifacts.metrics = null;
+    artifacts.projects = null;
+});
 
 // An in-memory docs collection, answering the README query the page sends
 const docs = vi.hoisted(() => ({
@@ -81,41 +99,29 @@ const serve = ({
     workflows?: Record<string, ProjectTabRow[]>;
 } = {}) => {
     serveEndpoint("/api/workflows/areas", () => workflows);
-    serveEndpoint("/api/snapshot/projects", (): SnapshotResponse => ({
-        manifest: null,
-        projects: { generatedAt: "2026-11-01T00:00:00Z", projects, retired: [] },
-    }));
-    serveEndpoint("/api/snapshot/metrics", (): SnapshotResponse => ({
-        manifest: null,
-        metrics: {
-            generatedAt: "2026-11-01T00:00:00Z",
-            commit: "abc",
-            branch: "master",
-            projects: metrics,
-            invariantFindings: [],
-            conventionalCommitRate: null,
-            commitsSinceLastRelease: null,
-        } satisfies MetricsArtifact,
-    }));
-    serveEndpoint("/api/snapshot/coverage", (): SnapshotResponse => ({
-        manifest: null,
-        coverage: {
-            generatedAt: "2026-11-01T00:00:00Z",
-            totals: null,
-            report: false,
-            projects: coverage,
-        } satisfies CoverageArtifact,
-    }));
-    serveEndpoint("/api/snapshot/deps", (): SnapshotResponse => ({
-        manifest: null,
-        deps: {
-            generatedAt: "2026-11-01T00:00:00Z",
-            vulnerabilities: null,
-            totalDependencies: null,
-            advisories: [],
-            outdated,
-        } satisfies DepsArtifact,
-    }));
+    artifacts.projects = { generatedAt: "2026-11-01T00:00:00Z", projects, retired: [] };
+    artifacts.metrics = {
+        generatedAt: "2026-11-01T00:00:00Z",
+        commit: "abc",
+        branch: "master",
+        projects: metrics,
+        invariantFindings: [],
+        conventionalCommitRate: null,
+        commitsSinceLastRelease: null,
+    } satisfies MetricsArtifact;
+    artifacts.coverage = {
+        generatedAt: "2026-11-01T00:00:00Z",
+        totals: null,
+        report: false,
+        projects: coverage,
+    } satisfies CoverageArtifact;
+    artifacts.deps = {
+        generatedAt: "2026-11-01T00:00:00Z",
+        vulnerabilities: null,
+        totalDependencies: null,
+        advisories: [],
+        outdated,
+    } satisfies DepsArtifact;
 };
 
 /** Each About fact by its label, the count beside a list label left out. */

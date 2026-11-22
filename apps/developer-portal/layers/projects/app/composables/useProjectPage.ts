@@ -12,7 +12,7 @@ const BUILT_IN = [
 
 /**
  * Everything a project page shows but its README, with the tabs other layers add through
- * `projectTabs`. Every read starts here and `ready` settles once they all have.
+ * `projectTabs`. Every read starts here and `ready` settles once the tabs' routes answer.
  */
 export const useProjectPage = () => {
     const { projectTabs = {} }: { projectTabs?: Record<string, ProjectTab | undefined> } =
@@ -36,30 +36,21 @@ export const useProjectPage = () => {
         }),
     );
     const extraRows = extraReads.map((read) => read.data);
-    const reads = {
-        projects: useSnapshot("projects"),
-        metrics: useSnapshot("metrics"),
-        coverage: useSnapshot("coverage"),
-        deps: useSnapshot("deps"),
-    };
-    const coverageSnapshot = reads.coverage.data;
-    const deps = reads.deps.data;
+    const coverageSnapshot = coverageArtifact();
+    const deps = depsArtifact();
 
-    const projects = computed(() => reads.projects.data.value?.projects?.projects ?? []);
+    const projects = projectsArtifact()?.projects ?? [];
     const project = computed(() =>
-        projects.value.find((candidate) => folderOf(candidate.root) === name.value),
+        projects.find((candidate) => folderOf(candidate.root) === name.value),
     );
 
     const coverage = computed(() =>
-        coverageSnapshot.value?.coverage?.projects.find(
-            (item) => item.root === project.value?.root,
-        ),
+        coverageSnapshot?.projects.find((item) => item.root === project.value?.root),
     );
     const outdated = computed(
         () =>
-            deps.value?.deps?.outdated?.filter((item) =>
-                item.dependents.includes(project.value?.root ?? ""),
-            ) ?? [],
+            deps?.outdated?.filter((item) => item.dependents.includes(project.value?.root ?? "")) ??
+            [],
     );
 
     const extra = computed(() => {
@@ -104,17 +95,15 @@ export const useProjectPage = () => {
         tabs,
         project,
         metric: computed(() =>
-            reads.metrics.data.value?.metrics?.projects.find(
-                (item) => item.name === project.value?.name,
-            ),
+            metricsArtifact()?.projects.find((item) => item.name === project.value?.name),
         ),
         projects,
         coverage,
-        coverageAge: computed(() => relativeTime(coverageSnapshot.value?.coverage?.generatedAt)),
+        coverageAge: relativeTime(coverageSnapshot?.generatedAt),
         outdated,
-        depsAge: computed(() => relativeTime(deps.value?.deps?.generatedAt)),
+        depsAge: relativeTime(deps?.generatedAt),
         extra,
         issues,
-        ready: Promise.all([...Object.values(reads), ...extraReads]),
+        ready: Promise.all(extraReads),
     };
 };

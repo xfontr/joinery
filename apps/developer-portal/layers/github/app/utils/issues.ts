@@ -48,7 +48,7 @@ export const summarize = (body: string, length = 140): string => {
 export const labelsOf = (issues: Issue[]): string[] =>
     [...new Set(issues.flatMap((issue) => issue.labels))].sort((a, b) => a.localeCompare(b));
 
-export interface IssueFilter {
+interface IssueFilter {
     label?: string;
     search?: string;
 }

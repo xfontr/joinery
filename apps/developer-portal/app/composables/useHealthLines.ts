@@ -8,21 +8,20 @@ const FULL = 100;
 
 /** Home's Health panel: one figure per area, each with the split behind it. */
 export const useHealthLines = () => {
-    const { data: coverage } = useSnapshot("coverage");
-    const { data: deps } = useSnapshot("deps");
-    const { data: usage } = useSnapshot("usage");
-    const { data: docsSnapshot } = useSnapshot("docs");
+    const coverage = coverageArtifact();
+    const deps = depsArtifact();
+    const usage = usageArtifact();
+    const docs = docsArtifact();
     const decisions = useDecisionReports();
     const audits = useAuditReports();
 
     return computed((): HealthLine[] => {
-        const lines = coverage.value?.coverage?.totals?.lines ?? null;
-        const counts = deps.value?.deps?.vulnerabilities ?? null;
+        const lines = coverage?.totals?.lines ?? null;
+        const counts = deps?.vulnerabilities ?? null;
         const worst = worstSeverity(counts);
-        const runs = sumDays(usage.value?.usage ? scriptRows(usage.value.usage) : []);
+        const runs = sumDays(usage ? scriptRows(usage) : []);
         const decided = countByStatus(decisions.value);
         const { findings } = countAll(audits.value);
-        const docs = docsSnapshot.value?.docs ?? null;
 
         return [
             {
@@ -38,7 +37,7 @@ export const useHealthLines = () => {
             },
             {
                 label: "Advisories",
-                value: counts ? String(deps.value?.deps?.advisories.length ?? 0) : "—",
+                value: counts ? String(deps?.advisories.length ?? 0) : "—",
                 tone: worst ? severityTone(worst) : "neutral",
                 to: "/deps",
                 legend: true,

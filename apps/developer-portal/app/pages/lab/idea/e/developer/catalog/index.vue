@@ -111,24 +111,20 @@ const crumbs = computed(() => (filter.value === "all" ? [] : [{ label: filter.va
 
 const search = ref("");
 
-const [{ data: projects }, { data: metrics }] = await Promise.all([
-    useSnapshot("projects"),
-    useSnapshot("metrics"),
-]);
+const projects = projectsArtifact();
+const metrics = metricsArtifact();
 
 const { data: readmes } = await useAsyncData("lab-e-catalog-readmes", () =>
     queryCollection("docs").select("path", "description").all(),
 );
 
 const rows = computed(() => {
-    const byRoot = new Map(
-        (metrics.value?.metrics?.projects ?? []).map((project) => [project.root, project]),
-    );
+    const byRoot = new Map((metrics?.projects ?? []).map((project) => [project.root, project]));
     const descriptions = new Map(
         (readmes.value ?? []).map((page) => [page.path, page.description]),
     );
 
-    return (projects.value?.projects?.projects ?? [])
+    return (projects?.projects ?? [])
         .map((project) => {
             const metric = byRoot.get(project.root);
             const kind = project.root.split("/")[0] ?? "";

@@ -2,7 +2,5 @@ import { toDecisionReports } from "#layers/decisions/shared/decisionReports.ts";
 
 /** Read off the collected snapshot rather than the content collection, because the frontmatter both pills show is parsed and validated there. */
 export const useDecisionReports = () => {
-    const { data: snapshot } = useSnapshot("docs");
-
-    return computed(() => toDecisionReports(snapshot.value?.docs?.pages ?? []));
+    return computed(() => toDecisionReports(docsArtifact()?.pages ?? []));
 };

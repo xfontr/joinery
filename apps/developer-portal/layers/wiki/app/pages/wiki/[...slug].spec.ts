@@ -1,10 +1,16 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
+import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import Page from "./[...slug].vue";
+
+const artifacts = vi.hoisted(() => ({ docs: null as DocsArtifact | null }));
+mockNuxtImport("docsArtifact", () => () => artifacts.docs);
+
+beforeEach(() => {
+    artifacts.docs = null;
+});
 
 // An in-memory docs collection, answering useWiki's listing and the page's own lookup
 const docs = vi.hoisted(() => ({
@@ -47,10 +53,7 @@ const page = (path: string, overrides: Partial<DocPage> = {}): DocPage => ({
 });
 
 const serve = (pages: DocPage[]) => {
-    serveEndpoint("/api/snapshot/docs", (): SnapshotResponse => ({
-        manifest: null,
-        docs: { generatedAt: "2026-11-01T00:00:00Z", pages, brokenLinkCount: 0 },
-    }));
+    artifacts.docs = { generatedAt: "2026-11-01T00:00:00Z", pages, brokenLinkCount: 0 };
 };
 
 const FIRST_HOUR = "/wiki/docs/guides/first-hour";

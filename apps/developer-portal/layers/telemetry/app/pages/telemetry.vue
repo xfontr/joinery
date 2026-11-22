@@ -32,8 +32,6 @@
 </template>
 
 <script setup lang="ts">
-const { usage, hasRuns, provenance, facts, ready } = useTelemetryPage();
+const { usage, hasRuns, provenance, facts } = useTelemetryPage();
 const series = ref("runs");
-
-await ready;
 </script>

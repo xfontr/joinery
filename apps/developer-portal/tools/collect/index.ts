@@ -2,6 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import type { ArtifactStatus } from "#layers/snapshot/shared/types/ArtifactStatus.ts";
 import type { Manifest } from "#layers/snapshot/shared/types/Manifest.ts";
+import { toBadges } from "./badges.ts";
 import { collectCoverage } from "./coverage.ts";
 import { collectDeps } from "./deps.ts";
 import { collectDocs } from "./docs.ts";
@@ -25,9 +26,45 @@ const write = async (name: string, value: unknown): Promise<void> => {
     );
 };
 
+interface Run {
+    generatedAt: string;
+    artifacts: Record<string, ArtifactStatus>;
+}
+
+/** Runs one collector, writes its artifact and records the outcome; null when it failed. */
+const step = async <T>(
+    run: Run,
+    name: string,
+    collect: () => Promise<T>,
+    summary: (value: T) => string,
+): Promise<T | null> => {
+    const result = await tryRun(collect);
+
+    if (!result.ok) {
+        run.artifacts[name] = { generatedAt: run.generatedAt, ok: false, error: result.error };
+        printError(`✗ ${name} — ${result.error}`);
+        return null;
+    }
+
+    await write(name, result.value);
+    run.artifacts[name] = { generatedAt: run.generatedAt, ok: true };
+    print(`✓ ${name} — ${summary(result.value)}`);
+    return result.value;
+};
+
+const collectProjects = async (generatedAt: string) => {
+    const graph = await collectGraph(generatedAt);
+
+    // Deleted projects are history the page can do without, so a git failure here only empties them.
+    const retired = await tryRun(() => collectRetired(graph.projects));
+    if (!retired.ok) printError(`✗ retired projects — ${retired.error}`);
+
+    return { ...graph, retired: retired.ok ? retired.value : [] };
+};
+
 const main = async (): Promise<void> => {
-    const generatedAt = new Date().toISOString();
-    const artifacts: Record<string, ArtifactStatus> = {};
+    const run: Run = { generatedAt: new Date().toISOString(), artifacts: {} };
+    const { generatedAt } = run;
 
     await mkdir(SNAPSHOT_DIR, { recursive: true });
 
@@ -36,113 +73,74 @@ const main = async (): Promise<void> => {
         git(["rev-parse", "--abbrev-ref", "HEAD"]).then((out) => out.trim()),
     ]);
 
-    // The graph comes first because coverage and metrics are both keyed off its project list. If it
-    // fails there is nothing to iterate, so that one failure is fatal where the others are not.
-    const graph = await tryRun(() => collectGraph(generatedAt));
-
-    if (!graph.ok) {
-        artifacts.projects = { generatedAt, ok: false, error: graph.error };
-        await write("manifest", {
+    // Written last so its presence means the run finished, however many collectors failed.
+    const writeManifest = () =>
+        write("manifest", {
             schemaVersion: SCHEMA_VERSION,
             generatedAt,
             commit,
             branch,
-            artifacts,
+            artifacts: run.artifacts,
         } satisfies Manifest);
 
-        printError(`✗ projects — ${graph.error}`);
-        process.exitCode = 1;
+    // Coverage and metrics are both keyed off the graph's project list, so without it the run stops.
+    const graph = await step(
+        run,
+        "projects",
+        () => collectProjects(generatedAt),
+        (value) => `${value.projects.length} projects`,
+    );
 
+    if (!graph) {
+        await writeManifest();
+        process.exitCode = 1;
         return;
     }
 
-    // Deleted projects are history the page can do without, so a git failure here only empties them.
-    const retired = await tryRun(() => collectRetired(graph.value.projects));
-    if (!retired.ok) printError(`✗ retired projects — ${retired.error}`);
-
-    await write("projects", { ...graph.value, retired: retired.ok ? retired.value : [] });
-    artifacts.projects = { generatedAt, ok: true };
-    print(`✓ projects — ${graph.value.projects.length} projects`);
-
-    const coverage = await tryRun(() => collectCoverage(graph.value.projects, generatedAt));
-
-    if (coverage.ok) {
-        await write("coverage", coverage.value);
-        artifacts.coverage = { generatedAt, ok: true };
-
-        const collected = coverage.value.projects.filter((project) => project.collected).length;
-        print(`✓ coverage — ${collected}/${coverage.value.projects.length} projects collected`);
-    } else {
-        artifacts.coverage = { generatedAt, ok: false, error: coverage.error };
-        printError(`✗ coverage — ${coverage.error}`);
-    }
-
-    const metrics = await tryRun(() =>
-        collectMetrics(
-            graph.value.projects,
-            coverage.ok
-                ? coverage.value
-                : { generatedAt, totals: null, report: false, projects: [] },
-            generatedAt,
-        ),
+    const coverage = await step(
+        run,
+        "coverage",
+        () => collectCoverage(graph.projects, generatedAt),
+        (value) =>
+            `${value.projects.filter((project) => project.collected).length}/${value.projects.length} projects collected`,
     );
 
-    if (metrics.ok) {
-        await write("metrics", metrics.value);
-        artifacts.metrics = { generatedAt, ok: true };
-        print(`✓ metrics — ${metrics.value.invariantFindings.length} invariant findings`);
-    } else {
-        artifacts.metrics = { generatedAt, ok: false, error: metrics.error };
-        printError(`✗ metrics — ${metrics.error}`);
-    }
+    const metrics = await step(
+        run,
+        "metrics",
+        () =>
+            collectMetrics(
+                graph.projects,
+                coverage ?? { generatedAt, totals: null, report: false, projects: [] },
+                generatedAt,
+            ),
+        (value) => `${value.invariantFindings.length} invariant findings`,
+    );
 
-    // Independent of the project graph, so a failure here never blocks coverage or metrics.
-    const deps = await tryRun(() => collectDeps(generatedAt));
+    const deps = await step(
+        run,
+        "deps",
+        () => collectDeps(generatedAt),
+        (value) => `${value.advisories.length} advisories, ${value.outdated?.length ?? 0} outdated`,
+    );
 
-    if (deps.ok) {
-        await write("deps", deps.value);
-        artifacts.deps = { generatedAt, ok: true };
-        print(
-            `✓ deps — ${deps.value.advisories.length} advisories, ${deps.value.outdated?.length ?? 0} outdated`,
-        );
-    } else {
-        artifacts.deps = { generatedAt, ok: false, error: deps.error };
-        printError(`✗ deps — ${deps.error}`);
-    }
+    const docs = await step(
+        run,
+        "docs",
+        () => collectDocs(generatedAt),
+        (value) => `${value.pages.length} pages, ${value.brokenLinkCount} broken links`,
+    );
 
-    const docs = await tryRun(() => collectDocs(generatedAt));
+    await step(
+        run,
+        "usage",
+        () => collectUsage(generatedAt),
+        (value) =>
+            `${Object.values(value.scripts).reduce((sum, item) => sum + item.runs, 0)} runs across ${Object.keys(value.scripts).length} scripts`,
+    );
 
-    if (docs.ok) {
-        await write("docs", docs.value);
-        artifacts.docs = { generatedAt, ok: true };
-        print(
-            `✓ docs — ${docs.value.pages.length} pages, ${docs.value.brokenLinkCount} broken links`,
-        );
-    } else {
-        artifacts.docs = { generatedAt, ok: false, error: docs.error };
-        printError(`✗ docs — ${docs.error}`);
-    }
-
-    const usage = await tryRun(() => collectUsage(generatedAt));
-
-    if (usage.ok) {
-        await write("usage", usage.value);
-        artifacts.usage = { generatedAt, ok: true };
-        const runs = Object.values(usage.value.scripts).reduce((sum, item) => sum + item.runs, 0);
-        print(`✓ usage — ${runs} runs across ${Object.keys(usage.value.scripts).length} scripts`);
-    } else {
-        artifacts.usage = { generatedAt, ok: false, error: usage.error };
-        printError(`✗ usage — ${usage.error}`);
-    }
-
-    // Written last so its presence means the run finished, however many collectors failed.
-    await write("manifest", {
-        schemaVersion: SCHEMA_VERSION,
-        generatedAt,
-        commit,
-        branch,
-        artifacts,
-    } satisfies Manifest);
+    await write("badges", toBadges({ deps, coverage, docs, metrics }));
+    await writeManifest();
 
     print(`\nSnapshot written to ${SNAPSHOT_DIR}`);
 };

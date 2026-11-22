@@ -1,11 +1,17 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DecisionOutcome, DecisionStatus } from "#layers/snapshot/shared/decisions.ts";
 import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
+import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import Page from "./[id].vue";
+
+const artifacts = vi.hoisted(() => ({ docs: null as DocsArtifact | null }));
+mockNuxtImport("docsArtifact", () => () => artifacts.docs);
+
+beforeEach(() => {
+    artifacts.docs = null;
+});
 
 // An in-memory docs collection, answering the page's own lookup
 const docs = vi.hoisted(() => ({
@@ -63,18 +69,15 @@ beforeEach(() => {
         { path: "/docs/decisions/0002-second", title: "Second" },
         { path: "/docs/decisions/0003-third", title: "Third" },
     ];
-    serveEndpoint("/api/snapshot/docs", (): SnapshotResponse => ({
-        manifest: null,
-        docs: {
-            generatedAt: "2026-11-01T00:00:00Z",
-            pages: [
-                report("0001-first", "implemented", "accepted"),
-                report("0002-second", "to-implement", "superseded", "0003-third.md"),
-                report("0003-third", "implemented", "accepted"),
-            ],
-            brokenLinkCount: 0,
-        },
-    }));
+    artifacts.docs = {
+        generatedAt: "2026-11-01T00:00:00Z",
+        pages: [
+            report("0001-first", "implemented", "accepted"),
+            report("0002-second", "to-implement", "superseded", "0003-third.md"),
+            report("0003-third", "implemented", "accepted"),
+        ],
+        brokenLinkCount: 0,
+    };
 });
 
 describe("decision detail page", () => {

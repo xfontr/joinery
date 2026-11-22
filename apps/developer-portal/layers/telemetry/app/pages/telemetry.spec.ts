@@ -1,14 +1,19 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
-import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ScriptUsage } from "#layers/snapshot/shared/types/ScriptUsage.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import DailyChart from "~/components/DailyChart.vue";
 import PageFacts from "~/components/PageFacts.vue";
 import type { PageFact } from "~/types/PageFact";
 import Page from "./telemetry.vue";
+
+const artifacts = vi.hoisted(() => ({ usage: null as UsageArtifact | null }));
+mockNuxtImport("usageArtifact", () => () => artifacts.usage);
+
+beforeEach(() => {
+    artifacts.usage = null;
+});
 
 // Each panel has its own spec; here only the page's own totals are under test
 const global = {
@@ -37,10 +42,7 @@ const tally = (overrides: Partial<ScriptUsage> = {}): ScriptUsage => ({
 });
 
 const serve = (usage: UsageArtifact | null) => {
-    serveEndpoint("/api/snapshot/usage", (): SnapshotResponse => ({
-        manifest: null,
-        usage,
-    }));
+    artifacts.usage = usage;
 };
 
 const usage = (

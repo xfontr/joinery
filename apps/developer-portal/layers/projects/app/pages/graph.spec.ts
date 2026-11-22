@@ -1,12 +1,26 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
-import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Manifest } from "#layers/snapshot/shared/types/Manifest.ts";
 import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
+import type { ProjectsArtifact } from "#layers/snapshot/shared/types/ProjectsArtifact.ts";
 import Page from "./graph.vue";
+
+const artifacts = vi.hoisted(() => ({
+    manifest: null as Manifest | null,
+    metrics: null as MetricsArtifact | null,
+    projects: null as ProjectsArtifact | null,
+}));
+mockNuxtImport("snapshotManifest", () => () => artifacts.manifest);
+mockNuxtImport("metricsArtifact", () => () => artifacts.metrics);
+mockNuxtImport("projectsArtifact", () => () => artifacts.projects);
+
+beforeEach(() => {
+    artifacts.manifest = null;
+    artifacts.metrics = null;
+    artifacts.projects = null;
+});
 
 const MANIFEST = {
     schemaVersion: 1,
@@ -36,14 +50,9 @@ const METRICS = {
 } satisfies MetricsArtifact;
 
 const serve = (projects: ProjectNode[], metrics: MetricsArtifact = METRICS) => {
-    serveEndpoint("/api/snapshot/projects", (): SnapshotResponse => ({
-        manifest: MANIFEST,
-        projects: { generatedAt: "2026-11-01T00:00:00Z", projects, retired: [] },
-    }));
-    serveEndpoint("/api/snapshot/metrics", (): SnapshotResponse => ({
-        manifest: MANIFEST,
-        metrics,
-    }));
+    artifacts.manifest = MANIFEST;
+    artifacts.projects = { generatedAt: "2026-11-01T00:00:00Z", projects, retired: [] };
+    artifacts.metrics = metrics;
 };
 
 // A group's heading is the only name it has, so it locates the group the way a reader would

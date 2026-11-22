@@ -157,6 +157,7 @@ describe("collector entrypoint", () => {
             "deps.json",
             "docs.json",
             "usage.json",
+            "badges.json",
             "manifest.json",
         ]);
         expect(state.writes.find(({ path }) => path.endsWith("coverage.json"))).toBeUndefined();
@@ -180,6 +181,7 @@ describe("collector entrypoint", () => {
         expect(state.writes.map(({ path }) => path.split("/").at(-1))).toEqual([
             "projects.json",
             "coverage.json",
+            "badges.json",
             "manifest.json",
         ]);
         const manifest = state.writes[state.writes.length - 1]!.value as {

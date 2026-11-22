@@ -19,7 +19,5 @@
 </template>
 
 <script setup lang="ts">
-const { deps, provenance, facts, ready } = useDepsPage();
-
-await ready;
+const { deps, provenance, facts } = useDepsPage();
 </script>

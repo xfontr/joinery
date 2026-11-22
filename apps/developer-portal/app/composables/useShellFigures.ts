@@ -101,8 +101,7 @@ const docsFigure = (badges: Badges | null, to: string): ShellFigure => {
 export const useShellFigures = () => {
     const { nav }: { nav: Record<string, NavLink | undefined> } = useAppConfig();
     const { shown: issues } = useIssues();
-    const badgesRead = useFetch<Badges>("/api/badges", { key: "badges" });
-    const badges = badgesRead.data;
+    const badges = shellBadges();
 
     const figureReads = Object.entries(nav).flatMap(([key, link]) =>
         link?.figure
@@ -114,16 +113,16 @@ export const useShellFigures = () => {
     const toOf = (key: string): string => nav[key]?.to ?? "/";
 
     const figures = computed((): Record<string, ShellFigure> => ({
-        coverage: coverageFigure(badges.value?.lineCoverage ?? null, toOf("coverage")),
-        deps: depsFigure(badges.value ?? null, toOf("deps")),
+        coverage: coverageFigure(badges?.lineCoverage ?? null, toOf("coverage")),
+        deps: depsFigure(badges, toOf("deps")),
         telemetry: toolingFigure(figureOf("telemetry"), toOf("telemetry")),
         issues: issuesFigure(issues.value, toOf("issues")),
-        docs: docsFigure(badges.value ?? null, toOf("docs")),
+        docs: docsFigure(badges, toOf("docs")),
     }));
 
     return {
         figures,
-        collected: computed(() => badges.value?.collected ?? null),
-        ready: Promise.all([badgesRead, ...figureReads.map((entry) => entry.read)]),
+        collected: badges?.collected ?? null,
+        ready: Promise.all(figureReads.map((entry) => entry.read)),
     };
 };

@@ -11,12 +11,7 @@
 </template>
 
 <script setup lang="ts">
-const [{ data: projects }, { data: metrics }] = await Promise.all([
-    useSnapshot("projects"),
-    useSnapshot("metrics"),
-]);
-
-const count = computed(() => projects.value?.projects?.projects.length ?? 0);
-const findings = computed(() => metrics.value?.metrics?.invariantFindings.length ?? 0);
-const hint = computed(() => counted(findings.value, "invariant finding"));
+const count = projectsArtifact()?.projects.length ?? 0;
+const findings = metricsArtifact()?.invariantFindings.length ?? 0;
+const hint = counted(findings, "invariant finding");
 </script>

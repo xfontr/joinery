@@ -3,7 +3,7 @@
         <template #header>
             <PageHeader title="Project graph">
                 <template #actions>
-                    <SnapshotAge :manifest="snapshot?.manifest ?? null" artifact="projects" />
+                    <SnapshotAge :manifest artifact="projects" />
                 </template>
             </PageHeader>
         </template>
@@ -28,9 +28,7 @@
 </template>
 
 <script setup lang="ts">
-const { data: snapshot } = await useSnapshot("projects");
-const { data: metricsSnapshot } = await useSnapshot("metrics");
-
-const projects = computed(() => snapshot.value?.projects?.projects ?? []);
-const findings = computed(() => metricsSnapshot.value?.metrics?.invariantFindings ?? []);
+const manifest = snapshotManifest();
+const projects = projectsArtifact()?.projects ?? [];
+const findings = metricsArtifact()?.invariantFindings ?? [];
 </script>

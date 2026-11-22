@@ -26,7 +26,7 @@ export const useProjectList = () => {
     const { projects, metricFor, readmeFor, ready } = useCatalog();
 
     const rows = computed(() =>
-        projects.value
+        projects
             .map((project): ProjectRow => {
                 const metric = metricFor(project);
                 const version = metric?.currentVersion ?? null;

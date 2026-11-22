@@ -1,6 +1,5 @@
 /** Every changelog, the one picked and the release metrics beside them; `ready` settles on load. */
 export const useChangelogs = () => {
-    const snapshot = useSnapshot("metrics");
     const list = useAsyncData(
         "changelogs",
         () =>
@@ -26,15 +25,15 @@ export const useChangelogs = () => {
         { watch: [selected] },
     );
 
-    const metrics = computed(() => snapshot.data.value?.metrics ?? null);
+    const metrics = metricsArtifact();
 
     return {
         changelogs,
         selected,
         page: content.data,
-        projects: computed(() => metrics.value?.projects ?? []),
-        sinceRelease: computed(() => metrics.value?.commitsSinceLastRelease ?? null),
-        conventional: computed(() => metrics.value?.conventionalCommitRate ?? null),
-        ready: Promise.all([snapshot, list, content]),
+        projects: metrics?.projects ?? [],
+        sinceRelease: metrics?.commitsSinceLastRelease ?? null,
+        conventional: metrics?.conventionalCommitRate ?? null,
+        ready: Promise.all([list, content]),
     };
 };
