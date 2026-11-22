@@ -1,32 +1,34 @@
 {
     "about": {
         "head": "About",
-        "lead": "I'm Xifré Font, a senior frontend developer in Barcelona. This repo holds the websites I build and the tooling they share.",
+        "intro": {
+            "end": "about Portal, their developer platform built on Backstage. My first thought was: hold on, with a monorepo this big, I can actually build one for my own stuff. So I did.",
+            "start": "The portal came later, after reading"
+        },
+        "lead": "I'm Xifré Font, a senior frontend developer in Barcelona. Before that I was a lawyer, and founded Huella Legal while practising.",
         "linkedin": "LinkedIn",
-        "look": {
+        "post": "a Spotify post",
+        "repo": "GitHub",
+        "story": {
+            "label": "How this repo got here",
             "items": {
-                "developer": {
-                    "detail": "Every decision, audit, test and dependency, as collected from the repo.",
-                    "term": "Developer view"
+                "playground": {
+                    "term": "A playground",
+                    "detail": "I wanted to see what a big monorepo really looks like: **Nx boundaries**, domain-driven design, **hexagonal adapters** for outside vendors like WordPress and the translation tool, and **a lint rule for every convention**, so nothing depends on someone remembering it."
                 },
-                "maps": {
-                    "detail": "How each project is planned before the first ticket.",
-                    "term": "Project maps"
+                "tooling": {
+                    "term": "The tooling",
+                    "detail": "Then came the scripts, to speed up the work and the back-and-forth with AI. And the **decision records (ADRs)**, which I'm a bit proud of: every call has its reason written down, so nothing here is truly arbitrary. The tooling also **reports its own usage**. This way, an unused script gets cut instead of being mindlessly maintained."
                 },
-                "method": {
-                    "detail": "The five rules every project follows, and the check behind each one.",
-                    "term": "Method"
+                "workflows": {
+                    "term": "Workflows",
+                    "detail": "Building Huella Legal end to end taught me which steps come back on every project. I turned that into **workflow templates**, so the next rebuild, or the next site from scratch, starts from what already worked."
                 },
-                "repo": {
-                    "detail": "The code itself.",
-                    "term": "GitHub"
-                },
-                "work": {
-                    "detail": "The two websites, what changed and why.",
-                    "term": "Work"
+                "apps": {
+                    "term": "Real apps",
+                    "detail": "At some point it stopped being just a playground: it was good enough to grow **real apps** on. Huella Legal moved in, then Marina Roustan, and there are more to come."
                 }
-            },
-            "label": "Where to look"
+            }
         },
         "title": "About",
         "titleMark": "this repo"
@@ -540,9 +542,9 @@
                 "title": "Live project maps"
             }
         },
-        "head": "Built by rules",
-        "intro": "Each one follows the five rules below, and every decision behind them is public.",
-        "lead": "Websites for small publications and practices, and the tools that run them.",
+        "head": "This is a developer platform",
+        "intro": "The five rules below run on every change, and every decision behind them is written down.",
+        "lead": "Huh? Let me explain. It's the tooling, rules and agents every app here is built with. Most companies keep theirs behind closed doors, but I'm not a company, so this one's public.",
         "rules": {
             "agents": {
                 "line": "Tests, lint rules and three review agents decide what gets merged. I step in when they ask.",
@@ -568,8 +570,8 @@
                 "proofCount": "{enabled} lint rules, {inHouse} written in-house"
             }
         },
-        "title": "Built by",
-        "titleMark": "rules."
+        "title": "This is a",
+        "titleMark": "developer platform."
     },
     "issues": {
         "empty": "No open issues.",

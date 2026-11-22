@@ -13,3 +13,12 @@ at,script,command,target,flags,area,caller,tty,exit,ms
 2026-11-22,dev,,developer-portal,,developer-portal,human,1,1,38025
 2026-11-22,map,,,check,developer-portal,claude-code,0,0,114
 2026-11-22,map,,,check,developer-portal,claude-code,0,0,107
+2026-11-22,map,,,check,developer-portal,claude-code,0,0,127
+2026-11-22,map,,,check,developer-portal,claude-code,0,0,126
+2026-11-22,workflow,next,,,developer-portal,claude-code,0,0,1690
+2026-11-22,workflow,file,,,developer-portal,claude-code,0,1,95
+2026-11-22,workflow,file,,,developer-portal,claude-code,0,0,1645
+2026-11-22,workflow,setup,,,developer-portal,claude-code,0,0,1250
+2026-11-22,workflow,setup,,yes,developer-portal,claude-code,0,0,1962
+2026-11-22,workflow,file,,yes,developer-portal,claude-code,0,0,13776
+2026-11-22,worktree,,,,developer-portal,claude-code,0,0,10237
