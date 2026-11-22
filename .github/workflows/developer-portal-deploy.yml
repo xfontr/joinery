@@ -56,4 +56,6 @@ jobs:
               with:
                   apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
                   accountId: fb3cf13b48ae51ed991e8f95c68d173b
-                  command: pages deploy apps/developer-portal/.output/public --project-name=xfontr-monorepo --branch=master
+                  # The action `pnpm add`s a missing wrangler at the workspace root, which pnpm refuses.
+                  workingDirectory: apps/developer-portal
+                  command: pages deploy .output/public --project-name=xfontr-monorepo --branch=master

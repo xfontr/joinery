@@ -21,6 +21,8 @@ export default {
         "apps/developer-portal": {
             // The second is an Nx `runtime` input, run by path from package.json
             entry: ["content.config.ts", "tools/lib/snapshotStamp.ts"],
+            // Run by cloudflare/wrangler-action in the deploy workflow, never imported
+            ignoreDependencies: ["wrangler"],
         },
         "packages/configs": {
             // A spec runs @playwright/test's `playwright` binary by path
