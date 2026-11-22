@@ -4,13 +4,13 @@ Claude Code's native layout: `CLAUDE.md` files for always-on rules, skills under
 [`.claude/skills/`](../../.claude/skills/) for task procedures, and settings, hooks, subagents and
 workflows beside them under `.claude/`. All tracked.
 
-## 📄 Why `CLAUDE.md` reads the way it does
+## Why `CLAUDE.md` reads the way it does
 
 `CLAUDE.md` holds only what the READMEs and code don't show, or what agents get wrong anyway. Each
 project's file is a pointer to its README plus the invariants worth losing a build over. The root
 file loads every turn; a project's loads once Claude reads something there.
 
-## 🪝 The hooks
+## The hooks
 
 Two `PostToolUse` hooks fire after every edit, and one `PreToolUse` hook before every shell
 command.
@@ -23,17 +23,17 @@ command.
 
 The hooks are early feedback; `pre-commit` and CI run the same gates on edits made by hand.
 
-## 🚫 What the deny list forecloses
+## What the deny list forecloses
 
 [`.claude/settings.json`](../../.claude/settings.json) denies editing changelogs and
 `docs/FEATURES.md`, running a release, and reading real `.env` files.
 
-## 🛠 What the skills are collectively
+## What the skills are collectively
 
 A skill loads only for a matching task, which keeps procedures out of unrelated context.
 [`docs/FEATURES.md`](../FEATURES.md) lists every skill.
 
-## 🚢 The ship-issue pipeline
+## The ship-issue pipeline
 
 [`ship-issue.js`](../../.claude/workflows/ship-issue.js) takes issues to merged PRs with no human
 reading the code: `/ship-issue 340 341`. Issues run one after another, each branching off the

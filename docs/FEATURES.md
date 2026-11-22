@@ -7,11 +7,11 @@ one. Start here when you don't yet know what to go and read.
 in the doc each row points at, so there is no prose here that can drift from its source. A row
 with no doc is a real gap rather than a rendering artifact.
 
-## ⌨️ Commands
+## Commands
 
 Root commands run against affected projects only. The per-project rows below them are the
 ones the root doesn't expose — `lint`, `typecheck`, `test` and `build` exist on every project
-and are documented once in the [root README](../README.md#-getting-started).
+and are documented once in the [root README](../README.md#getting-started).
 
 | Capability | Declared in | Explained in |
 | --- | --- | --- |
@@ -70,7 +70,7 @@ and are documented once in the [root README](../README.md#-getting-started).
 | `pnpm exec nx docker:down @monorepo/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
 | `pnpm exec nx docker:logs @monorepo/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
 
-## 🪝 Git hooks
+## Git hooks
 
 These run themselves, but only after `pnpm quick-start` — a fresh clone has no hooks at all until
 that per-clone setup runs.
@@ -83,7 +83,7 @@ that per-clone setup runs.
 | `pre-commit` | [`.husky/pre-commit`](../.husky/pre-commit) | [`README.md`](../README.md) |
 | `pre-push` | [`.husky/pre-push`](../.husky/pre-push) | [`README.md`](../README.md) |
 
-## ⚙️ Workflows
+## Workflows
 
 GitHub Actions, named as the Actions tab shows them rather than by filename.
 
@@ -98,7 +98,7 @@ GitHub Actions, named as the Actions tab shows them rather than by filename.
 | `Release` | [`.github/workflows/release.yml`](../.github/workflows/release.yml) | [`README.md`](../README.md) |
 | `Security` | [`.github/workflows/security.yml`](../.github/workflows/security.yml) | — |
 
-## 🛠 Agent skills
+## Agent skills
 
 Instructions an agent loads for one kind of task. Worth reading as a human too: a skill is the
 shortest statement of how a task is meant to go here.

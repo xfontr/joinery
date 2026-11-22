@@ -3,11 +3,11 @@
 A Nuxt 4 redesign of the Huella Legal law blog. Content comes from an external WordPress through
 [`@monorepo/content`](../../packages/content/README.md); the site is Spanish-only.
 
-## 🚀 Development
+## Development
 
 | Command | What it does |
 | --- | --- |
-| `pnpm dev` | Dev server against the [fake WordPress](#-dev-mocks), never huellalegal.com |
+| `pnpm dev` | Dev server against the [fake WordPress](#dev-mocks), never huellalegal.com |
 | `pnpm dev:api` | Dev server against the live WordPress. Only when the fakes can't show it |
 | `pnpm build` | Production build into `.output/`. Also typechecks, which is why it's slow |
 | `pnpm preview` | Serve the production build |
@@ -17,20 +17,20 @@ A Nuxt 4 redesign of the Huella Legal law blog. Content comes from an external W
 | `pnpm cache:clear` | Empty the local `articles` and `content` caches so the next request rereads WordPress |
 | `pnpm exec nx nuxt-prepare @monorepo/huella-legal` | Regenerate `.nuxt` by hand; Nx already runs it before lint, typecheck, test and build |
 
-### 🧪 Dev mocks
+### Dev mocks
 
 `pnpm dev` preloads [`mocks/server.ts`](./mocks/server.ts), an MSW fake of WordPress serving
 [`mocks/content.json`](./mocks/content.json). The live host blacklists machines that read it too
 often. An unknown slug is a `404`; any other request to huellalegal.com is an error in the dev log.
 Kit, Turnstile and Resend stay inert without their keys.
 
-### 📖 API reference
+### API reference
 
 Every `/api` route is documented at `/_openapi.json` and browsable at `/_scalar`, in dev and on
 every deploy. A route adds itself with `defineRouteMeta({ openAPI })` — literals only, since Nitro
 reads it from source and silently drops an imported constant.
 
-## 🚢 Deployment
+## Deployment
 
 GitHub Actions builds, Netlify hosts
 ([`netlify-deployment.yml`](../../.github/workflows/netlify-deployment.yml)). Netlify's own git
@@ -50,14 +50,14 @@ builds stay off.
 - `NETLIFY_SITE_ID` is a repo variable and `NETLIFY_AUTH_TOKEN` a secret. Fork and Dependabot PRs
   get neither and pass without a preview.
 
-### 🔒 Staging login
+### Staging login
 
 `staging.huellalegal.com` and every `*.netlify.app` URL ask for Basic Auth; the public host doesn't.
 [`modules/stagingGate.ts`](./modules/stagingGate.ts) writes a Netlify edge function on production
 builds only. With `STAGING_USERNAME` or `STAGING_PASSWORD` unset, gated hosts answer `401`. A new
 alias outside those two patterns stays open until it's added to `GATED_HOSTS`.
 
-### 🗄 Rendering
+### Rendering
 
 Pages that read no query string are prerendered; the rest are cached by Netlify's CDN through `isr`
 route rules. [0033](../../docs/decisions/0033-huella-legal-hybrid-prerender.md) has the reasoning.
@@ -87,7 +87,7 @@ Reproduce a deploy build locally (it reads the live WordPress):
 NUXT_SITE_ENV=preview pnpm exec nx build @monorepo/huella-legal --skip-nx-cache
 ```
 
-### 🔐 Abuse and hardening
+### Abuse and hardening
 
 Every BFF route is public, so input is capped and checked first: each free-text field has a maximum
 length in the browser and the route, forms carry a honeypot and a Turnstile token, and
@@ -95,7 +95,7 @@ length in the browser and the route, forms carry a honeypot and a Turnstile toke
 AI crawlers. The Turnstile site key's hostname list in Cloudflare is what ties tokens to our
 domains. Abusive IPs are blocked by hand in Netlify's firewall, never in the repo.
 
-## 🔑 Environment
+## Environment
 
 A variable a feature can't work without goes under `requiredEnv` in its layer's `nuxt.config.ts`.
 A production build fails naming each unset one; `nuxt dev` warns; other builds ignore them. Every
@@ -109,7 +109,7 @@ must expose them to builds too.
 | `NUXT_PUBLIC_SITE_URL` | Optional. Overrides the public origin used for permalinks and canonicals |
 | `NUXT_PUBLIC_PAGE_SLUGS` | JSON array of WordPress page slugs served at `/:slug/`. Leave unset for the default |
 | `NUXT_ARTICLES_HIDDEN_TERMS` | Optional. JSON array of category/tag slugs whose posts stay out of every listing |
-| `STAGING_USERNAME`, `STAGING_PASSWORD` | The [staging login](#-staging-login). Needs Netlify's Functions scope |
+| `STAGING_USERNAME`, `STAGING_PASSWORD` | The [staging login](#staging-login). Needs Netlify's Functions scope |
 | `NUXT_NEWSLETTER_API_KEY`, `_FORM_ID` | Kit API key and the form new readers join |
 | `NUXT_NEWSLETTER_BASE_URL` | Optional. Kit API origin, **without** `/v4` |
 | `NUXT_MAIL_API_KEY` | Resend API key for Contacto and Publicar |
@@ -126,13 +126,13 @@ must expose them to builds too.
 Public values that are the same everywhere (site URL, sender, inboxes) are literals in the
 `nuxt.config.ts` of the layer that owns them; the matching `NUXT_` variable still overrides them.
 
-## 🌍 i18n
+## i18n
 
 Copy lives in [`i18n/locales/es-ES.json`](./i18n/locales/es-ES.json), handed straight to
 `@nuxtjs/i18n` with no TMS (Tolgee's 500-key cap was outgrown). One locale, `no_prefix`, no browser
 detection. Specs see keys, not copy: [`vitest.setup.ts`](./vitest.setup.ts) empties the messages.
 
-### 🔤 Copy keys
+### Copy keys
 
 | Rule | Example |
 | --- | --- |
@@ -143,7 +143,7 @@ detection. Specs see keys, not copy: [`vitest.setup.ts`](./vitest.setup.ts) empt
 | `common` only for copy that means the same everywhere | `common.loading` |
 | Keys sorted alphabetically at every level | — |
 
-## 📄 Content
+## Content
 
 Only the `articles` layer's server routes call `useContent`; every page reads those routes. The
 routes map WordPress entries into view models, so neither the CMS URL nor raw HTML reaches the
@@ -151,7 +151,7 @@ browser. Listings, search suggestions and counts slice one cached index of every
 production, five minutes in dev), so a new post can take a couple of hours plus the CDN's day to
 list. The [module README](../../packages/content/src/nuxt/README.md) has the cache options.
 
-### 🧼 The body pipeline
+### The body pipeline
 
 `toArticleBody` turns a post's HTML into markup safe for `v-html`, server-side.
 [0027](../../docs/decisions/0027-huella-legal-content-model.md) has the corpus behind each rule.
@@ -166,7 +166,7 @@ list. The [module README](../../packages/content/src/nuxt/README.md) has the cac
 | Images | Lazy, and `/wp-content/` URLs repointed at `content.vendor.baseURL` |
 | Lead | Up to the first paragraph; the featured image goes after it |
 
-## 🧩 Structure
+## Structure
 
 `app/` is the thin shell: layout, header, footer, error page and client plugins. Domain code lives
 in Nuxt layers under [`layers/`](./layers), auto-registered (never add `extends`).
@@ -198,7 +198,7 @@ included.
 | [`forms`](./layers/forms) | Honeypot, Turnstile, `assertForm`, `sendMail` |
 | [`design`](./layers/design) | Tokens and the Nuxt UI theme ([DESIGN.md](./DESIGN.md)) |
 
-### 🔗 Links
+### Links
 
 Components link by route name (`{ name: "article", params: { slug } }`), never by a built string.
 A page sets its path in `definePageMeta`; `typedPages` fails typecheck on a wrong name.
@@ -216,14 +216,14 @@ A page sets its path in `definePageMeta`; `typedPages` fails typecheck on a wron
 | `contact` | `/contacto/` |
 | `publish` | `/publicar/` |
 
-## 📚 Storybook
+## Storybook
 
 Stories sit beside their component as `*.stories.ts`. It's plain `@storybook/vue3-vite` (the Nuxt
 integration stops at Nuxt 3), so [`.storybook/`](./.storybook) wires Nuxt UI, fonts, i18n,
 auto-imports and stubs for `NuxtImg` and `NuxtTurnstile` by hand. Its router repeats the
-[route table](#-links) by hand too. The published copy lives on the developer portal.
+[route table](#links) by hand too. The published copy lives on the developer portal.
 
-## 📡 Observability
+## Observability
 
 Both halves come from [`@monorepo/observability`](../../packages/observability/README.md) and are
 off when their URL is unset.
@@ -235,7 +235,7 @@ off when their URL is unset.
 - [`errorLog.ts`](./server/plugins/errorLog.ts) logs every handled `5xx` with its cause.
 - Don't set `NUXT_PUBLIC_OBSERVABILITY_APP_VERSION` on Netlify; the build stamps the commit.
 
-## ✅ Testing
+## Testing
 
 | Project | Covers | Command |
 | --- | --- | --- |
@@ -247,7 +247,7 @@ off when their URL is unset.
 Configs wrap the presets in [`@monorepo/configs`](../../packages/configs/README.md); thresholds live
 in [`vitest.config.ts`](./vitest.config.ts) and pages are left to Playwright.
 
-### 🎭 e2e
+### e2e
 
 - The built server runs with [`e2e/server.ts`](./e2e/server.ts) preloaded: MSW fakes WordPress (from
   `@monorepo/content/testing`), Kit and Turnstile in-process. Nothing reaches the network.
@@ -260,7 +260,7 @@ in [`vitest.config.ts`](./vitest.config.ts) and pages are left to Playwright.
 - Bumping `@playwright/test` means moving the image tag in [`ci.yml`](../../.github/workflows/ci.yml)
   in the same PR. Pre-push doesn't run e2e.
 
-## 🧭 Known gaps
+## Known gaps
 
 | Gap | Note |
 | --- | --- |

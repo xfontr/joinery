@@ -1,6 +1,7 @@
 <template>
     <template v-if="work && entry">
         <PageHero
+            :carry="`work-title-${work.slug}`"
             :kicker="$t('workApp.kicker', { kind: work.kind })"
             :title="work.title"
             :mark="work.mark"

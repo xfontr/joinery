@@ -5,7 +5,7 @@
     >
         <header class="flex items-baseline gap-4 md:col-span-4 md:flex-col md:items-start">
             <span class="font-display text-title text-primary">{{ number }}</span>
-            <h2 class="font-display text-section text-highlighted">
+            <h2 class="font-display text-section text-highlighted" :style="carriedTitle">
                 {{ $t(`rules.${id}.title`) }}
             </h2>
         </header>
@@ -43,4 +43,6 @@ interface Props {
 }
 
 const { id, number, bodyParams = {}, skill, count = 0, to } = defineProps<Props>();
+
+const carriedTitle = computed(() => carried(`rule-${id}`));
 </script>

@@ -13,7 +13,7 @@ See [README.md](./README.md) for the env vars, the i18n wiring and the telemetry
   goes in `.env.example` with a row in the README table, and nowhere else.
 - **No UI copy is hard-coded.** It goes in
   [`i18n/locales/es-ES.json`](./i18n/locales/es-ES.json) under a key that follows the
-  [naming convention](./README.md#-copy-keys), and the component calls `t()`. Every mode reads that
+  [naming convention](./README.md#copy-keys), and the component calls `t()`. Every mode reads that
   file; there is no TMS, so never wire `@monorepo/i18n` or the translations server back in.
 - **Domain logic lives in a Nuxt layer under `layers/`**, one directory per domain, beside `app/`
   rather than inside it: Nuxt auto-registers only `<rootDir>/layers/*`, so never add an `extends`
@@ -52,14 +52,14 @@ See [README.md](./README.md) for the env vars, the i18n wiring and the telemetry
   prepare`/`build` generate and nothing commits — a fresh checkout with no lifecycle scripts (both
   banned here) has no `.nuxt/` at all, so `lint`/`typecheck`/`test` all fail without it. The
   `nuxt-prepare` script and the root [`nx.json`](../../nx.json)'s `dependsOn` on it are what
-  regenerate `.nuxt` first — see [the root CLAUDE.md](../../CLAUDE.md#-the-two-places-that-must-agree).
+  regenerate `.nuxt` first — see [the root CLAUDE.md](../../CLAUDE.md#the-two-places-that-must-agree).
 - The ESLint config is the nuxt flavour, which is **not** type-checked. Don't switch it.
 - Shared packages are composed here, never reached into: import from `@monorepo/x`, not from a path
   inside it.
 - Both telemetry halves are off when their URL is unset, which is why local dev ships nothing. Keep
   that property when adding instrumentation.
 - The server observability plugin wraps `nitroApp.h3App.handler` by hand, for reasons
-  [`@monorepo/observability`](../../packages/observability/README.md#️-gotchas) explains. Don't
+  [`@monorepo/observability`](../../packages/observability/README.md#gotchas) explains. Don't
   replace it with the standard instrumentation.
 - **The span is named for the matched route, never the raw path.** It opens under the concrete URL
   because nothing has matched yet, and `end()` renames it. Keep the query string out of both the name
@@ -84,4 +84,4 @@ See [README.md](./README.md) for the env vars, the i18n wiring and the telemetry
 - `mocks/` is dev's MSW preload and its fake WordPress, never read by a spec. `pnpm dev` must
   not reach huellalegal.com, so a new WordPress route needs a handler before dev can show it.
 - **No `toHaveScreenshot`.** Baselines failed every page PR while the design still moves; the
-  [README](./README.md#-e2e) says when they come back. Assert on roles, text and status instead.
+  [README](./README.md#e2e) says when they come back. Assert on roles, text and status instead.

@@ -59,7 +59,7 @@ where it lives, which doc explains it, and nothing else. The *why* stays in the 
 the map has no hand-written column to clobber on the next render. It enumerates what already
 declares the surface: each `package.json`'s `scripts` and `nx.tags`, `.github/workflows/`,
 `.husky/*` and `.agents/skills/*`, from a new folder under
-[`infrastructure/scripts/src/`](../../infrastructure/scripts/README.md#-adding-a-script).
+[`infrastructure/scripts/src/`](../../infrastructure/scripts/README.md#adding-a-script).
 
 Implementing it settled one thing this record had wrong. The intended check was two assertions —
 the map matches its render, *and* every capability resolves to a doc — but the second one has to be
@@ -106,7 +106,7 @@ project forever, subdividing in place as they grow.
 The internal app to render all of this is **deferred out of this decision** — it is a view over the
 same sources and changes nothing about where they live. When it comes back it needs a boundary
 decision before any scaffolding, and that is the reusable finding: it fits nowhere in the tag table
-today, since the [root README](../../README.md#-architecture--boundaries) defines `infrastructure/`
+today, since the [root README](../../README.md#architecture--boundaries) defines `infrastructure/`
 as what is neither released nor user-facing — a docs site exactly — while `type:infra` may depend
 only on `type:config` and so could not import `@monorepo/ui`. Filing it under `apps/` contradicts
 that same paragraph. Either `type:infra` widens or a `type:docs` tag lands in both copies of the

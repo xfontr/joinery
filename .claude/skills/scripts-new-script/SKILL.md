@@ -6,7 +6,7 @@ description: Add a script to @monorepo/scripts — the index.ts/main.ts/adapters
 # Adding a script
 
 The layout rule and the import direction are in the
-[package README](../../../infrastructure/scripts/README.md#-structure). Follow it; this file is what
+[package README](../../../infrastructure/scripts/README.md#structure). Follow it; this file is what
 the prose can't enforce. Read [`drift/`](../../../infrastructure/scripts/src/drift) first —
 it is the smallest complete example of all four layers.
 

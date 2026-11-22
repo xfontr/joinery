@@ -18,7 +18,7 @@ pnpm brand:contrast apps/marina-roustan/layers/design/app/assets/main.css
 1280 × 800. Tone is always `—`: a person judges it. `contrast` is offline. Every pair is held to
 4.5:1, light theme only.
 
-## 🗂 Structure
+## Structure
 
 ```
 index.ts              hands { contrast, extract } to run()
@@ -31,7 +31,7 @@ domain/ramp.ts        a 50–950 OKLCH ramp that keeps the anchor hex at its nea
 domain/contrast.ts    resolving var() chains, pairing roles, WCAG ratios
 ```
 
-## 🔎 How the brand is picked
+## How the brand is picked
 
 | Ingredient | Rule | Why |
 | --- | --- | --- |

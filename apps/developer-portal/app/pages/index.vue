@@ -18,7 +18,7 @@
         >
             <p class="font-display text-title text-primary md:col-span-2">{{ index + 1 }}</p>
             <div class="flex flex-col gap-4 md:col-span-7">
-                <h2 class="font-display text-section text-highlighted">
+                <h2 class="font-display text-section text-highlighted" :style="item.carry">
                     {{ $t(`rules.${item.id}.title`) }}
                 </h2>
                 <p class="max-w-xl text-lg">{{ $t(`index.rules.${item.id}.line`) }}</p>
@@ -53,7 +53,7 @@
             <span class="font-mono text-xs text-muted uppercase">
                 {{ $t(`index.deeper.${item.id}.kicker`) }}
             </span>
-            <span class="font-display text-3xl/tight text-highlighted">
+            <span class="font-display text-3xl/tight text-highlighted" :style="item.carry">
                 {{ $t(`index.deeper.${item.id}.title`) }} →
             </span>
         </ULink>
@@ -80,9 +80,9 @@ const PROOFS = {
     prove: "/method#prove",
 } as const satisfies Record<RuleId, string>;
 const DEEPER = [
-    { id: "method", to: "/method" },
-    { id: "workflows", to: "/agentic-workflows" },
-    { id: "work", to: "/work" },
+    { id: "method", to: "/method", carry: carried("hero-method") },
+    { id: "workflows", to: "/agentic-workflows", carry: carried("hero-workflows") },
+    { id: "work", to: "/work", carry: carried("hero-work") },
 ] as const;
 
 const { t } = useI18n();
@@ -117,6 +117,7 @@ const principles = computed(() =>
     RULES.map((id) => ({
         id,
         to: PROOFS[id],
+        carry: carried(`rule-${id}`),
         proof: counted.value[id] ?? t(`index.rules.${id}.proof`),
     })),
 );

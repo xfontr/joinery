@@ -27,4 +27,4 @@ no other list; `Locale` is just `string`.
 | Skipped | What happens |
 | --- | --- |
 | Step 2 | The file is never served: nothing registers the locale |
-| Step 1 | Builds fine; the first request for that locale gets a vendor 404 (see the [errors](../../packages/i18n/README.md#️-errors)) |
+| Step 1 | Builds fine; the first request for that locale gets a vendor 404 (see the [errors](../../packages/i18n/README.md#errors)) |

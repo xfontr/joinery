@@ -68,7 +68,7 @@ and the build blocks implement.
 | Two densities of one page | W7 | `cap:view-switch` | The visitor view leaves out detail; it never has different facts |
 | One figure, static | W8, N1 | `app/pages/index.vue` | Rendered at build, readable with JavaScript off |
 
-### 🛠 The developer view
+### The developer view
 
 The twelve sites above have no dashboard, table or chart worth copying, so the developer view was
 benchmarked on its own against seven sites with dense pages, measured on 2026-11-17. Its baseline

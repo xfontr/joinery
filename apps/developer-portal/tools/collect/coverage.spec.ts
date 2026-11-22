@@ -29,6 +29,8 @@ const summary = (lines: { total: number; covered: number; pct: number }) => ({
     "src/other.ts": {},
 });
 
+const missing = () => Object.assign(new Error("missing"), { code: "ENOENT" });
+
 beforeEach(() => {
     vi.clearAllMocks();
     fs.access.mockRejectedValue(new Error("missing"));
@@ -70,7 +72,7 @@ describe("collectCoverage", () => {
             },
         };
         fs.readFile.mockImplementation(async (path: string) => {
-            if (path.endsWith("coverage-summary.json")) throw new Error("summary missing");
+            if (path.endsWith("coverage-summary.json")) throw missing();
 
             return JSON.stringify(final);
         });
@@ -127,5 +129,19 @@ describe("collectCoverage", () => {
         expect(fs.cp).toHaveBeenCalledWith(expect.any(String), expect.any(String), {
             recursive: true,
         });
+    });
+});
+
+describe("readSummary", () => {
+    it("reads a project with no coverage files as never collected, as on a fresh clone", async () => {
+        fs.readFile.mockRejectedValue(missing());
+
+        await expect(readSummary("packages/alpha")).resolves.toBeNull();
+    });
+
+    it("fails on a corrupt summary instead of passing it off as never collected", async () => {
+        fs.readFile.mockResolvedValue("{ not json");
+
+        await expect(readSummary("packages/alpha")).rejects.toThrow(SyntaxError);
     });
 });

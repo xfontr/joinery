@@ -4,7 +4,7 @@ The Nuxt integration for [`@monorepo/content`](../../README.md): one config bloc
 cached `useContent(event)`. Nothing is reachable from the browser; an app exposes content through
 its own routes.
 
-## 🚀 Usage
+## Usage
 
 ```ts
 export default defineNuxtConfig({
@@ -29,10 +29,10 @@ stale-while-revalidate refresh reaches the platform's `waitUntil`.
 
 | Option | What it is |
 | --- | --- |
-| `content.vendor` | A `VendorConfig` — see [vendors](../../README.md#-vendors). Declare runtime values empty and fill them with `NUXT_CONTENT_VENDOR_*` |
+| `content.vendor` | A `VendorConfig` — see [vendors](../../README.md#vendors). Declare runtime values empty and fill them with `NUXT_CONTENT_VENDOR_*` |
 | `content.cache` | `{ list, item }`, each `{ maxAge, swr }`. Pass both. Defaults in [`config.ts`](./config.ts) |
 
-## 🗂 Structure
+## Structure
 
 ```
 module.ts                         build time (@nuxt/kit)
@@ -43,7 +43,7 @@ runtime/server/utils/query.ts       query defaults and ceilings
 
 `module.ts` and `runtime/` are separate runtimes: import across with `import type` only.
 
-## 🗃 Caching
+## Caching
 
 | Read | `maxAge` | `swr` |
 | --- | --- | --- |
@@ -57,7 +57,7 @@ runtime/server/utils/query.ts       query defaults and ceilings
   indefinitely (Nitro ignores `staleMaxAge`).
 - WordPress embeds media and terms (`_embed`), so a list is one upstream request.
 
-## ⚠️ Gotchas
+## Gotchas
 
 - **Router slugs arrive encoded.** Use `getRouterParam(event, "slug", { decode: true })` or accented
   slugs 404.
@@ -66,7 +66,7 @@ runtime/server/utils/query.ts       query defaults and ceilings
   answers `500` naming what's missing on every cache miss, with nothing logged at startup. The
   vendor name is also checked at build.
 
-## 🧭 Known gaps
+## Known gaps
 
 | Gap | Note |
 | --- | --- |

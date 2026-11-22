@@ -4,9 +4,9 @@ The repo's front door: every markdown file rendered as a wiki, plus what isn't w
 coverage, the project graph, open issues, decisions, audits, workflows and tooling usage.
 
 Under `pnpm dev developer-portal` it reads the working tree live. The deployed site is a prerendered
-[snapshot of `master`](#-the-deployed-site-is-a-snapshot) on GitHub Pages.
+[snapshot of `master`](#the-deployed-site-is-a-snapshot) on GitHub Pages.
 
-## 🚀 Development
+## Development
 
 | Command | What it does |
 | --- | --- |
@@ -19,19 +19,19 @@ Under `pnpm dev developer-portal` it reads the working tree live. The deployed s
 - `build` delegates to `build-static`, so CI builds what deploys.
 - `.report/` is gitignored and every page must render without it.
 
-## 🗂 Structure
+## Structure
 
 | Path | What lives there |
 | --- | --- |
 | `app/` | The shell: layouts, Home, the visitor front and method pages, and `app/composables/`, which assemble Home's queue and Health, the rail, the status bar and search from several layers |
 | `app/components/`, `app/types/`, `app/utils/` | The kit: shared parts such as `StatTile`, `PageHero` and `EmptyState`, one type per file, pure helpers |
-| `i18n/locales/en.json` | The interface's copy — see [🔤 Copy](#-copy) |
-| `content/work/` | One markdown file per Work entry — see [🔤 Copy](#-copy) |
-| `layers/` | One Nuxt layer per capability — see [🧱 Layers](#-layers) |
+| `i18n/locales/en.json` | The interface's copy — see [🔤 Copy](#copy) |
+| `content/work/` | One markdown file per Work entry — see [🔤 Copy](#copy) |
+| `layers/` | One Nuxt layer per capability — see [🧱 Layers](#layers) |
 | `tools/collect/` | The collector that builds the snapshot |
 | `tools/lib/` | Node-only helpers: paths, `git`, the shape checks, the doc-link rewriter |
 
-## 🧱 Layers
+## Layers
 
 | Layer | Kind | What it owns |
 | --- | --- | --- |
@@ -46,7 +46,7 @@ Under `pnpm dev developer-portal` it reads the working tree live. The deployed s
 | `workflows` | Feature | The Workflows pages |
 | `wiki` | Feature | Documentation pages and the nav tree |
 
-The rules match [huella-legal's](../huella-legal/README.md#-structure): the kit (`app/components/`,
+The rules match [huella-legal's](../huella-legal/README.md#structure): the kit (`app/components/`,
 `app/types/`, `app/utils/`) uses only itself, cores use themselves and the kit, features also use
 cores but never another feature. `eslint.layerBoundaries` in [`eslint.config.ts`](./eslint.config.ts) enforces it.
 
@@ -59,17 +59,17 @@ cores but never another feature. `eslint.layerBoundaries` in [`eslint.config.ts`
 - A page reads its data through a `use<Page>` composable in its layer and lists its sections, each a
   component in `components/<page>/` or named for the layer (`wizard/Step.vue` → `WizardStep`).
 
-## 🔤 Copy
+## Copy
 
 The interface's copy is in [`en.json`](./i18n/locales/en.json) through `$t()`, keyed the
-way [huella-legal's are](../huella-legal/README.md#-copy-keys); `rules` holds the five rules both the
+way [huella-legal's are](../huella-legal/README.md#copy-keys); `rules` holds the five rules both the
 front page and Method number. `/work` and the front page's Work list read their prose from
 [`content/work/*.md`](./content/work) through the `work` collection in
 [`content.config.ts`](./content.config.ts): the frontmatter holds the facts, the body is the case
 study's story, and `caseStudy: false` marks a tool that links straight to its `live` URL.
 Specs see keys, not copy: [`vitest.setup.ts`](./vitest.setup.ts) empties the messages.
 
-## 📄 What each page reads
+## What each page reads
 
 | Page | Reads |
 | --- | --- |
@@ -107,7 +107,7 @@ Issues are fetched unauthenticated from the browser, so the site needs no server
 secret. The limit is 60 requests an hour per IP. Board placement (`projectItems`) is GraphQL-only and
 needs a token, so it isn't shown.
 
-## 🚢 The deployed site is a snapshot
+## The deployed site is a snapshot
 
 [`developer-portal-deploy.yml`](../../.github/workflows/developer-portal-deploy.yml) publishes to
 GitHub Pages on every push to `master` or by hand: `pnpm test:coverage`, then `collect`, then
@@ -121,7 +121,7 @@ Storybook is built into the same artifact under `/huella-legal-storybook/`.
   or `data/workflows/` change makes it affected, and a `runtime` input over
   [`snapshotStamp.ts`](./tools/lib/snapshotStamp.ts) hashes the gitignored `.report/`.
 
-## 🔍 Checks it surfaces
+## Checks it surfaces
 
 [`tools/lib/invariants.ts`](./tools/lib/invariants.ts) runs on every collect and shows findings on
 Home. It blocks nothing.
@@ -133,7 +133,7 @@ Home. It blocks nothing.
 | `compareDecisionShape` | A decision with a bad filename, reused number, unknown `status:`/`decision:`, no `issue:` or a dangling `supersededBy:` |
 | `compareWorkflowShape` | A workflow file that breaks [the workflow rules](../../docs/workflows/README.md) |
 
-## 🎨 Design system
+## Design system
 
 The [`design`](./layers/design) layer is the only place a value is chosen. Components use Nuxt UI's
 semantic roles and Tailwind's scale; ESLint rejects bracketed values.
@@ -152,7 +152,7 @@ the `dataviz` skill's validator before changing one.
 
 ESLint also rejects raw palette classes (`bg-slate-500`, `text-white`) everywhere.
 
-### 🪟 The identity
+### The identity
 
 Direction E, approved in [`0039`](../../docs/decisions/0039-developer-portal-benchmark.md), is one
 system in [`main.css`](./layers/design/app/assets/main.css) for the visitor pages and the developer
@@ -169,7 +169,7 @@ view alike, set on `:root` so Nuxt UI's overlays take it too. Nothing is set und
 | `<mark>` | A marked word takes the accent in italic |
 | `data-figure` | A count or percentage that leads a panel: tabular, semibold |
 | `data-scroll-x` | A row or table that scrolls sideways fades at its right edge |
-| `data-view-switch` | The view switch; its current pill carries the view transition between visitor and developer |
+| `data-page-transition` | Set on `<html>` for one page change: visitor pages rise in, the developer view crossfades, switching between them opens as a circle. A title or screenshot named with `carried()` flies to its namesake on the next page |
 | `data-prose`, `data-readme` | Rendered markdown keeps a 72-character measure; a README drops its own `#` title |
 
 Every text role clears 4.5:1 on every surface. Each cell is light / dark:
@@ -195,6 +195,6 @@ Every text role clears 4.5:1 on every surface. Each cell is light / dark:
 | `inverted` on `bg-primary` | 7.7 | |
 | `--tone-good`, `-warn`, `-bad`, lowest | 5.0 | 4.6 |
 
-## 📐 Boundaries
+## Boundaries
 
 `type:app`, `scope:internal`. Depends only on `@monorepo/configs`; nothing depends on it.

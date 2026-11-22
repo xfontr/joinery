@@ -5,16 +5,16 @@ import { documentedBy } from "./capabilities.ts";
 const SECTIONS: { kind: Kind; heading: string; lead: string[] }[] = [
     {
         kind: "command",
-        heading: "⌨️ Commands",
+        heading: "Commands",
         lead: [
             "Root commands run against affected projects only. The per-project rows below them are the",
             "ones the root doesn't expose — `lint`, `typecheck`, `test` and `build` exist on every project",
-            "and are documented once in the [root README](../README.md#-getting-started).",
+            "and are documented once in the [root README](../README.md#getting-started).",
         ],
     },
     {
         kind: "hook",
-        heading: "🪝 Git hooks",
+        heading: "Git hooks",
         lead: [
             "These run themselves, but only after `pnpm quick-start` — a fresh clone has no hooks at all until",
             "that per-clone setup runs.",
@@ -22,12 +22,12 @@ const SECTIONS: { kind: Kind; heading: string; lead: string[] }[] = [
     },
     {
         kind: "workflow",
-        heading: "⚙️ Workflows",
+        heading: "Workflows",
         lead: ["GitHub Actions, named as the Actions tab shows them rather than by filename."],
     },
     {
         kind: "skill",
-        heading: "🛠 Agent skills",
+        heading: "Agent skills",
         lead: [
             "Instructions an agent loads for one kind of task. Worth reading as a human too: a skill is the",
             "shortest statement of how a task is meant to go here.",

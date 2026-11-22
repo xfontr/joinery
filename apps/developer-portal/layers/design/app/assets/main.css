@@ -122,19 +122,63 @@ button:not(:disabled) {
     to { rotate: 0.4deg; }
 }
 
-/* Switching between the visitor and developer views: the current pill glides to its new place */
+/* Page changes; `pageTransition.client.ts` sets `data-page-transition` for the length of each one */
 [data-view-switch] [aria-current="true"] {
     view-transition-name: view-switch-current;
 }
 
-::view-transition-group(view-switch-current) {
-    animation-duration: 0.35s;
+[data-identity] > header {
+    view-transition-name: visitor-header;
+}
+
+::view-transition-group(*) {
+    animation-duration: 0.45s;
     animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
-::view-transition-old(root),
-::view-transition-new(root) {
-    animation-duration: 0.25s;
+:root[data-page-transition="dev"]::view-transition-old(root),
+:root[data-page-transition="dev"]::view-transition-new(root) {
+    animation-duration: 0.15s;
+}
+
+:root[data-page-transition="visitor"]::view-transition-old(root) {
+    animation: page-out 0.2s ease-in both;
+}
+
+:root[data-page-transition="visitor"]::view-transition-new(root) {
+    animation: page-in 0.4s cubic-bezier(0.2, 0, 0, 1) 0.08s both;
+}
+
+:root[data-page-transition="mode"]::view-transition-old(root) {
+    animation: none;
+}
+
+:root[data-page-transition="mode"]::view-transition-new(root) {
+    animation: page-reveal 0.7s cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+
+@keyframes page-out {
+    to {
+        opacity: 0;
+        translate: 0 -0.5rem;
+    }
+}
+
+@keyframes page-in {
+    from {
+        opacity: 0;
+        translate: 0 1.5rem;
+    }
+}
+
+@keyframes page-reveal {
+    from {
+        clip-path: circle(0 at var(--reveal-x) var(--reveal-y));
+    }
+
+    to {
+        clip-path: circle(var(--reveal-r) at var(--reveal-x) var(--reveal-y));
+    }
 }
 
 /* The identity's roles; `:root` so Nuxt UI's teleported overlays take them too */

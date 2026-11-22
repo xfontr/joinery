@@ -61,7 +61,7 @@ the user checks. Read the repo first, then ask only what the code can't tell you
 who uses it, what done looks like, and what is still undecided.
 
 1. **One block per thing an agent can finish and a check can verify**, at most 13 points on the
-   [complexity scale](../../../docs/workflows/README.md#-complexity). Anything bigger gets suggested
+   [complexity scale](../../../docs/workflows/README.md#complexity). Anything bigger gets suggested
    `tickets` or becomes two blocks.
 2. **Every open question is a `spike`, and every call only the user can make is an `owner` block**,
    such as scope, a provider or an API shape. Build blocks that depend on the answer go in
@@ -153,7 +153,7 @@ anything started or closed stays.
 ## 7. Keeping the diary
 
 Every project has a `<id>.diary.md`. Append one line in the
-[diary's shape](../../../docs/workflows/README.md#-diary), dated from `date +%F`, when:
+[diary's shape](../../../docs/workflows/README.md#diary), dated from `date +%F`, when:
 
 - the PR that closes a ticket is about to open (an `estimate` line). That PR closes the block: commit
   the line, `pnpm workflow:sync <id> --close` and any unfiled block the work proved wrong to its branch
@@ -167,7 +167,7 @@ Before appending, ask: does this line say something worked or went wrong? If not
 What the work found (measurements, the decision, a green `pnpm check`) belongs in the decision report
 or the commit. Never praise your own work.
 
-## 🎨 The design stage of a website rebuild
+## The design stage of a website rebuild
 
 What the `website-rebuild` design capabilities expect, learned on Huella:
 

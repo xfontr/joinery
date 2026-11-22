@@ -11,7 +11,7 @@ pnpm worktree:prepare                                # lists linked worktrees wi
 Run it from a checkout that's already installed. A fresh worktree can't run it on itself: every
 script here imports `@clack/prompts`, which isn't there yet.
 
-## 🗂 Structure
+## Structure
 
 ```
 index.ts               hands main to run()
@@ -22,7 +22,7 @@ adapters/pnpm.ts       pnpm install --frozen-lockfile --ignore-scripts in the wo
 domain/worktree.ts     the porcelain parser and which paths count as env files
 ```
 
-## 📋 The steps
+## The steps
 
 | Step | Why |
 | --- | --- |

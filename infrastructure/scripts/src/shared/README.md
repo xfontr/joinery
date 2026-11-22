@@ -2,7 +2,7 @@
 
 What more than one script needs. Nothing here knows a script exists.
 
-## 🗂 What's here
+## What's here
 
 | File | What it is |
 | --- | --- |
@@ -23,7 +23,7 @@ What more than one script needs. Nothing here knows a script exists.
 Code moves here when a second script needs it. Facts about the environment (the repo root, the
 terminal) live here from the start, so there's only one copy.
 
-## 🚫 No side effects at module scope
+## No side effects at module scope
 
 No `run()`, `git()` or `readFileSync` at a file's top level, and read `process.argv`/`process.env`
 inside a command or through `flag()`. Breaking this once made two modules unimportable outside a git

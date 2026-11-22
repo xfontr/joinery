@@ -30,8 +30,5 @@ const label = defineModel<string>("label", { required: true });
 
 const { t } = useI18n();
 
-const items = computed(() => [
-    { label: t("healthIssuesToolbar.everyLabel"), value: "all" },
-    ...labelsOf(issues).map((name) => ({ label: name, value: name })),
-]);
+const items = computed(() => filterItems(t("healthIssuesToolbar.everyLabel"), labelsOf(issues)));
 </script>

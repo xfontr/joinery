@@ -1,11 +1,11 @@
 # 📓 Developer portal front door diary
 
 What in the workflow worked and what went wrong. The format and when to write are in
-[the workflows README](../../../docs/workflows/README.md#-diary).
+[the workflows README](../../../docs/workflows/README.md#diary).
 
 - 2026-11-17 · map · #472 · No block covered superseding 0021, which banned visitor modes and portal-owned copy; the owner did it with 0039 inside the benchmark spike
 - 2026-11-17 · friction · #472 · The first pass took ten references from memory; the owner rejected six as below the bar and Oxide as generic
-- 2026-11-17 · friction · #472 · The second pass captured only first screens with one-line verdicts; the owner called it worthless, so the `benchmark` skill was written and the run redone
+- 2026-11-17 · friction · #472 · The second pass captured only first screens with one-line verdicts, too thin to design from, so the `benchmark` skill was written and the run redone
 - 2026-11-17 · friction · #472 · The new skill's shortlist contact sheet read to the owner as the deliverable; the analysis ran without waiting on it
 - 2026-11-17 · friction · #472 · `pnpm brand:extract` merges every URL into one brand; replaced by a computed-style readout in the capture script
 - 2026-11-17 · friction · #472 · CSS Design Awards hid live links from Playwright; four Awwwards sites showed only a WebGL intro or refused automation
@@ -24,10 +24,10 @@ What in the workflow worked and what went wrong. The format and when to write ar
 - 2026-11-17 · friction · #476 · The agent stored visitor copy as a hand-typed TS object with its own `{slot}` scheme; the owner rejected it: copy is either hardcoded or i18n, never an invented structure; moved to `@nuxtjs/i18n` and `i18n/locales/en.json`, copying huella-legal
 - 2026-11-17 · map · #476 · `visitor-copy` as its own block ran ahead of design: words written before any page existed pulled i18n, a new dependency and a projects-page change into prod before the lab; the owner asked why copy isn't written as each page is built
 - 2026-11-17 · map · #476 · `visitor-copy` should never have been a block: copy belongs to the ticket that builds the page it sits on; the owner had the block deleted and #476 closed as not planned
-- 2026-11-17 · friction · #477 · The owner called all three lab directions AI slop: each front page opened on a full-width app screenshot, led with usage numbers nobody asked for, and listed raw decisions as "how the work is run"
+- 2026-11-17 · friction · #477 · All three lab directions were rejected: each front page opened on a full-width app screenshot, led with usage numbers nobody asked for, and listed raw decisions as "how the work is run"
 - 2026-11-17 · map · #477 · 0040's front-page sections were drawn from the data the snapshot has, not from what a visitor wants to know, and the lab followed them literally; W6 was read as "one giant screenshot" though no benchmarked site leads with one
 - 2026-11-17 · friction · #477 · The lab's coverage and doc pages were wired into the visitor nav, though they stood for developer-view pages; the owner expects the developer view redesigned on the same system
-- 2026-11-17 · worked · #477 · Rebuilding the front page as one story (who, what's being made, how it's made, then the details) turned the owner's verdict from "AI slop" to "far better"; the story became the `idea` baseline for every direction
+- 2026-11-17 · worked · #477 · Rebuilding the front page as one story (who, what's being made, how it's made, then the details) read far better than the first three; the story became the `idea` baseline for every direction
 - 2026-11-17 · friction · #477 · The owner rejected B as uneventful, called C's long pages unreadable for lack of hierarchy and A dry; the copy also named the owner in first person, which they don't want on the portal
 - 2026-11-17 · worked · #477 · The owner ranked D, E and F as the strongest directions so far; telling the story through principles, questions and one journey beat styling alone
 - 2026-11-17 · map · #477 · The owner wants workflows as the portal's centrepiece, shown live on the landing with its own middle page; no block in the map named it, so it rode on design-lab

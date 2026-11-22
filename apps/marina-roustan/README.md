@@ -3,12 +3,12 @@
 A Nuxt 4 rebuild of Marina Roustan's website. So far: one placeholder page, the env check, the test
 harness and the design tokens.
 
-## 🎨 Design
+## Design
 
 The brand, the tokens and their contrast table are in [`DESIGN.md`](./DESIGN.md); every token
 lives in [`layers/design`](./layers/design), on Nuxt UI and Tailwind v4.
 
-## 🚀 Development
+## Development
 
 | Command | What it does |
 | --- | --- |
@@ -19,9 +19,9 @@ lives in [`layers/design`](./layers/design), on Nuxt UI and Tailwind v4.
 | `pnpm test:e2e` | Playwright against `.output/`. Build first, or run `nx test:e2e` |
 | `pnpm exec nx nuxt-prepare @monorepo/marina-roustan` | Regenerate `.nuxt` by hand; Nx already runs it before lint, typecheck, test and build |
 
-## 🔑 Environment
+## Environment
 
-Same mechanism as [huella-legal](../huella-legal/README.md#-environment): a variable a feature
+Same mechanism as [huella-legal](../huella-legal/README.md#environment): a variable a feature
 needs goes under `requiredEnv` in [`nuxt.config.ts`](./nuxt.config.ts), checked by
 [`modules/requiredEnv.ts`](./modules/requiredEnv.ts). None is listed yet.
 
@@ -33,7 +33,7 @@ needs goes under `requiredEnv` in [`nuxt.config.ts`](./nuxt.config.ts), checked 
 `public.site.url` is a literal in [`nuxt.config.ts`](./nuxt.config.ts). A new variable goes in
 [`.env.example`](./.env.example) and a row here.
 
-## ✅ Testing
+## Testing
 
 | Layer | Runs | Where | Command |
 | --- | --- | --- | --- |
@@ -44,13 +44,13 @@ needs goes under `requiredEnv` in [`nuxt.config.ts`](./nuxt.config.ts), checked 
 Both configs wrap the [`@monorepo/configs`](../../packages/configs/README.md) presets. Pages are
 left out of coverage; Playwright covers them.
 
-### 🎭 e2e
+### e2e
 
 Runs the built server on port 4320 with [`e2e/server.ts`](./e2e/server.ts) preloaded, which only
 records server console output for now. Any console output fails a test, and every page spec runs an
-axe scan. Conventions are in the [configs README](../../packages/configs/README.md#-playwright).
+axe scan. Conventions are in the [configs README](../../packages/configs/README.md#playwright).
 
-## 🧭 Next
+## Next
 
 | Need | Plan |
 | --- | --- |

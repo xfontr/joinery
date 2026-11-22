@@ -3,6 +3,7 @@
         <img
             :src="screenshot"
             :alt="work.screenshot.alt"
+            :style="carriedShot"
             width="1440"
             height="900"
             class="w-full border border-default"
@@ -28,4 +29,5 @@ interface Props {
 const { work } = defineProps<Props>();
 
 const screenshot = computed(() => workScreenshot(work));
+const carriedShot = computed(() => carried(`work-shot-${work.slug}`));
 </script>

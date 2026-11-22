@@ -1,7 +1,7 @@
 # 📓 Marina Roustan diary
 
 What in the workflow worked and what went wrong. The format and when to write are in
-[the workflows README](../../../docs/workflows/README.md#-diary).
+[the workflows README](../../../docs/workflows/README.md#diary).
 
 - 2026-11-15 · map · #447 · design-tokens writes the app's DESIGN.md and eslint config, but the map doesn't make it depend on app-scaffold (#448)
 - 2026-11-15 · friction · #446 · guard-live.sh blocks every /wp-json request, so the discovery spike couldn't probe the old site; its block was commented out on the owner's word

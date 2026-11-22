@@ -18,7 +18,7 @@ affected set that `pnpm lint` and CI run is already the whole workspace. Don't r
   `./src/...` **relatively**, not through `@monorepo/configs`. That is deliberate — a
   self-reference would be a dependency cycle.
 - [`lib/boundaries.ts`](./src/eslint/lib/boundaries.ts) is the enforced copy of the Nx tag table. The
-  readable copy in the [root README](../../README.md#-architecture--boundaries) is rendered from
+  readable copy in the [root README](../../README.md#architecture--boundaries) is rendered from
   it, so run `pnpm docs:map` after changing it.
 - Shipped as raw TypeScript and tagged `type:config`, so it may depend on nothing in the workspace.
   Nothing here may import another `@monorepo/*` package.
