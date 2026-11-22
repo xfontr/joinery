@@ -3,13 +3,21 @@ import { join, relative } from "node:path";
 import { at } from "../../shared/adapters/git.ts";
 import { PROJECT_ROOTS } from "../../shared/domain/layout.ts";
 import type { PackageSource } from "../domain/contracts.ts";
+import type { NuxtSources } from "../domain/sides.ts";
 
-const filesUnder = (directory: string, root: string, found: string[] = []): string[] => {
+const GENERATED = new Set([".nuxt", ".output", "node_modules", "coverage", "dist", "public"]);
+
+const filesUnder = (
+    directory: string,
+    root: string,
+    found: string[] = [],
+    skip: ReadonlySet<string> = new Set(),
+): string[] => {
     for (const entry of readdirSync(directory, { withFileTypes: true })) {
         const path = join(directory, entry.name);
 
         if (entry.isDirectory()) {
-            filesUnder(path, root, found);
+            if (!skip.has(entry.name)) filesUnder(path, root, found, skip);
         } else if (entry.isFile()) {
             found.push(relative(root, path).replaceAll("\\", "/"));
         }
@@ -67,3 +75,15 @@ export const readTableSources = (): { boundaries: string; readme: string } => ({
     boundaries: readFileSync(at("packages/configs/src/eslint/lib/boundaries.ts"), "utf8"),
     readme: readFileSync(at("README.md"), "utf8"),
 });
+
+/** Every `.ts` and `.vue` source of each app with a `nuxt.config.ts`, generated output left out. */
+export const readNuxtSources = (): NuxtSources[] =>
+    projectRoots()
+        .filter((project) => existsSync(at(project, "nuxt.config.ts")))
+        .map((app) => {
+            const root = at(app);
+            const files = filesUnder(root, root, [], GENERATED)
+                .filter((path) => /\.(?:ts|vue)$/.test(path))
+                .map((path) => ({ path, text: readFileSync(join(root, path), "utf8") }));
+            return { app, files };
+        });

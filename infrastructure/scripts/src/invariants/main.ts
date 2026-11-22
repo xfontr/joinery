@@ -2,11 +2,18 @@ import type { Args } from "../shared/cli.ts";
 import { optionValue } from "../shared/domain/cli.ts";
 import { ExpectedError } from "../shared/errors.ts";
 import { out } from "../shared/adapters/io.ts";
-import { projectRoots, readManifests, readPackages, readTableSources } from "./adapters/files.ts";
+import {
+    projectRoots,
+    readManifests,
+    readNuxtSources,
+    readPackages,
+    readTableSources,
+} from "./adapters/files.ts";
 import { assertCommit, manifestAt } from "./adapters/git.ts";
 import { manifestBans } from "./domain/bans.ts";
 import { contractFindings, validatePackage } from "./domain/contracts.ts";
 import { blocking, type Finding } from "./domain/findings.ts";
+import { oneSidedShared } from "./domain/sides.ts";
 import { compareLayoutBlock, compareTagTables } from "./domain/tables.ts";
 
 const versionOf = (manifest: unknown): string | undefined => {
@@ -26,6 +33,7 @@ const collect = (base: string | undefined): Finding[] => {
             }),
         ),
         ...readPackages().map(validatePackage).flatMap(contractFindings),
+        ...readNuxtSources().flatMap(oneSidedShared),
         ...compareTagTables(boundaries, readme),
         ...compareLayoutBlock(readme, projectRoots()),
     ];
