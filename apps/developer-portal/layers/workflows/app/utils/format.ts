@@ -34,8 +34,6 @@ const TICKET_STATUSES = {
 
 export const ticketStatusLabel = (status: TicketStatus): string => TICKET_STATUSES[status].label;
 
-export const ticketStatusTone = (status: TicketStatus): Tone => TICKET_STATUSES[status].tone;
-
 /** One `--state-*` token per state in `workflows.css`, shared by blocks and tickets. */
 export const stateColor = (state: CapabilityState | TicketStatus): string =>
     `var(--state-${state})`;
@@ -56,10 +54,6 @@ const STAGE_COLORS = 7;
 export const stageColor = (index: number): string => `var(--stage-${(index % STAGE_COLORS) + 1})`;
 
 export const capabilityColor = (state: CapabilityState): string => stateColor(state);
-
-/** Hollow for a block nobody can work on yet, so its state survives without its colour. */
-export const capabilityFilled = (state: CapabilityState): boolean =>
-    ["done", "in-flight", "ready", "waiting-on-you", "skipped"].includes(state);
 
 const REUSE_PLAN_LABELS = {
     package: "Import the package",

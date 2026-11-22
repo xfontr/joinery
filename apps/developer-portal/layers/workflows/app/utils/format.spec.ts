@@ -1,24 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { capabilityColor, capabilityFilled, stageColor } from "./format.ts";
+import { capabilityColor, stageColor } from "./format.ts";
 
 describe("capability marks", () => {
     it.each([
-        ["done", "var(--state-done)", true],
-        ["in-flight", "var(--state-in-flight)", true],
-        ["ready", "var(--state-ready)", true],
-        ["waiting-on-you", "var(--state-waiting-on-you)", true],
-        ["blocked", "var(--state-blocked)", false],
-        ["can-file", "var(--state-can-file)", false],
-        ["waits", "var(--state-waits)", false],
-        ["off", "var(--state-off)", false],
-        ["skipped", "var(--state-skipped)", true],
-    ] as const)(
-        "draws %s as %s, filled: %s, so state reads without colour",
-        (state, colour, filled) => {
-            expect(capabilityColor(state)).toBe(colour);
-            expect(capabilityFilled(state)).toBe(filled);
-        },
-    );
+        ["done", "var(--state-done)"],
+        ["in-flight", "var(--state-in-flight)"],
+        ["ready", "var(--state-ready)"],
+        ["waiting-on-you", "var(--state-waiting-on-you)"],
+        ["blocked", "var(--state-blocked)"],
+        ["can-file", "var(--state-can-file)"],
+        ["waits", "var(--state-waits)"],
+        ["off", "var(--state-off)"],
+        ["skipped", "var(--state-skipped)"],
+    ] as const)("draws %s as %s", (state, colour) => {
+        expect(capabilityColor(state)).toBe(colour);
+    });
 
     it("wraps the stage palette instead of running off its end", () => {
         expect(stageColor(7)).toBe(stageColor(0));
