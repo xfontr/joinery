@@ -123,6 +123,18 @@ const open = async (snapshot: { metrics?: MetricsArtifact; usage?: UsageArtifact
 
 beforeEach(() => {
     docs.benchmarks = [];
+    const { $i18n } = useNuxtApp();
+    $i18n.mergeLocaleMessage($i18n.locale.value, {
+        rules: { look: { count: "{count} studied" }, plan: { count: "{count} lessons" } },
+        method: {
+            prove: {
+                checks: {
+                    lint: { claimCount: "{enabled} rules, {inHouse} ours" },
+                    tests: { claimCount: "{count} specs" },
+                },
+            },
+        },
+    });
 });
 
 describe("method page", () => {
@@ -134,7 +146,7 @@ describe("method page", () => {
         ];
         const wrapper = await open();
 
-        expect(wrapper.get("#look").text()).toContain("2 sites studied so far.");
+        expect(wrapper.get("#look").text()).toContain("2 studied");
         expect(wrapper.get("#look").text()).toContain("primer.style · rauno.me");
     });
 
@@ -149,29 +161,27 @@ describe("method page", () => {
     it("counts the lessons on a template's repeatable blocks as well as its fixed ones", async () => {
         const wrapper = await open();
 
-        expect(wrapper.get("#plan").text()).toContain("3 lessons from past projects");
+        expect(wrapper.get("#plan").text()).toContain("3 lessons");
     });
 
     it("counts test files across every project in the snapshot", async () => {
         const wrapper = await open({ metrics: METRICS });
 
-        expect(wrapper.get("#prove").text()).toContain("42 test files");
+        expect(wrapper.get("#prove").text()).toContain("42 specs");
     });
 
     it("counts only switched-on lint rules, and the in-house ones among them", async () => {
         const wrapper = await open({ usage: USAGE });
 
-        expect(wrapper.get("#prove").text()).toContain(
-            "2 lint rules on, 1 of them written for this repo.",
-        );
+        expect(wrapper.get("#prove").text()).toContain("2 rules, 1 ours");
     });
 
     it("states every rule without a number when nothing was ever collected", async () => {
         const wrapper = await open();
 
-        expect(wrapper.text()).not.toContain("sites studied so far");
-        expect(wrapper.text()).not.toContain("test files");
-        expect(wrapper.text()).toContain("Lint rules, some written for this repo.");
+        expect(wrapper.text()).not.toContain("studied");
+        expect(wrapper.text()).not.toContain("specs");
+        expect(wrapper.text()).toContain("method.prove.checks.lint.claim");
     });
 
     it("links each written-down decision to its developer page", async () => {

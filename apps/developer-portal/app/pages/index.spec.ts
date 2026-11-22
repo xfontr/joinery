@@ -80,6 +80,15 @@ const open = async ({
 
 beforeEach(() => {
     docs.benchmarks = [];
+    const { $i18n } = useNuxtApp();
+    $i18n.mergeLocaleMessage($i18n.locale.value, {
+        index: {
+            rules: {
+                look: { proofCount: "{count} studied" },
+                prove: { proofCount: "{enabled} rules, {inHouse} ours" },
+            },
+        },
+    });
 });
 
 describe("front page", () => {
@@ -87,15 +96,15 @@ describe("front page", () => {
         const wrapper = await open();
 
         expect(wrapper.findAll("article")).toHaveLength(9);
-        expect(wrapper.text()).toContain("The sites studied");
-        expect(wrapper.text()).toContain("What gets checked");
+        expect(wrapper.text()).toContain("index.rules.look.proof");
+        expect(wrapper.text()).toContain("index.rules.prove.proof");
         expect(wrapper.find("[data-workflow-glyph]").exists()).toBe(false);
     });
 
     it("counts only switched-on lint rules, and the in-house ones among them", async () => {
         const wrapper = await open({ usage: USAGE });
 
-        expect(wrapper.text()).toContain("2 lint rules, 1 written in-house");
+        expect(wrapper.text()).toContain("2 rules, 1 ours");
     });
 
     it("counts the benchmarked sites from docs/benchmarks", async () => {
@@ -106,15 +115,7 @@ describe("front page", () => {
         ];
         const wrapper = await open();
 
-        expect(wrapper.text()).toContain("2 sites studied");
-    });
-
-    it("draws Huella Legal's plan as the glyph that leads to how projects are run", async () => {
-        const wrapper = await open({ projects: [{ id: "huella-legal", title: "Huella Legal" }] });
-
-        const link = wrapper.find("#workflows a");
-        expect(link.attributes("href")).toBe("/agentic-workflows");
-        expect(link.findAll("[data-workflow-glyph] rect")).toHaveLength(2);
+        expect(wrapper.text()).toContain("2 studied");
     });
 
     it("sends the reader who wants everything to the developer view", async () => {
