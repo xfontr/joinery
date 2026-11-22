@@ -1,3 +1,4 @@
+import type { Challenge } from "../types/Challenge";
 import type { FormError } from "@nuxt/ui";
 
 export type FormPostStatus = "idle" | "submitting" | "success" | "invalid" | "error";

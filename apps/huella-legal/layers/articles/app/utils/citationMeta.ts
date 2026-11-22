@@ -1,6 +1,6 @@
 import { LONG_DATE } from "../../../../i18n/dateFormats";
-import type { Article } from "../types/Article";
-import type { Journal } from "../types/Journal";
+import type { Article } from "../../shared/types/Article";
+import type { Journal } from "../../shared/types/Journal";
 
 interface MetaTag {
     name: string;

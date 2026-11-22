@@ -98,6 +98,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Challenge } from "#layers/forms/app/types/Challenge";
 import { useFormSubmission } from "#layers/forms/app/composables/useFormSubmission";
 import type { Form, SelectItem } from "@nuxt/ui";
 import {

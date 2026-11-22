@@ -1,3 +1,4 @@
+import type { Challenge } from "../types/Challenge";
 import type { FormErrorWithId } from "@nuxt/ui";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ref, shallowRef } from "vue";
