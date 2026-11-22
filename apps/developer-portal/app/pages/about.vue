@@ -36,7 +36,7 @@ definePageMeta({ layout: "visitor" });
 const LINKEDIN = "https://www.linkedin.com/in/xifre/";
 
 const { t } = useI18n();
-useHead({ title: t("about.head") });
+useSeoMeta({ title: t("about.head"), description: t("about.lead") });
 
 const {
     public: { repoUrl },

@@ -1,1 +1,5 @@
-export default defineNuxtConfig({});
+export default defineNuxtConfig({
+    routeRules: {
+        "/wiki/**": { robots: "noindex, follow" },
+    },
+});
