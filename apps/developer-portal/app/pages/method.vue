@@ -43,7 +43,7 @@
         <MethodChecks :specs :rules />
     </RuleSection>
 
-    <section v-if="example" class="mx-auto max-w-6xl px-4 pt-6 md:px-10">
+    <UContainer v-if="example" as="section" class="pt-6">
         <ULink
             :to="`/work/${example.slug}`"
             class="group flex flex-col gap-2 border-t border-accented pt-10"
@@ -56,7 +56,7 @@
             </span>
             <span class="text-lg">{{ $t("method.example.line") }}</span>
         </ULink>
-    </section>
+    </UContainer>
 </template>
 
 <script setup lang="ts">

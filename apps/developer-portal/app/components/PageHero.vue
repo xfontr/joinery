@@ -1,5 +1,5 @@
 <template>
-    <section class="mx-auto flex max-w-6xl flex-col gap-6 px-4 pt-10 pb-12 md:px-10 md:pt-20">
+    <UContainer as="section" class="flex flex-col gap-6 pt-10 pb-12 md:pt-20">
         <p v-if="kicker" class="font-mono text-xs text-muted uppercase">{{ kicker }}</p>
         <h1
             class="font-display text-section text-highlighted md:text-title lg:text-statement"
@@ -9,7 +9,7 @@
         </h1>
         <p class="max-w-2xl text-2xl text-highlighted">{{ lead }}</p>
         <slot />
-    </section>
+    </UContainer>
 </template>
 
 <script setup lang="ts">

@@ -1,6 +1,6 @@
 <template>
     <section id="work" class="bg-muted">
-        <div class="mx-auto max-w-6xl px-4 py-20 md:px-10">
+        <UContainer class="py-20">
             <h2 class="font-display text-section text-highlighted md:text-title">
                 {{ $t("workList.title") }} <mark>{{ $t("workList.titleMark") }}</mark>
             </h2>
@@ -44,7 +44,7 @@
                     </div>
                 </article>
             </div>
-        </div>
+        </UContainer>
     </section>
 </template>
 

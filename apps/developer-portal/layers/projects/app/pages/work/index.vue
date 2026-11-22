@@ -6,7 +6,7 @@
         :lead="$t('work.lead')"
     />
 
-    <section class="mx-auto flex max-w-6xl flex-col px-4 md:px-10">
+    <UContainer as="section" class="flex flex-col">
         <ULink
             v-for="item in cases"
             :key="item.slug"
@@ -36,7 +36,7 @@
                 </span>
             </div>
         </ULink>
-    </section>
+    </UContainer>
 </template>
 
 <script setup lang="ts">

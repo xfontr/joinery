@@ -1,8 +1,5 @@
 <template>
-    <section
-        :id
-        class="mx-auto grid max-w-6xl gap-8 border-t border-accented px-4 py-14 md:grid-cols-12 md:px-10"
-    >
+    <UContainer as="section" :id class="grid gap-8 border-t border-accented py-14 md:grid-cols-12">
         <header class="flex items-baseline gap-4 md:col-span-4 md:flex-col md:items-start">
             <span class="font-display text-title text-primary">{{ number }}</span>
             <h2 class="font-display text-section text-highlighted" :style="carriedTitle">
@@ -23,7 +20,7 @@
                 {{ $t(`rules.${id}.more`) }} →
             </ULink>
         </div>
-    </section>
+    </UContainer>
 </template>
 
 <script setup lang="ts">

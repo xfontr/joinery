@@ -7,3 +7,9 @@ at,script,command,target,flags,area,caller,tty,exit,ms
 2026-11-22,map,,,check,developer-portal,claude-code,0,0,155
 2026-11-22,map,,,check,developer-portal,claude-code,0,0,114
 2026-11-22,map,,,check,developer-portal,claude-code,0,0,99
+2026-11-22,map,,,check,developer-portal,claude-code,0,0,105
+2026-11-22,dev,,developer-portal,,developer-portal,human,1,1,2235774
+2026-11-22,dev,,developer-portal,,developer-portal,human,1,1,2766
+2026-11-22,dev,,developer-portal,,developer-portal,human,1,1,38025
+2026-11-22,map,,,check,developer-portal,claude-code,0,0,114
+2026-11-22,map,,,check,developer-portal,claude-code,0,0,107
