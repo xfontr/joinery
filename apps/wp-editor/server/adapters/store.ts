@@ -12,7 +12,7 @@ import type { RunReport } from "../../shared/types/RunReport.ts";
 import type { Settings } from "../../shared/types/Settings.ts";
 import type { Snapshot } from "../../shared/types/Snapshot.ts";
 import { DEFAULT_SETTINGS } from "../../shared/constants.ts";
-import { parseKey } from "../../shared/itemKey.ts";
+import { parseKey } from "../utils/itemKey.ts";
 import { Refusal } from "../../shared/refusal.ts";
 
 const sortKeys = (value: unknown): unknown => {
