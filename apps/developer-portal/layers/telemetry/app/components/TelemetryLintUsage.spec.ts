@@ -1,7 +1,25 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { LintRuleUsage } from "#layers/snapshot/shared/types/LintRuleUsage.ts";
 import TelemetryLintUsage from "./TelemetryLintUsage.vue";
+
+const MESSAGES = {
+    telemetryLintUsage: {
+        columns: {
+            disabled: "Disabled inline",
+            fixed: "Auto-fixed",
+            rule: "Rule",
+            total: "Total",
+        },
+        meta: "Hits per project in the last 90 days, darker for more; the last two columns say what a rule costs",
+        neverFired: "Never fired: {quiet} of {enabled} enabled rules",
+        quiet: "{watching} Quiet can also mean the rule works: agents follow what the docs say, or it guards something rare.",
+        scope: "Agent edits only: the counts come from the hook that lints every file an agent edits. Your own edits are fixed by the editor on save and never counted, so a rule that only catches people reads as quiet here.",
+        show: "Show the list",
+        since: "Watching since {since}: nothing here means much until that's weeks ago.",
+        title: "Lint rules × projects",
+    },
+};
 
 const rule = (overrides: Partial<LintRuleUsage> = {}): LintRuleUsage => ({
     enabled: true,
@@ -16,6 +34,10 @@ const rule = (overrides: Partial<LintRuleUsage> = {}): LintRuleUsage => ({
 
 const mount = (rules: Record<string, LintRuleUsage>, since: string | null = "2026-11-01") =>
     mountSuspended(TelemetryLintUsage, { props: { lint: { since, rules } } });
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("TelemetryLintUsage", () => {
     it("tables a rule that fired or is disabled, busiest first, and leaves silent ones out", async () => {

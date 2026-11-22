@@ -45,10 +45,10 @@ describe("projects menu route", () => {
 
         const rows = await handler({} as never);
 
-        expect(rows.map(({ label, to, badge }) => ({ label, to, badge }))).toEqual([
-            { label: "All projects", to: "/projects", badge: "3" },
-            { label: "Apps", to: "/projects?kind=apps", badge: "2" },
-            { label: "Packages", to: "/projects?kind=packages", badge: "1" },
+        expect(rows.map(({ labelKey, to, badge }) => ({ labelKey, to, badge }))).toEqual([
+            { labelKey: "app.menu.allProjects", to: "/projects", badge: "3" },
+            { labelKey: "app.menu.kinds.apps", to: "/projects?kind=apps", badge: "2" },
+            { labelKey: "app.menu.kinds.packages", to: "/projects?kind=packages", badge: "1" },
         ]);
     });
 

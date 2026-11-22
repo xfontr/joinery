@@ -1,8 +1,25 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { SnapshotIssue } from "#layers/workflows/shared/workflows.ts";
 import Remove from "./Remove.vue";
+
+const MESSAGES = {
+    settingsRemove: {
+        cancel: "Cancel",
+        confirm: "Type {project} to confirm",
+        delete: "Delete project",
+        deleteOpen: "Delete project…",
+        drop: "As of the last sync, {close} tickets are untouched and {keep} already started or closed. Close the untouched ones first with {command}, since it reads the milestone from this project file.",
+        lead: "Removes the project file and its snapshot. Run {command} first to close the tickets nobody started; the rest stay on GitHub.",
+        modal: {
+            description: "The project file and its snapshot go. Deleting closes nothing on GitHub.",
+            title: "Delete {title}?",
+        },
+        rarely: "Rarely needed.",
+        title: "Remove",
+    },
+};
 
 const ticket = (number: number, overrides: Partial<SnapshotIssue> = {}): SnapshotIssue => ({
     number,
@@ -36,6 +53,10 @@ const open = async (issues: SnapshotIssue[] = []) => {
     await flushPromises();
     return wrapper;
 };
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("SettingsRemove", () => {
     it("deletes only once the project's id is typed back", async () => {

@@ -1,7 +1,16 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import HealthIssueRow from "./HealthIssueRow.vue";
 import type { Issue } from "#layers/github/app/utils/issues.ts";
+
+const MESSAGES = {
+    healthIssueRow: {
+        noDescription: "No description.",
+        open: "Open #{number} on GitHub",
+        openLabel: "Open issue {number} on GitHub",
+        updated: "updated {age}",
+    },
+};
 
 const issue: Issue = {
     number: 42,
@@ -19,6 +28,10 @@ const mount = (props: { issue: Issue; compact?: boolean }) =>
         props,
         global: { stubs: { UIcon: true } },
     });
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("HealthIssueRow", () => {
     it("keeps the collapsed row short while retaining the issue identity and labels", async () => {

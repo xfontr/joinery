@@ -7,6 +7,66 @@ import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 import type { ProjectsArtifact } from "#layers/snapshot/shared/types/ProjectsArtifact.ts";
 import Page from "./index.vue";
 
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
+    },
+    pageHeader: {
+        breadcrumb: "Breadcrumb",
+        wordmark: "monorepo",
+    },
+    projects: {
+        crumb: "projects",
+        kinds: {
+            all: "All projects",
+            apps: "Apps",
+            infrastructure: "Infrastructure",
+            packages: "Packages",
+        },
+        row: {
+            unreleased: "+{count} unreleased",
+            usedBy: "used by {count}",
+        },
+    },
+    projectsList: {
+        empty: "No projects collected yet.",
+        filter: "Filter projects",
+        noMatch: "No project matches “{search}”.",
+    },
+    projectsTable: {
+        columns: {
+            lines: "Lines covered",
+            project: "Project",
+            recent: "Commits, 2 wk",
+            specs: "Specs",
+            unreleased: "Unreleased",
+            usedBy: "Used by",
+            version: "Version",
+        },
+    },
+};
+
 const artifacts = vi.hoisted(() => ({
     metrics: null as MetricsArtifact | null,
     projects: null as ProjectsArtifact | null,
@@ -92,6 +152,10 @@ beforeEach(() => {
     docs.readmes = [
         { path: "/packages/ui/readme", title: "UI kit", description: "Shared interface pieces." },
     ];
+});
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
 });
 
 describe("catalog page", () => {

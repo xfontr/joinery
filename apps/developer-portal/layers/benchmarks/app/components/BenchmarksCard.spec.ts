@@ -1,5 +1,5 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { Benchmark } from "#layers/benchmarks/app/types/Benchmark.ts";
 import BenchmarksCard from "./BenchmarksCard.vue";
 
@@ -14,6 +14,12 @@ const SITE = {
 } satisfies Benchmark;
 
 describe("BenchmarksCard", () => {
+    beforeEach(() => {
+        useNuxtApp().$i18n.mergeLocaleMessage("en", {
+            benchmarksCard: { screenshot: "{title}, first screen" },
+        });
+    });
+
     it("links to the entry with its screenshot named for the site", async () => {
         const wrapper = await mountSuspended(BenchmarksCard, { props: { benchmark: SITE } });
 

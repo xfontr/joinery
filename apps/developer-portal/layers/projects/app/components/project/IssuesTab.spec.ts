@@ -1,7 +1,17 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { Issue } from "#layers/github/app/utils/issues.ts";
 import IssuesTab from "./IssuesTab.vue";
+
+const MESSAGES = {
+    projectIssuesTab: {
+        meta: "GitHub · labelled {area}",
+        none: "No open issue is labelled {area}.",
+        reading: "Reading GitHub…",
+        readingIssues: "Reading open issues…",
+        title: "Open issues",
+    },
+};
 
 const ISSUE = {
     number: 42,
@@ -13,6 +23,10 @@ const ISSUE = {
     createdAt: "2026-11-01T00:00:00Z",
     updatedAt: "2026-11-02T00:00:00Z",
 } satisfies Issue;
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("ProjectIssuesTab", () => {
     it("links each issue to GitHub with its number and age", async () => {

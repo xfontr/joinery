@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { buildWiki, locate } from "./wiki.ts";
+import { buildWiki as build, locate } from "./wiki.ts";
+
+const t = (key: string): string => key;
+const buildWiki = (pages: { path: string; title: string }[]) => build(pages, t);
 
 const PAGES = [
     { path: "/readme", title: "Monorepo" },
@@ -48,7 +51,7 @@ describe("buildWiki", () => {
     });
 
     it("labels a project's own README 'Overview', because the group already carries the package name", () => {
-        expect(labelsIn("packages", "ui")).toEqual(["Overview"]);
+        expect(labelsIn("packages", "ui")).toEqual(["wiki.overview"]);
     });
 
     it("keeps every root-scoped skill in the shared agent setup", () => {
@@ -102,7 +105,7 @@ describe("buildWiki", () => {
     });
 
     it("keeps the decisions rubric, which is a doc about how a report is written rather than a report", () => {
-        expect(labelsIn("docs", "decisions")).toEqual(["Overview"]);
+        expect(labelsIn("docs", "decisions")).toEqual(["wiki.overview"]);
     });
 });
 
@@ -120,9 +123,9 @@ describe("buildWiki docs groups", () => {
 
     it("names every docs subfolder after itself, so no two groups share one generic label", () => {
         expect(docsGroups()?.map((group) => group.label)).toEqual([
-            "Start here",
-            "Workflows",
-            "Benchmarks",
+            "wiki.groups.start",
+            "wiki.groups.workflows",
+            "wiki.groups.benchmarks",
             "Zines",
         ]);
     });
@@ -130,7 +133,7 @@ describe("buildWiki docs groups", () => {
     it("keeps the benchmarks README but drops each site, which has a page of its own in this app", () => {
         const entries = docsGroups()?.find((group) => group.key === "benchmarks")?.entries;
 
-        expect(entries?.map((entry) => entry.label)).toEqual(["Overview"]);
+        expect(entries?.map((entry) => entry.label)).toEqual(["wiki.overview"]);
     });
 });
 

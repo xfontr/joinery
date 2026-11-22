@@ -96,7 +96,7 @@ describe("decision detail page", () => {
         expect(pills(wrapper)).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({ to: "/decisions/0003-third" }),
-                expect.objectContaining({ label: "To implement" }),
+                expect.objectContaining({ label: "decisions.status.to-implement" }),
             ]),
         );
     });
@@ -121,7 +121,7 @@ describe("decision detail page", () => {
     it("says there is no such report instead of rendering an empty one", async () => {
         const wrapper = await open("/decisions/missing");
 
-        expect(wrapper.text()).toContain("No such report");
+        expect(wrapper.text()).toContain("decision.missing.title");
     });
 
     it("loads the new report when the route changes under it", async () => {

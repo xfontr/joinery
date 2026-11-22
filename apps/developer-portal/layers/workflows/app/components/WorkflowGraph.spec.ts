@@ -1,9 +1,29 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
 import { nextTick } from "vue";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { projectView, readProject, readTemplate } from "#layers/workflows/shared/workflows.ts";
 import WorkflowGraph from "./WorkflowGraph.vue";
+
+const MESSAGES = {
+    workflowGraph: {
+        details: "Details for {title}",
+        fit: "Fit the selected path",
+        full: "Full screen",
+        node: "{title}, {state}",
+        relation: {
+            needed: "needed",
+        },
+        zoomIn: "Zoom in",
+        zoomOut: "Zoom out",
+    },
+    workflows: {
+        capabilityState: {
+            "can-file": "Can file now",
+            waits: "Waits on a decision",
+        },
+    },
+};
 
 const { template } = readTemplate({
     id: "t",
@@ -27,6 +47,10 @@ const mount = (selected: string | null) =>
 
 const node = (wrapper: VueWrapper, title: string) =>
     wrapper.find(`button[aria-label^='${title},']`);
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowGraph", () => {
     it("shows every block but greys out the ones off the selected path", async () => {

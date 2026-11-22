@@ -1,7 +1,25 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { UnsortedIssue } from "#layers/workflows/shared/workflows.ts";
 import Alerts from "./Alerts.vue";
+
+const MESSAGES = {
+    workflowAlerts: {
+        blank: {
+            description:
+                "Ask Claude to draft its map: it asks what the project is, writes the blocks under {extras} in {file}, and they show here for you to check before anything is filed.",
+            title: "This project has no blocks yet",
+        },
+        problems: "This project's files have problems",
+        reasons: {
+            noLabel: "no {detail} label",
+        },
+        unsorted: {
+            lead: "Not placed yet. Give each one the milestone and a {label} label on GitHub, then sync again.",
+            title: "{count} to organise",
+        },
+    },
+};
 
 const STRAY = {
     issue: {
@@ -23,6 +41,10 @@ const STRAY = {
     reason: "noLabel",
     detail: "cap:",
 } satisfies UnsortedIssue;
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowAlerts", () => {
     it("says nothing for a project with blocks, clean files and every ticket placed", async () => {

@@ -82,6 +82,15 @@
             "visitorSwitchTitle": "Visitor view",
             "wordmark": "monorepo"
         },
+        "menu": {
+            "allProjects": "All projects",
+            "kinds": {
+                "apps": "Apps",
+                "infrastructure": "Infrastructure",
+                "packages": "Packages"
+            },
+            "newProject": "New project"
+        },
         "nav": {
             "audits": "Audits",
             "benchmarks": "Benchmarks",
@@ -1277,23 +1286,7 @@
         "caseStudy": "Read the case study",
         "shotAlt": "{name}, the new site",
         "title": "Sites and",
-        "titleMark": "tools",
-        "tools": {
-            "portal": {
-                "cta": "Open the developer view",
-                "kind": "Developer portal",
-                "name": "This portal",
-                "stage": "Mid-redesign",
-                "what": "The site you're reading, plus the dashboards I run the repo from."
-            },
-            "wpEditor": {
-                "cta": "Read the docs",
-                "kind": "Editing tool",
-                "name": "WP Editor",
-                "stage": "In use, runs locally",
-                "what": "Claude proposes bulk edits to a WordPress blog. I review each one as a diff before it goes live, and can undo it later."
-            }
-        }
+        "titleMark": "tools"
     },
     "workQueue": {
         "all": "All {count}",

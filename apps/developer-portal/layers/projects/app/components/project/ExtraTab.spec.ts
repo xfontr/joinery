@@ -9,7 +9,7 @@ const TAB = {
     rows: "/api/workflows/areas",
     to: "/workflows",
     empty: "No workflow builds this project.",
-} satisfies ProjectTab;
+} satisfies ProjectTab & { label: string; empty: string };
 
 const ROW = {
     id: "blog",

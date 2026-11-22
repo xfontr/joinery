@@ -25,13 +25,40 @@ beforeEach(() => {
     artifacts.usage = null;
 });
 
+const WORK = [
+    {
+        path: "/work/huella-legal",
+        name: "Huella Legal",
+        title: "Huella",
+        mark: "Legal",
+        facts: ["105 articles"],
+        screenshot: { file: "huella-legal.jpg", alt: "Home", caption: "Home." },
+        kind: "Law magazine",
+        stage: "Redesign on staging",
+        line: "A law magazine.",
+        caseStudy: true,
+        live: { href: "https://staging.example.com", label: "See the new site" },
+    },
+    {
+        path: "/work/portal",
+        name: "This portal",
+        kind: "Developer portal",
+        stage: "Mid-redesign",
+        line: "The site you're reading.",
+        caseStudy: false,
+        live: { href: "/overview", label: "Open the developer view" },
+    },
+];
+
 const docs = vi.hoisted(() => ({ benchmarks: [] as { path: string; title: string }[] }));
 
-mockNuxtImport("queryCollection", () => () => {
+mockNuxtImport("queryCollection", () => (collection: string) => {
+    const rows = collection === "work" ? WORK : docs.benchmarks;
     const query = {
         where: () => query,
         select: () => query,
-        all: () => Promise.resolve(docs.benchmarks),
+        order: () => query,
+        all: () => Promise.resolve(rows),
     };
     return query;
 });

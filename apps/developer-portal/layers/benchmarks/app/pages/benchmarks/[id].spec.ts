@@ -76,7 +76,7 @@ describe("benchmark page", () => {
         const wrapper = await mountSuspended(Page, { global, route: "/benchmarks/super-eight" });
 
         expect(wrapper.findComponent({ name: "StatusPill" }).props("label")).toBe(
-            benchmarkVerdictLabel("partial"),
+            "benchmarks.verdict.partial",
         );
         expect(wrapper.text()).toContain("design studio");
         expect(wrapper.find("a[href='https://example.com/super-eight']").exists()).toBe(true);

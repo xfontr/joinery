@@ -6,7 +6,7 @@ import PageHeader from "./PageHeader.vue";
 const trail = (wrapper: VueWrapper) =>
     wrapper
         .findAll(
-            "nav[aria-label='Breadcrumb'] a, nav[aria-label='Breadcrumb'] span:not([aria-hidden])",
+            "nav[aria-label='pageHeader.breadcrumb'] a, nav[aria-label='pageHeader.breadcrumb'] span:not([aria-hidden])",
         )
         .map((crumb) => crumb.text());
 
@@ -18,7 +18,7 @@ describe("PageHeader", () => {
         });
 
         const crumbs = trail(wrapper);
-        expect(crumbs[0]).toBe("monorepo");
+        expect(crumbs[0]).toBe("pageHeader.wordmark");
         expect(crumbs).toHaveLength(3);
         expect(crumbs.at(-1)).toBe("0009");
     });
@@ -29,7 +29,7 @@ describe("PageHeader", () => {
             route: "/overview",
         });
 
-        expect(wrapper.find("nav[aria-label='Breadcrumb']").exists()).toBe(false);
+        expect(wrapper.find("nav[aria-label='pageHeader.breadcrumb']").exists()).toBe(false);
     });
 
     it("lets a page replace the title and add actions", async () => {

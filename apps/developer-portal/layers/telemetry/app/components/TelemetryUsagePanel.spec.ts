@@ -5,6 +5,21 @@ import type { ScriptUsage } from "#layers/snapshot/shared/types/ScriptUsage.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import TelemetryUsagePanel from "./TelemetryUsagePanel.vue";
 
+const MESSAGES = {
+    telemetryUsagePanel: {
+        failed: "{percent}% failed",
+        figures: {
+            agent: "By agents",
+            failed: "Failed",
+            runs: "Runs",
+        },
+        idle: "No script never run in the window. | {count} script never run in the window. | {count} scripts never run in the window.",
+        meta: "Repo scripts over the last {days} days",
+        notCollected: "Not collected.",
+        title: "Tooling usage",
+    },
+};
+
 const artifacts = vi.hoisted(() => ({ usage: null as UsageArtifact | null }));
 mockNuxtImport("usageArtifact", () => () => artifacts.usage);
 
@@ -45,6 +60,10 @@ const open = async (usage: UsageArtifact | null) => {
     await flushPromises();
     return wrapper;
 };
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("TelemetryUsagePanel", () => {
     it("counts runs as a number and the agent and failure shares as percentages", async () => {

@@ -1,6 +1,7 @@
 import type { NavigationMenuItem } from "@nuxt/ui";
 import type { ComputedRef } from "vue";
 import { appEntries, locate } from "~/utils/apps";
+import { menuLabel } from "~/utils/menuLabel";
 import type { MenuRow } from "~/types/MenuRow";
 import type { NavLink } from "~/types/NavLink";
 
@@ -28,7 +29,7 @@ export const useRailEntries = (
     const holds = (row: MenuRow): boolean => row.to === route.fullPath || row.to === route.path;
 
     const toItem = (row: MenuRow): NavigationMenuItem => ({
-        label: row.label,
+        label: menuLabel(row, t),
         icon: row.icon,
         to: row.to,
         active: row.to === route.fullPath,

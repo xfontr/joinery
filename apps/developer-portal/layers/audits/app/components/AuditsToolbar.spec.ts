@@ -22,7 +22,7 @@ describe("AuditsToolbar", () => {
 
         const scope = wrapper.findAllComponents({ name: "USelect" })[1];
         expect(scope?.props("items")).toEqual([
-            { label: "Every scope", value: "all" },
+            { label: "auditsToolbar.everyScope", value: "all" },
             { label: "packages/ui", value: "packages/ui" },
             { label: "apps/blog", value: "apps/blog" },
         ]);

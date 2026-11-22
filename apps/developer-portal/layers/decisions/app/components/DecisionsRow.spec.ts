@@ -21,7 +21,7 @@ describe("DecisionsRow", () => {
 
         expect(wrapper.find("a").attributes("href")).toBe("/decisions/0009-comment-discipline");
         expect(wrapper.text()).toContain("0009");
-        expect(wrapper.text()).toContain("Implemented");
+        expect(wrapper.text()).toContain("decisions.status.implemented");
     });
 
     it("names the report that supersedes one", async () => {
@@ -29,6 +29,6 @@ describe("DecisionsRow", () => {
             props: { report: { ...REPORT, decision: "superseded", supersededBy: "0012-later.md" } },
         });
 
-        expect(wrapper.html()).toContain("Superseded by 0012-later.md");
+        expect(wrapper.html()).toContain("decisions.supersededBy");
     });
 });

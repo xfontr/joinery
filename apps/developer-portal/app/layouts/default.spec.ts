@@ -9,6 +9,7 @@ import type { MenuRow } from "~/types/MenuRow";
 import type { RailFigure } from "~/types/RailFigure";
 import type { SearchSection } from "~/utils/search";
 import Layout from "./default.vue";
+import en from "../../i18n/locales/en.json";
 
 const github = vi.hoisted(() => ({ read: null as unknown }));
 mockNuxtImport("useIssues", () => () => ({ data: github.read, shown: github.read }));
@@ -87,9 +88,9 @@ const figures = (wrapper: VueWrapper) =>
     wrapper.findAll("footer[aria-label='Status'] a").map((link) => link.attributes("title"));
 
 const KINDS: MenuRow[] = [
-    { label: "All projects", to: "/projects", badge: "2" },
+    { labelKey: "app.menu.allProjects", to: "/projects", badge: "2" },
     {
-        label: "Apps",
+        labelKey: "app.menu.kinds.apps",
         to: "/projects?kind=apps",
         badge: "2",
         children: [
@@ -104,6 +105,10 @@ const DECISION = { label: "0036 Drop the UI kit", to: "/decisions/0036-ui" };
 beforeEach(() => {
     github.read = ref<IssuesRead>({ fetchedAt: "", error: null, issues: [] });
     search.mockClear();
+});
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", en);
 });
 
 describe("default layout", () => {

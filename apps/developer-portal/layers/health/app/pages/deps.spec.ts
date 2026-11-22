@@ -4,6 +4,80 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DepsArtifact } from "#layers/snapshot/shared/types/DepsArtifact.ts";
 import Page from "./deps.vue";
 
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
+    },
+    common: {
+        severity: {
+            critical: "critical",
+            high: "high",
+            low: "low",
+            moderate: "moderate",
+        },
+    },
+    deps: {
+        facts: {
+            dependencies: "Dependencies",
+            outdated: "Outdated",
+        },
+        provenance: "pnpm audit and pnpm outdated · collected {age}",
+        title: "Dependencies",
+    },
+    healthAdvisories: {
+        columns: {
+            advisory: "Advisory",
+            package: "Package",
+            patched: "Patched",
+            severity: "Severity",
+            via: "Pulled in via",
+        },
+        meta: "Every finding pnpm audit reports, over the whole workspace lockfile",
+        none: "No known vulnerabilities.",
+        notCollected: "Not collected.",
+        title: "Advisories",
+    },
+    healthOutdated: {
+        columns: {
+            current: "Current",
+            latest: "Latest",
+            package: "Package",
+            projects: "Projects",
+            usedBy: "Used by",
+            wanted: "Wanted",
+        },
+        deprecated: "deprecated",
+        meta: "pnpm outdated -r · wanted is what the range in package.json already allows",
+        notCollected: "Not collected.",
+        title: "Outdated",
+        upToDate: "Everything is on its wanted version.",
+    },
+    pageHeader: {
+        wordmark: "monorepo",
+    },
+};
+
 const artifacts = vi.hoisted(() => ({ deps: null as DepsArtifact | null }));
 mockNuxtImport("depsArtifact", () => () => artifacts.deps);
 
@@ -58,6 +132,10 @@ const cells = (wrapper: VueWrapper, name: string) =>
         .find((tr) => tr.findAll("td").some((td) => td.text().startsWith(name)))!
         .findAll("td")
         .map((td) => td.text());
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("dependencies page", () => {
     it("lists each advisory with its module, severity, fix and the chain that pulls it in", async () => {

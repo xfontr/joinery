@@ -1,7 +1,28 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { projectView, readProject, readTemplate } from "#layers/workflows/shared/workflows.ts";
 import WorkflowStageCards from "./WorkflowStageCards.vue";
+
+const MESSAGES = {
+    workflowStageCards: {
+        details: "Details for {title}",
+        dot: "#{number} {title} · {status}",
+        points: "{points} SP",
+        progress: "{done} of {total} · {points}",
+        stagePoints: "{done}/{total} SP",
+        summary: "{count} {status}",
+    },
+    workflows: {
+        capabilityState: {
+            blocked: "Blocked",
+            "can-file": "Can file now",
+            ready: "Ready",
+        },
+        ticketStatus: {
+            ready: "Ready",
+        },
+    },
+};
 
 const { template } = readTemplate({
     id: "t",
@@ -42,6 +63,10 @@ const mount = (selected: string | null = null) =>
         props: { stage: view.stages[0]!, index: 0, selected },
         global: { stubs: { UIcon: true } },
     });
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowStageCards", () => {
     it("leaves what a blocked block waits on to its details, keeping the card an overview", async () => {

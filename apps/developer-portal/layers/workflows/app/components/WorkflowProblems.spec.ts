@@ -1,6 +1,16 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import WorkflowProblems from "./WorkflowProblems.vue";
+
+const MESSAGES = {
+    workflowProblems: {
+        title: "{count} workflow file problems",
+    },
+};
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowProblems", () => {
     it("names each problem's file and message under a count", async () => {

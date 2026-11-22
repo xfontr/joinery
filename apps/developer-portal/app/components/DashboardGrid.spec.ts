@@ -39,6 +39,14 @@ const pointer = (wrapper: VueWrapper, type: string, { clientX = 0, clientY = 0 }
 };
 
 beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", {
+        dashboardGrid: {
+            done: "Done",
+            earlier: "Move {widget} earlier",
+            remove: "Remove {widget}",
+            reset: "Reset",
+        },
+    });
     localStorage.clear();
     toast.add.mockReset();
 });

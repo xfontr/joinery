@@ -7,6 +7,13 @@ import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 import type { ProjectsArtifact } from "#layers/snapshot/shared/types/ProjectsArtifact.ts";
 import ProjectsTile from "./ProjectsTile.vue";
 
+const MESSAGES = {
+    projectsTile: {
+        findings: "No invariant findings | {count} invariant finding | {count} invariant findings",
+        label: "Projects",
+    },
+};
+
 const artifacts = vi.hoisted(() => ({
     metrics: null as MetricsArtifact | null,
     projects: null as ProjectsArtifact | null,
@@ -49,6 +56,10 @@ const open = async (findings: InvariantFinding[]) => {
     await flushPromises();
     return wrapper;
 };
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("ProjectsTile", () => {
     it("counts the collected projects and links to the catalog", async () => {

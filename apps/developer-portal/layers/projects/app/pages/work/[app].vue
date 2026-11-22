@@ -1,5 +1,5 @@
 <template>
-    <template v-if="work">
+    <template v-if="work && entry">
         <PageHero
             :kicker="$t('workApp.kicker', { kind: work.kind })"
             :title="work.title"
@@ -13,9 +13,10 @@
 
         <section class="mx-auto grid max-w-6xl gap-10 px-4 pb-16 md:grid-cols-12 md:px-10">
             <p class="font-display text-heading text-highlighted md:col-span-7">{{ work.why }}</p>
-            <div class="flex flex-col gap-4 text-base text-muted md:col-span-4 md:col-start-9">
-                <p v-for="paragraph in work.story" :key="paragraph">{{ paragraph }}</p>
-            </div>
+            <ContentRenderer
+                :value="entry"
+                class="flex flex-col gap-4 text-base text-muted md:col-span-4 md:col-start-9"
+            />
         </section>
 
         <section class="bg-muted">
@@ -47,14 +48,16 @@
 </template>
 
 <script setup lang="ts">
-import { workFor } from "#layers/projects/shared/work.ts";
+import { toWorkCase } from "#layers/projects/app/utils/work.ts";
 
 definePageMeta({ layout: "visitor" });
 
 const { t } = useI18n();
 const route = useRoute();
 
-const work = computed(() => workFor(String(route.params.app ?? "")));
+const { data: entry } = await useWorkEntry(() => String(route.params.app ?? ""));
+
+const work = computed(() => toWorkCase(entry.value));
 const facts = computed(() =>
     work.value
         ? t("workApp.facts", { facts: work.value.facts.join(" · "), date: work.value.countedOn })

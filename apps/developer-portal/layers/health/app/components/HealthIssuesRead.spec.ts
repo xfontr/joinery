@@ -1,6 +1,18 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import HealthIssuesRead from "./HealthIssuesRead.vue";
+
+const MESSAGES = {
+    healthIssuesRead: {
+        notRead: "not read yet",
+        read: "read {age}",
+        refresh: "Re-read the issues from GitHub",
+    },
+};
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("HealthIssuesRead", () => {
     it("says GitHub hasn't been read before the first answer", async () => {

@@ -14,13 +14,38 @@ beforeEach(() => {
     artifacts.usage = null;
 });
 
+const WORK = [
+    {
+        path: "/work/huella-legal",
+        name: "Huella Legal",
+        title: "Huella",
+        mark: "Legal",
+        kind: "Law magazine",
+        stage: "Redesign on staging",
+        line: "A law magazine.",
+        caseStudy: true,
+        live: { href: "https://staging.example.com", label: "See the new site" },
+    },
+    {
+        path: "/work/portal",
+        name: "This portal",
+        kind: "Developer portal",
+        stage: "Mid-redesign",
+        line: "The site you're reading.",
+        caseStudy: false,
+        live: { href: "/overview", label: "Open the developer view" },
+    },
+];
+
 const docs = vi.hoisted(() => ({ benchmarks: [] as { path: string; title: string }[] }));
 
-mockNuxtImport("queryCollection", () => () => {
+mockNuxtImport("queryCollection", () => (collection: string) => {
+    const rows = collection === "work" ? WORK : docs.benchmarks;
     const query = {
         where: () => query,
         select: () => query,
-        all: () => Promise.resolve(docs.benchmarks),
+        order: () => query,
+        all: () => Promise.resolve(rows),
     };
     return query;
 });
@@ -101,7 +126,7 @@ describe("front page", () => {
     it("states every proof without a number when nothing was ever collected", async () => {
         const wrapper = await open();
 
-        expect(wrapper.findAll("article")).toHaveLength(9);
+        expect(wrapper.findAll("article")).toHaveLength(5 + WORK.length);
         expect(wrapper.text()).toContain("index.rules.look.proof");
         expect(wrapper.text()).toContain("index.rules.prove.proof");
         expect(wrapper.find("[data-workflow-glyph]").exists()).toBe(false);

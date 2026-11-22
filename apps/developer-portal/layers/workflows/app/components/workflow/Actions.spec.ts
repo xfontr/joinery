@@ -1,6 +1,18 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import Actions from "./Actions.vue";
+
+const MESSAGES = {
+    workflowActions: {
+        never: "Never synced — run {setup} then {sync}",
+        settings: "Settings",
+        synced: "Snapshot updated {age}",
+    },
+};
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowActions", () => {
     it("gives the commands that set up and sync a project never synced", async () => {

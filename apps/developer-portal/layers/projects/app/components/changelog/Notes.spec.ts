@@ -1,7 +1,20 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import Notes from "./Notes.vue";
+
+const MESSAGES = {
+    changelogNotes: {
+        conventional: {
+            description: "{percent}% of the last 100 commits parse as a version bump.",
+            title: "Conventional subjects",
+        },
+        unreleased: {
+            description: "{projects} — commits waiting on a first release, so no changelog yet.",
+            title: "Never released",
+        },
+    },
+};
 
 const metric = (root: string, values: Partial<ProjectMetrics>): ProjectMetrics => ({
     name: root,
@@ -14,6 +27,10 @@ const metric = (root: string, values: Partial<ProjectMetrics>): ProjectMetrics =
     currentVersion: null,
     hasChangelog: false,
     ...values,
+});
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
 });
 
 describe("ChangelogNotes", () => {

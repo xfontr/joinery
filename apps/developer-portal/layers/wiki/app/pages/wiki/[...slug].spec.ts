@@ -89,7 +89,7 @@ describe("doc detail page", () => {
     it("warns about the page's broken links, naming each one", async () => {
         const wrapper = await mountSuspended(Page, { global, route: FIRST_HOUR });
 
-        expect(wrapper.text()).toContain("This page links to something that is not there");
+        expect(wrapper.text()).toContain("wikiPage.broken");
         expect(wrapper.text()).toContain("./missing");
     });
 
@@ -110,7 +110,7 @@ describe("doc detail page", () => {
     it("says there is no such page instead of rendering an empty one", async () => {
         const wrapper = await mountSuspended(Page, { global, route: "/wiki/docs/guides/nope" });
 
-        expect(wrapper.text()).toContain("No such page");
+        expect(wrapper.text()).toContain("wikiPage.missing.title");
     });
 
     it("loads the new page when the route changes under it", async () => {

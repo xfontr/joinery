@@ -1,6 +1,16 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import TelemetryCallerSplit from "./TelemetryCallerSplit.vue";
+
+const MESSAGES = {
+    telemetryCallerSplit: {
+        split: "{agent} by agents, {people} by people",
+    },
+};
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("TelemetryCallerSplit", () => {
     it("splits the bar by share and names both counts on hover", async () => {

@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { workFor } from "#layers/projects/shared/work.ts";
+import { isStudy } from "#layers/projects/app/utils/work.ts";
 import { specTotal } from "#layers/snapshot/app/utils/metrics.ts";
 import { ruleCounts } from "#layers/telemetry/shared/lintUsage.ts";
 import { lessonCount } from "#layers/workflows/shared/workflows.ts";
@@ -77,7 +77,6 @@ const PIPELINE = ["pick", "plan", "build", "review", "polish", "ship"] as const;
 const { t } = useI18n();
 useHead({ title: t("method.head") });
 
-const example = workFor("huella-legal");
 const decisionItems = Object.entries(DECISIONS).map(([key, id]) => ({
     id,
     question: t(`method.decide.decisions.${key}.question`),
@@ -89,10 +88,14 @@ const pipeline = PIPELINE.map((id) => ({
     detail: t(`method.agents.pipeline.${id}.does`),
 }));
 
-const [{ data: benchmarks }, { data: workflows }] = await Promise.all([
+const [{ data: benchmarks }, { data: workflows }, { data: work }] = await Promise.all([
     useBenchmarks(),
     useWorkflows(),
+    useWorkList(),
 ]);
+const example = computed(() =>
+    work.value.filter(isStudy).find((entry) => entry.slug === "huella-legal"),
+);
 const decisions = useDecisionReports();
 
 const sites = computed(() => benchmarks.value.map((item) => item.title).join(" · "));

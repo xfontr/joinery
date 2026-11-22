@@ -1,7 +1,33 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import GraphSection from "./GraphSection.vue";
+
+const MESSAGES = {
+    workflowGraph: {
+        details: "Details for {title}",
+        fit: "Fit the selected path",
+        full: "Full screen",
+        node: "{title}, {state}",
+        relation: {
+            waits: "waits on it",
+        },
+        zoomIn: "Zoom in",
+        zoomOut: "Zoom out",
+    },
+    workflowGraphSection: {
+        chain: "{status} Longest chain left: {chain}.",
+        status: "{state}. Its path stays lit; click an empty spot for the whole map.",
+        title: "Dependency graph",
+        titleSelected: "Dependency graph · {title}",
+    },
+    workflows: {
+        capabilityState: {
+            "can-file": "Can file now",
+            waits: "Waits on a decision",
+        },
+    },
+};
 
 const TEMPLATE = {
     id: "site",
@@ -26,6 +52,10 @@ const VIEW = assembleWorkflows(
 ).projects[0];
 
 const TITLES = { page: "Page", launch: "Launch" };
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowGraphSection", () => {
     it("heads the graph with the block picked and the longest chain left", async () => {

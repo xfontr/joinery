@@ -1,10 +1,16 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import ListCard from "./ListCard.vue";
 
 const PROPS = { title: "Every audit", note: "" };
 
 describe("ListCard", () => {
+    beforeEach(() => {
+        useNuxtApp().$i18n.mergeLocaleMessage("en", {
+            listCard: { shown: "{shown} of {total}" },
+        });
+    });
+
     it("counts the rows the filter lets through out of all of them", async () => {
         const wrapper = await mountSuspended(ListCard, {
             props: { ...PROPS, shown: 2, total: 5 },

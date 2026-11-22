@@ -13,6 +13,122 @@ import type { ProjectTabRow } from "~/types/ProjectTabRow";
 import type { ProjectsArtifact } from "#layers/snapshot/shared/types/ProjectsArtifact.ts";
 import Page from "./[name].vue";
 
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
+    },
+    appTabs: {
+        label: "{app} sections",
+    },
+    common: {
+        metrics: {
+            lines: "lines",
+        },
+        shortAge: {
+            days: "{count} d",
+        },
+    },
+    issuesRead: {
+        noRepo: "NUXT_PUBLIC_REPO_URL is unset, so there is no repo to read.",
+    },
+    pageHeader: {
+        breadcrumb: "Breadcrumb",
+        wordmark: "monorepo",
+    },
+    project: {
+        missing: {
+            description: "No collected project lives in a folder called {name}.",
+            title: "No such project",
+        },
+        noReadme: "This project has no README.",
+        tabs: {
+            coverage: "Coverage",
+            deps: "Dependencies",
+            issues: "Issues",
+            readme: "README",
+        },
+    },
+    projectAbout: {
+        facts: {
+            changelog: "Changelog",
+            lines: "Lines covered",
+            recent: "Commits, 2 wk",
+            specs: "Specs",
+            unreleased: "Unreleased",
+            version: "Version",
+        },
+        no: "no",
+        relations: {
+            dependsOn: "Depends on",
+            usedBy: "Used by",
+        },
+        tags: "Tags",
+        title: "About",
+        yes: "yes",
+    },
+    projectCoverageTab: {
+        meta: "Vitest · {files} files · collected {age}",
+        parts: {
+            covered: "covered",
+            uncovered: "not covered",
+        },
+        title: "Coverage",
+    },
+    projectDepsTab: {
+        columns: {
+            current: "Current",
+            latest: "Latest",
+            package: "Package",
+            wanted: "Wanted",
+        },
+        meta: "pnpm outdated · collected {age} · advisories are workspace-wide",
+        title: "Outdated dependencies",
+    },
+    projectExtraTab: {
+        meta: "Running in {name}",
+        parts: {
+            done: "done",
+            left: "to go",
+        },
+    },
+    projectIssuesTab: {
+        meta: "GitHub · labelled {area}",
+        reading: "Reading GitHub…",
+        readingIssues: "Reading open issues…",
+        title: "Open issues",
+    },
+    projectTabs: {
+        workflows: {
+            empty: "No workflow runs in this project.",
+            label: "Workflows",
+        },
+    },
+    projects: {
+        crumb: "projects",
+    },
+};
+
 const artifacts = vi.hoisted(() => ({
     coverage: null as CoverageArtifact | null,
     deps: null as DepsArtifact | null,
@@ -145,6 +261,10 @@ const tabs = (wrapper: VueWrapper) =>
 afterEach(() => {
     docs.readmes = [];
     useRuntimeConfig().public.repoUrl = "";
+});
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
 });
 
 describe("project page", () => {

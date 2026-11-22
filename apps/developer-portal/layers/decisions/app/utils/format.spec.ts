@@ -1,20 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { decisionOutcomeLabel, decisionStatusLabel, decisionStatusTone } from "./format.ts";
+import { decisionStatusTone } from "./format.ts";
 
-describe("decision labels and tones", () => {
+describe("decisionStatusTone", () => {
     it.each([
-        ["to-implement", "To implement", "warn"],
-        ["implemented", "Implemented", "good"],
-        ["wont-implement", "Won't implement", "neutral"],
-    ] as const)("maps %s to its status label and tone", (status, label, tone) => {
-        expect(decisionStatusLabel(status)).toBe(label);
+        ["to-implement", "warn"],
+        ["implemented", "good"],
+        ["wont-implement", "neutral"],
+    ] as const)("maps %s to its tone", (status, tone) => {
         expect(decisionStatusTone(status)).toBe(tone);
-    });
-
-    it.each([
-        ["accepted", "Accepted"],
-        ["superseded", "Superseded"],
-    ] as const)("labels the %s outcome", (outcome, label) => {
-        expect(decisionOutcomeLabel(outcome)).toBe(label);
     });
 });
