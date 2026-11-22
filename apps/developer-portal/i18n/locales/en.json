@@ -397,6 +397,22 @@
     "docSource": {
         "meta": "{words} words · updated {updated}"
     },
+    "error": {
+        "head": "Error {status}",
+        "kicker": "Error {status}",
+        "notFound": {
+            "title": "There's no page at this address",
+            "lead": "The link may be mistyped. Everything the portal has is reachable from the front page or the developer view.",
+            "home": "Front page",
+            "developer": "Developer view"
+        },
+        "server": {
+            "title": "This page failed to load",
+            "lead": "Something broke while it was loading. Trying again usually works.",
+            "retry": "Try again",
+            "home": "Front page"
+        }
+    },
     "graph": {
         "title": "Project graph"
     },
