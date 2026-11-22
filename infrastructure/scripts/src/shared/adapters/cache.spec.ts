@@ -47,8 +47,6 @@ describe("cached", () => {
         expect(cached("projects", () => "fresh")).toBe("fresh");
     });
 
-    // The escape hatch: a fresh cache is still a wrong answer once you know it needs busting. The
-    // flag is read per call, so setting it here is enough — no module reset.
     it("bypasses a cache that's still fresh when --refresh is on the command line", () => {
         process.argv = [...ORIGINAL_ARGV, "--refresh"];
         fs.readFileSync.mockReturnValue(JSON.stringify({ fetchedAt: Date.now(), data: "cached" }));
@@ -66,8 +64,6 @@ describe("cached", () => {
         expect(fetch).toHaveBeenCalledOnce();
     });
 
-    // Offline with a stale cache, a swallowed gh failure returns [] — writing it would leave
-    // `readCache` nothing to fall back to.
     it("keeps the stale entry instead of overwriting it with an empty fetch", () => {
         fs.readFileSync.mockReturnValue(
             JSON.stringify({ fetchedAt: Date.now() - DAY_MS - 1, data: ["stale"] }),

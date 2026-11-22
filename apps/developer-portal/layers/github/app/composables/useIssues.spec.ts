@@ -5,7 +5,6 @@ import { useIssues } from "./useIssues.ts";
 
 const nuxt = vi.hoisted(() => ({ options: new Map<string, unknown>() }));
 
-// A spy over the real composable: every read still runs, and its rendering options can be read
 mockNuxtImport("useAsyncData", (original) => (...args: Parameters<typeof original>) => {
     nuxt.options.set(args[0] as string, args[2]);
     return original(...args);
@@ -40,7 +39,6 @@ const use = async (repoUrl = "https://github.com/acme/repo") => {
     const { value } = await withSetup(async () => {
         clearNuxtData("issues");
         const issues = useIssues();
-        // Awaited for the read, and wrapped so the caller keeps the state rather than its result
         await issues;
         return { issues };
     });

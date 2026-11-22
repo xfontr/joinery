@@ -7,7 +7,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NuxtPage } from "#components";
 import { assembleWorkflows, type Workflows } from "#layers/workflows/shared/workflows.ts";
 
-// Writing back is `nuxt dev` only, so the edit composable is the boundary
 const editing = vi.hoisted(() => ({ editable: true, edit: vi.fn() }));
 mockNuxtImport("useWorkflowEdit", () => () => editing);
 
@@ -39,7 +38,6 @@ const choice = (wrapper: VueWrapper, legend: string, title: string) =>
 const templates = (template: object = TEMPLATE): Workflows =>
     assembleWorkflows([{ file: "new-website.yaml", ok: true, value: template }], [], {});
 
-// Rendered through the router view, which is the only place a route-leave guard registers
 const Routed = defineComponent({ render: () => h(NuxtPage) });
 
 const open = async (data: Workflows = templates()) => {
@@ -51,10 +49,8 @@ const open = async (data: Workflows = templates()) => {
 
 const path = () => useRouter().currentRoute.value.path;
 
-// The destination page loads lazily, so a navigation settles over several ticks
 const landsOn = (target: string) => vi.waitFor(() => expect(path()).toBe(target));
 
-// A modal renders in a portal on the document, not inside the page's wrapper
 const press = async (label: string) => {
     [...document.body.querySelectorAll("[role=dialog] button")]
         .find((candidate) => candidate.textContent?.trim() === label)!

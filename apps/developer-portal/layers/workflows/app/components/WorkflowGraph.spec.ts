@@ -99,7 +99,6 @@ describe("WorkflowGraph", () => {
         expect(wrapper.emitted("details")).toEqual([["search"]]);
     });
 
-    // A plain wheel has to reach the page, or the map would trap anyone scrolling past it.
     it("zooms on a pinch or ctrl-wheel and lets a plain wheel scroll the page", async () => {
         const wrapper = await mount(null);
         const viewport = wrapper.find("div");

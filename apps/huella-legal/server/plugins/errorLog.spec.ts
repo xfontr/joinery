@@ -32,8 +32,6 @@ afterEach(() => {
 });
 
 describe("the nitro error log plugin", () => {
-    // A handled 502 answers the client with a generic message, so without this line the upstream
-    // failure behind it is recorded nowhere
     it("logs a handled 5xx with the error that carries its cause", () => {
         const cause = new Error("connect ECONNREFUSED");
         const error = httpError({ statusCode: 502 }, cause);

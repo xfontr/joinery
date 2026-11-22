@@ -18,7 +18,6 @@ describe("htmlDiff", () => {
 
         expect(stripHighlights(before)).toBe(base);
         expect(stripHighlights(after)).toBe(proposed);
-        // Every highlight holds text only, so removing them leaves no stray opener behind.
         expect(`${before}${after}`.replace(/<(ins|del)>[^<]*<\/\1>/g, "")).not.toMatch(
             /<(ins|del)>/,
         );
@@ -45,7 +44,6 @@ describe("htmlTokens", () => {
         expect(htmlTokens("<style>p <!-- a> <")).toEqual(["<style>", "p", " ", "<!-- a>", " "]);
     });
 
-    // The regex this replaced rescanned to the end from every unclosed opener: ~40s on this input
     it("tokenizes a run of unclosed openers in linear time", () => {
         const html = "<style".repeat(50_000) + "<!--".repeat(50_000) + "<".repeat(50_000);
         const started = performance.now();

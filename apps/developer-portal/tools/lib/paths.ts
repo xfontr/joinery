@@ -16,8 +16,7 @@ export const SNAPSHOT_DIR = resolve(PROJECT_ROOT, ".report");
 export const MERGED_COVERAGE_DIR = resolve(WORKSPACE_ROOT, "coverage");
 
 /**
- * Served statically: Nx's own graph client and the merged coverage report, copied in as-is. They sit
- * under `embed/` because Nitro serves `public/` ahead of the page routes — a tree at
+ * Under `embed/` because Nitro serves `public/` ahead of the page routes — a tree at
  * `public/coverage/` silently shadows the `/coverage` page with somebody else's `index.html`.
  */
 const PUBLIC_DIR = resolve(PROJECT_ROOT, "public");

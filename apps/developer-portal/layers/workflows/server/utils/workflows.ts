@@ -247,7 +247,6 @@ export const applyEdit = async (body: unknown): Promise<string | null> => {
     if (edit.action === "create") return createProject(edit, id, path, workflows);
     if (!existsSync(path)) return `${id} doesn't exist`;
 
-    // GitHub keeps the milestone and its tickets; only the files that draw the project go.
     if (edit.action === "delete") {
         await rm(path);
         await rm(resolve(workflowsDir(), "projects", `${id}.snapshot.json`), { force: true });

@@ -8,7 +8,6 @@ export const toArticleComments = (open: boolean, comments: WordpressComment[]): 
     const byId = new Map(comments.map((comment) => [comment.id, comment]));
     const threads = new Map<number, CommentThread>();
 
-    // A reply to a comment that isn't approved has nothing to hang from, so it opens its own thread
     const rootOf = (comment: WordpressComment): WordpressComment => {
         const parent = byId.get(comment.parent);
 

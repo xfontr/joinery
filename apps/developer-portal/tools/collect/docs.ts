@@ -62,12 +62,10 @@ const exists = async (path: string): Promise<boolean> => {
 };
 
 /**
- * Resolves against the filesystem rather than against a route table, because these files are read on
- * GitHub first and in this app second: a link to `./layers` or to `./vite.config.ts` is perfectly
- * valid there, and only a missing target is a real defect.
+ * Resolves against the filesystem, not the route table: these files are read on GitHub first, where
+ * a link to `./layers` or to `./vite.config.ts` is valid.
  */
 const checkLink = async (fromFile: string, href: string): Promise<DocLink | null> => {
-    // `#anchor` and `:91-94` both point inside a file; neither says whether the file itself exists.
     const [target] = href.split("#");
     const path = target?.replace(/:\d+(?:-\d+)?$/, "");
 
@@ -77,7 +75,6 @@ const checkLink = async (fromFile: string, href: string): Promise<DocLink | null
 
     if (await exists(absolute)) return null;
 
-    // A markdown link may omit the extension when a renderer routes it.
     if (await exists(`${absolute}.md`)) return null;
 
     return { href, resolved: absolute.slice(WORKSPACE_ROOT.length + 1) };
@@ -103,10 +100,8 @@ interface DecisionMeta {
 const NO_DECISION_META: DecisionMeta = { status: null, decision: null, supersededBy: null };
 
 /**
- * Only a decision report carries this — `TEMPLATE.md` doesn't match `DECISION_PATH` and answers null
- * rather than a stale default. An unrecognised `status`/`decision` value (a typo, a
- * value from before this existed) also answers null instead of guessing, so a missing badge in the
- * dashboard is the visible nudge to fix the frontmatter rather than a silently wrong one.
+ * An unrecognised `status`/`decision` value answers null instead of a guess, so a frontmatter typo
+ * shows as a missing badge in the dashboard.
  */
 export const decisionMetaOf = (path: string, source: string): DecisionMeta => {
     if (!DECISION_PATH.test(path)) return NO_DECISION_META;

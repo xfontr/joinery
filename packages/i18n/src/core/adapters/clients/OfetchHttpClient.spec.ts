@@ -56,8 +56,6 @@ describe("OfetchHttpClient", () => {
         });
     });
 
-    // A proxy or bot filter can answer with a 200 HTML page, which ofetch hands back as a string the
-    // provider would then serve as a TranslationMap
     describe("when the vendor answers with something other than JSON", () => {
         const page = {
             _data: "<!DOCTYPE html>\n<html>\n  <title>Just a moment</title>\n</html>",
@@ -89,8 +87,6 @@ describe("OfetchHttpClient", () => {
     });
 
     describe("when the request fails", () => {
-        // Without this the domain cannot tell "upstream said no" from "the network is down", and a
-        // FetchError reaches the client carrying the vendor's URL in its message
         it("never surfaces a transport-specific error", async () => {
             const { $fetch } = createFailingFetch(fetchError(401));
 
@@ -102,8 +98,6 @@ describe("OfetchHttpClient", () => {
             );
         });
 
-        // The locale is checked against the declared list before the request, so nothing upstream can
-        // report is the caller's fault — the status is diagnosis, not a status to serve
         it.each([400, 401, 404, 500])(
             "reports upstream %i as a gateway failure, keeping the status",
             async (status) => {
@@ -118,8 +112,6 @@ describe("OfetchHttpClient", () => {
             },
         );
 
-        // A network error carries no status, which is why it is optional rather than defaulted to
-        // something that looks like an answer from upstream
         it("reports a failure that never reached the vendor without a status", async () => {
             const cause = new Error("connect ECONNREFUSED");
             const { $fetch } = createFailingFetch(cause);

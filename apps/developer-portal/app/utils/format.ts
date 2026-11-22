@@ -19,7 +19,6 @@ export const calendarDay = (day: string, month: "short" | "only" = "short"): str
             : { timeZone: "UTC", day: "numeric", month: "short" },
     );
 
-/** "3 hours ago" beats a timestamp for the one question a report page has to answer. */
 export const relativeTime = (iso: string | null | undefined): string => {
     if (!iso) return "never";
 
@@ -36,7 +35,6 @@ export const relativeTime = (iso: string | null | undefined): string => {
         { unit: "year" as Intl.RelativeTimeFormatUnit, size: 31_536_000 },
     ];
 
-    // The largest unit the gap fills at least once — "3 hours ago", never "180 minutes ago".
     const step = scale.findLast((entry) => Math.abs(seconds) >= entry.size) ?? smallest;
 
     return new Intl.RelativeTimeFormat(undefined, { numeric: "auto" }).format(

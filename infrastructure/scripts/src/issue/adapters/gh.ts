@@ -21,8 +21,6 @@ export interface Issue {
     labels: string[];
 }
 
-// `gh project list` demands an owner, and the owner of the repo you're standing in is the only
-// one this CLI ever has a reason to ask about.
 const repoOwner = (): string => gh("repo", "view", "--json", "owner", "--jq", ".owner.login");
 
 /** Whether `gh` is reachable, distinct from `listProjects` swallowing a missing `project` scope the same way. */

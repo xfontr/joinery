@@ -20,7 +20,6 @@ export const parseLinesChanged = (numstat: string[]): number =>
 export const hasRename = (nameStatus: string[]): boolean =>
     nameStatus.some((line) => line.startsWith("R"));
 
-// Stable SHA-256 fingerprints suppress repeated warnings without treating this as security.
 export const fingerprint = (diff: string): string =>
     createHash("sha256").update(diff).digest("hex");
 
@@ -40,7 +39,6 @@ export const recordFingerprint = (
     return { seen: { ...seen, [root]: value }, isNew: true };
 };
 
-// 120 days is the stale-docs threshold.
 const STALE_DOCS_MS = 120 * 24 * 60 * 60 * 1000;
 
 const BIG_CHANGE_LINES = 200;

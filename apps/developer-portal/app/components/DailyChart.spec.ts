@@ -18,7 +18,6 @@ const bars = (wrapper: VueWrapper) => wrapper.findAll("[style*='height']");
 
 const heights = (wrapper: VueWrapper) => bars(wrapper).map((bar) => bar.attributes("style"));
 
-// The hover is caught by each bar's column and released by the plot around every column
 const hover = async (wrapper: VueWrapper, index: number, event: "mouseenter" | "mouseleave") => {
     const column = bars(wrapper)[index]!.element.parentElement!;
     const target = event === "mouseenter" ? column : column.parentElement!.parentElement!;

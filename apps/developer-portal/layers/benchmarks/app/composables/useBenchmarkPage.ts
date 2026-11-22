@@ -20,7 +20,6 @@ export const useBenchmarkPage = () => {
     );
     const benchmark = computed(() => benchmarks.value[index.value] ?? null);
 
-    // Neighbours in gallery order, so reading on from one entry follows the page it was opened from.
     const around = computed(() => {
         const { previous, next } = neighbours(benchmarks.value, index.value);
         const link = (entry: typeof previous) =>

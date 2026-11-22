@@ -18,7 +18,6 @@ const index = {
 } satisfies SubjectIndex;
 
 describe("subjects section nav", () => {
-    // SubjectsGrid, SubjectsFormats and SubjectsTopics carry these ids
     it("jumps to each section of the page", async () => {
         const wrapper = await mountSuspended(SubjectsSectionNav, { props: { index }, global });
 

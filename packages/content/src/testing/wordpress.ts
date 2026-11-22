@@ -57,7 +57,6 @@ const toWordpressTerm = (term: Term): WordpressTerm => {
     };
 };
 
-// The provider names an avatar after its author, so an avatar's `alt` doesn't survive the trip
 const toWordpressUser = (author: Author): WordpressUser => ({
     id: Number(author.id),
     name: escapeText(author.name),

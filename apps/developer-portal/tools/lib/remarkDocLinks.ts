@@ -82,7 +82,6 @@ export default function remarkDocLinks() {
         eachLink(tree, (link) => {
             const href = link.url ?? "";
 
-            // A placeholder names no target, so it renders as text rather than as a dead route.
             if (isPlaceholder(href)) return link.children ?? [];
 
             const url = resolveDocLink(href, from, isPage) ?? href;

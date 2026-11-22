@@ -22,7 +22,6 @@ const ARTICLE: Article = {
 };
 
 describe("article back matter", () => {
-    // ArticleHeader's share bar and byline link to these two ids
     it("keeps the citation at #citar and the author cards at #autor", async () => {
         const wrapper = await mountSuspended(ArticleBackMatter, {
             props: { article: ARTICLE, authorCounts: {} },

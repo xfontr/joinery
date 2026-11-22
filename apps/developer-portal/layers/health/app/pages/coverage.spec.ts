@@ -45,7 +45,6 @@ describe("coverage page", () => {
         expect(row(wrapper, "tested")).toEqual(["tested", "91%", "90%", "89%", "88%", "3"]);
     });
 
-    // Absent is its own state: a 0% or a blank would read as a measured result
     it("marks a project with no report uncollected instead of giving it a percentage", async () => {
         serve(COVERAGE);
         const wrapper = await mountSuspended(Page);

@@ -93,7 +93,6 @@ describe("GET /api/translations/:locale", () => {
         await expect(handler(createEvent("en-GB"))).rejects.toMatchObject({ statusCode: 500 });
     });
 
-    // Unset env vars used to reach the vendor as an empty base URL and come back as a 502
     it("500s unset vendor config, naming what is missing instead of blaming the vendor", async () => {
         nitro.vendor = { name: "tolgee", baseURL: "", project: "", options: { token: "" } };
 
@@ -105,8 +104,6 @@ describe("GET /api/translations/:locale", () => {
         expect(ofetch.raw).not.toHaveBeenCalled();
     });
 
-    // The vendor answered, so it did not fail — flattening this into a 502 used to blame it for a
-    // locale our own config claimed
     it("keeps the status of a failure it diagnosed, rather than reporting it as a vendor failure", async () => {
         nitro.vendor = {
             name: "tolgee",
@@ -150,7 +147,6 @@ describe("GET /api/translations/:locale", () => {
     });
 });
 
-// Key derivation itself lives in core and is covered by core/translationsKey.spec.ts
 describe("translations cache", () => {
     it("keys entries off the configured vendor and the requested locale", () => {
         expect(nitro.cache?.getKey?.(createEvent("en-GB"))).toBe(
@@ -164,7 +160,6 @@ describe("translations cache", () => {
         );
     });
 
-    // The key is derived before the handler runs, so this is what bounds the keyspace to the declared locales
     it("404s a key lookup for an undeclared locale, so it cannot mint an entry of its own", () => {
         expect(() => nitro.cache?.getKey?.(createEvent("fr-FR"))).toThrow(
             expect.objectContaining({ statusCode: 404 }) as Error,

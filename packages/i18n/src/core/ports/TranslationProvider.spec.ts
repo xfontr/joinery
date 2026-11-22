@@ -10,7 +10,6 @@ const vendor = {
     options: { id: "abc" },
 };
 
-// The port is abstract, so a vendor that forgets getTranslations fails to compile rather than at runtime
 class StubProvider extends TranslationProvider<{ id: string }> {
     override getTranslations(): Promise<TranslationMap> {
         return Promise.resolve({});
@@ -43,7 +42,6 @@ describe("TranslationProvider", () => {
             expect(() => new StubProvider(broken, http)).toThrow(problem);
         });
 
-        // One restart per missing variable is the thing worth avoiding
         it("reports every problem at once, naming the provider that cannot be built", () => {
             const broken = { baseURL: "", project: "", options: { id: "abc" } };
 

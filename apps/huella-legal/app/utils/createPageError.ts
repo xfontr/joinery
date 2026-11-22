@@ -11,7 +11,6 @@ export const createPageError = (error: NuxtError): NuxtError => {
         data: error.data,
         stack: error.stack,
         cause: error,
-        // The server renders the error page either way, and Nitro logs every fatal error it serves
         fatal: import.meta.client || status >= 500,
     });
 };

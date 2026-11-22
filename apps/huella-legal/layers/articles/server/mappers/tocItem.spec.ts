@@ -20,7 +20,6 @@ describe("annotateHeadings", () => {
         expect(html).toContain('<h2 id="introduccion">');
     });
 
-    // 13 posts already carry heading ids, and old deep links point at them
     it("keeps a heading's existing id", () => {
         expect(annotate('<h2 id="conclusiones-finales">Conclusiones</h2>').toc[0]?.id).toBe(
             "conclusiones-finales",

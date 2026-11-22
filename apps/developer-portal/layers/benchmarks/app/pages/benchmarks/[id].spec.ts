@@ -4,7 +4,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { BenchmarkPage } from "#layers/benchmarks/app/utils/benchmarks.ts";
 import Page from "./[id].vue";
 
-// An in-memory docs collection, answering both the gallery list and the page's own lookup
 const docs = vi.hoisted(() => ({ pages: [] as BenchmarkPage[] }));
 
 mockNuxtImport("queryCollection", () => () => {
@@ -19,7 +18,6 @@ mockNuxtImport("queryCollection", () => () => {
     return query;
 });
 
-// Only a server render can set a status; the prerender crawler is what reads it
 const setStatus = vi.hoisted(() => vi.fn());
 mockNuxtImport("setResponseStatus", () => setStatus);
 

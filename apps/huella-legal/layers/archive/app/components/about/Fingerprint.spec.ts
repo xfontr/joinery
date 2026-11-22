@@ -17,7 +17,6 @@ describe("about fingerprint", () => {
         expect(onView.find("svg").attributes("data-waiting")).toBe("true");
     });
 
-    // The draw animation offsets a dash of length 1, so a path measured any other way never finishes
     it("normalises every ridge to a length of one, each with its own stagger index", async () => {
         const wrapper = await mountSuspended(AboutFingerprint);
 

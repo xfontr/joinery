@@ -3,7 +3,6 @@ import { excerpt, stripAnsi } from "./logs.ts";
 
 const ESC = "\u001b";
 
-// Trimmed from a real `tsc --noEmit` failure inside an Nx task log.
 const TSC_LOG = [
     "$ tsc --noEmit",
     `${ESC}[96msrc/shared/domain/broken.ts${ESC}[0m:${ESC}[93m1${ESC}[0m:${ESC}[93m14${ESC}[0m - ${ESC}[91merror${ESC}[0m${ESC}[90m TS2322: ${ESC}[0mType 'string' is not assignable to type 'number'.`,

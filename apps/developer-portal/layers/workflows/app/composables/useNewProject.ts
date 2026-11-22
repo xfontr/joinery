@@ -98,7 +98,6 @@ export const useNewProject = () => {
         ticketSize,
     });
 
-    // Files load in name order, so a blank template such as `custom` would otherwise come first.
     const fallback = computed(
         () =>
             (
@@ -127,7 +126,6 @@ export const useNewProject = () => {
         return owner ? `Already ${owner.project.title}'s milestone` : undefined;
     });
 
-    // Only a template with page types asks for pages.
     const shown = computed(() =>
         STEPS.filter(({ id }) => id !== "pages" || (template.value?.types.length ?? 0) > 0),
     );

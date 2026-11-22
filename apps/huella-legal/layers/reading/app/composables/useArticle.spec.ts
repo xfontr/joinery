@@ -30,7 +30,6 @@ const nuxt = vi.hoisted(() => ({
     signedTitle: undefined as unknown as () => string | undefined,
 }));
 
-// A spy over the real composable: every read still runs, and its rendering options can be read
 mockNuxtImport("useCachedFetch", (original) => (...args: Parameters<typeof original>) => {
     nuxt.fetches.set(args[0] as string, args[1] as Record<string, unknown> | undefined);
     return original(...args);
@@ -90,7 +89,6 @@ describe("useArticle", () => {
         ]);
     });
 
-    // A prerendered article is rebuilt weekly, and a thread baked into it would stay that old
     it("reads the comments in the browser only, without blocking navigation on them", async () => {
         await setUp();
 
@@ -100,7 +98,6 @@ describe("useArticle", () => {
         });
     });
 
-    // Rendered on the server, so crawlers follow the links and the band never shifts the page in
     it("server-renders the related posts without blocking navigation on them", async () => {
         await setUp();
 
@@ -113,7 +110,6 @@ describe("useArticle", () => {
     });
 
     describe("author counts", () => {
-        // The directory reads the same route whole, and a shared key would hand one the other's shape
         it("reads them lazily under a key of their own", async () => {
             await setUp();
 
@@ -123,7 +119,6 @@ describe("useArticle", () => {
             });
         });
 
-        // Read in the browser, they would invoke a function on every view of a prerendered article
         it("server-renders them, so a prerendered article carries them in its payload", async () => {
             await setUp();
 
@@ -142,7 +137,6 @@ describe("useArticle", () => {
         });
     });
 
-    // Thrown during setup, so server rendering answers with the route's own status
     it("throws a fatal 404 when the post doesn't exist", async () => {
         unregisters.splice(0).forEach((unregister) => unregister());
         serve(() => new Response("Not found", { status: 404 }));

@@ -13,7 +13,6 @@ const teardown = (config: FullConfig) => {
     }
 
     const output = readFileSync(path, "utf8").trim();
-    // Removed every run, so a later preload that drops the recorder can't pass on a stale file
     rmSync(path);
 
     if (output) throw new Error(`The server logged during the e2e run:\n\n${output}`);

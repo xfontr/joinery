@@ -436,6 +436,11 @@
             "title": "No hemos podido cargar esta página"
         }
     },
+    "errorDebug": {
+        "data": "Data",
+        "message": "Message",
+        "stack": "Stack"
+    },
     "filterPills": {
         "count": "{count} publicación | {count} publicaciones"
     },
@@ -684,6 +689,7 @@
         },
         "breadcrumb": "Publicar",
         "faq": {
+            "guide": "Todos los criterios, en la guía de publicaciones",
             "items": {
                 "advertising": {
                     "answer": "No más allá de una breve reseña profesional y enlaces de contacto.",
@@ -706,7 +712,6 @@
                     "question": "¿Sobre qué temas puedo escribir?"
                 }
             },
-            "guide": "Todos los criterios, en la guía de publicaciones",
             "title": "Preguntas frecuentes"
         },
         "kicker": "Publicar en Huella Legal",

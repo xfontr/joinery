@@ -79,7 +79,6 @@ export const summarizeLint = (
         if (!first || at < first) first = at;
     }
 
-    // A comment naming a rule nothing enables or reports is a typo or a plugin long gone.
     for (const [rule, count] of Object.entries(disabled)) {
         const usage = rules[rule];
         if (usage) usage.disabled = count;

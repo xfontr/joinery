@@ -28,7 +28,6 @@ export default defineSitemapEventHandler(async (event) => {
         ...pages
             .filter(({ seo }) => !seo?.noindex)
             .map(({ slug, updatedAt }) => ({ loc: `/${slug}/`, lastmod: updatedAt })),
-        // Yoast marked these archives noindex for WordPress's theme; the app's áreas are indexed
         ...categories
             .filter((category) => !isHiddenTerm(category))
             .map(({ slug }) => ({ loc: `/areas/${slug}/` })),

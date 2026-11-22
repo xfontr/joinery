@@ -41,6 +41,5 @@ const readArticleIndex = defineCachedFunction(
     },
 );
 
-// Filtered after the cache, so a change to the hidden tags needs no cache bust
 export const getArticleIndex = async (event: H3Event): Promise<ArticleSummary[]> =>
     (await readArticleIndex(event)).filter(isListed);

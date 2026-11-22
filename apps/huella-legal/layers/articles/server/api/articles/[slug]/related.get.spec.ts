@@ -64,7 +64,6 @@ describe("GET /api/articles/:slug/related", () => {
         expect(nitro.listEntries).not.toHaveBeenCalled();
     });
 
-    // The page hides the band on an error, so an empty fallback here would hide that something failed
     it("fails with the list's status rather than answering an empty list", async () => {
         nitro.listEntries.mockRejectedValue(Object.assign(new Error("http"), { statusCode: 502 }));
 

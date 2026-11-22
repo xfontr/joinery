@@ -1,7 +1,6 @@
 import type { FormError } from "@nuxt/ui";
 import * as v from "valibot";
 
-// `rejected` is Kit's verdict on an address these rules let through
 export type SubscriptionIssue = "invalid" | "required" | "rejected";
 
 export type SubscriptionError = FormError & { message: SubscriptionIssue };

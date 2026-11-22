@@ -72,7 +72,6 @@ test("refuses an empty form without sending it, naming each field", async ({ pag
 });
 
 test.describe("a refused send", () => {
-    // Chrome logs every response that fails, and these fail on purpose
     test.use({ allowedConsole: [/the server responded with a status of (422|502)\b/] });
 
     test("puts the server's refusal on the field it names", async ({ page }) => {
@@ -98,7 +97,6 @@ test.describe("a refused send", () => {
 
         const alert = page.getByRole("alert");
 
-        // The summary of an empty, pre-hydration submit is an alert too, so only the text settles it
         await send(page, () =>
             expect(alert).toContainText("No hemos podido enviar tu mensaje", { timeout: 2000 }),
         );

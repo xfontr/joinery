@@ -38,7 +38,6 @@ export const useWorkflowSettings = () => {
     const discard = () => Object.assign(draft, saved.value, { switches: {} });
     watch(saved, discard, { immediate: true });
 
-    // Any live milestone ticket with a `cap:` label fixes the size, whether filed by script or by hand.
     const sizeFixed = computed(() => (base.value?.tickets.filed ?? 0) > 0);
 
     const features = computed(() => {
@@ -50,7 +49,6 @@ export const useWorkflowSettings = () => {
         );
     });
 
-    // Only the switches that differ from the file go in the draft, so toggling back clears it.
     const toggle = (capability: string, on: boolean) => {
         const current = base.value?.features.find((feature) => feature.id === capability)?.enabled;
         if (on === current) delete draft.switches[capability];

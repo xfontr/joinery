@@ -35,8 +35,6 @@ export const normalizeGraph = (
             name: node.name,
             root: node.data.root,
             tags: (node.data.tags ?? []).filter(isDeclaredTag),
-            // Derived from the forward edges rather than read from a second field, so a project
-            // with no dependencies still appears with two empty lists instead of being dropped.
             dependsOn: edges
                 .filter((edge) => edge.source === node.name)
                 .map((edge) => edge.target)
@@ -57,8 +55,7 @@ export const collectGraph = async (
     const jsonPath = resolve(SNAPSHOT_DIR, "nx-graph.raw.json");
 
     // `nx graph --file` resolves a relative path against the workspace root, not cwd, and the JSON
-    // branch writes the file directly without creating its parent — hence the absolute path and the
-    // mkdir. The HTML branch copies Nx's own graph client in and creates its directory itself.
+    // branch writes the file directly without creating its parent.
     await mkdir(SNAPSHOT_DIR, { recursive: true });
     await run("pnpm", ["exec", "nx", "graph", "--file", jsonPath]);
 

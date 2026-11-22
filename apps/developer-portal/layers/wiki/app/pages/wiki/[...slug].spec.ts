@@ -12,7 +12,6 @@ beforeEach(() => {
     artifacts.docs = null;
 });
 
-// An in-memory docs collection, answering useWiki's listing and the page's own lookup
 const docs = vi.hoisted(() => ({
     entries: [] as { path: string; title: string; body?: unknown }[],
 }));
@@ -28,7 +27,6 @@ mockNuxtImport("queryCollection", () => () => {
     return query;
 });
 
-// Only a server render can set a status; the prerender crawler is what reads it
 const setStatus = vi.hoisted(() => vi.fn());
 mockNuxtImport("setResponseStatus", () => setStatus);
 

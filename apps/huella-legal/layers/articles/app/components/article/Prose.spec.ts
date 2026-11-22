@@ -16,7 +16,6 @@ describe("article prose", () => {
         expect(wrapper.find("h2#la-culpa").exists()).toBe(true);
     });
 
-    // The figure sits after the lead because the lead is the standfirst's continuation in the design
     it("places the image between the lead and the body", async () => {
         const image = fakeAsset();
         const wrapper = await mountSuspended(ArticleProse, { props: { ...PROPS, image } });

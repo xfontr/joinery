@@ -19,7 +19,6 @@ beforeEach(() => {
     artifacts.projects = null;
 });
 
-// An in-memory docs collection, answering the README query the page sends
 const docs = vi.hoisted(() => ({
     readmes: [] as { path: string; title: string; description: string }[],
 }));

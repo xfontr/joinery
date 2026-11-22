@@ -58,7 +58,6 @@ test("refuses an address with no domain without sending it", async ({ page }) =>
 
     await page.goto(`/areas/${SUBJECT.slug}/`);
 
-    // The sidebar card is the subject page's only newsletter form
     const email = page.getByRole("textbox", { name: t("newsletterForm.email.label") });
 
     await expect(async () => {

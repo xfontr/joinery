@@ -50,7 +50,6 @@ describe("usePage", () => {
         expect(seo("title")).toBe("Aviso legal");
     });
 
-    // Thrown during setup, so server rendering answers with the route's own status
     it("throws a fatal 404 when WordPress has no page by the slug", async () => {
         serve(() => new Response("Not found", { status: 404 }));
 

@@ -15,7 +15,6 @@ export default defineEventHandler(async (event): Promise<ArticleSummary[]> => {
 
     if (!category) return [];
 
-    // One extra, because the article is usually among its own category's newest
     const { items } = await content.listEntries("posts", {
         term: { resource: "categories", id: category.id },
         perPage: RELATED + 1,

@@ -10,8 +10,6 @@ const command = (invocation: string, source: string, token: string): Capability 
 });
 
 describe("mentions", () => {
-    // `pnpm release` is deliberately undocumented (releases run from the Release workflow), so a
-    // doc that only covers `release:dry` must not make its row look answered.
     it("does not let a longer script name satisfy the shorter one it starts with", () => {
         expect(mentions("Locally: `pnpm release:dry`", "release")).toBe(false);
         expect(mentions("| `pnpm test:coverage` |", "test")).toBe(false);
@@ -50,8 +48,6 @@ describe("rootCommands", () => {
 });
 
 describe("projectCommands", () => {
-    // Eight projects times five standard targets would bury the handful of commands that are
-    // actually specific to one project.
     it("drops the targets every project declares, leaving only what is specific to one", () => {
         const rows = projectCommands(
             [{ root: "packages/ui", name: "@monorepo/ui", scripts: ["lint", "test", "storybook"] }],
@@ -108,7 +104,6 @@ describe("documentedBy", () => {
         );
     });
 
-    // Nearness alone sent skills to a sibling skill, and ranking alone to whichever README named them.
     it.each([
         { other: ".claude/skills/doc-drift-check/SKILL.md", text: "follow the house-docs skill" },
         {

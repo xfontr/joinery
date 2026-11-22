@@ -14,7 +14,6 @@ const { addSubscriber } = await import("./kit");
 
 const created = (state: string) => ({ subscriber: { id: 42, state } });
 
-// The shape `$fetch` rejects with: Kit's error list arrives as `data`
 const refused = (message: string) =>
     Object.assign(new Error("Unprocessable Entity"), {
         statusCode: 422,

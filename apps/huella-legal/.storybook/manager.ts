@@ -8,7 +8,6 @@ const shared = {
     fontBase: "Montserrat, ui-sans-serif, system-ui, sans-serif",
 };
 
-// Read once at load, so switching the OS theme takes a reload to show.
 const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
 addons.setConfig({

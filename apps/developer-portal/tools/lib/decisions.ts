@@ -10,10 +10,8 @@ const FRONTMATTER = /^---\n([\s\S]*?)\n---/;
 const FILENAME = /^\d{4}-[a-z0-9]+(?:-[a-z0-9]+)*\.md$/;
 
 /**
- * Scalars flattened to strings, because every rule below compares against a string and `issue: 106`
- * parses as a number. Null means the block is there but isn't valid YAML, which is its own problem
- * rather than an empty set of fields — `@nuxt/content` reads these same bytes as YAML to render the
- * page, so the checker has to agree with it about what parses.
+ * Scalars flattened to strings, since `issue: 106` parses as a number. Null means the block is there
+ * but isn't valid YAML — `@nuxt/content` parses the same bytes, so the checker must agree with it.
  */
 export const frontmatterFields = (source: string): Record<string, string> | null => {
     const block = FRONTMATTER.exec(source)?.[1];
@@ -79,8 +77,7 @@ const reportProblems = (file: string, source: string, filed: ReadonlySet<string>
 
 /**
  * Every rule `docs/decisions/README.md` states about a report's filename and frontmatter. A reused
- * number is a problem here where a reused `issue:` is not: two questions off one issue is normal,
- * two reports answering to the same `NNNN` is the collision consecutive numbering exists to prevent.
+ * `issue:` is allowed; a reused number is not.
  */
 export const decisionProblems = (
     reports: { file: string; source: string }[],

@@ -122,7 +122,6 @@ describe("store lock", () => {
         });
     });
 
-    // The dev mocks live in their own store, so a fake server never blocks the real one.
     it("never blocks a server on a different store", async () => {
         const other = await mkdtemp(join(tmpdir(), "wp-editor-"));
 

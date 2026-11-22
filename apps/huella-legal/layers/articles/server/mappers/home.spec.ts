@@ -20,7 +20,6 @@ describe("toHome", () => {
         expect([lead, ...latest, ...recent]).toEqual(INDEX.slice(0, 9));
     });
 
-    // The band is its own archive, so a thesis already in the latest may show there too
     it("fills the thesis band with the newest theses from the whole index", () => {
         const { theses } = toHome(INDEX);
 

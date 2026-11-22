@@ -3,7 +3,6 @@ import { flushPromises } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import WorkflowLeaveModal from "./WorkflowLeaveModal.vue";
 
-// The modal renders in a portal on the document, not inside the wrapper
 const press = async (label: string) => {
     [...document.body.querySelectorAll<HTMLButtonElement>("[role=dialog] button")]
         .find((candidate) => candidate.textContent?.trim() === label)

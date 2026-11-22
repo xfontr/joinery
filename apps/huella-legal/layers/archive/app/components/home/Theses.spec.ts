@@ -36,7 +36,6 @@ describe("home theses", () => {
         expect(hrefs).toContain("/publicar/#tesis");
     });
 
-    // A dark band with a heading over nothing reads as a broken page
     it("renders nothing until the first thesis is published", async () => {
         const wrapper = await mountSuspended(HomeTheses, { props: { articles: [] }, global });
 

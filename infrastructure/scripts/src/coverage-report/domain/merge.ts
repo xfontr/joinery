@@ -5,7 +5,7 @@ import { ExpectedError } from "../../shared/errors.ts";
 
 interface LoadedReport {
     name: string;
-    data: CoverageMapData | undefined; // undefined when coverage-final.json wasn't found on disk
+    data: CoverageMapData | undefined;
 }
 
 export const assertComplete = (reports: LoadedReport[]): void => {

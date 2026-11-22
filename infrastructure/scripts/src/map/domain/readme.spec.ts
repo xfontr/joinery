@@ -67,7 +67,6 @@ describe("readmeRegions", () => {
         ]);
     });
 
-    // A regex that silently stops matching would otherwise render empty tables and pass --check.
     it("refuses to render when boundaries.ts yields no constraints", () => {
         expect(() => readmeRegions([], PROJECTS, ["apps"])).toThrow("No depConstraints parsed");
     });

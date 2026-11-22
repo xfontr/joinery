@@ -15,7 +15,6 @@ const NOTES = [
 ];
 
 describe("article notes", () => {
-    // The body's superscripts link to `#nota-N` and are themselves `#ref-N`, so both ids are a contract
     it("gives each note the id the body links to, and links back to the body's reference", async () => {
         const wrapper = await mountSuspended(ArticleNotes, { props: { notes: NOTES }, global });
 

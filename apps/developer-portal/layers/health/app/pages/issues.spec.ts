@@ -5,12 +5,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Issue, IssuesRead } from "#layers/github/app/utils/issues.ts";
 import Page from "./issues.vue";
 
-// GitHub is read straight from the browser, so the github layer's composable is the boundary
 const github = vi.hoisted(() => ({ read: null as unknown, reload: vi.fn() }));
 
 mockNuxtImport("useIssues", () => () => ({ data: github.read, reload: github.reload }));
 
-// Each row has its own spec; here only which issues the page shows, and in what order
 const global = {
     stubs: {
         HealthIssueRow: {

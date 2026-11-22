@@ -22,7 +22,6 @@ const ticket = (number: number, overrides: Partial<SnapshotIssue> = {}): Snapsho
     ...overrides,
 });
 
-// The confirmation renders in a portal on the document, not inside the wrapper
 const dialog = () => document.body.querySelector<HTMLElement>("[role=dialog]");
 const deleteButton = () =>
     [...(dialog()?.querySelectorAll("button") ?? [])].find(

@@ -10,7 +10,6 @@ export const useWorkflowProject = () => {
     const { data } = read;
     const { editable, edit } = useWorkflowEdit();
 
-    // The project as synced; the replay lays the same files over an earlier day.
     const base = computed(() => data.value.projects.find(({ project }) => project.id === id.value));
     const problems = computed(() =>
         data.value.problems

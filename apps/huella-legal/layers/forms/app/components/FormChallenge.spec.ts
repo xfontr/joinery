@@ -7,7 +7,6 @@ import FormChallenge from "./FormChallenge.vue";
 
 const reset = vi.hoisted(() => vi.fn());
 
-// The real widget would fetch Cloudflare's script, so only its contract with the challenge is kept
 const NuxtTurnstile = defineComponent({
     name: "NuxtTurnstile",
     props: { modelValue: { type: String, default: undefined } },

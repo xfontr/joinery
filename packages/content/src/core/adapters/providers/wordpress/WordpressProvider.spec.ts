@@ -19,7 +19,6 @@ const respond = (data: unknown, headers: Record<string, string> = {}) => {
     get.mockResolvedValue({ data, headers: new Headers(headers) });
 };
 
-// Built the way the registry builds it: a vendor with no options is configured without the field
 const build = () => new WordpressProvider({ baseURL: "https://wp.test" }, http);
 
 beforeEach(() => {
@@ -85,8 +84,6 @@ describe("WordpressProvider", () => {
         });
     });
 
-    // A thin smoke test that the query and the response are actually wired through WordpressHelpers —
-    // the mapping and pagination edge cases themselves are pinned in WordpressHelpers.spec.ts
     it("returns a page built from the mapped response", async () => {
         respond([entry], { "x-wp-total": "12", "x-wp-totalpages": "2" });
 

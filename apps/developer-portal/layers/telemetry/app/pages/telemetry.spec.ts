@@ -15,7 +15,6 @@ beforeEach(() => {
     artifacts.usage = null;
 });
 
-// Each panel has its own spec; here only the page's own totals are under test
 const global = {
     stubs: {
         TelemetryScriptActivity: true,

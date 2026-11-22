@@ -54,8 +54,6 @@ describe("createIssue", () => {
         expect(exec.run).toHaveBeenCalledWith("gh", expected);
     });
 
-    // A description is free text, and one starting with a markdown checklist used to throw after
-    // every field had been typed.
     it("passes a dash-leading body as the value of --body instead of rejecting it", () => {
         createIssue({ title: "--label=bug", body: "- [ ] first step" });
 

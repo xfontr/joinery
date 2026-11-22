@@ -12,7 +12,6 @@ beforeEach(() => {
     artifacts.docs = null;
 });
 
-// An in-memory docs collection, which the real useWiki groups into sections
 const docs = vi.hoisted(() => ({ entries: [] as { path: string; title: string }[] }));
 
 mockNuxtImport("queryCollection", () => () => {
@@ -20,7 +19,6 @@ mockNuxtImport("queryCollection", () => () => {
     return query;
 });
 
-// The nav has its own spec; here only that the page hands it the wiki
 const WikiNav = { props: { sections: Array }, template: "<nav />" };
 const global = { stubs: { WikiNav } };
 

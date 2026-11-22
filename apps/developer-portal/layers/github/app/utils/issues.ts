@@ -33,7 +33,6 @@ export const summarize = (body: string, length = 140): string => {
 
     if (text.length <= length) return text;
 
-    // Cut on a word boundary when there is one near the limit, so the ellipsis never lands mid-word.
     const cut = text.slice(0, length);
     const space = cut.lastIndexOf(" ");
 

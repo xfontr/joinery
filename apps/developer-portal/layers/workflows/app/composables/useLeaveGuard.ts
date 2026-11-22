@@ -10,7 +10,6 @@ export const useLeaveGuard = (dirty: () => boolean, onLeave: () => void) => {
         return false;
     });
 
-    // `onLeave` has to make `dirty` false, or the guard holds this navigation too.
     const leave = async () => {
         const to = destination.value;
         onLeave();

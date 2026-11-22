@@ -65,7 +65,6 @@ describe("oneSidedShared", () => {
         ).toEqual([]);
     });
 
-    // The Turnstile route's "Challenge failed" once read as a use of the client-only Challenge type
     it("ignores a name that only appears in a string or a comment", () => {
         expect(
             flagged(
