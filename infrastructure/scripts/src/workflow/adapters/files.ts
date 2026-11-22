@@ -34,7 +34,7 @@ export const readSnapshot = (id: string): Snapshot | null => {
 export const writeSnapshot = (id: string, snapshot: Snapshot): void =>
     writeFileSync(at(snapshotPath(id)), `${JSON.stringify(snapshot, null, 4)}\n`, "utf8");
 
-export const TEMPLATES_DIR = "data/workflows/templates";
+const TEMPLATES_DIR = "data/workflows/templates";
 
 /** The parsed template file, null when it doesn't exist. */
 export const readTemplate = (id: string): unknown => {

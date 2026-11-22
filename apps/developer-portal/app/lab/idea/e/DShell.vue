@@ -142,7 +142,7 @@ import { apps, BASE, projectPath, type AppId } from "./apps";
 import DRail, { type RailItem } from "./DRail.vue";
 import DStatusBar from "./DStatusBar.vue";
 
-export interface DTab {
+interface DTab {
     label: string;
     to: string;
     active: boolean;
@@ -190,7 +190,7 @@ const openSearchFromDrawer = (): void => {
 
 defineShortcuts({ meta_k: () => (searchOpen.value = !searchOpen.value) });
 
-const { data: projects } = await useSnapshot("projects");
+const projects = projectsArtifact();
 
 const {
     data: docSections,
@@ -217,7 +217,7 @@ const searchGroups = computed(() => [
     {
         id: "projects",
         label: "Projects",
-        items: (projects.value?.projects?.projects ?? []).map((project) => ({
+        items: (projects?.projects ?? []).map((project) => ({
             label: project.name,
             suffix: project.root,
             to: projectPath(project.root),

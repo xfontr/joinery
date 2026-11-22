@@ -8,7 +8,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 const EMPTY_DAY: DayUsage = { runs: 0, agent: 0, failures: 0 };
 
-export interface ScriptRow extends DayUsage {
+interface ScriptRow extends DayUsage {
     name: string;
     /** One entry per `windowDays` day, in the same order. */
     days: DayUsage[];
@@ -17,7 +17,7 @@ export interface ScriptRow extends DayUsage {
     failing: boolean;
 }
 
-export interface RuleRow {
+interface RuleRow {
     rule: string;
     hits: number;
     fixable: number;
@@ -26,7 +26,7 @@ export interface RuleRow {
     projects: number[];
 }
 
-export interface LintTable {
+interface LintTable {
     /** Busiest first. */
     projects: string[];
     rows: RuleRow[];
@@ -144,19 +144,19 @@ export type CallerMix = "agents" | "both" | "people";
 
 export type FixKind = "manual" | "auto";
 
-export interface Tick {
+interface Tick {
     /** Percent along the axis. */
     at: number;
     label: string;
 }
 
-export interface Axis {
+interface Axis {
     ticks: Tick[];
     /** Percent along the axis where the alert's threshold sits. */
     threshold: number;
 }
 
-export interface Point<Kind extends string> {
+interface Point<Kind extends string> {
     name: string;
     /** Percent from the left. */
     x: number;

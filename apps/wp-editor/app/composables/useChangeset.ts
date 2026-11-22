@@ -5,7 +5,7 @@ import type { Proposal } from "#shared/types/Proposal.ts";
 import type { RunReport } from "#shared/types/RunReport.ts";
 import type { Settings } from "#shared/types/Settings.ts";
 
-export interface ChangesetView {
+interface ChangesetView {
     changeset: Changeset;
     items: Item[];
     settings: Settings;

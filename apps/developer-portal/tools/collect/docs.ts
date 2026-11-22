@@ -94,7 +94,7 @@ const kindOf = (path: string): DocKind => {
     return "readme";
 };
 
-export interface DecisionMeta {
+interface DecisionMeta {
     status: DecisionStatus | null;
     decision: DecisionOutcome | null;
     supersededBy: string | null;
@@ -129,7 +129,7 @@ export const decisionMetaOf = (path: string, source: string): DecisionMeta => {
     };
 };
 
-export const auditMetaOf = (path: string, source: string): AuditMeta | null => {
+const auditMetaOf = (path: string, source: string): AuditMeta | null => {
     if (!AUDIT_PATH.test(path)) return null;
 
     const fields = frontmatterFields(source) ?? {};

@@ -1,7 +1,7 @@
 import * as v from "valibot";
 import { parseDecimal } from "../utils/interest";
 
-export type InterestFormIssue = "principal" | "from" | "to" | "order";
+type InterestFormIssue = "principal" | "from" | "to" | "order";
 
 export const interestFormSchema = (message: (issue: InterestFormIssue) => string) =>
     v.config(

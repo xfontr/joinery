@@ -2,7 +2,7 @@ import { assertNotFlagLike, run } from "./exec.ts";
 
 export const gh = (...args: string[]): string => run("gh", args);
 
-export interface NewIssue {
+interface NewIssue {
     title: string;
     body: string;
     label?: string;

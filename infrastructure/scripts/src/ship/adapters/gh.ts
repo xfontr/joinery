@@ -18,7 +18,7 @@ export const enableAutoMerge = (url: string, method: string): void => {
     gh("pr", "merge", "--auto", `--${method}`, assertNotFlagLike(url, "PR url"));
 };
 
-export interface ChecksResult {
+interface ChecksResult {
     passed: boolean;
     /** `gh`'s per-check table, shown when a check fails. */
     output: string;

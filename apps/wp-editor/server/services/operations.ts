@@ -140,7 +140,7 @@ export const markScanned = async (store: Store, id: string, keys: string[]): Pro
     return refreshStatus(store, id);
 };
 
-export interface ValidateReport {
+interface ValidateReport {
     removed: ItemKey[];
     markerWarnings: ItemKey[];
 }
@@ -410,7 +410,7 @@ const runEach = async (
     return report;
 };
 
-export const latestDryRun = async (store: Store, id: string): Promise<RunReport | null> =>
+const latestDryRun = async (store: Store, id: string): Promise<RunReport | null> =>
     (await store.listRuns(id)).find(({ kind }) => kind === "dry-run") ?? null;
 
 /** Checks every pending article against live WordPress and saves the report bulk apply reads. */

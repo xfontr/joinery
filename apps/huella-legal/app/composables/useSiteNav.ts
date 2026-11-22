@@ -54,7 +54,7 @@ const SOCIAL = [
     { key: "x", icon: "i-lucide-twitter" },
 ] as const;
 
-export interface CookiePreferences {
+interface CookiePreferences {
     enabled: boolean;
     open: () => unknown;
 }

@@ -24,7 +24,7 @@ export const hasRename = (nameStatus: string[]): boolean =>
 export const fingerprint = (diff: string): string =>
     createHash("sha256").update(diff).digest("hex");
 
-export interface FingerprintTransition {
+interface FingerprintTransition {
     seen: Record<string, string>;
     isNew: boolean;
 }
@@ -41,10 +41,10 @@ export const recordFingerprint = (
 };
 
 // 120 days is the stale-docs threshold.
-export const STALE_DOCS_MS = 120 * 24 * 60 * 60 * 1000;
+const STALE_DOCS_MS = 120 * 24 * 60 * 60 * 1000;
 
-export const BIG_CHANGE_LINES = 200;
-export const BIG_CHANGE_FILES = 8;
+const BIG_CHANGE_LINES = 200;
+const BIG_CHANGE_FILES = 8;
 
 export interface ChangeSize {
     linesChanged: number;

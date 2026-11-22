@@ -8,7 +8,7 @@ export interface Capability {
 }
 
 /** Omit commands already exposed by the root so the map stays focused on project-specific capabilities. */
-export const STANDARD_TARGETS = ["lint", "typecheck", "test", "test:dev", "test:coverage", "build"];
+const STANDARD_TARGETS = ["lint", "typecheck", "test", "test:dev", "test:coverage", "build"];
 
 export interface ProjectScripts {
     root: string;

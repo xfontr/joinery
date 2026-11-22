@@ -8,7 +8,7 @@ const ACTION_ROLES = ["--ui-primary", "--ui-secondary", "--ui-error"];
 
 const VAR = /^var\(\s*(--[\w-]+)\s*(?:,[^)]*)?\)$/;
 
-export interface Pair {
+interface Pair {
     text: string;
     surface: string;
 }

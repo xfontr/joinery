@@ -51,7 +51,7 @@ export const toAuditReports = (pages: DocPage[]): AuditReport[] =>
             };
         });
 
-export interface AuditReportFilter {
+interface AuditReportFilter {
     state?: AuditState | "all";
     scope?: string;
     search?: string;
@@ -69,9 +69,7 @@ export const filterAudits = (reports: AuditReport[], filter: AuditReportFilter):
     });
 };
 
-export const AUDIT_SORTS = ["newest", "oldest", "most-open"] as const;
-
-export type AuditSort = (typeof AUDIT_SORTS)[number];
+export type AuditSort = "newest" | "oldest" | "most-open";
 
 // ISO dates, so a string compare is a chronological one; the id breaks a same-day tie.
 const newestFirst = (a: AuditReport, b: AuditReport): number => b.id.localeCompare(a.id);

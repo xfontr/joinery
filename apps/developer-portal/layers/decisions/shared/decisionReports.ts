@@ -37,7 +37,7 @@ export const toDecisionReports = (pages: DocPage[]): DecisionReport[] =>
             };
         });
 
-export interface DecisionReportFilter {
+interface DecisionReportFilter {
     status?: DecisionStatus | "all";
     decision?: DecisionOutcome | "all";
     search?: string;
@@ -60,9 +60,7 @@ export const filterDecisions = (
     });
 };
 
-export const DECISION_SORTS = ["newest", "oldest", "updated", "status"] as const;
-
-export type DecisionSort = (typeof DECISION_SORTS)[number];
+export type DecisionSort = "newest" | "oldest" | "updated" | "status";
 
 /** A report whose `status` didn't parse sorts last rather than under a guessed value. */
 const statusRank = (status: DecisionStatus | null): number =>
