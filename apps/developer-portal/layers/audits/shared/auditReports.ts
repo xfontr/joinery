@@ -110,3 +110,7 @@ export const countAll = (
 
     return { findings, states };
 };
+
+/** Audits with a finding still open, the most open first. */
+export const openAudits = (reports: AuditReport[]): AuditReport[] =>
+    sortAudits(reports, "most-open").filter((report) => report.state !== "closed");
