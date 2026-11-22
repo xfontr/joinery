@@ -1,5 +1,11 @@
 <template>
     <div data-identity class="flex min-h-screen flex-col">
+        <a
+            href="#content"
+            class="sr-only z-50 bg-primary text-sm font-semibold text-inverted focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:px-4 focus:py-3"
+            >{{ $t("app.skipLink") }}</a
+        >
+
         <UContainer
             as="header"
             class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 py-6"
@@ -12,24 +18,21 @@
                     class="flex flex-wrap items-baseline gap-x-6 gap-y-2 text-sm"
                     :aria-label="$t('app.visitor.navLabel')"
                 >
-                    <ULink to="/method" active-class="text-primary">
-                        {{ $t("app.visitor.nav.method") }}
-                    </ULink>
-                    <ULink to="/agentic-workflows" active-class="text-primary">
-                        {{ $t("app.visitor.nav.workflows") }}
-                    </ULink>
-                    <ULink to="/work" active-class="text-primary">
-                        {{ $t("app.visitor.nav.work") }}
-                    </ULink>
-                    <ULink to="/about" active-class="text-primary">
-                        {{ $t("app.visitor.nav.about") }}
+                    <ULink
+                        v-for="item in NAV"
+                        :key="item.to"
+                        :to="item.to"
+                        active-class="text-primary"
+                        :aria-current="current(item.to)"
+                    >
+                        {{ $t(`app.visitor.nav.${item.key}`) }}
                     </ULink>
                 </nav>
                 <ViewSwitch current="visitor" />
             </div>
         </UContainer>
 
-        <main class="flex-1">
+        <main id="content" tabindex="-1" class="flex-1 outline-none">
             <slot />
         </main>
 
@@ -50,3 +53,18 @@
         </UContainer>
     </div>
 </template>
+
+<script setup lang="ts">
+const NAV = [
+    { to: "/method", key: "method" },
+    { to: "/agentic-workflows", key: "workflows" },
+    { to: "/work", key: "work" },
+    { to: "/about", key: "about" },
+] as const;
+
+const route = useRoute();
+
+// `ULink` sets `aria-current` only on an exact match, which would leave Work unmarked on a case study
+const current = (to: string) =>
+    route.path === to || route.path.startsWith(`${to}/`) ? "page" : undefined;
+</script>
