@@ -5,7 +5,7 @@ packages:
 catalog:
   '@nuxt/fonts': 1.2.0
   '@nuxtjs/i18n': 10.6.0
-  nuxt: ^4.6.3
+  nuxt: ^4.6.4
   vue-tsc: ^3.3.0
   vue: ^3.5.38
   typescript: ^6.0.3
@@ -14,8 +14,8 @@ catalog:
   '@vitest/coverage-v8': 5.1.0
   '@playwright/test': 1.64.1
   eslint: ^10.4.1
-  hono: ^4.13.14
-  '@hono/node-server': ^2.1.1
+  hono: ^4.13.16
+  '@hono/node-server': ^2.1.6
 overrides:
   axios: '>=1.18.0'
   qs: '>=6.16.0'

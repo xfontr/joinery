@@ -49,3 +49,7 @@ at,script,command,target,flags,area,caller,tty,exit,ms
 2026-11-22,invariants,,,,developer-portal,claude-code,0,0,320
 2026-11-22,map,,,check,developer-portal,claude-code,0,0,251
 2026-11-22,map,,,check,developer-portal,claude-code,0,0,168
+2026-11-22,map,,,check,developer-portal,claude-code,0,0,168
+2026-11-22,invariants,,,,developer-portal,claude-code,0,0,275
+2026-11-22,map,,,check,developer-portal,claude-code,0,0,213
+2026-11-22,workflow,sync,,close,developer-portal,claude-code,0,0,2193
