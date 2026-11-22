@@ -1,0 +1,321 @@
+import {
+    draftProject,
+    estimateOf,
+    featuresOf,
+    pageId,
+    pageProblems,
+    PROJECT_ID,
+    projectSlug,
+    projectView,
+    projectYaml,
+    receiptOf,
+    TICKET_SIZE_LABELS,
+    typedExtra,
+    type Capability,
+    type NewPage,
+    type ReviewRow,
+    type TicketSize,
+} from "#layers/workflows/shared/workflows.ts";
+
+const STEPS = [
+    {
+        id: "template",
+        title: "Template",
+        icon: "i-lucide-layout-template",
+        question: "What are you building?",
+        hint: "The template is the map of blocks the project starts from. It can't be changed later.",
+    },
+    {
+        id: "details",
+        title: "Details",
+        icon: "i-lucide-pencil",
+        question: "What is it called?",
+        hint: "The id, milestone and area label follow the title until you change them.",
+    },
+    {
+        id: "pages",
+        title: "Pages",
+        icon: "i-lucide-files",
+        question: "Which page templates, custom pages and blogs does it have?",
+        hint: "Add a layout once, not each page on it: the legal and about pages on one layout are one page template. Each becomes a block with its own estimate.",
+    },
+    {
+        id: "features",
+        title: "Features",
+        icon: "i-lucide-layers",
+        question: "Which features does it need?",
+        hint: "Leaving one out takes its blocks out of the map; the ticket count beside it follows. You can change this later in Settings.",
+    },
+    {
+        id: "review",
+        title: "Review",
+        icon: "i-lucide-check",
+        question: "Ready to create it?",
+        hint: "Nothing goes to GitHub. The project file is all that gets written.",
+    },
+] as const;
+
+const NO_TICKETS = { block: 0, supervised: 0, fast: 0 } as const satisfies Record<
+    TicketSize,
+    number
+>;
+
+/** A field follows the title until someone types in it, and again once it is cleared. */
+const derived = (from: () => string) => {
+    const typed = ref<string | null>(null);
+    return computed({
+        get: () => typed.value ?? from(),
+        set: (value: string) => {
+            typed.value = value || null;
+        },
+    });
+};
+
+const saveFile = (name: string, text: string) => {
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(new Blob([text], { type: "text/yaml" }));
+    link.download = name;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 0);
+};
+
+/** The new-project wizard's draft, steps and estimate; `ready` settles once the templates load. */
+export const useNewProject = () => {
+    const read = useWorkflows();
+    const { data } = read;
+    const { editable, edit } = useWorkflowEdit();
+
+    const step = ref(0);
+    const switches: Record<string, boolean> = {};
+    const pageRows: { key: number; type: string; title: string }[] = [];
+    const ticketSize: TicketSize = "block";
+    const draft = reactive({
+        template: "",
+        title: "",
+        summary: "",
+        switches,
+        pages: pageRows,
+        ticketSize,
+    });
+
+    // Files load in name order, so a blank template such as `custom` would otherwise come first.
+    const fallback = computed(
+        () =>
+            (
+                data.value.templates.find(({ capabilities }) => capabilities.length > 0) ??
+                data.value.templates[0]
+            )?.id ?? "",
+    );
+    const templateId = computed(() => draft.template || fallback.value);
+    const template = computed(() => data.value.templates.find(({ id }) => id === templateId.value));
+
+    const id = derived(() => projectSlug(draft.title));
+    const milestone = derived(() => draft.title.trim());
+    const area = derived(() => (id.value ? `app:${id.value}` : ""));
+
+    const idError = computed(() => {
+        if (id.value)
+            return PROJECT_ID.test(id.value) ? undefined : "Lower case, digits and dashes";
+        return draft.title.trim()
+            ? "Type one: the title has no letters to make it from"
+            : undefined;
+    });
+    const milestoneError = computed(() => {
+        const owner = data.value.projects.find(
+            ({ project }) => project.milestone === milestone.value.trim(),
+        );
+        return owner ? `Already ${owner.project.title}'s milestone` : undefined;
+    });
+
+    // Only a template with page types asks for pages.
+    const shown = computed(() =>
+        STEPS.filter(({ id }) => id !== "pages" || (template.value?.types.length ?? 0) > 0),
+    );
+    const steps = computed(() => shown.value.map(({ title, icon }) => ({ title, icon })));
+    const current = computed(() => shown.value[step.value] ?? STEPS[0]);
+    const last = computed(() => step.value === steps.value.length - 1);
+
+    const pickTemplate = (picked: string) => {
+        if (picked === templateId.value) return;
+        draft.switches = {};
+        draft.pages = [];
+        draft.template = picked;
+    };
+
+    const pages = computed<NewPage[]>(() =>
+        draft.pages.map(({ type, title }) => ({ id: pageId(title), type, title: title.trim() })),
+    );
+    const pageErrors = computed(() =>
+        pageProblems(draft.pages, new Set(template.value?.capabilities.map(({ id }) => id))),
+    );
+    const extras = computed<Capability[]>(() =>
+        pages.value.flatMap((page) => {
+            const type = template.value?.types.find(({ id }) => id === page.type);
+            return type ? [typedExtra(type, page)] : [];
+        }),
+    );
+
+    const features = computed(() =>
+        template.value
+            ? featuresOf(draftProject(template.value, draft.switches), template.value)
+            : [],
+    );
+    const toggle = (feature: string, on: boolean) => {
+        draft.switches = { ...draft.switches, [feature]: on };
+    };
+
+    const estimate = computed(() =>
+        template.value ? estimateOf(template.value, draft.switches, extras.value) : null,
+    );
+    const receipt = computed(() =>
+        template.value ? receiptOf(template.value, draft.switches, pages.value) : [],
+    );
+    const blocks = computed(() => estimate.value?.blocks ?? 0);
+    const tickets = computed(() => estimate.value?.tickets ?? NO_TICKETS);
+    const points = computed(() => estimate.value?.points ?? 0);
+
+    const preview = computed(() =>
+        template.value
+            ? projectView(
+                  draftProject(template.value, draft.switches, draft.ticketSize, extras.value),
+                  template.value,
+                  null,
+              )
+            : null,
+    );
+
+    const detailsDone = computed(() =>
+        Boolean(
+            draft.title.trim() &&
+            id.value &&
+            !idError.value &&
+            milestone.value &&
+            !milestoneError.value,
+        ),
+    );
+    const canAdvance = computed(() => {
+        if (current.value.id === "template") return template.value !== undefined;
+        if (current.value.id === "details") return detailsDone.value;
+        if (current.value.id === "pages") return pageErrors.value.every((error) => error === null);
+        return true;
+    });
+    const next = () => {
+        if (canAdvance.value && !last.value) step.value += 1;
+    };
+    const back = () => {
+        step.value -= 1;
+    };
+
+    const pageList = computed(() =>
+        pages.value
+            .map(({ title, type }) => {
+                const typeTitle = template.value?.types.find(({ id }) => id === type)?.title;
+                return `${title} (${typeTitle ?? type})`;
+            })
+            .join(", "),
+    );
+    const featureList = (enabled: boolean) =>
+        features.value
+            .filter((feature) => feature.enabled === enabled)
+            .map(({ title }) => title)
+            .join(", ") || "None";
+
+    const review = computed((): ReviewRow[] => [
+        { label: "Template", value: template.value?.title ?? "" },
+        { label: "Title", value: draft.title },
+        { label: "Summary", value: draft.summary || "—" },
+        { label: "Id", value: id.value },
+        { label: "Milestone", value: milestone.value },
+        { label: "Area label", value: area.value || "—" },
+        { label: "Features on", value: featureList(true) },
+        { label: "Left out", value: featureList(false) },
+        ...(shown.value.some(({ id }) => id === "pages")
+            ? [{ label: "Pages", value: pageList.value || "None" }]
+            : []),
+        {
+            label: "Tickets",
+            value: `${TICKET_SIZE_LABELS[draft.ticketSize].title}, ${tickets.value[draft.ticketSize]} for ${blocks.value} blocks`,
+        },
+        { label: "Complexity", value: `${points.value} SP` },
+    ]);
+
+    const fields = () => ({
+        template: templateId.value,
+        title: draft.title.trim(),
+        summary: draft.summary.trim(),
+        milestone: milestone.value.trim(),
+        area: area.value.trim(),
+        switches: draft.switches,
+        ticketSize: draft.ticketSize,
+        extras: pages.value,
+    });
+
+    const untouched = JSON.stringify(draft);
+    const done = ref(false);
+    const { leaving, leave } = useLeaveGuard(
+        () => !done.value && (step.value > 0 || JSON.stringify(draft) !== untouched),
+        () => {
+            done.value = true;
+        },
+    );
+
+    const creating = ref(false);
+    const create = async () => {
+        creating.value = true;
+        const created = await edit({ action: "create", project: id.value, ...fields() });
+        creating.value = false;
+
+        if (created) {
+            done.value = true;
+            await navigateTo(`/workflows/${id.value}`);
+        }
+    };
+
+    const download = () => saveFile(`${id.value}.yaml`, projectYaml({ id: id.value, ...fields() }));
+
+    return {
+        draft,
+        step,
+        steps,
+        id,
+        milestone,
+        area,
+        pickTemplate,
+        toggle,
+        next,
+        back,
+        create,
+        download,
+        leaving,
+        leave,
+        view: computed(() => ({
+            step: current.value,
+            templates: data.value.templates,
+            templateId: templateId.value,
+            template: template.value,
+            idError: idError.value,
+            milestoneError: milestoneError.value,
+            features: features.value,
+            pageErrors: pageErrors.value,
+            review: review.value,
+            preview: preview.value,
+        })),
+        footer: computed(() => ({
+            id: id.value,
+            first: step.value === 0,
+            last: last.value,
+            canAdvance: canAdvance.value,
+            editable,
+            creating: creating.value,
+        })),
+        summary: computed(() => ({
+            template: template.value?.title ?? null,
+            title: draft.title,
+            blocks: blocks.value,
+            tickets: tickets.value,
+            points: points.value,
+            receipt: receipt.value,
+        })),
+        ready: read,
+    };
+};

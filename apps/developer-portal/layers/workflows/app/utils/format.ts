@@ -4,7 +4,7 @@ import type {
     ReusePlan,
     TicketStatus,
 } from "#layers/workflows/shared/workflows.ts";
-import type { Tone } from "~/utils/format.ts";
+import type { Tone } from "~/types/Tone";
 
 const CAPABILITY_STATES = {
     off: { label: "Off", tone: "neutral" },

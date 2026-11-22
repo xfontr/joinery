@@ -11,6 +11,7 @@ export type { Progress } from "./types/Progress.ts";
 export type { Project } from "./types/Project.ts";
 export type { ProjectView } from "./types/ProjectView.ts";
 export type { ReceiptRow } from "./types/ReceiptRow.ts";
+export type { ReviewRow } from "./types/ReviewRow.ts";
 export type { ReusePlan } from "./types/ReusePlan.ts";
 export type { SettledState } from "./types/SettledState.ts";
 export type { Snapshot } from "./types/Snapshot.ts";

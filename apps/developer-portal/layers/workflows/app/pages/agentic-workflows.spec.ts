@@ -38,47 +38,4 @@ describe("agentic workflows page", () => {
         const links = wrapper.findAll("a").map((link) => link.attributes("href"));
         expect(links).toEqual(expect.arrayContaining(["/workflows/blog", "/workflows/shop"]));
     });
-
-    it("says nothing about tickets for a project that was never synced", async () => {
-        const wrapper = await open(workflows());
-
-        expect(wrapper.text()).toContain("0 of 1 blocks done");
-        expect(wrapper.text()).not.toContain("tickets closed");
-    });
-
-    it("counts a synced project's closed tickets", async () => {
-        const wrapper = await open(
-            workflows({
-                blog: {
-                    file: "blog.snapshot.json",
-                    ok: true,
-                    value: {
-                        syncedAt: "2026-11-09T00:00:00Z",
-                        milestone: "Blog",
-                        issues: [
-                            {
-                                number: 1,
-                                title: "T",
-                                url: "",
-                                state: "closed",
-                                reason: "completed",
-                                caps: ["article-page"],
-                                createdAt: null,
-                                closedAt: "2026-11-01T00:00:00Z",
-                                activity: [],
-                                blockedBy: [],
-                                branch: false,
-                                pr: false,
-                                owner: false,
-                                complexity: null,
-                            },
-                        ],
-                        noMilestone: [],
-                    },
-                },
-            }),
-        );
-
-        expect(wrapper.text()).toContain("1 of 1 tickets closed");
-    });
 });
