@@ -1,4 +1,4 @@
-export interface Worktree {
+interface Worktree {
     path: string;
     branch: string | undefined;
 }

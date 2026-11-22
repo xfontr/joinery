@@ -2,13 +2,13 @@ import { isFailing, scriptRows, sumDays } from "#layers/telemetry/shared/usageVi
 import type { DepsArtifact } from "#layers/snapshot/shared/types/DepsArtifact.ts";
 import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
-import type { IssuesRead } from "#layers/github/shared/issues.ts";
-import type { Tone } from "~/utils/format";
+import type { IssuesRead } from "#layers/github/app/utils/issues.ts";
+import type { Tone } from "~/types/Tone";
 import { BASE } from "./apps";
 
 const SEVERITIES = ["critical", "high", "moderate", "low", "info"] as const;
 
-export interface Signal {
+interface Signal {
     id: string;
     label: string;
     value: string;
@@ -71,28 +71,23 @@ const docsSignal = (docs: DocsArtifact | null): Signal => ({
     to: null,
 });
 
-export const useSignals = async () => {
+export const useSignals = () => {
     const { data: read } = useIssues();
     const mounted = ref(false);
     onMounted(() => (mounted.value = true));
 
-    const [{ data: coverage }, { data: deps }, { data: docs }, { data: usage }, { data: metrics }] =
-        await Promise.all([
-            useSnapshot("coverage"),
-            useSnapshot("deps"),
-            useSnapshot("docs"),
-            useSnapshot("usage"),
-            useSnapshot("metrics"),
-        ]);
-
-    const manifest = computed(() => metrics.value?.manifest ?? null);
+    const coverage = coverageArtifact();
+    const deps = depsArtifact();
+    const docs = docsArtifact();
+    const usage = usageArtifact();
+    const manifest = snapshotManifest();
 
     const signals = computed<Signal[]>(() => [
-        coverageSignal(coverage.value?.coverage?.totals?.lines ?? null),
-        advisorySignal(deps.value?.deps ?? null),
-        toolingSignal(usage.value?.usage ?? null),
+        coverageSignal(coverage?.totals?.lines ?? null),
+        advisorySignal(deps ?? null),
+        toolingSignal(usage ?? null),
         issueSignal(mounted.value ? read.value : null),
-        docsSignal(docs.value?.docs ?? null),
+        docsSignal(docs ?? null),
     ]);
 
     return { signals, manifest };

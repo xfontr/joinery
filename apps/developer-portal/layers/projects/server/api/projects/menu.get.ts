@@ -4,9 +4,9 @@ import type { ProjectsArtifact } from "#layers/snapshot/shared/types/ProjectsArt
 import { readArtifact } from "#layers/snapshot/server/utils/store.ts";
 
 const KINDS = [
-    { id: "apps", label: "Apps", icon: "i-lucide-app-window" },
-    { id: "packages", label: "Packages", icon: "i-lucide-package" },
-    { id: "infrastructure", label: "Infrastructure", icon: "i-lucide-server" },
+    { id: "apps", labelKey: "app.menu.kinds.apps", icon: "i-lucide-app-window" },
+    { id: "packages", labelKey: "app.menu.kinds.packages", icon: "i-lucide-package" },
+    { id: "infrastructure", labelKey: "app.menu.kinds.infrastructure", icon: "i-lucide-server" },
 ] as const;
 
 /** The sidebar's submenu: each kind with its count, holding its projects with their line coverage. */
@@ -24,7 +24,7 @@ export default defineEventHandler(async () => {
         const members = nodes.filter((node) => node.root.startsWith(`${kind.id}/`));
 
         return {
-            label: kind.label,
+            labelKey: kind.labelKey,
             icon: kind.icon,
             to: `/projects?kind=${kind.id}`,
             badge: String(members.length),
@@ -45,7 +45,7 @@ export default defineEventHandler(async () => {
 
     return [
         {
-            label: "All projects",
+            labelKey: "app.menu.allProjects",
             icon: "i-lucide-layers",
             to: "/projects",
             badge: String(nodes.length),

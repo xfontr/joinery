@@ -22,7 +22,6 @@ const open = async (page: Page) => {
 // The hidden tab stays mounted to keep its fields, so every lookup is scoped to the visible one
 const panel = (page: Page) => page.getByRole("tabpanel");
 
-// 1 000 EUR over a 365-day year makes the interest the annual rate applied once
 const fillYear = async (page: Page) => {
     await panel(page).getByLabel("Fecha inicial").fill("2026-01-01");
     await panel(page).getByLabel("Fecha final").fill("2027-01-01");
@@ -135,7 +134,6 @@ test("adds calculations to a table that totals them and survives a reload", asyn
     await fillAdvanced(page, "3");
     await add();
 
-    // The monthly case the guide describes: only the month changes between rows
     for (const group of ["Fecha inicial", "Fecha final"]) {
         await panel(page).getByRole("group", { name: group }).getByLabel("Mes").fill("4");
     }

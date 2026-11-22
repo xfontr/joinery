@@ -74,7 +74,6 @@ describe("createProvider", () => {
     });
 });
 
-// The registry drives both the runtime lookup and the config type, so these cannot be allowed to drift
 describe("the registered vendors", () => {
     it("are the ones the config type offers", () => {
         expect(VENDOR_NAMES).toEqual(["internal", "tolgee"]);

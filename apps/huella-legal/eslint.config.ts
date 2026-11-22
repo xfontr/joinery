@@ -17,14 +17,12 @@ export default [
         ],
     }),
     {
-        // Plain CSS classes from the prose stylesheets and a spec hook, not Tailwind utilities.
         files: ["**/*.vue", "**/*.ts"],
         rules: {
             "better-tailwindcss/no-unknown-classes": [
                 "error",
                 { ignore: ["^hl-", "^error__debug$"] },
             ],
-            // Each banned step is what a semantic role in main.css already resolves to
             "better-tailwindcss/no-restricted-classes": [
                 "error",
                 {

@@ -110,7 +110,6 @@ const createEvent = (path: string, matchedRoute?: string): H3Event =>
         context: matchedRoute === undefined ? {} : { matchedRoute: { path: matchedRoute } },
     }) as unknown as H3Event;
 
-// The plugin replaces `h3App.handler` in place, so what it installed is what a request goes through
 const start = (handle: Handler = () => BODY) => {
     const nitroApp = createNitroApp(handle);
 
@@ -164,8 +163,6 @@ beforeEach(() => {
 });
 
 describe("the nitro observability plugin", () => {
-    // Local dev sets no collector URL, and the property worth keeping is that this costs nothing
-    // rather than merely sending nowhere
     it("starts no exporter and leaves the handler alone when no collector URL is set", () => {
         runtimeConfig = createConfig("");
 
@@ -174,12 +171,10 @@ describe("the nitro observability plugin", () => {
         expect(telemetry.startNodeTelemetry).not.toHaveBeenCalled();
         expect(handler).toBe(nitroApp.h3App.handler);
 
-        // Returned as-is rather than awaited, so an untraced request costs no promise either
         expect(handler(createEvent("/articles"))).toBe(BODY);
         expect(otel.tracer.startActiveSpan).not.toHaveBeenCalled();
     });
 
-    // A rejected export on shutdown fails the build
     it("starts no exporter while prerendering, so a build without the token still finishes", () => {
         vi.stubEnv("prerender", "true");
 
@@ -208,8 +203,6 @@ describe("the nitro observability plugin", () => {
         await expect(traced("/articles", "/articles")).resolves.toBe(BODY);
     });
 
-    // Without the extracted parent every server span is its own root, and the browser trace that
-    // caused it sits in a second, unrelated tree
     it("continues an incoming trace rather than opening a second one for the same request", async () => {
         await traced("/articles", "/articles");
 
@@ -223,8 +216,6 @@ describe("the nitro observability plugin", () => {
         expect(spanCall()[1].kind).toBe(SpanKind.SERVER);
     });
 
-    // The span opens under the concrete path because the route is not matched yet, so leaving it at
-    // that would give every slug a span name of its own and make the operation unaggregatable
     it("renames the span to the matched route, so a path carrying an id cannot multiply span names", async () => {
         await traced("/articles/hello-world", "/articles/:slug");
 
@@ -240,8 +231,6 @@ describe("the nitro observability plugin", () => {
         expect(attributes()[ATTR_HTTP_ROUTE]).toBe("/nope");
     });
 
-    // A 404 is the one route that is never matched, so the fallback above is what a crawler hits.
-    // With the query left on it, `?a=1` and `?a=2` are two operations and the keyspace is unbounded.
     it("strips the query off the fallback route, so an unmatched path cannot mint a name per query", async () => {
         await traced("/nope?a=1");
 
@@ -249,7 +238,6 @@ describe("the nitro observability plugin", () => {
         expect(attributes()[ATTR_HTTP_ROUTE]).toBe("/nope");
     });
 
-    // A search query, the reader's IP and their user agent are personal data a third party must not get
     it("stamps no attribute that identifies the reader or what they typed", async () => {
         await traced("/buscar?q=despido", "/buscar");
 
@@ -270,7 +258,6 @@ describe("the nitro observability plugin", () => {
     });
 
     describe("when the response is a failure", () => {
-        // A 4xx is the caller's fault. Marking it ERROR makes an error rate that no deploy can fix.
         it.each([400, 404, 499])(
             "leaves %i unmarked, since the client is what went wrong",
             async (status) => {
@@ -312,7 +299,6 @@ describe("the nitro observability plugin", () => {
             expect(otel.span.end).toHaveBeenCalledOnce();
         });
 
-        // The thrown error only says "Upstream request failed"; what actually failed is its cause
         it("records the cause as well, since the exception event drops it", async () => {
             const upstream = new Error("connect ECONNREFUSED");
             const wrapped = Object.assign(
@@ -339,7 +325,6 @@ describe("the nitro observability plugin", () => {
             expect(otel.span.recordException).toHaveBeenCalledOnce();
         });
 
-        // An error with no status is ours, not the caller's, so it must not read as a 200
         it("closes the span as a 500 when the error carries no status", async () => {
             const boom = new Error("boom");
 
@@ -351,19 +336,15 @@ describe("the nitro observability plugin", () => {
         });
     });
 
-    // Left untraced on purpose: an asset request per page view would outnumber the requests worth
-    // looking at, and every one of them would carry a hashed filename of its own
     it.each(["/_nuxt/entry.abc123.js", "/_fonts/inter.woff2", "/__nuxt/island", "/favicon.ico"])(
         "does not trace %s",
         (path) => {
-            // Handed straight back, not awaited: the untraced path adds no promise to an asset request
             expect(untraced(path)).toBe(BODY);
 
             expect(otel.tracer.startActiveSpan).not.toHaveBeenCalled();
         },
     );
 
-    // Nitro reports errors it handled itself through this hook, which never reaches the try/catch above
     it("records an error reported through Nitro's hook on the span that is open", () => {
         const error = new Error("render failed");
 
@@ -386,7 +367,6 @@ describe("the nitro observability plugin", () => {
         expect(() => start().nitroApp.fire("error", new Error("render failed"))).not.toThrow();
     });
 
-    // Netlify freezes the function once it responds, so a batch left waiting on its timer never leaves
     describe("flushing on Netlify", () => {
         it("hands the flush to waitUntil once the request span has ended", async () => {
             otel.span.end.mockImplementationOnce(() =>
@@ -417,7 +397,6 @@ describe("the nitro observability plugin", () => {
         });
     });
 
-    // The exporter batches, so without this the spans from the last seconds before a deploy are lost
     it("shuts the exporter down when Nitro closes, so buffered spans are flushed", () => {
         start().nitroApp.fire("close");
 

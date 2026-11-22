@@ -11,7 +11,6 @@ describe("about intro", () => {
         expect(wrapper.findAll("h1")).toHaveLength(1);
     });
 
-    // The count-up is drawn by CSS over these digits, so they must be the real figure
     it("keeps every figure in the text, under its label", async () => {
         const wrapper = await mountSuspended(AboutIntro, { props });
 
@@ -31,7 +30,6 @@ describe("about intro", () => {
         ]);
     });
 
-    // The CTA's copy waits to be seen; this one is above the fold, so it draws straight away
     it("draws its fingerprint on load", async () => {
         const wrapper = await mountSuspended(AboutIntro, { props });
 

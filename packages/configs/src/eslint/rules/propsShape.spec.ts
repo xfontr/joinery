@@ -24,7 +24,6 @@ ruleTester.run("props-shape", propsShape, {
         script(`${PROPS}\nconst props = defineProps<Props>();`),
         script(`${PROPS}\nconst props = withDefaults(defineProps<Props>(), { label: "Save" });`),
         script(`${PROPS}\nconst { label = "Save" } = defineProps<Props>();`),
-        // Runtime props are left alone.
         script("const props = defineProps({ label: String });"),
     ],
     invalid: [

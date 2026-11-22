@@ -30,7 +30,6 @@ describe("tag pill", () => {
             global,
         });
 
-        // The fill only survives Nuxt UI's outline variant if the state class wins the merge
         expect(wrapper.find("a").classes()).toContain("bg-primary");
     });
 

@@ -4,7 +4,7 @@ import { listCommentedPosts } from "../adapters/wordpress";
 
 const { cache } = useRuntimeConfig().articles;
 
-export const getCommentCounts = defineCachedFunction(
+const getCommentCounts = defineCachedFunction(
     async (event: H3Event): Promise<Record<string, number>> => {
         const counts: Record<string, number> = {};
 

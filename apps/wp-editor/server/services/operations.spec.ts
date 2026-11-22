@@ -168,7 +168,6 @@ describe("operations", () => {
         expect((await store.readItem(id, KEY))?.state.restored).toBeDefined();
     });
 
-    // The ticket's end-to-end walk, against the fake instead of a live draft.
     it("restores in stack order: blocked by the later changeset, then back through each base", async () => {
         const fake = fakeWordPress("original");
         const first = await propose(fake.wp, "one", "after one");

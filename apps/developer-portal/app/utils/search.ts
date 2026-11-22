@@ -1,5 +1,7 @@
 import type { CommandPaletteGroup, CommandPaletteItem } from "@nuxt/ui";
-import type { AppEntry, AppGroup } from "~/utils/apps";
+import type { AppEntry } from "~/types/AppEntry";
+import type { AppGroup } from "~/types/AppGroup";
+import type { Translate } from "~/types/Translate";
 
 /** One heading of one doc, as `queryCollectionSearchSections` splits it. */
 export interface SearchSection {
@@ -29,13 +31,19 @@ export const matchPages = (term: string, items: CommandPaletteItem[]): CommandPa
     });
 };
 
-const WIKI = { id: "docs", label: "Wiki", icon: "i-lucide-file-text", to: "/wiki" };
-
 /** Every page in the rail, then each doc under the page that renders it, the wiki taking the rest. */
 export const searchGroups = (
     apps: (AppGroup & { entries: AppEntry[] })[],
     sections: SearchSection[],
+    t: Translate,
 ): CommandPaletteGroup<CommandPaletteItem>[] => {
+    const WIKI = {
+        id: "docs",
+        label: t("app.search.wiki"),
+        icon: "i-lucide-file-text",
+        to: "/wiki",
+    };
+
     const owners = apps
         .flatMap((app) => app.entries)
         .flatMap((entry) => {
@@ -50,7 +58,6 @@ export const searchGroups = (
     for (const section of sections) {
         const [path = "", anchor] = section.id.split("#");
 
-        // The doc's own h1 repeats the row the doc already has, under the same title.
         if (anchor !== undefined && section.level === 1) continue;
 
         const owner = owners
@@ -74,7 +81,7 @@ export const searchGroups = (
     return [
         {
             id: "pages",
-            label: "Pages",
+            label: t("app.search.pages"),
             // The palette keeps its 12 best matches across every group, and docs that also match in
             // their text outrank a page matching by name alone, so pages are matched apart.
             ignoreFilter: true,

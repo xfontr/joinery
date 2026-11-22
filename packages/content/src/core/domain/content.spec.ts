@@ -21,14 +21,12 @@ describe("resource guards", () => {
         expect(isEntryResource(resource)).toBe(false);
     });
 
-    // The route picks the provider method by asking both, so an overlap would make one family unreachable
     it("keeps the two families disjoint", () => {
         const terms: readonly string[] = TERM_RESOURCES;
 
         expect(ENTRY_RESOURCES.filter((resource) => terms.includes(resource))).toEqual([]);
     });
 
-    // A resource reaches these straight from the URL, so anything not in the list has to fall through
     it.each([undefined, "", "  ", "POSTS", "post", "media", "../posts", "posts/1"])(
         "rejects %o",
         (resource) => {
@@ -43,7 +41,6 @@ describe("query ceilings", () => {
         expect(DEFAULT_PER_PAGE).toBeLessThanOrEqual(MAX_PER_PAGE);
     });
 
-    // They bound the cache key space of a public route, so a ceiling that is absent or huge is the bug
     it.each([
         ["MAX_PAGE", MAX_PAGE],
         ["MAX_PER_PAGE", MAX_PER_PAGE],

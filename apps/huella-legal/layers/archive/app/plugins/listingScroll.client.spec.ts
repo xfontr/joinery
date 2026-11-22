@@ -13,7 +13,6 @@ const at = (fullPath: string): RouteLocationNormalized => {
     } as RouteLocationNormalized;
 };
 
-// Runs against the router the Nuxt environment built, so the plugin and Nuxt's default are both real
 const scroll = (to: string, from: string, saved: { left: number; top: number } | null = null) =>
     useRouter().options.scrollBehavior?.(at(to), at(from), saved);
 

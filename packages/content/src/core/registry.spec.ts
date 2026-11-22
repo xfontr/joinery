@@ -42,7 +42,6 @@ describe("createProvider", () => {
         );
     });
 
-    // Unset env vars used to reach the vendor as an empty base URL and come back as a 502
     it("rejects a registered vendor whose config cannot work, rather than returning it", async () => {
         await expect(createProvider({ name: "wordpress", baseURL: "" }, http)).rejects.toThrow(
             MisconfiguredVendorError,
@@ -53,7 +52,6 @@ describe("createProvider", () => {
     });
 });
 
-// The registry drives both the runtime lookup and the config type, so these cannot be allowed to drift
 describe("the registered vendors", () => {
     it("are the ones the config type offers", () => {
         expect(VENDOR_NAMES).toEqual(["wordpress"]);

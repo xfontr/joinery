@@ -101,7 +101,6 @@ test.describe("the archive search", () => {
         page.getByRole("searchbox", { name: t("archiveSearch.label") });
     const articles = (page: Page) => page.getByRole("main").getByRole("article");
 
-    // The second post that /buscar/ finds has the word only in its body, which this search skips
     test("submitting a query narrows the archive and puts it in the URL", async ({ page }) => {
         await page.goto("/publicaciones/");
 

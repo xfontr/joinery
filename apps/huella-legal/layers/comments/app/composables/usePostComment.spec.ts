@@ -1,3 +1,4 @@
+import type { Challenge } from "#layers/forms/app/types/Challenge";
 import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -24,7 +25,6 @@ mockNuxtImport(
 
 const challenge = vi.fn((send: (token: string) => Promise<unknown>) => send("tok")) as Challenge;
 
-// The shape `$fetch` rejects with: the route's `createError` arrives as the body, under `data`
 const rejected = (statusCode: number, data?: unknown) =>
     Object.assign(new Error("fetch failed"), {
         statusCode,

@@ -26,7 +26,6 @@ beforeEach(() => {
 });
 
 describe("GET /api/pages/:slug", () => {
-    // Left encoded, an accented slug would reach WordPress encoded twice and match nothing
     it("reads the page named by the route, its slug decoded", async () => {
         await handler({});
 
@@ -50,7 +49,6 @@ describe("GET /api/pages/:slug", () => {
         });
     });
 
-    // Otherwise any WordPress page would go live at a root permalink the moment it was published
     it("answers a 404 for a slug the config doesn't list, without asking WordPress", async () => {
         nitro.param.mockReturnValue("borrador");
 

@@ -77,7 +77,8 @@ A mock sits at the edge of what the code owns, never inside it.
 | A Nuxt module | `vi.mock("@nuxt/kit")` | [`module.spec.ts`](../../../packages/content/src/nuxt/module.spec.ts) |
 | A cached server route in a package | `nitropack/runtime` + `ofetch` | [`translations.get.spec.ts`](../../../packages/i18n/src/nuxt/runtime/server/translations.get.spec.ts) |
 | A route, middleware or plugin in an app's `server/` | `stubNitro()` from `@monorepo/configs/vitest/utils/nitro`, before the dynamic `import()` | [`contact.post.spec.ts`](../../../apps/huella-legal/layers/contact/server/api/contact.post.spec.ts) |
-| A page or composable reading the app's own API | `serveEndpoint` from `@monorepo/configs/vitest/utils/nuxt` answers the route until the test ends; the real `useFetch` runs | [`coverage.spec.ts`](../../../apps/developer-portal/layers/health/app/pages/coverage.spec.ts) |
+| A page or composable reading the app's own API | `serveEndpoint` from `@monorepo/configs/vitest/utils/nuxt` answers the route until the test ends; the real `useFetch` runs | [`WorkflowHomePanel.spec.ts`](../../../apps/developer-portal/layers/workflows/app/components/WorkflowHomePanel.spec.ts) |
+| A developer-portal page reading a snapshot artifact | `mockNuxtImport("<name>Artifact")` over a `vi.hoisted` state, reset in a `beforeEach` | [`coverage.spec.ts`](../../../apps/developer-portal/layers/health/app/pages/coverage.spec.ts) |
 | A composable reading a third-party API | `serveEndpoint` on the absolute URL | [`useIssues.spec.ts`](../../../apps/developer-portal/layers/github/app/composables/useIssues.spec.ts) |
 | Nuxt Content | `mockNuxtImport("queryCollection")` returning an in-memory collection | [`changelog.spec.ts`](../../../apps/developer-portal/layers/projects/app/pages/changelog.spec.ts) |
 | A provider | nothing — inject a fake `HttpClient` through the port | [`TolgeeProvider.spec.ts`](../../../packages/i18n/src/core/adapters/providers/TolgeeProvider.spec.ts) |

@@ -10,7 +10,6 @@ import {
 } from "#core/domain/content";
 import { MalformedQueryError, UndefinedResourceError } from "#core/domain/errors";
 
-// Out of range is rejected, not clamped
 const toBoundedInteger = (
     value: number | undefined,
     param: string,
@@ -49,8 +48,6 @@ export const toQuery = (query: Query = {}): Query => ({
     search: toSearch(query.search),
 });
 
-// An unknown taxonomy is rejected rather than dropped, so a typo cannot silently return the
-// unfiltered list.
 const toTerm = (term: EntryQuery["term"]): EntryQuery["term"] => {
     if (!term) return undefined;
 

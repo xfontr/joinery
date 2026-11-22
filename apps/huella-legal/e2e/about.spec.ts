@@ -22,7 +22,6 @@ test("shows the quote with its author", async ({ page }) => {
     ).toBeVisible();
 });
 
-// The count-up is drawn by CSS, so the number itself must stay in the text
 test("keeps every figure readable as text, whatever the counter animation shows", async ({
     page,
 }) => {
@@ -62,7 +61,6 @@ test("the footer's about link lands on it", async ({ page }) => {
     await expect(page).toHaveURL(new RegExp(`${PATH}$`));
 });
 
-// Reduced motion leaves every scroll-revealed block visible, so axe and the screenshot see them all
 test("the about page has no WCAG AA violations", async ({ page }, testInfo) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(PATH);

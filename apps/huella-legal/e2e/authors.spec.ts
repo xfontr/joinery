@@ -43,7 +43,7 @@ test("the page opens on the journal's about, then its principles", async ({ page
     );
     await expect(page.getByRole("main")).toContainText(`Hoy reúne a ${AUTHOR_COUNT} colaboradores`);
     await expect(
-        page.getByRole("region", { name: t("authors.principles.label") }).getByRole("heading"),
+        page.getByRole("region", { name: t("directoryPrinciples.label") }).getByRole("heading"),
     ).toHaveText(["Rigor", "Accesibilidad", "Acceso libre"]);
 });
 

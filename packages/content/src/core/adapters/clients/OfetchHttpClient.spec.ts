@@ -21,7 +21,6 @@ const fetchError = (status: number): FetchError =>
     });
 
 describe("OfetchHttpClient", () => {
-    // Vendors report pagination in headers, and a body alone cannot build a Page
     it("returns the parsed body together with the response headers", async () => {
         const headers = new Headers({ "x-wp-total": "12" });
         const { $fetch } = createFetch({ _data: [{ id: 1 }], headers });
@@ -34,7 +33,6 @@ describe("OfetchHttpClient", () => {
         });
     });
 
-    // A provider owns how its vendor is addressed, so the transport must not rewrite the URL
     it("passes an absolute url through untouched", async () => {
         const { raw, $fetch } = createFetch({ _data: [], headers: new Headers() });
 
@@ -60,8 +58,6 @@ describe("OfetchHttpClient", () => {
         });
     });
 
-    // A host's bot filter can answer a REST route with a 200 challenge page, which ofetch hands back
-    // as a string the provider would then try to map
     describe("when the vendor answers with something other than JSON", () => {
         const challenge = {
             _data: "<!DOCTYPE html>\n<html>\n  <title>Just a moment</title>\n</html>",
@@ -112,8 +108,6 @@ describe("OfetchHttpClient", () => {
             );
         });
 
-        // ofetch parses a body with no content type as JSON, so refusing it would break a vendor
-        // that simply omits the header
         it.each([["application/json; charset=UTF-8"], ["application/problem+json"], [null]])(
             "accepts a %s body as JSON",
             async (contentType) => {
@@ -128,7 +122,6 @@ describe("OfetchHttpClient", () => {
     });
 
     describe("when the request fails", () => {
-        // Without this the domain cannot tell "upstream said no" from "the network is down"
         it("never surfaces a transport-specific error", async () => {
             const { $fetch } = createFailingFetch(fetchError(404));
 
@@ -162,8 +155,6 @@ describe("OfetchHttpClient", () => {
             ).rejects.toMatchObject({ body: { code: "rest_post_invalid_page_number" } });
         });
 
-        // A network error carries no status, which is why it is optional rather than defaulted to
-        // something that looks like an answer from upstream
         it("reports a failure that never reached the vendor without a status", async () => {
             const cause = new Error("connect ECONNREFUSED");
             const { $fetch } = createFailingFetch(cause);

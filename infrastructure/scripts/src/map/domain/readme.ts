@@ -7,7 +7,7 @@ export interface ProjectManifest {
     tags: string[];
 }
 
-export interface Constraint {
+interface Constraint {
     tag: string;
     allowed: string[];
 }
@@ -67,7 +67,7 @@ const layout = (projects: ProjectManifest[], tops: string[]): string[] => {
     ];
 };
 
-export interface Region {
+interface Region {
     name: string;
     lines: string[];
 }

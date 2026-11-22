@@ -25,13 +25,7 @@
 </template>
 
 <script setup lang="ts">
-export interface PageFact {
-    label: string;
-    value: string;
-    class?: string;
-    /** Set on a figure that also picks what the page's chart draws. */
-    series?: string;
-}
+import type { PageFact } from "~/types/PageFact";
 
 interface Props {
     provenance: string;

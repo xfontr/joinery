@@ -12,10 +12,13 @@
                     >
                         <span aria-hidden="true" class="font-mono">{{ GLYPHS[block.tone] }}</span>
                         <span>{{ block.title }}</span>
-                        <span class="sr-only">, {{ LEGEND[block.tone] }}</span>
-                        <span v-if="block.owner" class="text-muted"
-                            >◆ <span class="sr-only">the owner's call</span></span
+                        <span class="sr-only"
+                            >, {{ $t(`workflowProjectMap.legend.${block.tone}`) }}</span
                         >
+                        <span v-if="block.owner" class="text-muted">
+                            ◆
+                            <span class="sr-only">{{ $t("workflowProjectMap.owner") }}</span>
+                        </span>
                     </li>
                 </ul>
             </li>
@@ -48,8 +51,10 @@
         </div>
 
         <figcaption class="flex flex-wrap gap-x-6 gap-y-1 font-mono text-xs text-muted">
-            <span v-for="(text, tone) in LEGEND" :key="tone">{{ GLYPHS[tone] }} {{ text }}</span>
-            <span>◆ the owner's call</span>
+            <span v-for="(glyph, tone) in GLYPHS" :key="tone">
+                {{ glyph }} {{ $t(`workflowProjectMap.legend.${tone}`) }}
+            </span>
+            <span>◆ {{ $t("workflowProjectMap.owner") }}</span>
         </figcaption>
     </figure>
 </template>
@@ -66,10 +71,4 @@ interface Props {
 defineProps<Props>();
 
 const GLYPHS = { done: "■", moving: "□", waiting: "⬚" } as const satisfies Record<MapTone, string>;
-
-const LEGEND = {
-    done: "done",
-    moving: "moving now",
-    waiting: "waiting on another block",
-} as const satisfies Record<MapTone, string>;
 </script>

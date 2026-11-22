@@ -91,7 +91,6 @@ describe("drift main", () => {
         });
     });
 
-    // Recording before the prompt made a cancelled or unattended warning permanent.
     it("leaves the fingerprint unrecorded when nobody answered the warning", async () => {
         detect.shouldWarn.mockReturnValue(true);
         await main();

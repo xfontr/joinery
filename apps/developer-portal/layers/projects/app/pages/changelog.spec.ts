@@ -1,13 +1,70 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import Page from "./changelog.vue";
 
-// An in-memory docs collection, answering the two query shapes the page sends
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
+    },
+    changelog: {
+        empty: {
+            hint: "They are written by {command}, never by hand.",
+            title: "No CHANGELOG.md in the workspace yet.",
+        },
+        intro: "This page brings together generated release histories and unreleased activity across the workspace.",
+        sinceRelease: "{count} commits since the last release",
+        title: "What's new",
+    },
+    changelogList: {
+        unreleased: "+{count} unreleased",
+        version: "v{version}",
+    },
+    changelogNotes: {
+        conventional: {
+            description: "{percent}% of the last 100 commits parse as a version bump.",
+            title: "Conventional subjects",
+        },
+        unreleased: {
+            description: "{projects} — commits waiting on a first release, so no changelog yet.",
+            title: "Never released",
+        },
+    },
+    pageHeader: {
+        wordmark: "monorepo",
+    },
+};
+
+const artifacts = vi.hoisted(() => ({ metrics: null as MetricsArtifact | null }));
+mockNuxtImport("metricsArtifact", () => () => artifacts.metrics);
+
+beforeEach(() => {
+    artifacts.metrics = null;
+});
+
 const docs = vi.hoisted(() => ({
     changelogs: [] as { path: string; title: string }[],
     pages: {} as Record<string, { title: string }>,
@@ -53,10 +110,7 @@ const METRICS = {
 } satisfies MetricsArtifact;
 
 const serve = (metrics: Partial<MetricsArtifact> = {}) => {
-    serveEndpoint("/api/snapshot/metrics", (): SnapshotResponse => ({
-        manifest: null,
-        metrics: { ...METRICS, ...metrics },
-    }));
+    artifacts.metrics = { ...METRICS, ...metrics };
 };
 
 const entries = (wrapper: VueWrapper) =>
@@ -68,6 +122,10 @@ const alert = (wrapper: VueWrapper, title: string) =>
 beforeEach(() => {
     docs.changelogs = [];
     docs.pages = {};
+});
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
 });
 
 describe("changelog page", () => {

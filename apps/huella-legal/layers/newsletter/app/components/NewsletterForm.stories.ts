@@ -26,7 +26,6 @@ export const Inline: Story = { args: { layout: "inline" } };
 
 export const Submitting: Story = holding("submitting");
 
-// Field errors only reach the field through a submit, which the address fails before any request
 export const Invalid: Story = {
     play: async ({ canvas, userEvent }) => {
         const email = canvas.getByRole("textbox", { name: "Correo electrónico" });

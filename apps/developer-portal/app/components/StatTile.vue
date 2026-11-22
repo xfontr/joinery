@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import { NuxtLink } from "#components";
-import type { Tone } from "../utils/format.ts";
+import type { Tone } from "../types/Tone.ts";
 
 interface Props {
     label: string;

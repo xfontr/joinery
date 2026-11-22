@@ -3,7 +3,6 @@ import { AUTHOR, SOUGHT, SUBJECT, TAG } from "./fakes.ts";
 
 const THESES = "/publicar-mi-articulo/publicar-tfm-tfg-derecho/";
 
-// One old WordPress URL per family that has to survive the move to the same domain
 const MOVED: [from: string, to: string][] = [
     ["/categorias/", "/areas/"],
     [`/Categoria/${SUBJECT.slug}/`, `/areas/${SUBJECT.slug}/`],

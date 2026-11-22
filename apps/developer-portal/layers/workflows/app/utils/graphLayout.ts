@@ -39,7 +39,6 @@ export const graphLayout = (shown: CapabilityView[]) => {
                 (!seen.has(need) && (seen.add(need), reaches(need, target, seen))),
         );
 
-    // A link a block already reaches through another of its needs adds a line, not information.
     const links = shown.flatMap(({ id }) => {
         const own = needs.get(id)!;
         return own

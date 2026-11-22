@@ -20,7 +20,6 @@ test.describe("an unknown slug", () => {
     });
 });
 
-// vue-i18n prints a key it can't find, and keys built from a variable are out of the lint's reach
 const PAGES = [
     "/",
     "/publicaciones/",

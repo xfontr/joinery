@@ -38,7 +38,6 @@ class Target extends EventTarget {
     }
 }
 
-// Runs the inline script against stand-ins for the window and the document, as the browser would
 const runInBrowser = (head: string) => {
     const source = /<script>([\s\S]*?)<\/script>/.exec(head)?.[1] ?? "";
     const appended: object[] = [];

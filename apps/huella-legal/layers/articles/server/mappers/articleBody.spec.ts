@@ -28,7 +28,6 @@ describe("sanitising", () => {
         expect(html("<p>Antes</p><script>alert(1)</script>")).toBe("<p>Antes</p>");
     });
 
-    // 50 bodies open with a pasted `<meta charset>`; parsed as a document it would drag in a `<head>`
     it("drops a pasted meta tag without wrapping the body in a document", () => {
         expect(html('<meta charset="utf-8"><p>Texto</p>')).toBe("<p>Texto</p>");
     });
@@ -114,7 +113,6 @@ describe("the class map", () => {
         );
     });
 
-    // Tailwind utilities are global, so a pasted `hidden` would hide the paragraph
     it("drops every other class", () => {
         expect(html('<p class="hidden contenedor">Texto</p>')).toBe('<p class="hl-note">Texto</p>');
     });
@@ -147,7 +145,6 @@ describe("the bibliography", () => {
         },
     );
 
-    // "Fuentes" is also a subject in a law blog, and cutting there would drop the rest of the article
     it("does not take a section about the sources of law for the bibliography", () => {
         expect(
             toArticleBody("<h2>Las fuentes del Derecho</h2><p>La ley.</p>").bibliography,
@@ -168,7 +165,6 @@ describe("the bibliography", () => {
 });
 
 describe("the pass order", () => {
-    // Notes close the post, after the bibliography, so they must leave before it is split off
     it("takes the notes out before the bibliography, so they aren't read as references", () => {
         const body = toArticleBody(
             '<p>El dolo<a href="#_ftn1">[1]</a>.</p><h2>Bibliografía</h2><p>ROXIN, C.</p><hr>' +

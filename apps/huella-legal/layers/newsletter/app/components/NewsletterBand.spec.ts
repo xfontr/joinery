@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { NEWSLETTER_ID } from "../composables/useNewsletterJump";
 import NewsletterBand from "./NewsletterBand.vue";
 
-// `<i18n-t>` reads the real i18n instance rather than a `$t` mock, so the spec feeds it messages
 const MESSAGES = {
     newsletterBand: {
         kicker: "kicker",

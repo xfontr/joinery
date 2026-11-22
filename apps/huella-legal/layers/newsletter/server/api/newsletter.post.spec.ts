@@ -35,7 +35,6 @@ describe("POST /api/newsletter", () => {
         expect(nitro.addSubscriber).toHaveBeenCalledWith({}, "lucia@ejemplo.es");
     });
 
-    // A bot told it failed would retry; one told it succeeded moves on
     it("answers a filled honeypot like a reader, spending no verification and subscribing nobody", async () => {
         nitro.body.mockResolvedValue({ email: "lucia@ejemplo.es", honeypot: "https://spam.test" });
 

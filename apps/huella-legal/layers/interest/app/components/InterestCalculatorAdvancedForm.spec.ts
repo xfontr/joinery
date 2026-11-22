@@ -30,7 +30,6 @@ const MESSAGES = {
     },
 };
 
-// The pensión de alimentos case the page describes: 300 EUR owed from 7 March 2017
 const FILLED = {
     concept: "Marzo",
     principal: "300",

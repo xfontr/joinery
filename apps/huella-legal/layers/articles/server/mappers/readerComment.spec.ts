@@ -29,7 +29,6 @@ describe("toReaderComment", () => {
         ).toEqual(["Mira esto"]);
     });
 
-    // A comment WordPress left unwrapped would otherwise lose its loose text to the filter
     it("reads text outside any paragraph as one paragraph rather than dropping it", () => {
         expect(rendered("Uno<br>dos").paragraphs).toEqual(["Uno dos"]);
     });

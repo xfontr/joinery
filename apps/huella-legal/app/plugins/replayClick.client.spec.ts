@@ -3,7 +3,6 @@ import plugin from "./replayClick.client";
 
 const slot = window as unknown as { __pendingClick?: HTMLElement | null };
 
-// Runs the plugin, then resolves hydration the way Nuxt does once the app has mounted
 const hydrate = () => {
     let resolve = () => {};
     const nuxtApp = {

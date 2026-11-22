@@ -131,7 +131,6 @@ describe("comments section", () => {
         expect(wrapper.text()).toContain("t(commentsSection.closed)");
     });
 
-    // Read in the browser, the thread may fail or still be on its way; the form works either way
     it("offers the form before the thread arrives, without replies or an empty state", async () => {
         const wrapper = await mount();
 

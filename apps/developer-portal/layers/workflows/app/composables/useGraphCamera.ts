@@ -104,7 +104,6 @@ export const useGraphCamera = (
         const dx = event.clientX - pressed.x;
         const dy = event.clientY - pressed.y;
 
-        // Capturing only once it is a drag, so a plain click still lands on the block under it.
         if (!dragged && Math.hypot(dx, dy) > DRAG_THRESHOLD) {
             dragged = true;
             dragging.value = true;

@@ -32,7 +32,6 @@ describe("toArticleListing", () => {
         expect(toArticleListing([], QUERY)).toMatchObject({ items: [], total: 0, totalPages: 1 });
     });
 
-    // The index is kept newest first, so oldest first is that order reversed
     it("puts the oldest first when asked", () => {
         const articles = index(3);
 

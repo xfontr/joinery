@@ -1,4 +1,4 @@
-import { markersDiffer } from "../../shared/blockMarkers.ts";
+import { markersDiffer } from "../utils/blockMarkers.ts";
 import {
     afterEdit,
     appliedText,
@@ -28,13 +28,12 @@ import type { ItemState } from "../../shared/types/ItemState.ts";
 import type { Proposal } from "../../shared/types/Proposal.ts";
 import type { RunReport } from "../../shared/types/RunReport.ts";
 import { POST_TYPES } from "../../shared/constants.ts";
-import { parseKey } from "../../shared/itemKey.ts";
+import { parseKey } from "../utils/itemKey.ts";
 import { Refusal } from "../../shared/refusal.ts";
 import type { Store } from "../adapters/store.ts";
 import type { WordPress } from "../adapters/wordpress.ts";
 import { toSnapshot } from "../adapters/wordpress.ts";
 
-// WordPress erroring this many articles in a row usually means the host is blocking us.
 const MAX_FAILURES_IN_A_ROW = 3;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -140,7 +139,7 @@ export const markScanned = async (store: Store, id: string, keys: string[]): Pro
     return refreshStatus(store, id);
 };
 
-export interface ValidateReport {
+interface ValidateReport {
     removed: ItemKey[];
     markerWarnings: ItemKey[];
 }
@@ -228,7 +227,6 @@ export const review = {
             (changeset) => changeset.status === "open" && changeset.id !== id,
         );
 
-        // Rejecting the last pending item may have closed this changeset; undoing it reopens it.
         const reopens = !state.applied && changesets.find((c) => c.id === id)?.status === "closed";
 
         if (other && reopens) {
@@ -278,7 +276,6 @@ export const repull = async (store: Store, wp: WordPress, id: string, key: ItemK
     const { type, id: postId } = keyOf(key);
     const item = await requireItem(store, id, key);
 
-    // A restore record is what an earlier changeset's restore checks drift against.
     if (item.state.applied) throw new Refusal("Applied items can't be re-pulled.");
 
     await store.writeBase(id, key, toSnapshot(await wp.get(type, postId)));
@@ -410,7 +407,7 @@ const runEach = async (
     return report;
 };
 
-export const latestDryRun = async (store: Store, id: string): Promise<RunReport | null> =>
+const latestDryRun = async (store: Store, id: string): Promise<RunReport | null> =>
     (await store.listRuns(id)).find(({ kind }) => kind === "dry-run") ?? null;
 
 /** Checks every pending article against live WordPress and saves the report bulk apply reads. */
@@ -503,7 +500,6 @@ export const restoreItem = async (store: Store, wp: WordPress, id: string, key: 
     const modifiedGmt = landed
         ? live.modified_gmt
         : (await wp.update(type, postId, base)).modified_gmt;
-    // Back in review, so sending it out again takes a fresh confirm.
     const next: ItemState = { ...state, level: "seen", restored: { at: now(), modifiedGmt } };
 
     await store.writeState(id, key, next);

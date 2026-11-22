@@ -1,7 +1,19 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { projectView, readProject, readTemplate } from "#layers/workflows/shared/workflows.ts";
 import WorkflowSkyline from "./WorkflowSkyline.vue";
+
+const MESSAGES = {
+    workflowSkyline: {
+        label: "{title}, {state}",
+        title: "{title} · {state}",
+    },
+    workflows: {
+        capabilityState: {
+            "can-file": "Can file now",
+        },
+    },
+};
 
 const { template } = readTemplate({
     id: "t",
@@ -17,6 +29,10 @@ const { template } = readTemplate({
 });
 const { project } = readProject({ id: "p", title: "P", template: "t", milestone: "P" });
 const { stages } = projectView(project, template, null);
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowSkyline", () => {
     it("picks a block from its square and opens that block's stage", async () => {

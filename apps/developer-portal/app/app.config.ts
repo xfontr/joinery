@@ -1,5 +1,5 @@
 export default defineAppConfig({
     nav: {
-        overview: { label: "Overview", icon: "i-lucide-layout-dashboard", to: "/overview" },
+        overview: { icon: "i-lucide-layout-dashboard", to: "/overview" },
     },
 });

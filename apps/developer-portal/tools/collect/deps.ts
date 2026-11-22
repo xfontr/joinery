@@ -5,9 +5,6 @@ import type { VulnerabilityAdvisory } from "#layers/snapshot/shared/types/Vulner
 import { WORKSPACE_ROOT } from "../lib/paths.ts";
 import { runAllowFailure, tryRun } from "../lib/run.ts";
 
-// The only pair of collectors that reach the npm registry instead of reading the working tree —
-// offline or rate-limited is a real, separate failure mode from everything else here.
-
 interface RawAdvisory {
     id: number;
     title: string;

@@ -57,7 +57,6 @@ describe("author card", () => {
         expect(wrapper.find("a").text()).toBe("t(authorCard.profile)");
     });
 
-    // 9 of 42 authors have no bio
     it("leaves out the bio paragraph for an author without one", async () => {
         const wrapper = await mountSuspended(ArticleAuthorCard, {
             props: { author: { ...AUTHOR, bio: undefined }, to: "/colaboradores/maria" },

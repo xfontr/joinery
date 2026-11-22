@@ -86,7 +86,6 @@ describe("GET /api/articles", () => {
         await expect(handler({})).resolves.toMatchObject({ total: 22 });
     });
 
-    // h3 mangles anything else in a status message and logs a warning for every such request
     it("keeps the status message printable ASCII and puts what was wrong in the message", async () => {
         nitro.query = { page: "0", sort: "más" };
 

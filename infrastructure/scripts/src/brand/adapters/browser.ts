@@ -2,7 +2,7 @@
 import { chromium } from "@playwright/test";
 import type { Sample } from "../domain/brand.ts";
 
-export interface PageSamples {
+interface PageSamples {
     url: string;
     status: number;
     samples: Sample[];

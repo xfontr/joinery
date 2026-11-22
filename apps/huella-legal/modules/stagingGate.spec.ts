@@ -155,7 +155,6 @@ describe("stagingGate module", () => {
         expect((await loadGate())(request(STAGING, "editor:guess"))?.status).toBe(401);
     });
 
-    // Unset vars would otherwise make "undefined:undefined" a working login
     it.each([
         { STAGING_USERNAME: undefined, STAGING_PASSWORD: "s3cret" },
         { STAGING_USERNAME: "editor", STAGING_PASSWORD: undefined },

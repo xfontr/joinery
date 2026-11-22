@@ -5,7 +5,7 @@ export interface SearchableIssue {
     labels: string[];
 }
 
-export interface SearchableLabel {
+interface SearchableLabel {
     name: string;
     description: string;
 }

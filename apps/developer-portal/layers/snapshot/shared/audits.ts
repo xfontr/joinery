@@ -39,7 +39,7 @@ const findingColumns = (cells: string[]): FindingColumns => {
     return { id: header.indexOf("id"), status: header.indexOf("status") };
 };
 
-export const isFindingStatus = (value: string): value is FindingStatus =>
+const isFindingStatus = (value: string): value is FindingStatus =>
     (FINDING_STATUSES as readonly string[]).includes(value);
 
 const findingOf = (

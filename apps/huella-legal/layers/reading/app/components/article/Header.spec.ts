@@ -48,7 +48,6 @@ describe("article header", () => {
         expect(hrefsIn(wrapper, "nav")).toEqual(["/", "/publicaciones/"]);
     });
 
-    // The breadcrumb already ends at the category, so naming it again here only repeats it
     it("labels the format without repeating the category", async () => {
         const wrapper = await mountSuspended(ArticleHeader, {
             props: { article: ARTICLE },
@@ -81,7 +80,6 @@ describe("article header", () => {
         expect(wrapper.text()).not.toContain("article.number");
     });
 
-    // The standfirst draws its own rules, so an empty one would leave two lines with nothing between them
     it("leaves out the standfirst for an article without an excerpt", async () => {
         const wrapper = await mountSuspended(ArticleHeader, {
             props: { article: { ...ARTICLE, excerpt: undefined } },
@@ -91,7 +89,6 @@ describe("article header", () => {
         expect(wrapper.find("h1 + p").exists()).toBe(false);
     });
 
-    // `#autor` is ArticleBackMatter's id, so the byline lands on the author cards further down
     it("points every byline name at the author cards on the same page", async () => {
         const second = fakeAuthor();
         const wrapper = await mountSuspended(ArticleHeader, {

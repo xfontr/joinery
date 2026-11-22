@@ -2,7 +2,7 @@ import { UndefinedLocaleProviderError } from "#core/domain/errors";
 import type { Locale, TranslationMap } from "#core/domain/translations";
 import TranslationProvider from "#core/ports/TranslationProvider";
 
-export interface TolgeeProviderOptions {
+interface TolgeeProviderOptions {
     token: string;
 }
 

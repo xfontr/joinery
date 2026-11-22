@@ -15,8 +15,10 @@ export default defineNuxtConfig({
 
     typescript: {
         typeCheck: false,
-        // A component left behind by a removed layer then fails typecheck instead of rendering nothing.
-        tsConfig: { vueCompilerOptions: { checkUnknownComponents: true } },
+        tsConfig: {
+            include: ["../vitest.setup.ts"],
+            vueCompilerOptions: { checkUnknownComponents: true },
+        },
     },
 
     content: {
@@ -30,8 +32,6 @@ export default defineNuxtConfig({
             ignore: [`${process.env.NUXT_APP_BASE_URL ?? "/"}huella-legal-storybook/`],
         },
 
-        // The collectors reach outside `apps/developer-portal` on purpose, and the two vendored report
-        // trees under `public/` are thousands of files the dev server has no reason to watch.
         watchOptions: {
             ignored: ["**/.report/**", "**/public/embed/**"],
         },

@@ -1,3 +1,4 @@
+import type { Challenge } from "#layers/forms/app/types/Challenge";
 import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -20,7 +21,6 @@ mockNuxtImport(
         url === "/api/contact" ? fetch(url, options) : globalThis.$fetch(url, options as never),
 );
 
-// A challenge with a token at hand: the waiting and the reset are FormChallenge's own spec
 const challenge = vi.fn((send: (token: string) => Promise<unknown>) => send("tok")) as Challenge;
 
 const setUp = async () => (await withSetup(() => useContact())).value;

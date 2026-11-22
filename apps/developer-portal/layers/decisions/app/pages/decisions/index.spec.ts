@@ -1,11 +1,17 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
-import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DecisionOutcome, DecisionStatus } from "#layers/snapshot/shared/decisions.ts";
 import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
+import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import Page from "./index.vue";
+
+const artifacts = vi.hoisted(() => ({ docs: null as DocsArtifact | null }));
+mockNuxtImport("docsArtifact", () => () => artifacts.docs);
+
+beforeEach(() => {
+    artifacts.docs = null;
+});
 
 const report = (
     id: string,
@@ -32,12 +38,8 @@ const OLD = report("0001-old", "to-implement", "superseded", "Old", "2026-09-19"
 
 type Wrapper = VueWrapper;
 
-// The report list is fetched without `await`, so it lands after the first render
 const open = async (pages: DocPage[] = [NEW, OLD]) => {
-    serveEndpoint("/api/snapshot/docs", (): SnapshotResponse => ({
-        manifest: null,
-        docs: { generatedAt: "2026-11-01T00:00:00Z", pages, brokenLinkCount: 0 },
-    }));
+    artifacts.docs = { generatedAt: "2026-11-01T00:00:00Z", pages, brokenLinkCount: 0 };
     const wrapper = await mountSuspended(Page);
     await flushPromises();
     return wrapper;
@@ -68,7 +70,10 @@ describe("decisions index page", () => {
         await wrapper.find("input").setValue("New");
 
         expect(listed(wrapper)).toEqual(["/decisions/0002-new"]);
-        expect(tiles(wrapper)).toMatchObject({ Implemented: 1, "To implement": 1 });
+        expect(tiles(wrapper)).toMatchObject({
+            "decisions.status.implemented": 1,
+            "decisions.status.to-implement": 1,
+        });
     });
 
     it("narrows the list to the status picked", async () => {
@@ -104,7 +109,7 @@ describe("decisions index page", () => {
             .findAllComponents({ name: "StatusPill" })
             .map((pill) => pill.props("hint"));
 
-        expect(hints).toContain("Superseded by 0002-new.md");
+        expect(hints).toContain("decisions.supersededBy");
     });
 
     it("says nothing matches instead of showing an empty list", async () => {
@@ -113,6 +118,6 @@ describe("decisions index page", () => {
         await wrapper.find("input").setValue("missing");
 
         expect(listed(wrapper)).toEqual([]);
-        expect(wrapper.text()).toContain("Nothing matches that filter.");
+        expect(wrapper.text()).toContain("listCard.empty");
     });
 });

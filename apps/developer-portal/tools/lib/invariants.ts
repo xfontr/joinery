@@ -37,7 +37,7 @@ export const parseGateFindings = (stdout: string): InvariantFinding[] => {
 };
 
 /** Dated audits only — `README.md` and `TEMPLATE.md` are the furniture around them. */
-export const listAuditFiles = async (): Promise<string[]> => {
+const listAuditFiles = async (): Promise<string[]> => {
     const entries = await readdir(resolve(WORKSPACE_ROOT, AUDITS_DIR)).catch(() => [] as string[]);
 
     return entries
@@ -46,7 +46,7 @@ export const listAuditFiles = async (): Promise<string[]> => {
 };
 
 /** A finding whose status doesn't parse still counts as open on the audits page, so this is what says why. */
-export const compareAuditShape = (audits: { file: string; source: string }[]): InvariantFinding[] =>
+const compareAuditShape = (audits: { file: string; source: string }[]): InvariantFinding[] =>
     auditProblems(audits).map(({ file, message }) => ({
         id: "audit-shape-mismatch",
         title: "An audit doesn't match the template",
@@ -55,7 +55,7 @@ export const compareAuditShape = (audits: { file: string; source: string }[]): I
     }));
 
 /** Dated decisions only — `README.md` and `TEMPLATE.md` are the furniture around them. */
-export const listDecisionFiles = async (): Promise<string[]> => {
+const listDecisionFiles = async (): Promise<string[]> => {
     const entries = await readdir(resolve(WORKSPACE_ROOT, DECISIONS_DIR)).catch(
         () => [] as string[],
     );
@@ -76,9 +76,7 @@ export const compareDecisionShape = (
     }));
 
 /** The workflows page renders a broken file as a gap, so this is what says which file and why. */
-export const compareWorkflowShape = (
-    problems: { file: string; message: string }[],
-): InvariantFinding[] =>
+const compareWorkflowShape = (problems: { file: string; message: string }[]): InvariantFinding[] =>
     problems.map(({ file, message }) => ({
         id: "workflow-shape-mismatch",
         title: "A workflow file breaks the rules",

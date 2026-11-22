@@ -36,7 +36,6 @@ describe("toArticleComments", () => {
         expect(threads[0]?.replies.map(({ replyTo }) => replyTo)).toEqual([undefined, "Luis"]);
     });
 
-    // The parent may be held, spammed or deleted, and the reply is still approved
     it("opens a thread for a reply whose parent isn't approved instead of losing it", () => {
         const { threads } = toArticleComments(true, [comment(2, 1, "Luis")]);
 

@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { htmlDiff } from "#shared/htmlDiff.ts";
+import { htmlDiff } from "~/utils/htmlDiff.ts";
 
 interface Props {
     before: string;

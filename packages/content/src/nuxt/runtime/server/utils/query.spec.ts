@@ -18,7 +18,6 @@ describe("toQuery", () => {
         expect(toQuery({ page: 2, perPage: 6 })).toMatchObject({ page: 2, perPage: 6 });
     });
 
-    // MAX_PAGE and MAX_PER_PAGE are far enough apart (1000 vs 50) that a swap would throw here
     it("accepts the ceilings themselves", () => {
         expect(toQuery({ page: MAX_PAGE, perPage: MAX_PER_PAGE })).toMatchObject({
             page: MAX_PAGE,
@@ -71,7 +70,6 @@ describe("toQuery", () => {
 });
 
 describe("toEntryQuery", () => {
-    // A dropped filter would be cached under the value that was asked for, listing the whole archive
     it("keeps the term and the author an entry list filters by", () => {
         expect(
             toEntryQuery({ term: { resource: "categories", id: " 12 " }, author: " 3 " }),

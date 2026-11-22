@@ -60,7 +60,6 @@ export const parseDeletions = (log: string, live: ProjectNode[]): Deletion[] => 
                 });
         })
         .filter((project) => {
-            // A `git mv` reads as a delete plus an add, and the log is newest first.
             if (liveNames.has(project.name) || seen.has(project.name)) return false;
             seen.add(project.name);
 

@@ -1,139 +1,69 @@
 <template>
     <UDashboardPanel id="issues">
         <template #header>
-            <PageHeader title="Work in progress">
+            <PageHeader :title="$t('issues.title')">
                 <template #actions>
-                    <span class="text-xs text-muted">
-                        {{ read }}
-                    </span>
-                    <UButton
-                        icon="i-lucide-refresh-cw"
-                        color="neutral"
-                        variant="ghost"
-                        size="xs"
-                        :loading="reloading"
-                        aria-label="Re-read the issues from GitHub"
-                        @click="refresh"
+                    <HealthIssuesRead
+                        :fetched-at="issues.fetchedAt"
+                        :reloading
+                        @refresh="refresh"
                     />
                 </template>
             </PageHeader>
 
-            <UDashboardToolbar>
-                <template #left>
-                    <UInput
-                        v-model="search"
-                        icon="i-lucide-search"
-                        placeholder="Search issues…"
-                        size="sm"
-                        class="w-56"
-                    />
-                </template>
-                <template #right>
-                    <USelect
-                        v-model="label"
-                        :items="labelItems"
-                        value-key="value"
-                        size="sm"
-                        class="w-40"
-                    />
-                </template>
-            </UDashboardToolbar>
+            <HealthIssuesToolbar v-model:search="search" v-model:label="label" :issues="all" />
         </template>
 
         <template #body>
             <div class="flex flex-col gap-4">
-                <p class="max-w-3xl text-sm text-muted">
-                    Planned and active repository work appears here as issues from GitHub. The issue
-                    read is live in your browser; the rest of this portal remains a collected
-                    snapshot.
-                </p>
+                <p class="max-w-3xl text-sm text-muted">{{ $t("issues.intro") }}</p>
 
                 <UAlert
                     v-if="issues.error"
                     color="warning"
                     variant="subtle"
                     icon="i-lucide-plug-zap"
-                    title="GitHub could not be reached"
-                    :description="`${issues.error} — this page reads GitHub from your browser, unauthenticated, which allows 60 requests an hour per address.`"
+                    :title="$t('issues.error.title')"
+                    :description="$t('issues.error.description', { error: issues.error })"
                 />
 
-                <UCard variant="flush">
-                    <template #header>
-                        <div class="flex items-center justify-between gap-4">
-                            <div>
-                                <h2 class="font-semibold">Open issues</h2>
-                                <p class="text-xs text-muted">
-                                    Read live from GitHub by your own browser. Nothing is stored
-                                    here — the issue is the record, and this is a window onto it.
-                                </p>
-                            </div>
-
-                            <span class="shrink-0 text-xs text-dimmed tabular-nums">
-                                {{ visible.length }} of {{ all.length }}
-                            </span>
+                <ListCard
+                    :title="$t('issues.list.title')"
+                    :note="$t('issues.list.note')"
+                    :shown="visible.length"
+                    :total="all.length"
+                >
+                    <template #empty>
+                        <div class="p-12 text-center">
+                            <UIcon
+                                name="i-lucide-circle-dot"
+                                class="mx-auto mb-2 size-8 text-dimmed"
+                            />
+                            <p class="text-sm text-muted">
+                                {{ all.length === 0 ? $t("issues.empty") : $t("issues.noMatch") }}
+                            </p>
+                            <I18nT
+                                v-if="all.length === 0 && !issues.error"
+                                keypath="issues.file"
+                                tag="p"
+                                scope="global"
+                                class="mt-1 text-xs text-dimmed"
+                            >
+                                <template #command>
+                                    <code class="font-mono">{{ ADD }}</code>
+                                </template>
+                            </I18nT>
                         </div>
                     </template>
-
-                    <div v-if="visible.length === 0" class="p-12 text-center">
-                        <UIcon name="i-lucide-circle-dot" class="mx-auto mb-2 size-8 text-dimmed" />
-                        <p class="text-sm text-muted">
-                            {{
-                                all.length === 0
-                                    ? "No open issues."
-                                    : "Nothing matches that filter."
-                            }}
-                        </p>
-                        <p
-                            v-if="all.length === 0 && !issues.error"
-                            class="mt-1 text-xs text-dimmed"
-                        >
-                            File one with <code class="font-mono">pnpm issue:add</code>.
-                        </p>
-                    </div>
-
-                    <div v-else class="divide-y divide-default">
-                        <HealthIssueRow v-for="issue in visible" :key="issue.number" :issue />
-                    </div>
-                </UCard>
+                    <HealthIssueRow v-for="issue in visible" :key="issue.number" :issue />
+                </ListCard>
             </div>
         </template>
     </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { filterIssues, labelsOf, sortIssues } from "#layers/github/shared/issues.ts";
+const ADD = "pnpm issue:add";
 
-// Not awaited: `await` resolves to the plain `useFetch` state and would drop `reload` with it.
-// Nuxt settles the request before it serialises the payload either way.
-const { data: issues, reload } = useIssues();
-
-const label = ref<string>("all");
-const search = ref("");
-
-const all = computed(() => issues.value.issues);
-const read = computed(() =>
-    issues.value.fetchedAt ? `read ${relativeTime(issues.value.fetchedAt)}` : "not read yet",
-);
-
-const visible = computed(() =>
-    sortIssues(
-        filterIssues(all.value, {
-            label: label.value,
-            search: search.value,
-        }),
-    ),
-);
-
-const labelItems = computed(() => [
-    { label: "Every label", value: "all" },
-    ...labelsOf(all.value).map((name) => ({ label: name, value: name })),
-]);
-
-const reloading = ref(false);
-
-const refresh = async (): Promise<void> => {
-    reloading.value = true;
-    await reload();
-    reloading.value = false;
-};
+const { issues, label, search, all, visible, reloading, refresh } = useIssueList();
 </script>

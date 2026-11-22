@@ -339,7 +339,6 @@ describe("planFiling several blocks", () => {
 });
 
 describe("bundlesOf waits", () => {
-    // Bundling scaffold with deploy would hold scaffold back until the sign-off deploy needs.
     it("keeps a block out of a ticket that would make it wait on something it doesn't need", () => {
         const map = staged("fast");
 
@@ -375,7 +374,6 @@ describe("bundleFor", () => {
 });
 
 describe("fileableNow", () => {
-    // Two blocks that only need a filed build block were left unfiled while agents sat idle (#484).
     it("offers every block whose needs are filed, not only the one a closed ticket opened", () => {
         const map = readMap(TEMPLATE, PROJECT);
         const issues = [closed(1, "design-approval"), ticket(2, "component-kit")];

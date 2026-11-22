@@ -3,18 +3,49 @@ import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { LintRuleUsage } from "#layers/snapshot/shared/types/LintRuleUsage.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import Page from "./index.vue";
 
+const artifacts = vi.hoisted(() => ({ usage: null as UsageArtifact | null }));
+mockNuxtImport("usageArtifact", () => () => artifacts.usage);
+
+beforeEach(() => {
+    artifacts.usage = null;
+});
+
+const WORK = [
+    {
+        path: "/work/huella-legal",
+        name: "Huella Legal",
+        title: "Huella",
+        mark: "Legal",
+        kind: "Law magazine",
+        stage: "Redesign on staging",
+        line: "A law magazine.",
+        caseStudy: true,
+        live: { href: "https://staging.example.com", label: "See the new site" },
+    },
+    {
+        path: "/work/portal",
+        name: "This portal",
+        kind: "Developer portal",
+        stage: "Mid-redesign",
+        line: "The site you're reading.",
+        caseStudy: false,
+        live: { href: "/overview", label: "Open the developer view" },
+    },
+];
+
 const docs = vi.hoisted(() => ({ benchmarks: [] as { path: string; title: string }[] }));
 
-mockNuxtImport("queryCollection", () => () => {
+mockNuxtImport("queryCollection", () => (collection: string) => {
+    const rows = collection === "work" ? WORK : docs.benchmarks;
     const query = {
         where: () => query,
         select: () => query,
-        all: () => Promise.resolve(docs.benchmarks),
+        order: () => query,
+        all: () => Promise.resolve(rows),
     };
     return query;
 });
@@ -61,7 +92,7 @@ const open = async ({
     usage = null as UsageArtifact | null,
     projects = [] as { id: string; title: string }[],
 } = {}) => {
-    serveEndpoint("/api/snapshot/usage", (): SnapshotResponse => ({ manifest: null, usage }));
+    artifacts.usage = usage;
     serveEndpoint("/api/workflows", () =>
         assembleWorkflows(
             [{ file: "website-rebuild.yaml", ok: true, value: TEMPLATE }],
@@ -80,22 +111,31 @@ const open = async ({
 
 beforeEach(() => {
     docs.benchmarks = [];
+    const { $i18n } = useNuxtApp();
+    $i18n.mergeLocaleMessage($i18n.locale.value, {
+        index: {
+            rules: {
+                look: { proofCount: "{count} studied" },
+                prove: { proofCount: "{enabled} rules, {inHouse} ours" },
+            },
+        },
+    });
 });
 
 describe("front page", () => {
     it("states every proof without a number when nothing was ever collected", async () => {
         const wrapper = await open();
 
-        expect(wrapper.findAll("article")).toHaveLength(9);
-        expect(wrapper.text()).toContain("The sites studied before anything was drawn");
-        expect(wrapper.text()).toContain("What the machines check on every change");
+        expect(wrapper.findAll("article")).toHaveLength(5 + WORK.length);
+        expect(wrapper.text()).toContain("index.rules.look.proof");
+        expect(wrapper.text()).toContain("index.rules.prove.proof");
         expect(wrapper.find("[data-workflow-glyph]").exists()).toBe(false);
     });
 
     it("counts only switched-on lint rules, and the in-house ones among them", async () => {
         const wrapper = await open({ usage: USAGE });
 
-        expect(wrapper.text()).toContain("2 lint rules on every change, 1 written in-house");
+        expect(wrapper.text()).toContain("2 rules, 1 ours");
     });
 
     it("counts the benchmarked sites from docs/benchmarks", async () => {
@@ -106,15 +146,7 @@ describe("front page", () => {
         ];
         const wrapper = await open();
 
-        expect(wrapper.text()).toContain("2 sites studied");
-    });
-
-    it("draws Huella Legal's plan as the glyph that leads to how projects are run", async () => {
-        const wrapper = await open({ projects: [{ id: "huella-legal", title: "Huella Legal" }] });
-
-        const link = wrapper.find("#workflows a");
-        expect(link.attributes("href")).toBe("/how-its-run");
-        expect(link.findAll("[data-workflow-glyph] rect")).toHaveLength(2);
+        expect(wrapper.text()).toContain("2 studied");
     });
 
     it("sends the reader who wants everything to the developer view", async () => {

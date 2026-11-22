@@ -27,7 +27,6 @@ test("markup a compromised editor saves in a post never runs on the page", async
     await anchor.click();
 
     expect(await page.evaluate(() => "pwned" in globalThis)).toBe(false);
-    // Stripped of its `javascript:` href, it is no longer a link at all
     await expect(page.getByRole("link", { name: HOSTILE_LINK })).toHaveCount(0);
     await expect(page.locator("main script, main iframe, main svg[onload]")).toHaveCount(0);
 });

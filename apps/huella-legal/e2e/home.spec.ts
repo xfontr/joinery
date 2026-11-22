@@ -48,7 +48,7 @@ test("follows with the three posts after those", async ({ page }) => {
 
     await expect(
         page
-            .getByRole("region", { name: t("home.recent.title") })
+            .getByRole("region", { name: t("homeRecent.title") })
             .getByRole("heading", { level: 3 }),
     ).toHaveText(titles.slice(6, 6 + shown));
 });
@@ -75,7 +75,6 @@ test("shows the newest theses and leads to the rest", async ({ page }) => {
     await expect(page).toHaveURL(/\/publicaciones\/\?format=tfg-tfm$/);
 });
 
-// Every "subscribe" link in the header targets this anchor
 test("ends with the newsletter band at #newsletter", async ({ page }) => {
     await expect(page.locator("#newsletter")).toHaveAccessibleName(
         "Un correo al mes con lo que hemos publicado. Nada más.",

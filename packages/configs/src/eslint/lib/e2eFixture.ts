@@ -7,7 +7,6 @@ const e2eFixture: object = {
     plugins,
     rules: {
         ...rules,
-        // A shared step named `expect…` asserts, so a test that ends in one has its assertion
         "playwright/expect-expect": ["warn", { assertFunctionPatterns: ["^expect"] }],
         "no-restricted-imports": [
             "error",

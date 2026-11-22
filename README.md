@@ -131,8 +131,9 @@ Each rule is enforced by a hook or workflow;
   [`pnpm invariants:check`](./infrastructure/scripts/src/invariants/README.md), and stages
   [`pnpm usage:flush`](./infrastructure/scripts/src/usage/README.md)'s telemetry.
 - [`pre-push`](./.husky/pre-push) rejects a bad branch name or an added `TODO`/`FIXME` (file it with
-  [`pnpm issue:add`](./infrastructure/scripts/src/issue/README.md)), then runs lint, test and
-  typecheck.
+  [`pnpm issue:add`](./infrastructure/scripts/src/issue/README.md)), then runs lint, test,
+  typecheck and `pnpm unused:check`, which fails on any export, file or dependency nothing uses
+  ([`knip.config.ts`](./knip.config.ts)). A spec counts as a user.
 - [`pnpm issue:ship`](./infrastructure/scripts/src/ship/README.md) pushes, opens the PR and arms
   auto-merge.
 - PRs get their title, assignees and project from the issue

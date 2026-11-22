@@ -80,7 +80,6 @@ describe("POST /api/submissions", () => {
         ]);
     });
 
-    // A bot told it failed would retry; one told it succeeded moves on
     it("answers a filled honeypot like an author, spending no verification and sending nothing", async () => {
         nitro.form.mockResolvedValue(multipart({ ...FIELDS, honeypot: "https://spam.test" }));
 

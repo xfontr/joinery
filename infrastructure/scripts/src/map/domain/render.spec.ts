@@ -10,8 +10,6 @@ const command = (invocation: string, source: string, token: string): Capability 
 });
 
 describe("render", () => {
-    // A hand-kept list is what let real capabilities stay undocumented for years — an empty
-    // section would look like the same kind of silent gap instead of "there are none".
     it("omits a section entirely when it has no capabilities, rather than an empty table", () => {
         const markdown = render([command("pnpm docs:map", "package.json", "docs:map")], []);
 
@@ -21,8 +19,6 @@ describe("render", () => {
         expect(markdown).not.toContain("## 🛠 Agent skills");
     });
 
-    // The `—` is the one signal this file exists to produce — a row that silently linked to
-    // nothing, or fell back to some other text, would hide the exact gap it's meant to surface.
     it("marks an undocumented capability with a dash instead of leaving the cell blank", () => {
         const markdown = render([command("pnpm release", "package.json", "release")], []);
 
@@ -40,8 +36,6 @@ describe("render", () => {
         );
     });
 
-    // Sections are ordered by SECTIONS, not by input order — a reader always finds commands
-    // before hooks before workflows before skills, regardless of how the capabilities were found.
     it("keeps sections in a fixed order regardless of the order capabilities were passed in", () => {
         const capabilities: Capability[] = [
             {

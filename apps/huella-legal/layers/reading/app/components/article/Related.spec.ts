@@ -48,7 +48,6 @@ describe("article related", () => {
         expect(hrefs).toContain("/el-dolo/");
     });
 
-    // The list is lazy and may fail, and a heading over nothing reads as a broken page
     it("renders nothing while there is no related article", async () => {
         const wrapper = await mountSuspended(ArticleRelated, {
             props: { category: CATEGORY, articles: [] },

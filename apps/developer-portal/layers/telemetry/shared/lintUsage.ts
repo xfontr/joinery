@@ -79,7 +79,6 @@ export const summarizeLint = (
         if (!first || at < first) first = at;
     }
 
-    // A comment naming a rule nothing enables or reports is a typo or a plugin long gone.
     for (const [rule, count] of Object.entries(disabled)) {
         const usage = rules[rule];
         if (usage) usage.disabled = count;
@@ -94,3 +93,18 @@ export const neverFired = (lint: LintUsage): string[] =>
         .filter(([, usage]) => usage.enabled && usage.recent === 0 && usage.disabled === 0)
         .map(([rule]) => rule)
         .sort((a, b) => a.localeCompare(b));
+
+const IN_HOUSE = "monorepo/";
+
+/** How many rules are on, and how many of those this repo wrote; `null` with none collected. */
+export const ruleCounts = (
+    lint: LintUsage | undefined,
+): { enabled: number; inHouse: number } | null => {
+    const enabled = Object.entries(lint?.rules ?? {}).filter(([, usage]) => usage.enabled);
+    if (!enabled.length) return null;
+
+    return {
+        enabled: enabled.length,
+        inHouse: enabled.filter(([rule]) => rule.startsWith(IN_HOUSE)).length,
+    };
+};

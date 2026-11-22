@@ -14,7 +14,7 @@ const RANK = { unreviewed: 0, seen: 1, confirmed: 2 } as const satisfies Record<
     number
 >;
 
-export const slugify = (title: string): string =>
+const slugify = (title: string): string =>
     title
         .normalize("NFD")
         .replace(/\p{Diacritic}/gu, "")
@@ -119,7 +119,7 @@ export const itemFingerprint = (item: Pick<Item, "base" | "state" | "proposal">)
 };
 
 /** Why the last dry run doesn't cover the pending articles, or null when it does. */
-export const dryRunBlocker = (items: Item[], lastDryRun: RunReport | null): string | null => {
+const dryRunBlocker = (items: Item[], lastDryRun: RunReport | null): string | null => {
     if (!lastDryRun) return "Run a dry run first.";
     if (lastDryRun.incomplete) return "The last dry run didn't finish; run it again.";
 
@@ -197,7 +197,7 @@ export const parseSettings = (patch: unknown, current: Settings = DEFAULT_SETTIN
 export const driftRefusal = (expected: string, live: string): string | null =>
     expected === live ? null : "Changed in WordPress since pull, re-pull.";
 
-export interface StackEntry {
+interface StackEntry {
     changeset: Changeset;
     item: Item | undefined;
 }
@@ -222,7 +222,6 @@ export const restoreBlocker = (
     if (later) return `Restore it in changeset ${later.changeset.id} first; it is applied there.`;
     if (landed) return null;
 
-    // A later changeset's restore is the tool's own write, so it moves the expected timestamp too.
     const writes = [
         own.state.applied!,
         ...stack.slice(index + 1).map(({ item }) => item?.state.restored),

@@ -1,6 +1,6 @@
 import type { Finding } from "./findings.ts";
 
-export interface ManifestSource {
+interface ManifestSource {
     /** Repo-relative, e.g. `packages/content/package.json`. */
     path: string;
     manifest: unknown;

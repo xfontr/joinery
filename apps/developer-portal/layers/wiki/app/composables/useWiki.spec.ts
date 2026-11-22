@@ -3,7 +3,6 @@ import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useWiki } from "./useWiki.ts";
 
-// An in-memory docs collection that records which fields a query asked for
 const docs = vi.hoisted(() => ({
     entries: [] as { path: string; title: string }[],
     selected: [] as string[],
@@ -48,7 +47,6 @@ describe("useWiki", () => {
         );
     });
 
-    // Every page's payload carries the tree, so a page body in it would ship the whole wiki
     it("reads only the path and title of each page", async () => {
         await use();
 

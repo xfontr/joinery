@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
 import type { AuditFinding } from "#layers/snapshot/shared/audits.ts";
 import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
-import { countAll, filterAudits, scopesOf, sortAudits, toAuditReports } from "./auditReports.ts";
+import {
+    countAll,
+    filterAudits,
+    openAudits,
+    scopesOf,
+    sortAudits,
+    toAuditReports,
+} from "./auditReports.ts";
 
 const row = (id: string, status: AuditFinding["status"]): AuditFinding => ({
     id,
@@ -112,6 +119,15 @@ describe("countAll and scopesOf", () => {
             "@monorepo/developer-portal",
             "@monorepo/scripts",
             "@monorepo/ui",
+        ]);
+    });
+});
+
+describe("openAudits", () => {
+    it("leaves out a closed audit and puts the one with most open findings first", () => {
+        expect(idsOf(openAudits(REPORTS))).toEqual([
+            "2026-09-25-developer-portal",
+            "2026-09-22-ui",
         ]);
     });
 });

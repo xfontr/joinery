@@ -1,12 +1,88 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
-import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Manifest } from "#layers/snapshot/shared/types/Manifest.ts";
 import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
+import type { ProjectsArtifact } from "#layers/snapshot/shared/types/ProjectsArtifact.ts";
 import Page from "./graph.vue";
+
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
+    },
+    graph: {
+        title: "Project graph",
+    },
+    graphEdges: {
+        lead: "What the picture does not answer: which tags a project carries, and what breaks if it changes.",
+        leaf: "leaf",
+        title: "Tags and edges",
+        usedBy: "used by {list}",
+        uses: "uses {list}",
+    },
+    graphGroups: {
+        groups: {
+            apps: "Applications",
+            packages: "Shared building blocks",
+            tooling: "Repository tooling",
+        },
+        lead: "The repository groups applications, shared building blocks, and the tooling that supports them.",
+        noRelations: "No project relationships recorded.",
+        none: "No projects in this group.",
+        title: "How the pieces fit",
+        usedBy: "Used by: {list}",
+        uses: "Uses: {list}",
+    },
+    graphNxEmbed: {
+        frame: "Nx project graph",
+        lead: "Nx's own graph client, vendored in by the collector rather than redrawn.",
+        title: "Detailed Nx graph",
+    },
+    pageHeader: {
+        wordmark: "monorepo",
+    },
+    snapshotAge: {
+        at: "At {commit} on {branch}",
+        collected: "Collected {age}",
+    },
+};
+
+const artifacts = vi.hoisted(() => ({
+    manifest: null as Manifest | null,
+    metrics: null as MetricsArtifact | null,
+    projects: null as ProjectsArtifact | null,
+}));
+mockNuxtImport("snapshotManifest", () => () => artifacts.manifest);
+mockNuxtImport("metricsArtifact", () => () => artifacts.metrics);
+mockNuxtImport("projectsArtifact", () => () => artifacts.projects);
+
+beforeEach(() => {
+    artifacts.manifest = null;
+    artifacts.metrics = null;
+    artifacts.projects = null;
+});
 
 const MANIFEST = {
     schemaVersion: 1,
@@ -36,17 +112,11 @@ const METRICS = {
 } satisfies MetricsArtifact;
 
 const serve = (projects: ProjectNode[], metrics: MetricsArtifact = METRICS) => {
-    serveEndpoint("/api/snapshot/projects", (): SnapshotResponse => ({
-        manifest: MANIFEST,
-        projects: { generatedAt: "2026-11-01T00:00:00Z", projects, retired: [] },
-    }));
-    serveEndpoint("/api/snapshot/metrics", (): SnapshotResponse => ({
-        manifest: MANIFEST,
-        metrics,
-    }));
+    artifacts.manifest = MANIFEST;
+    artifacts.projects = { generatedAt: "2026-11-01T00:00:00Z", projects, retired: [] };
+    artifacts.metrics = metrics;
 };
 
-// A group's heading is the only name it has, so it locates the group the way a reader would
 const group = (wrapper: VueWrapper, heading: string) =>
     wrapper
         .findAll("h3")
@@ -57,6 +127,10 @@ const listed = (wrapper: VueWrapper, heading: string) =>
     [...group(wrapper, heading).querySelectorAll("p.font-medium")].map((p) =>
         p.textContent?.trim(),
     );
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("graph page", () => {
     it("files each project under apps, packages or tooling by where it lives", async () => {

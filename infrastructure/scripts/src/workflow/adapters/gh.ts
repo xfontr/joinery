@@ -141,7 +141,7 @@ export const areaIssuesWithoutMilestone = (area: string): GhIssue[] =>
         ) as (Omit<GraphIssue, "labels"> & { labels: { name: string }[] })[]
     ).map((issue) => toGhIssue({ ...issue, labels: { nodes: issue.labels } }));
 
-export interface NewTicket {
+interface NewTicket {
     title: string;
     body: string;
     milestone: string;
