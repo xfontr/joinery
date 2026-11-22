@@ -14,6 +14,7 @@ Under `pnpm dev developer-portal` it reads the working tree live. The deployed s
 | `pnpm exec nx collect @monorepo/developer-portal` | Rebuild the snapshot in `.report/`: graph, coverage, metrics, docs, usage |
 | `pnpm exec nx build-static @monorepo/developer-portal` | `nuxt build --prerender`, the build that deploys |
 | `pnpm exec nx nuxt-prepare @monorepo/developer-portal` | Regenerate `.nuxt` by hand; Nx already runs it before lint, typecheck, test and build |
+| `pnpm exec nx test:e2e @monorepo/developer-portal` | Playwright over the built visitor pages: axe in light and dark, keyboard, motion, SEO tags, sitemap |
 
 - Coverage is only as fresh as the last root `pnpm test:coverage`.
 - `build` delegates to `build-static`, so CI builds what deploys.
@@ -117,9 +118,23 @@ Storybook is built into the same artifact under `/huella-legal-storybook/`.
 - Every page is as old as the last deploy, except issues (live) and workflows (as
   old as the last committed `pnpm workflow:sync`).
 - `NUXT_APP_BASE_URL` and `NUXT_PUBLIC_REPO_URL` are baked in at build time, derived by the workflow.
+- The deploy sets `NUXT_SITE_ENV=preview`, so every page asks not to be indexed. When the portal
+  moves to its own domain, drop that line and swap `SITE_URL` in [`nuxt.config.ts`](./nuxt.config.ts).
 - The project overrides its `production` Nx input in [`package.json`](./package.json) so any `*.md`
   or `data/workflows/` change makes it affected, and a `runtime` input over
   [`snapshotStamp.ts`](./tools/lib/snapshotStamp.ts) hashes the gitignored `.report/`.
+
+## Search and speed
+
+| Concern | Where |
+| --- | --- |
+| Title, description, canonical, OG | `useSeoMeta` on each visitor page; `nuxt-seo-utils` signs the title with the site name |
+| Indexing | Visitor pages only; each developer layer's `nuxt.config.ts` sets `noindex, follow` on its routes |
+| Sitemap, robots.txt | `@nuxtjs/sitemap` and `@nuxtjs/robots`; robots.txt is skipped under a base path |
+| Structured data | A `Person` identity in `schemaOrg`, from `nuxt-schema-org` |
+| Payload | Visitor pages read `useWorkflowMaps()` and `useRuleCounts()`, never the whole workflows set or `usageArtifact()` |
+| First paint | Styles inlined; no script preload or chunk prefetch; links prefetch on interaction |
+| Images | Work screenshots go through `vite-imagetools` as WebP at 480, 960 and 1440 px |
 
 ## Checks it surfaces
 
