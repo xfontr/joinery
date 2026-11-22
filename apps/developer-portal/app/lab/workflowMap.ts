@@ -30,7 +30,7 @@ interface MapScale {
 }
 
 /** Labelled boxes, for the middle page. */
-export const FULL: MapScale = { column: 184, nodeWidth: 164, nodeHeight: 30, row: 40, header: 36 };
+const FULL: MapScale = { column: 184, nodeWidth: 164, nodeHeight: 30, row: 40, header: 36 };
 
 /** Unlabelled dots, for a glance on the front page. */
 export const GLYPH: MapScale = { column: 52, nodeWidth: 10, nodeHeight: 10, row: 16, header: 0 };

@@ -35,8 +35,5 @@ export const STAGE_NEED_PREFIX = "stage:";
 /** The prefix of the GitHub label that places an issue under a capability. */
 export const CAPABILITY_LABEL_PREFIX = "cap:";
 
-/** The GitHub label on a ticket only the project's owner can close: a decision, a credential, DNS. */
-export const OWNER_LABEL = "owner";
-
 /** The Fibonacci values a complexity estimate may take; anything bigger is a block to split. */
 export const COMPLEXITY_SCALE = [1, 2, 3, 5, 8, 13, 21] as const;

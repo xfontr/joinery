@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import postcss from "postcss";
 import { at } from "../../shared/adapters/git.ts";
 
-export const readText = (path: string): string => readFileSync(at(path), "utf8");
+const readText = (path: string): string => readFileSync(at(path), "utf8");
 
 /** Every `--*` declared in a top-level `@theme` or `:root`; a later declaration wins. */
 export const readCustomProperties = (path: string): Map<string, string> => {

@@ -2,7 +2,7 @@ import type { AppEntry } from "~/types/AppEntry";
 import type { AppGroup } from "~/types/AppGroup";
 import type { NavLink } from "~/types/NavLink";
 
-export const APPS: readonly AppGroup[] = [
+const APPS: readonly AppGroup[] = [
     { id: "home", label: "Home", icon: "i-lucide-house", items: ["overview"] },
     {
         id: "catalog",
