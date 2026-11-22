@@ -97,3 +97,9 @@ export const countByStatus = (reports: DecisionReport[]): Record<DecisionStatus,
 
     return counts;
 };
+
+/** Accepted decisions still waiting to land, newest first; a superseded one never lands. */
+export const toImplement = (reports: DecisionReport[]): DecisionReport[] =>
+    sortDecisions(reports, "newest").filter(
+        (report) => report.status === "to-implement" && report.decision !== "superseded",
+    );
