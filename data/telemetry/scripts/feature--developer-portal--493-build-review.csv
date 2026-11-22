@@ -4,3 +4,11 @@ at,script,command,target,flags,area,caller,tty,exit,ms
 2026-11-20,map,,,check,repo,claude-code,0,0,99
 2026-11-20,map,,,check,developer-portal,claude-code,0,0,104
 2026-11-20,map,,,check,developer-portal,claude-code,0,0,113
+2026-11-20,map,,,check,developer-portal,claude-code,0,0,115
+2026-11-20,map,,,check,developer-portal,claude-code,0,0,154
+2026-11-20,map,,,check,developer-portal,claude-code,0,0,98
+2026-11-20,map,,,check,developer-portal,claude-code,0,0,101
+2026-11-20,dev,,developer-portal,,developer-portal,human,1,0,6320675
+2026-11-21,map,,,check,developer-portal,claude-code,0,0,124
+2026-11-21,map,,,check,developer-portal,claude-code,0,0,139
+2026-11-21,map,,,check,developer-portal,claude-code,0,0,132
