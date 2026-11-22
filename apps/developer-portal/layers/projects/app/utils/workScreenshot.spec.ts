@@ -17,7 +17,7 @@ describe("workScreenshot", () => {
     it.each(named)(
         "finds the screenshot %s names, so no case study ships an empty image",
         (_, file) => {
-            expect(workScreenshot(screenshotOf(file))).toBeTypeOf("string");
+            expect(workScreenshot(screenshotOf(file))?.src).toBeTypeOf("string");
         },
     );
 
