@@ -56,9 +56,13 @@ its own block and ticket cost. A page that fits no type is an ordinary extra wit
 
 ## 1.5 Drafting a map for a custom project
 
-A `custom` project starts with no blocks; its map is the project file's `extras`, which you draft and
-the user checks. Read the repo first, then ask only what the code can't tell you: what it is for,
-who uses it, what done looks like, and what is still undecided.
+A `custom` project starts with five recommended blocks from the template — `scope-signoff`,
+`error-pages`, `build-review`, `docs-update` and `go-live` — and the rest of its map is the project
+file's `extras`, which you draft and the user checks. Switch a recommended block off only where it
+can't apply, such as `error-pages` on a dev-only tool or a package, with a one-line comment above
+the switch saying why; never redraw one as an extra, since an extra can't reuse a template id.
+Read the repo first, then ask only what the code can't tell you: what it is for, who uses it, what
+done looks like, and what is still undecided.
 
 1. **One block per thing an agent can finish and a check can verify**, at most 13 points on the
    [complexity scale](../../../docs/workflows/README.md#complexity). Anything bigger gets suggested
@@ -72,8 +76,8 @@ who uses it, what done looks like, and what is still undecided.
    up front as a list in the ticket.
 4. **Write lessons only from issues that happened**, with their numbers. Leave them out rather than
    inventing any.
-5. **Stages are `plan`, `build` and `ship`.** End with an `owner` block in `ship` that needs every
-   other block, so the release is a decision too.
+5. **Stages are `plan`, `build` and `ship`.** The template's `go-live` owner block needs every other
+   `ship` block, so the release is a decision too; never add a second one.
 
 Show the user the map in the portal at `/workflows/<id>` before running `workflow:setup`, and
 change the file until they agree with it. If a second project of the same kind turns up, its map
@@ -81,11 +85,10 @@ becomes a template.
 
 ## 1.6 Every build ends in a review
 
-Per-ticket review sees one block; nobody sees the build as a whole. The website templates carry a
-required `build-review` owner block with `dependsOn: [stage:build]`, so it waits on every build
-block, the project's own pages included. A `custom` map has no template to inherit it from: when
-you draft or redraft one, copy `new-website`'s block into `extras` in the stage after the build,
-and make that stage's blocks need it.
+Per-ticket review sees one block; nobody sees the build as a whole. Every template carries a
+`build-review` owner block with `dependsOn: [stage:build]`, so it waits on every build block, the
+project's own pages included; in `custom` it is a recommended block, switched off only for a build
+too small to review.
 
 When the build closes, the agent prepares the overview its `doneWhen` asks for and the user makes
 the calls. The user may instead settle it as skipped in its panel, but that is their call; never

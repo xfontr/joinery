@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-22T22:42:18.610Z",
+    "syncedAt": "2026-11-22T22:44:01.572Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -283,7 +283,7 @@
                 {
                     "number": 504,
                     "open": false,
-                    "closedAt": "2026-11-22T22:42:18.610Z"
+                    "closedAt": "2026-11-22T22:44:01.572Z"
                 }
             ],
             "branch": false,
@@ -368,8 +368,9 @@
                 "production-readiness"
             ],
             "createdAt": "2026-11-22T16:52:15Z",
-            "closedAt": "2026-11-22T22:42:18.610Z",
+            "closedAt": "2026-11-22T22:44:01.572Z",
             "activity": [
+                "2026-11-22",
                 "2026-11-22",
                 "2026-11-22",
                 "2026-11-22",
@@ -395,11 +396,13 @@
                 "error-pages"
             ],
             "createdAt": "2026-11-22T18:54:54Z",
-            "closedAt": "2026-11-22T19:22:45Z",
-            "activity": [],
+            "closedAt": "2026-11-22T19:19:15.243Z",
+            "activity": [
+                "2026-11-22"
+            ],
             "blockedBy": [],
-            "branch": false,
-            "pr": true,
+            "branch": true,
+            "pr": false,
             "owner": false,
             "complexity": 2
         }

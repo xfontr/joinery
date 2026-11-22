@@ -52,16 +52,6 @@ extras:
       - The front page's sections are listed in order, each reading only `layers/snapshot`,
         passing 0039's W1, W6 and W8 and avoiding N1–N4.
 
-  - id: scope-signoff
-    stage: plan
-    kind: owner
-    title: Scope sign-off
-    complexity: 1
-    dependsOn: [visitor-structure]
-    summary: You approve the visitor view's structure before any of it is designed or built.
-    doneWhen:
-      - The entry choice, the page list and the front page's sections are approved.
-
   - id: design-lab
     stage: plan
     title: Design lab
@@ -211,40 +201,3 @@ extras:
       - Mobile Lighthouse for `/`, `/work` and `/about` is measured before and after, and no
         visitor page preloads a payload over 50 KB.
 
-  - id: build-review
-    stage: ship
-    title: Build review
-    complexity: 3
-    dependsOn: [stage:build]
-    summary: You and the agent look at the whole build at once — the developer view and every
-      visitor page — for one design system, the right features and how each ticket was read.
-    reuse: { plan: method, from: apps/developer-portal/README.md }
-    doneWhen:
-      - Every page the build touched is screenshotted at 390 and 1280 px, in light and dark, side
-        by side, and any colour, size or radius that drifts from the design layer is listed.
-      - The features as built are listed against 0040 and the approved lab, with what to add or
-        drop.
-      - Each build ticket has a line on where its agent departed from the brief.
-      - Every change the owner asks for is filed as a ticket or settled.
-
-  - id: docs-update
-    stage: ship
-    title: Docs brought up to date
-    complexity: 2
-    dependsOn: [build-review]
-    summary: The portal's README and CLAUDE.md describe the visitor pages, the developer view, the
-      two token sets and where visitor copy lives.
-    reuse: { plan: method, from: apps/developer-portal/README.md }
-    doneWhen:
-      - The doc-drift check reports nothing for the portal.
-
-  - id: go-live
-    stage: ship
-    kind: owner
-    title: Go live
-    complexity: 1
-    dependsOn: [docs-update, production-readiness]
-    summary: You approve the deployed site as the public front door.
-    doneWhen:
-      - The deployed site serves the visitor front page at `/` and every developer page still
-        works.
