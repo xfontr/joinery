@@ -3,8 +3,8 @@ import {
     toIssues,
     type GithubIssue,
     type IssuesRead,
-} from "#layers/github/shared/issues.ts";
-import { messageOf } from "#layers/github/shared/github.ts";
+} from "#layers/github/app/utils/issues.ts";
+import { messageOf } from "#layers/github/app/utils/github.ts";
 
 const NO_ISSUES: IssuesRead = { fetchedAt: "", error: null, issues: [] };
 

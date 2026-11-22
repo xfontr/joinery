@@ -1,6 +1,6 @@
 import type { BreadcrumbItem } from "@nuxt/ui";
 import { toCollectionPath } from "#layers/docs/shared/docPages.ts";
-import { locate } from "#layers/wiki/shared/wiki.ts";
+import { locate } from "#layers/wiki/app/utils/wiki.ts";
 
 const slugOf = (param: string | string[] | undefined): string[] =>
     Array.isArray(param) ? param : [];

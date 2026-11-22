@@ -1,6 +1,6 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
-import type { ProjectActivity } from "#layers/workflows/shared/workflowActivity.ts";
+import type { ProjectActivity } from "#layers/workflows/app/utils/workflowActivity.ts";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import WorkflowActivityStrip from "./WorkflowActivityStrip.vue";
 

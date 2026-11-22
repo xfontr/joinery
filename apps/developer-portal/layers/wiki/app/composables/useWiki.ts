@@ -1,4 +1,4 @@
-import { buildWiki } from "#layers/wiki/shared/wiki.ts";
+import { buildWiki } from "#layers/wiki/app/utils/wiki.ts";
 
 /** Built once per session under one key — every doc page renders the same nav, and re-deriving it per navigation would rebuild the tree on each click. */
 export const useWiki = () =>

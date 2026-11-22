@@ -13,12 +13,14 @@ See [README.md](./README.md) for what each page reads, the snapshot and the depl
   cores, and a feature uses those and the shell's parts, never another feature. A new page joins
   the layer whose task it serves; a new layer needs its own logic, its own config, or to be
   something you'd switch off whole, plus a `nuxt.config.ts` or Nuxt won't register it.
-- **A layer's `shared/` is pure and imported by `app/`, `server/` and `tools/` alike.** Anything
-  node-only — `yaml`, `node:fs`, `git` — lives in `tools/` or a layer's `server/`, so it never
-  reaches the browser bundle. `tools/` may import a `server/utils/` file that uses no Nitro
+- **A layer's `shared/` is pure and holds only what `app/` and the Node side (`server/`, `tools/`,
+  a `nuxt.config.ts`) both import**; `pnpm invariants:check` fails a file only one side reaches.
+  Anything node-only — `yaml`, `node:fs`, `git` — lives in `tools/` or a layer's `server/`, so it
+  never reaches the browser bundle. `tools/` may import a `server/utils/` file that uses no Nitro
   auto-import, as it does `workflowFiles.ts`; the reverse is a lint error. Never add a root
-  `shared/`: a relative import into it breaks the prerendered build. A type goes in the layer's
-  `shared/types/<Name>.ts`, one per file, never exported from a route, and a component at a layer's
+  `shared/`: a relative import into it breaks the prerendered build. A type goes in
+  `<Name>.ts` under the layer's `shared/types/`, or its `app/types/` when only `app/` uses it, one
+  per file, never exported from a route, and a component at a layer's
   root carries the layer's name (`TelemetryDayStrip`), per
   [`conventions.md`](../../docs/concepts/conventions.md).
 - **No value is chosen outside the `design` layer.** The [README](./README.md#-design-system) lists

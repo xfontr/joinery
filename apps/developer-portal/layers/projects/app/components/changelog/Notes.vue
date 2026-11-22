@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { projectDisplayName } from "#layers/projects/shared/changelogs.ts";
+import { projectDisplayName } from "#layers/projects/app/utils/changelogs.ts";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 
 interface Props {

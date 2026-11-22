@@ -1,4 +1,4 @@
-import { filterIssues, sortIssues } from "#layers/github/shared/issues.ts";
+import { filterIssues, sortIssues } from "#layers/github/app/utils/issues.ts";
 
 /** The live issue read, filtered and newest first, with a manual re-read. */
 export const useIssueList = () => {

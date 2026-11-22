@@ -63,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProjectRow } from "#layers/projects/shared/types/ProjectRow.ts";
+import type { ProjectRow } from "#layers/projects/app/types/ProjectRow.ts";
 
 interface Props {
     groups: { id: string; label: string; rows: ProjectRow[] }[];

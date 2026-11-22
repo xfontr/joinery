@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { kindsOf } from "#layers/benchmarks/shared/benchmarks.ts";
+import { kindsOf } from "#layers/benchmarks/app/utils/benchmarks.ts";
 
 const { benchmarks, verdict, kind, search, visible, ready } = useBenchmarkList();
 const kinds = computed(() => kindsOf(benchmarks.value));

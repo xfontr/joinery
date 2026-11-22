@@ -1,7 +1,7 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
 import HealthIssueRow from "./HealthIssueRow.vue";
-import type { Issue } from "#layers/github/shared/issues.ts";
+import type { Issue } from "#layers/github/app/utils/issues.ts";
 
 const issue: Issue = {
     number: 42,

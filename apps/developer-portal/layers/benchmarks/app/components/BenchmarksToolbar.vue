@@ -15,8 +15,8 @@
 </template>
 
 <script setup lang="ts">
-import { BENCHMARK_VERDICTS } from "#layers/benchmarks/shared/benchmarks.ts";
-import type { BenchmarkVerdict } from "#layers/benchmarks/shared/types/BenchmarkVerdict.ts";
+import { BENCHMARK_VERDICTS } from "#layers/benchmarks/app/utils/benchmarks.ts";
+import type { BenchmarkVerdict } from "#layers/benchmarks/app/types/BenchmarkVerdict.ts";
 
 interface Props {
     /** Every kind of site in the library, to filter by. */

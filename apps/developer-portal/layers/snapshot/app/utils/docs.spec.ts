@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { brokenPages } from "./docs.ts";
-import type { DocPage } from "./types/DocPage.ts";
+import type { DocPage } from "../../shared/types/DocPage.ts";
 
 const page = (path: string, broken: number): DocPage => ({
     path,

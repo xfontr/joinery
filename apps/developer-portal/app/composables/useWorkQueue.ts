@@ -1,9 +1,9 @@
 import { openAudits } from "#layers/audits/shared/auditReports.ts";
 import { toImplement } from "#layers/decisions/shared/decisionReports.ts";
 import { toCollectionPath } from "#layers/docs/shared/docPages.ts";
-import { sortIssues } from "#layers/github/shared/issues.ts";
-import { brokenPages } from "#layers/snapshot/shared/docs.ts";
-import { unreleased } from "#layers/snapshot/shared/metrics.ts";
+import { sortIssues } from "#layers/github/app/utils/issues.ts";
+import { brokenPages } from "#layers/snapshot/app/utils/docs.ts";
+import { unreleased } from "#layers/snapshot/app/utils/metrics.ts";
 import type { QueueKind } from "~/types/QueueKind";
 import type { QueueRow } from "~/types/QueueRow";
 

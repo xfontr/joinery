@@ -72,8 +72,8 @@
 </template>
 
 <script setup lang="ts">
-import { summarize } from "#layers/github/shared/issues.ts";
-import type { Issue } from "#layers/github/shared/issues.ts";
+import { summarize } from "#layers/github/app/utils/issues.ts";
+import type { Issue } from "#layers/github/app/utils/issues.ts";
 
 interface Props {
     issue: Issue;

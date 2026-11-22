@@ -1,5 +1,5 @@
 import type { SettledState } from "#layers/workflows/shared/workflows.ts";
-import { projectActivity } from "#layers/workflows/shared/workflowActivity.ts";
+import { projectActivity } from "#layers/workflows/app/utils/workflowActivity.ts";
 
 /** One workflow project, replayable to any synced day, with the block picked across the page. */
 export const useWorkflowProject = () => {

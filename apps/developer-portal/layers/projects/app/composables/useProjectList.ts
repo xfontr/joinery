@@ -1,4 +1,4 @@
-import type { ProjectRow } from "#layers/projects/shared/types/ProjectRow.ts";
+import type { ProjectRow } from "#layers/projects/app/types/ProjectRow.ts";
 
 type KindId = "all" | "apps" | "packages" | "infrastructure";
 

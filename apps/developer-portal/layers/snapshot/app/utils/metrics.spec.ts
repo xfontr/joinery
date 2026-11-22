@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { specTotal, unreleased } from "./metrics.ts";
-import type { ProjectMetrics } from "./types/ProjectMetrics.ts";
+import type { ProjectMetrics } from "../../shared/types/ProjectMetrics.ts";
 
 const project = (
     root: string,

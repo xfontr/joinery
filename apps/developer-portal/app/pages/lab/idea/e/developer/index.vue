@@ -161,7 +161,7 @@ import { NuxtLink } from "#components";
 import { countAll, sortAudits } from "#layers/audits/shared/auditReports.ts";
 import { countByStatus, sortDecisions } from "#layers/decisions/shared/decisionReports.ts";
 import { toCollectionPath } from "#layers/docs/shared/docPages.ts";
-import { sortIssues } from "#layers/github/shared/issues.ts";
+import { sortIssues } from "#layers/github/app/utils/issues.ts";
 import { dailyTotals, scriptRows, shownDays, sumDays } from "#layers/telemetry/shared/usageView.ts";
 import { activeProjects, projectCard } from "#layers/workflows/shared/workflows.ts";
 import { BASE, projectPath } from "~/lab/idea/e/apps";

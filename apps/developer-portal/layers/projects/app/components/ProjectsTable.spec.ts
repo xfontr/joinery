@@ -1,6 +1,6 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
-import type { ProjectRow } from "#layers/projects/shared/types/ProjectRow.ts";
+import type { ProjectRow } from "#layers/projects/app/types/ProjectRow.ts";
 import ProjectsTable from "./ProjectsTable.vue";
 
 const ROW = {

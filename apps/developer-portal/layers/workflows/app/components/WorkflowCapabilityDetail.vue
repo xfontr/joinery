@@ -157,7 +157,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CapabilityActivity } from "#layers/workflows/shared/workflowActivity.ts";
+import type { CapabilityActivity } from "#layers/workflows/app/utils/workflowActivity.ts";
 import {
     ticketStatus,
     type CapabilityView,

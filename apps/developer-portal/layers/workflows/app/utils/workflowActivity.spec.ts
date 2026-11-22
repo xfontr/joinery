@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { projectActivity } from "./workflowActivity.ts";
-import { projectView, readProject, readTemplate, type SnapshotIssue } from "./workflows.ts";
+import { projectView, readProject, readTemplate, type SnapshotIssue } from "../../shared/workflows.ts";
 
 const { template } = readTemplate({
     id: "t",

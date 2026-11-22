@@ -1,4 +1,4 @@
-import type { IssuesRead } from "#layers/github/shared/issues.ts";
+import type { IssuesRead } from "#layers/github/app/utils/issues.ts";
 import type { Badges } from "#layers/snapshot/shared/types/Badges.ts";
 import type { NavLink } from "~/types/NavLink";
 import type { RailFigure } from "~/types/RailFigure";
