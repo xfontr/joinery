@@ -407,14 +407,27 @@ capabilities:
     title: Page shell
     complexity: 3
     dependsOn: [component-kit, ci-deploy]
-    summary: The route that finds a page by its slug in the content source, and the 404 and error pages; layouts are page templates.
+    summary: The route that finds a page by its slug in the content source; layouts are page templates.
     reuse: { plan: method, from: apps/huella-legal/layers/reading }
     doneWhen:
       - A page from the content source renders at its slug on the page template the code assigns it, confirmation landings included.
-      - The 404 and error pages render inside the shell.
     lessons:
       - text: The about page and the newsletter confirmation page were not in the plan.
         issues: [249, 328, 400]
+
+  - id: error-pages
+    stage: build
+    title: 404 and error pages
+    complexity: 2
+    dependsOn: [navigation-shell]
+    summary: The page an unknown URL or a failed request lands on, inside the header and footer, with a way back.
+    reuse: { plan: method, from: apps/huella-legal/app/error.vue }
+    doneWhen:
+      - An unknown URL answers with status 404 and a not-found page inside the shell that links home.
+      - A server error shows its own page with a retry, never the not-found copy or Nuxt's default page.
+      - The production build serves the not-found page for a missing URL, prerendered routes included.
+    lessons:
+      - text: The developer portal shipped with neither page because no block in its map named them.
 
   - id: home-page
     stage: build
