@@ -60,7 +60,9 @@ export const filterDecisions = (
     });
 };
 
-export type DecisionSort = "newest" | "oldest" | "updated" | "status";
+export const DECISION_SORTS = ["newest", "oldest", "updated", "status"] as const;
+
+export type DecisionSort = (typeof DECISION_SORTS)[number];
 
 /** A report whose `status` didn't parse sorts last rather than under a guessed value. */
 const statusRank = (status: DecisionStatus | null): number =>

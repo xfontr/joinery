@@ -1,5 +1,6 @@
 <template>
     <nav
+        data-view-switch
         class="inline-flex shrink-0 items-center gap-0.5 rounded-md p-0.5 font-mono text-xs ring ring-default"
         :aria-label="$t('viewSwitch.label')"
     >

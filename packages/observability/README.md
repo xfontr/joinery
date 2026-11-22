@@ -28,9 +28,9 @@ const provider = startNodeTelemetry({
 
 That's the whole package: [`src/index.ts`](./src/index.ts) and [`src/node.ts`](./src/node.ts). The
 two entries must never import each other — one needs `window`, the other Node built-ins.
-[`@monorepo/huella-legal`](../../apps/huella-legal/README.md#-observability) is the worked example.
+[`@monorepo/huella-legal`](../../apps/huella-legal/README.md#observability) is the worked example.
 
-## 📥 What you get for free
+## What you get for free
 
 **Browser.** `getWebInstrumentations()` covers errors, unhandled rejections, web vitals, console and
 session tracking. `TracingInstrumentation` adds fetch/XHR spans and registers a global OpenTelemetry
@@ -45,7 +45,7 @@ stamped with `service.name`, `service.version` and `deployment.environment.name`
 
 The inbound span is *not* included — see the gotcha below.
 
-## ⚠️ Gotchas
+## Gotchas
 
 - **Browser only for the default entry.** Faro touches `window` while initializing, so it must not
   run during SSR — in Nuxt that means a `.client` plugin.
@@ -59,7 +59,7 @@ The inbound span is *not* included — see the gotcha below.
 - **The first page load's server trace stands alone**: a document navigation carries no
   `traceparent`. Everything fetched afterwards joins up.
 
-## 🧭 Known gaps
+## Known gaps
 
 | Gap | Note |
 | --- | --- |

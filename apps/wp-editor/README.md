@@ -6,7 +6,7 @@ its own backup of every article, since WordPress's REST API can't restore a revi
 
 Runs on `127.0.0.1` only and **never deploys**.
 
-## 🗂 Structure
+## Structure
 
 | Path | Holds |
 | --- | --- |
@@ -20,11 +20,11 @@ Runs on `127.0.0.1` only and **never deploys**.
 
 The CLI imports from `server/`, never the reverse (lint forbids `app/` and `server/` importing `tools/`).
 
-## 🚀 Development
+## Development
 
 | Command | What it does |
 | --- | --- |
-| `pnpm dev` | The review app on `http://127.0.0.1:3100`, against the [fake WordPress and store](#-dev-mocks) |
+| `pnpm dev` | The review app on `http://127.0.0.1:3100`, against the [fake WordPress and store](#dev-mocks) |
 | `pnpm dev:api` | The same against the real WordPress and `NUXT_EDITOR_STORE` from `.env` |
 | `pnpm mocks:reset` | Drops the mock state, so the next start begins from the fixtures again; `pnpm dev` runs it first |
 | `pnpm editor new "<title>" [--instructions=…] [--override] [--ids=posts-12,…]` | Opens a changeset and pulls `base` for every published post and page, or only `--ids` (drafts allowed) |
@@ -36,7 +36,7 @@ The CLI imports from `server/`, never the reverse (lint forbids `app/` and `serv
 | `pnpm editor:dev <command>` | Any of the above against the mocks, never the live site |
 | `pnpm exec nx nuxt-prepare @monorepo/wp-editor` | Generates `.nuxt/`, which `tsconfig.json` points into; `lint`, `typecheck`, `test` and `build` depend on it |
 
-### 🧪 Dev mocks
+### Dev mocks
 
 `pnpm dev` and `editor:dev` preload [`mocks/server.ts`](./mocks/server.ts), which overrides the env
 and fakes WordPress with MSW. Nothing reaches the network.
@@ -52,7 +52,7 @@ Writes go to a copy in the gitignored `.data/mocks/`. The two fixtures must agre
 Claude's batch loop is the [`wp-bulk-edit` skill](../../.claude/skills/wp-bulk-edit/SKILL.md).
 Claude never drives the UI.
 
-## 🔑 Environment
+## Environment
 
 | Var | Why |
 | --- | --- |
@@ -64,7 +64,7 @@ Claude never drives the UI.
 Checked when used, never at build. Give Claude access to the store through `additionalDirectories`
 in the gitignored `.claude/settings.local.json`.
 
-## 💾 The store
+## The store
 
 ```
 settings.json                   reviewGate, bulkApplyMinLevel, requireDryRun, dryRun, pauseMs
@@ -84,7 +84,7 @@ changesets/0001-ortografia/
 JSON is written with sorted keys so the store can be a git repo; the tool never runs git. Only
 `title.raw`, `excerpt.raw` and `content.raw` are edited — writing `rendered` back breaks the blocks.
 
-## 📏 Rules
+## Rules
 
 All of them live in [`shared/rules.ts`](./shared/rules.ts) and are pinned by its spec.
 
@@ -106,20 +106,20 @@ All of them live in [`shared/rules.ts`](./shared/rules.ts) and are pinned by its
 | Lost response | If WordPress saved a write but the connection dropped, the next apply or restore records it instead of calling it drift |
 | One server | The first server locks the store (`.server.lock`); a second shows only an error. A dead pid's lock is taken over. The CLI takes no lock |
 
-## 🔬 Step 0
+## Step 0
 
 `pnpm editor probe` checks what the tool assumes about the site: block vs classic markup, revisions,
 whether a draft keeps custom classes and `<style>`, and that `modified_gmt` moves on `PUT`.
 
-**Not run yet** — it needs credentials Claude doesn't have. Record the output here.
+**Not yet run against the live site.** The output goes here once it has been.
 
-## ⚠️ Known caveats
+## Known caveats
 
 - **Custom CSS may not survive.** WordPress strips `<style>` without `unfiltered_html`, and Huella
   Legal's sanitizer strips `<style>` and unknown classes.
 - **LiteSpeed** is expected to purge its cache on save. Verify it once on the first real apply.
 
-## 📐 Boundaries
+## Boundaries
 
 `type:app`, `scope:internal`; depends on `@monorepo/configs` only. It has its own WordPress client
 because `@monorepo/content` is read-only and anonymous.

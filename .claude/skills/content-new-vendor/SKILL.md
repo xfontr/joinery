@@ -5,7 +5,7 @@ description: Add a CMS vendor to @monorepo/content — a ContentProvider subclas
 
 # Adding a content vendor
 
-The steps are in the [Vendors section](../../../packages/content/README.md#-vendors) of the package README. Follow
+The steps are in the [Vendors section](../../../packages/content/README.md#vendors) of the package README. Follow
 them; this file is what the prose can't enforce. Read
 [`wordpress/`](../../../packages/content/src/core/adapters/providers/wordpress) first — it is the only vendor, so it
 *is* the pattern, including the split into a provider, its constants, its mapping helpers and its

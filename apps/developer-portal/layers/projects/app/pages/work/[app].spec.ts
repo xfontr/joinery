@@ -51,7 +51,7 @@ describe("/work/<app>", () => {
         const wrapper = await mountSuspended(Page, { route: "/work/huella-legal" });
 
         const image = wrapper.get("img");
-        expect(image.attributes("src")).toContain("huella-legal");
+        expect(image.attributes("srcset")).toMatch(/ 480w, .+ 960w, .+ 1440w$/);
         expect(image.attributes("alt")).toBe(HUELLA.screenshot.alt);
         expect(wrapper.find(`a[href="${HUELLA.live.href}"]`).exists()).toBe(true);
         for (const decision of HUELLA.decisions) {

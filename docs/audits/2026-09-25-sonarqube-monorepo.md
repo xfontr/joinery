@@ -5,14 +5,14 @@ commit: "88f5939"
 
 # 🔎 SonarQube code smells: shared packages
 
-## 🗺 Context
+## Context
 
 SonarQube Cloud reported nine open code smells and one accepted code smell across
 `packages/content`, `packages/i18n` and `packages/observability` on `master` on 2026-09-25. The
 flagged lines were checked against commit `88f5939`. The nine open findings have been fixed;
 the accepted finding needs no code change. Each issue key identifies its SonarQube finding.
 
-## 🧹 Quality
+## Quality
 
 | ID | Where | Severity and issue | What goes wrong | Fix | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -27,7 +27,7 @@ the accepted finding needs no code change. Each issue key identifies its SonarQu
 | Q9 | [`i18n/translations.ts:1`](../../packages/i18n/src/core/domain/translations.ts#L1) | Major `AZ_8etZSbSjYjv7QodyM` | `Locale` aliases `string`; SonarQube suggests replacing the name at its call sites with `string`. | Retain the domain name: it distinguishes a locale value in signatures even though the current representation is a string. SonarQube already marks this issue accepted. | wont-fix — accepted in SonarQube |
 | Q10 | [`observability/node.ts:34`](../../packages/observability/src/node.ts#L34) | Major `AZ__HlrVjHpLikj8piLb` | A nested template literal builds Basic authorization inside another template literal. | Build the `instanceId:token` credential and its encoded header in separate local values, then pass the header to the exporter; keep the existing wire value. | fixed |
 
-## 🪜 Order
+## Order
 
 Fix Q1 with long slash-suffix and subdirectory URL cases, then Q2 to preserve content-key order.
 Q4–Q5 and Q7–Q8 are paired substitutions. Q3, Q6 and Q10 are local refactors. Run the affected

@@ -6,7 +6,7 @@ See [README.md](./README.md) for the domain, the ports and the errors. Use the
 The invariants worth losing a build over:
 
 - **Nothing under `src/core/` may import the Nuxt or Nitro runtime**
-  ([the enforced list](../configs/README.md#-what-the-eslint-factories-bundle)), and `src/core/domain/`
+  ([the enforced list](../configs/README.md#what-the-eslint-factories-bundle)), and `src/core/domain/`
   imports nothing at all. The day that breaks, the core stops being portable and the ports stop
   earning their indirection.
 - The Nuxt half is a separate entry point (`@monorepo/content/nuxt`) and its dependencies are

@@ -82,21 +82,24 @@ const summaryFromCoverage = (raw: RawCoverage): RawSummary | null => {
     };
 };
 
+const readJson = async <T>(path: string): Promise<T | null> => {
+    try {
+        return JSON.parse(await readFile(path, "utf8")) as T;
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+        throw error;
+    }
+};
+
 /** Reads one project's summary, or derives one from its final coverage map. */
 export const readSummary: SummaryReader = async (root) => {
-    try {
-        const path = resolve(WORKSPACE_ROOT, root, "coverage/coverage-summary.json");
+    const coverage = resolve(WORKSPACE_ROOT, root, "coverage");
+    const summary = await readJson<RawSummary>(resolve(coverage, "coverage-summary.json"));
+    if (summary) return summary;
 
-        return JSON.parse(await readFile(path, "utf8")) as RawSummary;
-    } catch {
-        try {
-            const path = resolve(WORKSPACE_ROOT, root, "coverage/coverage-final.json");
+    const final = await readJson<RawCoverage>(resolve(coverage, "coverage-final.json"));
 
-            return summaryFromCoverage(JSON.parse(await readFile(path, "utf8")) as RawCoverage);
-        } catch {
-            return null;
-        }
-    }
+    return final ? summaryFromCoverage(final) : null;
 };
 
 /** Copies in the report `pnpm test:coverage` already merges, which the app embeds as-is. */

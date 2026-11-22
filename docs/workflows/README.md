@@ -8,7 +8,7 @@ links between blocks, not from stages.
 The `project-workflow` skill runs this; the commands are in
 [the workflow script's README](../../infrastructure/scripts/src/workflow/README.md).
 
-## 🗂 Structure
+## Structure
 
 This page is the rules. The files live in [`data/workflows/`](../../data/README.md), and the
 portal's invariant checks validate every one: each id, stage and switch resolves, each `reuse.from`
@@ -32,7 +32,7 @@ data/workflows/
 | Ticket size | How closely a person oversees the code, which sets how many points a filed ticket holds: `block`, `supervised` or `fast` | The project's `ticketSize` |
 | Complexity | A Fibonacci estimate of how much a person has to understand, decide and check, whoever writes the code | The template's `complexity` per block; the board's `Complexity` field per ticket |
 
-## 🧩 Templates
+## Templates
 
 | Template | For | Blocks with defaults on |
 | --- | --- | --- |
@@ -40,7 +40,7 @@ data/workflows/
 | [`new-website`](../../data/workflows/templates/new-website.yaml) | A site started from nothing: no audit, migration, redirects or cutover, but a brand, a content model and the launch copy to create | 33 |
 | [`custom`](../../data/workflows/templates/custom.yaml) | Anything no template fits, such as a developer tool, a package or an internal feature: three stages, five recommended blocks (scope sign-off, 404 and error pages, build review, docs, go live) the project switches off where they don't fit, and the rest of the map in its `extras`, drafted with the `project-workflow` skill | 5 |
 
-## 🧱 Three kinds of block
+## Three kinds of block
 
 | `kind` | What it is | Huella examples |
 | --- | --- | --- |
@@ -51,7 +51,7 @@ data/workflows/
 A gate is an `owner` block. `scope-signoff`, `design-approval` and `go-live` hold back only the
 blocks that need them, and closing the ticket is the approval. Nothing else waits.
 
-## 📄 Page types
+## Page types
 
 A template's `types` are blocks a project adds under `extras`, once per layout — never once per page,
 since another page on a layout is just a slug. The extra inherits the type's stage, estimate,
@@ -74,7 +74,7 @@ extras:
 `comments` (8 SP) is `onDemand`: the first blog with comments brings it in. `standard-pages`
 (*Page shell*) is the slug route; the 404 and error pages are `error-pages`.
 
-## 🤝 The contract with GitHub
+## The contract with GitHub
 
 The map seeds the plan, and filing writes it to GitHub. **After that, GitHub wins**: change a
 dependency on the issue, never in the file.
@@ -89,7 +89,7 @@ dependency on the issue, never in the file.
 | Someone is on it | A branch linked on the issue, which `pnpm issue:pick` makes through `gh issue develop` |
 | Done or dropped | Closed as completed, or closed as not planned |
 
-## 🎟 Ticket size
+## Ticket size
 
 `ticketSize` sets how many blocks share a ticket, never the map. Blocks fill tickets first-fit up to
 the size's width in points; a ticket with several `cap:` labels counts under each, and closing it
@@ -113,7 +113,7 @@ Counts are tickets with each template's defaults on. Widths are `TICKET_WIDTH` i
 
 `pnpm workflow:file <id> <a> <b> <c>` merges exactly the blocks named, as a one-off.
 
-## 🧮 Complexity
+## Complexity
 
 Points measure how much a person has to understand, decide and check — not how much typing.
 
@@ -132,7 +132,7 @@ Points measure how much a person has to understand, decide and check — not how
 | A ticket under several blocks | Split evenly between them, so a project total counts it once |
 | A settled or switched-off block | Nothing |
 
-## 📏 The rules
+## The rules
 
 Each rule comes from something Huella Legal paid for; the issue numbers are the evidence.
 
@@ -145,7 +145,7 @@ Each rule comes from something Huella Legal paid for; the issue numbers are the 
 | **Deploy work is done on a real preview deploy**, not on a green local check | #382, #387, #388 and #395, all found only by the real deploy |
 | **A blocked ticket can't be picked.** `pnpm issue:pick` reads the links live and refuses while one is open, unless given `--force` | An agent starting on a snapshot that went stale an hour ago |
 
-## 🚦 Status
+## Status
 
 A ticket's status comes from GitHub alone, so it never needs updating by hand.
 
@@ -176,13 +176,13 @@ A block's state comes from its switch, the project file and its tickets, in this
 A block is blocked by the map as well as by GitHub's links. **Progress** is done blocks over blocks
 that are on and not skipped.
 
-## 🗺️ The page
+## The page
 
 A day-by-day replay from the first commit, the blocks left, stage cards, and a graph of what blocks
 what. **Settings** (features, ticket size, details, delete) writes the project file under `pnpm dev`
 and is read-only when deployed.
 
-## 🏷️ How a ticket finds its place
+## How a ticket finds its place
 
 | The issue has | It shows |
 | --- | --- |
@@ -194,12 +194,12 @@ and is read-only when deployed.
 
 Place a ticket by adding the milestone and a `cap:` label on GitHub.
 
-## 📈 Activity
+## Activity
 
 The sync reads `git log`: each commit naming a ticket as `[#N]` marks a day of activity on it. It
 shows when work happened, not how long it took.
 
-## ✍️ Commands
+## Commands
 
 | Need | How |
 | --- | --- |
@@ -214,7 +214,7 @@ shows when work happened, not how long it took.
 | Add an extra or a page | Edit `projects/<id>.yaml` |
 | Change the generic map | Edit the template |
 
-## 📓 Diary
+## Diary
 
 Every project keeps `projects/<id>.diary.md`: a log of what in the workflow went right and what
 went wrong, so the next template keeps the first and fixes the second. "The workflow" is the

@@ -13,7 +13,7 @@ that wires a TMS into `@nuxtjs/i18n` behind a cached server route. Vendors: `int
 The second and third entries' dependencies are optional peers. The structure and the vendor
 contract mirror [`@monorepo/content`](../content/README.md); keep the two matching.
 
-## 🗂 Structure
+## Structure
 
 ```
 src/core/domain/        Locale, TranslationMap, errors, vendor config — imports nothing
@@ -25,7 +25,7 @@ src/nuxt/               the Nuxt module
 src/testing/            fake vendors for consumers' e2e
 ```
 
-## 🏷 Vendors
+## Vendors
 
 A vendor is one entry in [`core/registry.ts`](./src/core/registry.ts), which drives both the runtime
 lookup and the config type. `options` holds credentials only, and is required when the provider
@@ -40,10 +40,10 @@ Adding a vendor (the `i18n-new-vendor` skill walks it):
 
 1. Write `core/adapters/providers/<Name>Provider.ts` extending `TranslationProvider`, overriding
    `getTranslations`. File, class and registry key share the name.
-2. If it takes `options`, override `configProblems()` — see [validation](#-validation).
+2. If it takes `options`, override `configProblems()` — see [validation](#validation).
 3. Add one line to `providers`.
 
-## 🔌 The ports
+## The ports
 
 ```ts
 interface HttpClient {
@@ -59,14 +59,14 @@ abstract class TranslationProvider<T extends object = object> {
 The generic is what the registry reads to make `options` required or forbidden. Every failed
 request, including a `200` that isn't JSON, becomes an `UpstreamError`.
 
-## ✅ Validation
+## Validation
 
 A provider validates in its constructor: `project` non-empty, `baseURL` absolute, and the vendor's
 `options` through `configProblems()` (`tolgee` needs a token). Every problem is reported at once in
 one `MisconfiguredVendorError` (a `500`). It's hand-written rather than a schema library, since it
 only checks a few strings whose shape the types already guarantee.
 
-## 🧩 Framework-agnostic use
+## Framework-agnostic use
 
 ```ts
 const http = new OfetchHttpClient(ofetch.create({ baseURL }));
@@ -78,7 +78,7 @@ The core doesn't cache. `translationsKey(vendor, locale)` is the identity to cac
 config minus `options` (credentials aren't identity), hashed to word characters behind a readable
 `vendor_locale_` prefix, because Nitro strips everything else from a key.
 
-## 🧪 Fake vendors
+## Fake vendors
 
 ```ts
 setupServer(...tolgeeHandlers(baseURL, { "es-ES": messages })).listen();
@@ -87,7 +87,7 @@ setupServer(...tolgeeHandlers(baseURL, { "es-ES": messages })).listen();
 Serves `GET <baseURL>/v2/projects/:project/translations/:locale`, and a `404` for a locale it wasn't
 given. There's no fake for `internal`; run the real server instead.
 
-## ⚠️ Errors
+## Errors
 
 All extend `TranslationsError` and carry their own `statusCode`.
 
@@ -100,7 +100,7 @@ All extend `TranslationsError` and carry their own `statusCode`.
 | `UpstreamError` | 502 | The vendor failed. Always 502: the locale is checked first, so no upstream answer is the caller's fault |
 | `TranslationsUnavailableError` | 502 | Any other read failure, such as a mapping bug |
 
-## 🧭 Known gaps
+## Known gaps
 
 | Gap | Note |
 | --- | --- |

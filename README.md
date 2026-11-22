@@ -7,10 +7,18 @@
 [![Release](https://github.com/xfontr/monorepo/actions/workflows/release.yml/badge.svg)](https://github.com/xfontr/monorepo/actions/workflows/release.yml)
 [![Netlify deployment](https://github.com/xfontr/monorepo/actions/workflows/netlify-deployment.yml/badge.svg)](https://github.com/xfontr/monorepo/actions/workflows/netlify-deployment.yml)
 
-A pnpm + Nx monorepo hosting personal projects: Nuxt frontend(s), the shared packages they build
-on, and the supporting services they depend on.
+A pnpm + Nx monorepo maintained by Xifré Font: Nuxt websites for small publications and
+practices, the shared packages they build on, and the tooling that keeps them consistent. The
+[developer portal](https://xfontr.github.io/monorepo/) is the readable way in.
 
-## 🗂 Workspace layout
+| Worth reading first | Why |
+| --- | --- |
+| [`apps/huella-legal`](./apps/huella-legal/README.md) | The main product: a Nuxt 4 rebuild of a WordPress law magazine |
+| [`@monorepo/configs`](./packages/configs/README.md) | Shared presets and the in-house ESLint rules every project runs |
+| [Architecture & boundaries](#architecture--boundaries) | How projects may depend on each other, enforced at lint time |
+| [0028](./docs/decisions/0028-huella-legal-urls-and-cutover.md), [0030](./docs/decisions/0030-huella-legal-rendering-hosting-and-cost.md) | Two decisions: keeping old URLs working, and hosting cost |
+
+## Workspace layout
 
 <!-- docs:map:layout -->
 ```
@@ -42,7 +50,7 @@ infrastructure/
 | Known problems per project | [`docs/audits/`](./docs/audits/README.md) |
 | Files the tooling reads and writes | [`data/`](./data/README.md) |
 
-## 🧱 Architecture & boundaries
+## Architecture & boundaries
 
 Projects are layered with Nx tags (declared in each `package.json` under `nx.tags`) and enforced by
 `@nx/enforce-module-boundaries` at lint time:
@@ -75,7 +83,7 @@ Apps compose, everything else stays a leaf, and nothing reaches into another pro
 The constraints live in [`boundaries.ts`](./packages/configs/src/eslint/lib/boundaries.ts);
 [`docs/concepts/boundaries.md`](./docs/concepts/boundaries.md) has the why.
 
-## 🔧 Tooling conventions
+## Tooling conventions
 
 - **pnpm catalog**: shared framework versions are pinned once in `pnpm-workspace.yaml` and
   referenced as `catalog:`.
@@ -85,7 +93,7 @@ The constraints live in [`boundaries.ts`](./packages/configs/src/eslint/lib/boun
 - **Shared configs**: every ESLint, Vitest, Playwright and tsconfig file wraps a preset from
   [`@monorepo/configs`](./packages/configs/README.md).
 
-## 🚀 Getting started
+## Getting started
 
 Requires the Node version in `.nvmrc` and pnpm (version pinned via `packageManager` in
 `package.json`).
@@ -96,7 +104,7 @@ pnpm quick-start                        # hooks, .env files, workspace coverage 
 pnpm dev                                # pick a project to start
 ```
 
-Skip `pnpm quick-start` and the [git hooks](#-git-conventions) never install: lifecycle scripts are
+Skip `pnpm quick-start` and the [git hooks](#git-conventions) never install: lifecycle scripts are
 banned here, so Husky can't install itself.
 
 `lint`, `typecheck`, `test` and `build` run on **affected** projects only (changed since `master`),
@@ -117,13 +125,13 @@ like CI. For everything, `pnpm exec nx run-many -t <target>`.
 | `pnpm docs:map` | Re-render [`docs/FEATURES.md`](./docs/FEATURES.md); `--check` asserts it is current |
 | `pnpm release:dry` | Preview a release (versioning + changelogs) |
 
-## 🌿 Git conventions
+## Git conventions
 
 Each rule is enforced by a hook or workflow;
 [`change-lifecycle.md`](./docs/guides/change-lifecycle.md) has the order they fire in.
 
 - Branches match `^(hotfix|fix|feature|release)/[^/]+/[0-9]+-.+`, so `master` can't be pushed.
-  [`pnpm issue:pick`](./infrastructure/scripts/src/issue/README.md#-pnpm-issuepick) makes one.
+  [`pnpm issue:pick`](./infrastructure/scripts/src/issue/README.md#pnpm-issuepick) makes one.
 - Commits are [Conventional Commits](https://www.conventionalcommits.org)
   ([`commitlint.config.mjs`](./commitlint.config.mjs)). [`commit-msg`](./.husky/commit-msg) adds the
   branch's issue number: `feat: [#50] add thing`.
@@ -148,7 +156,7 @@ Each rule is enforced by a hook or workflow;
 - Five secrets nothing provisions; see
   [`docs/guides/repo-secrets.md`](./docs/guides/repo-secrets.md).
 
-## 🏷 Versioning
+## Versioning
 
 Versions and changelogs are derived from commit messages by `nx release` — no manual bumps.
 

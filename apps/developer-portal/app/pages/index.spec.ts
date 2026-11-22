@@ -1,18 +1,12 @@
 import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { LintRuleUsage } from "#layers/snapshot/shared/types/LintRuleUsage.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
+import { ruleCounts } from "#layers/telemetry/shared/lintUsage.ts";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import Page from "./index.vue";
-
-const artifacts = vi.hoisted(() => ({ usage: null as UsageArtifact | null }));
-mockNuxtImport("usageArtifact", () => () => artifacts.usage);
-
-beforeEach(() => {
-    artifacts.usage = null;
-});
 
 const WORK = [
     {
@@ -92,7 +86,7 @@ const open = async ({
     usage = null as UsageArtifact | null,
     projects = [] as { id: string; title: string }[],
 } = {}) => {
-    artifacts.usage = usage;
+    serveEndpoint("/api/telemetry/rules", () => ruleCounts(usage?.lint));
     serveEndpoint("/api/workflows", () =>
         assembleWorkflows(
             [{ file: "website-rebuild.yaml", ok: true, value: TEMPLATE }],
@@ -120,6 +114,10 @@ beforeEach(() => {
             },
         },
     });
+});
+
+afterEach(() => {
+    vi.unstubAllGlobals();
 });
 
 describe("front page", () => {
@@ -155,5 +153,22 @@ describe("front page", () => {
         const links = wrapper.findAll("a").map((link) => link.attributes("href"));
         expect(links).toContain("/overview");
         expect(links).not.toContain("/");
+    });
+
+    it.each([
+        { pointerType: "mouse", previewed: true },
+        { pointerType: "touch", previewed: false },
+    ])("previews a rule under a $pointerType: $previewed", async ({ pointerType, previewed }) => {
+        vi.stubGlobal("matchMedia", (query: string) => ({
+            matches: true,
+            media: query,
+            addEventListener: () => {},
+            removeEventListener: () => {},
+        }));
+        const wrapper = await open();
+
+        await wrapper.find("article").trigger("pointerenter", { pointerType });
+
+        expect(wrapper.find("[data-cursor-preview]").exists()).toBe(previewed);
     });
 });

@@ -8,7 +8,7 @@ have the resources to properly build and maintain this, so I went for the quick 
 
 One folder per script under `src/`, each with its own README. This one covers what they share.
 
-## 🗂 Structure
+## Structure
 
 Every script folder has the same four things:
 
@@ -22,9 +22,9 @@ domain/      pure functions and their types. No fs, no subprocess, no clack, no 
 | Script | Command | What it's for |
 | --- | --- | --- |
 | [`dev`](./src/dev/README.md) | `pnpm dev` | Picking which project to start, and installing the workspace first on a fresh clone |
-| [`issue add`](./src/issue/README.md#-pnpm-issueadd) | `pnpm issue:add` | Picking a project and label, then filing an issue with `gh` |
-| [`issue pick`](./src/issue/README.md#-pnpm-issuepick) | `pnpm issue:pick` | Picking an open issue off a project board, then branching off it and self-assigning |
-| [`issue brief`](./src/issue/README.md#-pnpm-issuebrief) | `pnpm issue:brief` | Printing an issue with its comments, blockers, decisions, projects and linked docs |
+| [`issue add`](./src/issue/README.md#pnpm-issueadd) | `pnpm issue:add` | Picking a project and label, then filing an issue with `gh` |
+| [`issue pick`](./src/issue/README.md#pnpm-issuepick) | `pnpm issue:pick` | Picking an open issue off a project board, then branching off it and self-assigning |
+| [`issue brief`](./src/issue/README.md#pnpm-issuebrief) | `pnpm issue:brief` | Printing an issue with its comments, blockers, decisions, projects and linked docs |
 | [`ship`](./src/ship/README.md) | `pnpm issue:ship` | Pushing the current branch, opening or reusing its PR, arming auto-merge, then blocking on checks |
 | [`ci-failures`](./src/ci-failures/README.md) | `pnpm ci:failures` | Reporting a PR's failed checks, each Actions job cut to its error lines |
 | [`worktree`](./src/worktree/README.md) | `pnpm worktree:prepare` | Copying env files into a linked worktree and installing it the way CI does |
@@ -37,7 +37,7 @@ domain/      pure functions and their types. No fs, no subprocess, no clack, no 
 | [`usage`](./src/usage/README.md) | `pnpm usage:flush` | Moving the runs every script records into the committed log; the pre-commit hook runs it |
 | [`coverage-report`](./src/coverage-report/README.md) | `pnpm test:coverage` (root) | Merging every project's coverage into one browsable HTML report |
 
-## 🤖 Run by agents, not only by people
+## Run by agents, not only by people
 
 An agent's shell has no terminal, so `isTTY` is false and `out` prints plain lines. Two rules
 follow for every script:
@@ -48,7 +48,7 @@ follow for every script:
   number it asks nothing.
 - **A command that reports a failure exits 1.**
 
-## 🧱 Which way imports go
+## Which way imports go
 
 **index.ts → the command → `adapters/` → `domain/`.** Never back up, and never sideways into another
 script's folder. One scoped exception: a command may import another command *in the same folder*,
@@ -62,7 +62,7 @@ dispatcher. `shared/` is reachable from anywhere and reaches nothing.
 half; the rest is convention. [0004](../../docs/decisions/0004-scripts-architecture.md) has the
 reasoning.
 
-## 🚀 Adding a script
+## Adding a script
 
 The `scripts-new-script` skill has the steps. The rules:
 
@@ -88,7 +88,7 @@ await run(main);
 - Don't name a folder `coverage/` or `types/`: both are in ESLint's
   [`baseIgnores`](../../packages/configs/src/eslint/lib/ignores.ts) and would go unlinted.
 
-## 🔑 Requirements
+## Requirements
 
 | Script | Needs |
 | --- | --- |

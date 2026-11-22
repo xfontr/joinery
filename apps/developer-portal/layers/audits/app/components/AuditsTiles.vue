@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { countAll, type AuditReport } from "#layers/audits/shared/auditReports.ts";
-import type { FindingStatus } from "#layers/snapshot/shared/audits.ts";
+import { FINDING_STATUSES } from "#layers/snapshot/shared/audits.ts";
 
 interface Props {
     reports: AuditReport[];
@@ -27,14 +27,12 @@ interface Props {
 
 const { reports } = defineProps<Props>();
 
-const TILES: FindingStatus[] = ["open", "fixed", "wont-fix"];
-
 const { t } = useI18n();
 
 const totals = computed(() => countAll(reports));
 
 const tiles = computed(() =>
-    TILES.map((status) => ({
+    FINDING_STATUSES.map((status) => ({
         status,
         hint: t(`auditsTiles.hints.${status}`),
         label: t(`audits.findingStatus.${status}`),

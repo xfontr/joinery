@@ -3,7 +3,7 @@
 301s from the old WordPress URLs that the app renamed, so indexed and linked URLs keep working, per
 [0028](../../../../docs/decisions/0028-huella-legal-urls-and-cutover.md). It does nothing else.
 
-## 🗂 Structure
+## Structure
 
 | Old URL | Goes to | Where |
 | --- | --- | --- |
@@ -25,7 +25,7 @@
 Netlify serves the rules from `_redirects` before Nitro runs, so `nuxi preview` and
 `e2e/legacy.spec.ts` only exercise Nitro's copy.
 
-## 🚚 The cutover
+## The cutover
 
 The `/wp-*` forward only does something once WordPress has its own hostname. The switch itself is
 DNS and WordPress settings, in the order 0028 gives.
@@ -37,7 +37,7 @@ NITRO_PRESET=netlify pnpm exec nuxt build && grep -vE '\s301$' dist/_redirects  
 curl -so /dev/null -w '%{http_code} %{redirect_url}\n' https://<host>/Categoria/<slug>/
 ```
 
-## 🧭 Known gaps
+## Known gaps
 
 | Gap | Note |
 | --- | --- |

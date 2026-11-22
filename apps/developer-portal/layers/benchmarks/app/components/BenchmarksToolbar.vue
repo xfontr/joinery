@@ -8,7 +8,13 @@
                 size="sm"
                 class="w-56"
             />
-            <USelect v-model="verdict" :items="VERDICTS" value-key="value" size="sm" class="w-44" />
+            <USelect
+                v-model="verdict"
+                :items="verdictItems"
+                value-key="value"
+                size="sm"
+                class="w-44"
+            />
             <USelect v-model="kind" :items="kindItems" value-key="value" size="sm" class="w-40" />
         </template>
     </UDashboardToolbar>
@@ -31,13 +37,13 @@ const kind = defineModel<string>("kind", { required: true });
 
 const { t } = useI18n();
 
-const VERDICTS = [
-    { label: t("benchmarksToolbar.everyVerdict"), value: "all" },
-    ...BENCHMARK_VERDICTS.map((value) => ({ label: t(`benchmarks.verdict.${value}`), value })),
-];
+const verdictItems = computed(() =>
+    filterItems(t("benchmarksToolbar.everyVerdict"), BENCHMARK_VERDICTS, (value) =>
+        t(`benchmarks.verdict.${value}`),
+    ),
+);
 
-const kindItems = computed(() => [
-    { label: t("benchmarksToolbar.everyKind"), value: "all" },
-    ...kinds.map((value) => ({ label: benchmarkKindLabel(value), value })),
-]);
+const kindItems = computed(() =>
+    filterItems(t("benchmarksToolbar.everyKind"), kinds, benchmarkKindLabel),
+);
 </script>

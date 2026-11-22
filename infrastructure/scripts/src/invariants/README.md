@@ -14,7 +14,7 @@ seconds, such as no unused exports, goes in `pnpm unused:check`, which runs at p
 | `pnpm invariants:check --base=<ref>` | Also fail on a `version` that moved since `<ref>` |
 | `pnpm invariants:check --json` | Print the findings as one JSON line and exit 0, for the portal |
 
-## 🗂 Structure
+## Structure
 
 ```
 index.ts       hands main to run()
@@ -23,7 +23,7 @@ adapters/      reads manifests, package files and the README; reads a manifest a
 domain/        the bans, the package contracts, the shared/ sides and the tag-table comparisons
 ```
 
-## ✅ What blocks and what warns
+## What blocks and what warns
 
 | Check | Where | Blocks? |
 | --- | --- | --- |

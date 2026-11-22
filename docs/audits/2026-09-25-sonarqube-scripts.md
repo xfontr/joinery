@@ -5,13 +5,13 @@ commit: "88f5939"
 
 # 🔎 SonarQube code smells: scripts
 
-## 🗺 Context
+## Context
 
 SonarQube Cloud reported 14 open code smells for `infrastructure/scripts` on `master` on
 2026-09-25. Each flagged line was checked against commit `88f5939`; the issue keys identify the
 original findings. The fixes pass the scripts project tests, lint and typecheck.
 
-## 🧹 Quality
+## Quality
 
 | ID | Where | Severity and issue | What goes wrong | Fix | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -30,7 +30,7 @@ original findings. The fixes pass the scripts project tests, lint and typecheck.
 | Q13 | [`map/domain/capabilities.ts:65`](../../infrastructure/scripts/src/map/domain/capabilities.ts#L65) | Minor `AaBsdAgrc4poDHW_U8-z` | The regex-escape replacement uses a doubly escaped replacement string. | Use `String.raw` for the replacement; assert punctuation tokens still match literally. | fixed |
 | Q14 | [`map/domain/capabilities.ts:66`](../../infrastructure/scripts/src/map/domain/capabilities.ts#L66) | Minor `AaBsdAgrc4poDHW_U8-0` | The dynamic regex also escapes character classes inside a template string. | Use `String.raw` for the pattern template and preserve boundary behavior. | fixed |
 
-## 🪜 Order
+## Order
 
 Address Q6 and Q5 with focused regression cases, then Q1–Q4 together because they share one
 adapter pattern. The remaining findings are local substitutions; run the scripts project specs,

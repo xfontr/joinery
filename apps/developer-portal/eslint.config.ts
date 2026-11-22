@@ -40,13 +40,6 @@ export default [
             ],
         },
     },
-    {
-        files: ["app/lab/**/*.{vue,ts}", "app/pages/lab/**/*.{vue,ts}"],
-        rules: {
-            "better-tailwindcss/no-restricted-classes": ["error", { restrict: [bracketedValue] }],
-            "@intlify/vue-i18n/no-raw-text": "off",
-        },
-    },
 
     {
         // Pages that predate the length cap; drop a path once its page is split into sections.

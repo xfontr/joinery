@@ -3,7 +3,7 @@
 What a static read of one project found wrong at one commit, numbered and worked down over time.
 One file per audit, `<YYYY-MM-DD>-<scope-slug>.md`. The `audit-report` skill writes them.
 
-## 🧭 Audit or decision
+## Audit or decision
 
 | | [Decision](../decisions/README.md) | Audit |
 | --- | --- | --- |
@@ -16,7 +16,7 @@ One file per audit, `<YYYY-MM-DD>-<scope-slug>.md`. The `audit-report` skill wri
 A finding that turns out to be a real fork becomes a decision report, and its row reads `wont-fix`
 with the report as reference.
 
-## 🗂 Structure
+## Structure
 
 Copy [`TEMPLATE.md`](./TEMPLATE.md): frontmatter, then:
 
@@ -38,7 +38,7 @@ commit: "61b6f7f"
 
 Quote `commit:`, or an all-digit sha parses as a number.
 
-## 🚦 Status
+## Status
 
 **Whoever lands a fix flips that finding's cell in the same PR.**
 

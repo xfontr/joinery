@@ -8,7 +8,7 @@ anything.
 | --- |
 | AI, with no human supervision |
 
-## 🗂 Structure
+## Structure
 
 | Path | What it is |
 | --- | --- |
@@ -20,26 +20,26 @@ anything.
 
 There is no `server/`: the arithmetic runs in the browser.
 
-## 📝 The guide
+## The guide
 
 The explanatory copy is a WordPress page, edited by the owner there. If WordPress fails, the
 calculator still renders without it. `calculo-intereses` is in `pageSlugs` only so the page route
 can read it.
 
-## ⚡ Cost to the rest of the site
+## Cost to the rest of the site
 
 - The footer link has `prefetch: false`, so other pages never fetch this route's chunk or payload.
 - Its copy is ~0.8 kB brotli of the shared `messages.json`; its Tailwind utilities ~0.2 kB of the
   inlined stylesheet.
 
-## ✅ Validation
+## Validation
 
 - Nothing validates before the first submit — validating on blur moved the button out from under
   the pointer mid-click.
 - Amounts are text inputs with `inputmode="decimal"`, never `type="number"`: Chrome read `1.000` as
   100. `parseDecimal` reads Spanish formatting and refuses ambiguous input like `1,000.50`.
 
-## 🧭 Known gaps
+## Known gaps
 
 | Gap | Note |
 | --- | --- |

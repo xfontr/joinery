@@ -15,6 +15,12 @@ const isCaseStudy = (file: string): boolean => {
 };
 
 export default defineNuxtConfig({
+    routeRules: {
+        "/projects/**": { robots: "noindex, follow" },
+        "/graph/**": { robots: "noindex, follow" },
+        "/changelog/**": { robots: "noindex, follow" },
+    },
+
     nitro: {
         prerender: {
             routes: readdirSync(CONTENT)

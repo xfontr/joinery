@@ -4,7 +4,7 @@ The Nuxt integration for [`@monorepo/i18n`](../../README.md). It installs and co
 `@nuxtjs/i18n`, registers a loader per locale, and serves messages through a cached route, so the TMS
 URL and token never reach the browser.
 
-## 🚀 Usage
+## Usage
 
 ```ts
 export default defineNuxtConfig({
@@ -24,13 +24,13 @@ Locales are declared under `i18n`; the module reads them (across layers) and der
 
 ### Options
 
-- `translations.vendor` is a `VendorConfig` — see [vendors](../../README.md#-vendors).
+- `translations.vendor` is a `VendorConfig` — see [vendors](../../README.md#vendors).
 - Declare secret or per-environment fields empty and fill them with `NUXT_TRANSLATIONS_VENDOR_*`
   (`_BASE_URL`, `_PROJECT`, `_OPTIONS_TOKEN`). **Never read `process.env` in `nuxt.config`**: it's
   baked into the build, token included. `name` stays a literal.
 - Don't set `translations.locales`; the module overwrites it.
 
-## 🗂 Structure
+## Structure
 
 ```
 module.ts                          build time (@nuxt/kit)
@@ -41,7 +41,7 @@ runtime/server/translations.get.ts the cached route
 
 `module.ts` and `runtime/` are separate runtimes: import across with `import type` only.
 
-## 🔁 The request path
+## The request path
 
 ```
 $t("meta.title")
@@ -55,7 +55,7 @@ $t("meta.title")
 The path and windows are constants in [`config.ts`](./config.ts); override the cache with a Nitro
 route rule if needed. The cache key is the core's `translationsKey`.
 
-## ⚠️ Gotchas
+## Gotchas
 
 - **Don't add `@nuxtjs/i18n` to `modules` yourself.** This module installs it after registering the
   loader.

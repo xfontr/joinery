@@ -11,7 +11,7 @@ pnpm env:sync --check   # say what would change and exit 1, writing nothing
 Every `.env.example` git knows about is covered; its partner is the `.env` beside it. `.env.local`
 and friends are left alone. A missing `.env` is created from the example with mode `600`.
 
-## 🗂 Structure
+## Structure
 
 ```
 index.ts            hands main to run()
@@ -21,7 +21,7 @@ domain/envFile.ts   the line parser, which refuses anything it can't classify
 domain/sync.ts      the merge, the lost-data check and the key-only summary
 ```
 
-## 🔀 What a sync does
+## What a sync does
 
 The example decides the layout, and `.env` supplies the values:
 
@@ -34,7 +34,7 @@ The example decides the layout, and `.env` supplies the values:
 | A prose comment the example doesn't have | Dropped in favour of the example's comments. The output counts them, and the backup still has them |
 | Nothing, for a key the example sets | Added at the example's position with the example's default |
 
-## 🛡 Why it can't lose a file
+## Why it can't lose a file
 
 | Guard | Where |
 | --- | --- |
@@ -44,7 +44,7 @@ The example decides the layout, and `.env` supplies the values:
 
 A file left untouched makes the command exit 1, but the others still sync.
 
-## 🪝 When it runs on its own
+## When it runs on its own
 
 | Trigger | Condition |
 | --- | --- |

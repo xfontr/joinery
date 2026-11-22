@@ -1,8 +1,11 @@
 <template>
-    <figure class="mx-auto max-w-6xl px-4 pb-16 md:px-10">
+    <UContainer as="figure" class="pb-16">
         <img
-            :src="screenshot"
+            v-bind="screenshot"
+            sizes="(min-width: 72rem) 72rem, 100vw"
+            fetchpriority="high"
             :alt="work.screenshot.alt"
+            :style="carriedShot"
             width="1440"
             height="900"
             class="w-full border border-default"
@@ -15,7 +18,7 @@
                 {{ work.live.label }}
             </ULink>
         </figcaption>
-    </figure>
+    </UContainer>
 </template>
 
 <script setup lang="ts">
@@ -28,4 +31,5 @@ interface Props {
 const { work } = defineProps<Props>();
 
 const screenshot = computed(() => workScreenshot(work));
+const carriedShot = computed(() => carried(`work-shot-${work.slug}`));
 </script>

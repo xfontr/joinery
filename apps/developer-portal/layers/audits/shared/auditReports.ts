@@ -69,7 +69,9 @@ export const filterAudits = (reports: AuditReport[], filter: AuditReportFilter):
     });
 };
 
-export type AuditSort = "newest" | "oldest" | "most-open";
+export const AUDIT_SORTS = ["newest", "oldest", "most-open"] as const;
+
+export type AuditSort = (typeof AUDIT_SORTS)[number];
 
 const newestFirst = (a: AuditReport, b: AuditReport): number => b.id.localeCompare(a.id);
 

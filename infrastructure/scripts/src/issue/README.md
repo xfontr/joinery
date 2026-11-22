@@ -11,7 +11,7 @@ pnpm issue:pick 288 --type=feature   # no prompts — the form agents use
 pnpm issue:brief 288                 # or no number, on that issue's branch
 ```
 
-## 🗂 Structure
+## Structure
 
 ```
 index.ts         dispatches add | pick | brief
@@ -25,7 +25,7 @@ domain/          branch names, search matching, pick options, the brief's layout
 The generic `gh()` wrapper, the file cache and the cancel helper live in
 [`../shared/`](../shared/README.md).
 
-## 🚀 `pnpm issue:add`
+## `pnpm issue:add`
 
 | Step | What it does |
 | --- | --- |
@@ -38,7 +38,7 @@ The generic `gh()` wrapper, the file cache and the cancel helper live in
 No templates, on purpose: this is for issues that would otherwise never get written. The
 `github-issue` skill has the templated shapes.
 
-## 🌱 `pnpm issue:pick`
+## `pnpm issue:pick`
 
 | Step | What it does |
 | --- | --- |
@@ -55,7 +55,7 @@ No templates, on purpose: this is for issues that would otherwise never get writ
 - When `gh` is unreachable, `pick` browses the cached projects and issues, then fails at the
   branch step.
 
-### 🔢 Picking by number
+### Picking by number
 
 `pnpm issue:pick <number>` asks nothing:
 
@@ -68,7 +68,7 @@ No templates, on purpose: this is for issues that would otherwise never get writ
 
 Flags take the `--name=value` form only.
 
-## 📇 `pnpm issue:brief`
+## `pnpm issue:brief`
 
 Prints the issue's state, labels, assignees, board column, body and every comment, then:
 
@@ -81,12 +81,12 @@ Prints the issue's state, labels, assignees, board column, body and every commen
 
 With no number, it reads the one in the branch name.
 
-## 🗄 Caching
+## Caching
 
 Projects and labels are cached for 24 h under `node_modules/.cache/@monorepo/scripts/`; `--refresh`
 bypasses it. The issue list is always fetched live and cached only as the offline fallback.
 
-## 🔑 Requirements
+## Requirements
 
 `gh` logged in with the `project` scope (`gh auth refresh -s project`). Without it `add` loses the
 project prompt and `pick` can't run. Assigning needs repo write access; moving the card needs project

@@ -169,7 +169,7 @@ than flipping.** Verified per change:
 4. Every decision report's frontmatter is now followed by a `## Confirmation` section, this one
    included.
 5. `decision: superseded` plus `supersededBy:` is a parsed, validated frontmatter pair — see
-   [`docs/decisions/README.md`](./README.md#-superseding-a-decision) — not a prose line.
+   [`docs/decisions/README.md`](./README.md#superseding-a-decision) — not a prose line.
 6. All twelve reports carry the frontmatter template. The vocabulary they're checked against is
    `DECISION_STATUSES`/`DECISION_OUTCOMES` in
    [`shared/decisions.ts`](../../apps/developer-portal/layers/snapshot/shared/decisions.ts), which the dashboard's own types
