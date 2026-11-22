@@ -4,15 +4,9 @@ import { flushPromises } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { LintRuleUsage } from "#layers/snapshot/shared/types/LintRuleUsage.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
+import { ruleCounts } from "#layers/telemetry/shared/lintUsage.ts";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import Page from "./index.vue";
-
-const artifacts = vi.hoisted(() => ({ usage: null as UsageArtifact | null }));
-mockNuxtImport("usageArtifact", () => () => artifacts.usage);
-
-beforeEach(() => {
-    artifacts.usage = null;
-});
 
 const WORK = [
     {
@@ -92,7 +86,7 @@ const open = async ({
     usage = null as UsageArtifact | null,
     projects = [] as { id: string; title: string }[],
 } = {}) => {
-    artifacts.usage = usage;
+    serveEndpoint("/api/telemetry/rules", () => ruleCounts(usage?.lint));
     serveEndpoint("/api/workflows", () =>
         assembleWorkflows(
             [{ file: "website-rebuild.yaml", ok: true, value: TEMPLATE }],
