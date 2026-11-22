@@ -10,7 +10,7 @@ See [README.md](./README.md) for what each page reads, the snapshot and the depl
   [`store.ts`](./layers/snapshot/server/utils/store.ts) return `null` for a missing artifact; keep
   that rather than throwing.
 - **A capability is a Nuxt layer under `layers/`**, and `app/` is only the shell. The
-  [README](./README.md#-layers) has the table: `design`, `snapshot`, `docs` and `github` are the
+  [README](./README.md#layers) has the table: `design`, `snapshot`, `docs` and `github` are the
   cores, and a feature uses those and the shell's parts, never another feature. A new page joins
   the layer whose task it serves; a new layer needs its own logic, its own config, or to be
   something you'd switch off whole, plus a `nuxt.config.ts` or Nuxt won't register it.
@@ -24,7 +24,7 @@ See [README.md](./README.md) for what each page reads, the snapshot and the depl
   per file, never exported from a route, and a component at a layer's
   root carries the layer's name (`TelemetryDayStrip`), per
   [`conventions.md`](../../docs/concepts/conventions.md).
-- **No value is chosen outside the `design` layer.** The [README](./README.md#-design-system) lists
+- **No value is chosen outside the `design` layer.** The [README](./README.md#design-system) lists
   the tokens and classes; a new size or colour is a token there, not a bracketed class.
 - **`tools/lib/invariants.ts` reads `pnpm invariants:check --json`** and adds the audit, decision
   and workflow shape checks. A repo rule belongs in the

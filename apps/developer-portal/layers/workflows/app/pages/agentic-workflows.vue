@@ -1,5 +1,6 @@
 <template>
     <PageHero
+        carry="hero-workflows"
         :title="$t('agenticWorkflows.title')"
         :mark="$t('agenticWorkflows.titleMark')"
         :lead="$t('agenticWorkflows.lead')"

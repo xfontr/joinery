@@ -2,14 +2,14 @@
 
 Renders [`docs/FEATURES.md`](../../../../docs/FEATURES.md), the index of every command, git hook,
 workflow and agent skill with the doc that explains it, plus the root README's
-[generated regions](#-the-readme-regions).
+[generated regions](#the-readme-regions).
 
 | Command | What it does |
 | --- | --- |
 | `pnpm docs:map` | Re-render both |
 | `pnpm docs:map --check` | Exit 1 if either file differs from the render. Runs in CI and pre-commit |
 
-## 🗂 Structure
+## Structure
 
 ```
 main.ts                   render, then write or --check
@@ -19,7 +19,7 @@ domain/render.ts          the markdown
 domain/readme.ts          the README regions
 ```
 
-## 🔍 What it finds
+## What it finds
 
 | Kind | Read from | Skipped |
 | --- | --- | --- |
@@ -28,7 +28,7 @@ domain/readme.ts          the README regions
 | Workflow | `.github/workflows/*.yml` | — |
 | Skill | `.claude/skills/*/SKILL.md`, named by frontmatter | — |
 
-## 📄 Picking the doc
+## Picking the doc
 
 Every markdown file is a candidate except changelogs, the map itself and the capability's own source
 file. The token must appear standalone (`release:dry` doesn't answer for `release`). Ranked by
@@ -37,7 +37,7 @@ audience first — `README.md`, then other docs, then `CLAUDE.md`, then `SKILL.m
 A capability no doc names shows `—`. `--check` doesn't fail on it, since some are undocumented on
 purpose; the fix is to write the doc, never to edit the map.
 
-## 🧱 The README regions
+## The README regions
 
 | Region | Rendered from |
 | --- | --- |

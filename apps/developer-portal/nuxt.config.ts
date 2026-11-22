@@ -21,6 +21,10 @@ export default defineNuxtConfig({
         },
     },
 
+    experimental: {
+        viewTransition: true,
+    },
+
     content: {
         experimental: {
             sqliteConnector: "native",
@@ -41,16 +45,6 @@ export default defineNuxtConfig({
         server: {
             fs: {
                 allow: [WORKSPACE_ROOT],
-            },
-        },
-    },
-
-    $production: {
-        hooks: {
-            "pages:extend": (pages) => {
-                for (let index = pages.length - 1; index >= 0; index--) {
-                    if (pages[index]?.path.startsWith("/lab")) pages.splice(index, 1);
-                }
             },
         },
     },

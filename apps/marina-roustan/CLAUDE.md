@@ -21,7 +21,7 @@ See [README.md](./README.md) for the commands, the env vars and the test harness
   `pnpm typecheck` would.
 - [`tsconfig.json`](./tsconfig.json) only references `./.nuxt/tsconfig.*.json`, which nothing
   commits, so `lint`/`typecheck`/`test` need the `nuxt-prepare` script — see
-  [the root CLAUDE.md](../../CLAUDE.md#-the-two-places-that-must-agree).
+  [the root CLAUDE.md](../../CLAUDE.md#the-two-places-that-must-agree).
 - The ESLint config is the nuxt flavour, which is **not** type-checked. Don't switch it.
 - **`vitest.config.ts` and `playwright.config.ts` are wrappers over `@monorepo/configs`.** Only this
   app's specifics are passed as options.

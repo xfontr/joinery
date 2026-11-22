@@ -12,7 +12,7 @@ infrastructure/translations/
 
 `projects/example/` is a stand-in the specs read. No API key.
 
-## 📡 Endpoints
+## Endpoints
 
 | Method | Path | Returns |
 | ------ | ---- | ------- |
@@ -27,7 +27,7 @@ The route above serves `projects/example/es-ES.json`. CORS is open. Unknown loca
 path segment `400`, unreadable file `500`. A new locale is a new file here plus a declaration in the
 app — see [adding a locale](../../docs/guides/adding-a-locale.md).
 
-## 🐳 Run in Docker (recommended)
+## Run in Docker (recommended)
 
 The [image](./docker/Dockerfile) is the deployable artifact: production dependencies only, non-root,
 `restart: unless-stopped`. From this folder:
@@ -41,7 +41,7 @@ pnpm docker:down    # stop and remove
 Editing `projects/**/*.json` is live (bind-mounted, re-read per request). Editing `server/` needs
 `pnpm docker:up` again, which rebuilds.
 
-## 💻 Run directly
+## Run directly
 
 ```bash
 pnpm dev     # node --watch
@@ -51,7 +51,7 @@ pnpm serve   # no watch
 
 Not alongside the container: both want port 4000.
 
-## ✅ Checks
+## Checks
 
 Specs call `app.request()` and never bind a port. Tagged `type:infra`: depends only on
 `@monorepo/configs`, and isn't versioned by `nx release`.

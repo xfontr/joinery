@@ -1,5 +1,10 @@
 <template>
-    <PageHero :title="$t('work.title')" :mark="$t('work.titleMark')" :lead="$t('work.lead')" />
+    <PageHero
+        carry="hero-work"
+        :title="$t('work.title')"
+        :mark="$t('work.titleMark')"
+        :lead="$t('work.lead')"
+    />
 
     <section class="mx-auto flex max-w-6xl flex-col px-4 md:px-10">
         <ULink
@@ -11,13 +16,17 @@
             <img
                 :src="workScreenshot(item)"
                 :alt="item.screenshot.alt"
+                :style="carried(`work-shot-${item.slug}`)"
                 width="1440"
                 height="900"
                 class="w-full border border-default md:col-span-7"
             />
             <div class="flex flex-col gap-3 md:col-span-5">
                 <p class="font-mono text-xs text-muted uppercase">{{ item.kind }}</p>
-                <h2 class="font-display text-section text-highlighted group-hover:text-primary">
+                <h2
+                    class="font-display text-section text-highlighted group-hover:text-primary"
+                    :style="carried(`work-title-${item.slug}`)"
+                >
                     {{ item.name }}
                 </h2>
                 <p class="text-lg">{{ item.line }}</p>

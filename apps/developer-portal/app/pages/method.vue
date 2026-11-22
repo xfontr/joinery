@@ -1,5 +1,6 @@
 <template>
     <PageHero
+        carry="hero-method"
         :title="$t('method.title')"
         :mark="$t('method.titleMark')"
         :lead="$t('method.lead')"

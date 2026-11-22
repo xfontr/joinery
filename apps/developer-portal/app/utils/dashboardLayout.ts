@@ -1,6 +1,6 @@
-export type WidgetSize = "small" | "medium" | "wide";
+const WIDGET_SIZES = ["small", "medium", "wide"] as const;
 
-const WIDGET_SIZES: readonly WidgetSize[] = ["small", "medium", "wide"];
+export type WidgetSize = (typeof WIDGET_SIZES)[number];
 
 export interface WidgetDefinition {
     id: string;

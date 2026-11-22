@@ -1,1 +1,3 @@
-export type RuleId = "look" | "decide" | "plan" | "agents" | "prove";
+import type { RULES } from "../utils/rules.ts";
+
+export type RuleId = (typeof RULES)[number];

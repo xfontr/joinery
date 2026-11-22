@@ -7,12 +7,12 @@ Nuxt module that gives server code a cached reader. WordPress is the only vendor
 | --- | --- | --- |
 | `@monorepo/content` | Domain, ports, adapters, vendor registry, cache key | `ofetch`, `ohash`, `entities` |
 | `@monorepo/content/nuxt` | The Nuxt module — see [`src/nuxt/README.md`](./src/nuxt/README.md) | `@nuxt/kit`, `h3`, `nitropack` |
-| `@monorepo/content/testing` | Seeded fakes and MSW WordPress handlers — see [🧪 Fake vendors](#-fake-vendors) | `msw`, `@faker-js/faker` |
+| `@monorepo/content/testing` | Seeded fakes and MSW WordPress handlers — see [🧪 Fake vendors](#fake-vendors) | `msw`, `@faker-js/faker` |
 
 The second and third entries' dependencies are optional peers, so a plain consumer of the core
 installs none of them.
 
-## 🗂 Structure
+## Structure
 
 ```
 src/core/domain/      Entry, Term, Page, errors, vendor config — imports nothing
@@ -26,7 +26,7 @@ src/testing/          fakes for consumers' specs and e2e
 
 Nothing under `core/` may import Nuxt or Nitro; lint enforces it.
 
-## 📄 The domain
+## The domain
 
 ```ts
 interface Entry  { id, slug, title, excerpt?, body, wordCount?, publishedAt?, updatedAt?, image?, terms, authors, seo?, fields? }
@@ -48,7 +48,7 @@ interface Page<T> { items, page, perPage, total, totalPages }
 - `MAX_PAGE`, `MAX_PER_PAGE` and `MAX_SEARCH_LENGTH` bound any query forwarded from a request, so the
   cache key space stays finite.
 
-## 🏷 Vendors
+## Vendors
 
 A vendor is one entry in [`core/registry.ts`](./src/core/registry.ts), which drives both the runtime
 lookup and the config type. `baseURL` holds whatever picks the document; `options` holds credentials
@@ -65,13 +65,13 @@ Adding a vendor (the `content-new-vendor` skill walks it):
    `ContentProvider<YourOptions>`), overriding `listEntries` and `listTerms`. Directory, file, class
    and registry key share the name. Helpers and wire types go in siblings —
    [`wordpress/`](./src/core/adapters/providers/wordpress) is the example.
-2. If it takes `options`, override `configProblems()` — see [validation](#-validation).
+2. If it takes `options`, override `configProblems()` — see [validation](#validation).
 3. Add one line to `providers`.
 4. Override `getEntry` / `getTerm` only if the vendor has a single-document endpoint.
 
 The import is lazy, so a deployment ships only the vendor it configured.
 
-## 🔌 The ports
+## The ports
 
 ```ts
 interface HttpClient {
@@ -93,7 +93,7 @@ abstract class ContentProvider<T extends object = object> {
 - Every failed request becomes an `UpstreamError`, including a `200` that isn't JSON (a bot filter's
   HTML challenge page).
 
-## ✅ Validation
+## Validation
 
 A provider validates its config in its constructor, so it can't exist misconfigured. `baseURL` must
 be an absolute URL; `configProblems()` checks the vendor's `options`. All problems are reported at
@@ -102,7 +102,7 @@ once in one `MisconfiguredVendorError` (a `500`).
 `configProblems()` runs from the base constructor, so an override may only read `options` — a
 subclass's own fields aren't initialised yet.
 
-## 🧩 Framework-agnostic use
+## Framework-agnostic use
 
 ```ts
 const http = new OfetchHttpClient(ofetch.create({ baseURL }));
@@ -114,7 +114,7 @@ The core doesn't cache. It provides `contentKey(vendor, resource, query)`, the i
 upstream document: the vendor config minus `options` (credentials aren't identity), plus the sorted
 query, hashed to word characters only because Nitro's storage splits keys on `/`, `:` and `?`.
 
-## 🧪 Fake vendors
+## Fake vendors
 
 ```ts
 import { fakeEntry, fakeTerm, wordpressHandlers } from "@monorepo/content/testing";
@@ -133,7 +133,7 @@ The faker is seeded, so values are stable — but adding a call shifts every val
 exported `faker`, not your own import. [`wordpress.spec.ts`](./src/testing/wordpress.spec.ts) runs
 the real provider against the handlers so the fake can't drift.
 
-## ⚠️ Errors
+## Errors
 
 All extend `ContentError` and carry their own `statusCode`. `statusMessage` never includes the
 vendor's URL; the real failure is on `cause`, and logging it is the app's job.
@@ -149,7 +149,7 @@ vendor's URL; the real failure is on `cause`, and logging it is the app's job.
 | `UndefinedVendorError` | 500 | Config names an unregistered vendor |
 | `MisconfiguredVendorError` | 500 | The vendor's config can't work; `problems` lists why |
 
-## 🧭 Known gaps
+## Known gaps
 
 | Gap | Note |
 | --- | --- |

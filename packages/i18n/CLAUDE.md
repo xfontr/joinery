@@ -6,7 +6,7 @@ See [README.md](./README.md) for the vendors, the ports and the errors. Use the
 The invariants worth losing a build over:
 
 - **Nothing under `src/core/` may import the Nuxt or Nitro runtime**
-  ([the enforced list](../configs/README.md#-what-the-eslint-factories-bundle)). `ofetch` and
+  ([the enforced list](../configs/README.md#what-the-eslint-factories-bundle)). `ofetch` and
   `ohash` are the package's only real dependencies; everything the Nuxt entry point needs is an **optional peer
   dependency**. Never promote one.
 - Use the `#core/*` and `#nuxt/*` subpath imports, never `../../`.

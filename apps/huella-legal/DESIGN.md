@@ -3,7 +3,7 @@
 The site was designed directly in code, reviewed at 390, 768 and 1280 px. There is no design file:
 the running site is the design, and this page keeps the tokens and decisions behind it.
 
-## 🧩 What stays recognizably Huella
+## What stays recognizably Huella
 
 | Ingredient | Direction |
 | --- | --- |
@@ -17,7 +17,7 @@ the running site is the design, and this page keeps the tokens and decisions beh
 > Tailwind's incremental scan sometimes misses classes in a new file. If a fresh page renders with
 > a collapsed grid, touch [`main.css`](./layers/design/app/assets/main.css) or restart the dev server.
 
-## 🗂 Structure
+## Structure
 
 | Path | Role |
 | --- | --- |
@@ -25,7 +25,7 @@ the running site is the design, and this page keeps the tokens and decisions beh
 | [`layers/design/app/app.config.ts`](./layers/design/app/app.config.ts) | Nuxt UI colour aliases and control defaults: 44 px minimum height, paper field surface, and a button theme that darkens on hover, rings outlines in ink and draws the 2 px focus ring |
 | `.hl-prose` in [`layers/articles/app/assets/prose.css`](./layers/articles/app/assets/prose.css) | Reading typography for that HTML: headings, drop cap, notes, quotes, quoted legislation, tables, figures. It styles plain elements and Gutenberg's own wrappers (`wp-block-table`), so production can reuse it on CMS HTML |
 
-## 🎨 Tokens
+## Tokens
 
 Palettes are namespaced (`ivory`, `huella-slate`, `huella-teal`, `huella-ink`, `huella-danger`) so
 none shadows a Tailwind palette, and each runs 50–950 because Nuxt UI generates all eleven shades
@@ -83,7 +83,7 @@ An abandoned Penpot sheet (P5) supplied the original tokens. These are the devia
 | Canvas | `ivory-100` | `ivory-100` | Unchanged |
 | Muted text | Stated as 4.60:1 | Measured 4.60:1 | Unchanged; the ratio was re-measured |
 
-## 🚦 Review gates
+## Review gates
 
 | Gate | Question | Status |
 | --- | --- | --- |
@@ -92,7 +92,7 @@ An abandoned Penpot sheet (P5) supplied the original tokens. These are the devia
 | C | Is the whole site ready at 390 / 768 / 1280? | Approved 29 Sep 2026 |
 | D | Which benchmark proposals make it in? | Approved 30 Sep 2026: the D set, A wherever D has no page |
 
-## 🧭 Not designed yet
+## Not designed yet
 
 | Area | State |
 | --- | --- |

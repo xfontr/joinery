@@ -20,6 +20,9 @@
                     <ULink to="/work" active-class="text-primary">
                         {{ $t("app.visitor.nav.work") }}
                     </ULink>
+                    <ULink to="/about" active-class="text-primary">
+                        {{ $t("app.visitor.nav.about") }}
+                    </ULink>
                 </nav>
                 <ViewSwitch current="visitor" />
             </div>
@@ -39,6 +42,9 @@
                     <mark>{{ $t("app.visitor.footer.titleMark") }}</mark>
                 </span>
                 <span class="text-sm text-muted">{{ $t("app.visitor.footer.line") }}</span>
+            </ULink>
+            <ULink to="/about" class="mt-6 inline-block text-sm text-muted hover:text-highlighted">
+                {{ $t("app.visitor.footer.builtBy") }}
             </ULink>
         </footer>
     </div>

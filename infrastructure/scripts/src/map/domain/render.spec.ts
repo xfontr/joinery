@@ -13,10 +13,10 @@ describe("render", () => {
     it("omits a section entirely when it has no capabilities, rather than an empty table", () => {
         const markdown = render([command("pnpm docs:map", "package.json", "docs:map")], []);
 
-        expect(markdown).toContain("## ⌨️ Commands");
-        expect(markdown).not.toContain("## 🪝 Git hooks");
-        expect(markdown).not.toContain("## ⚙️ Workflows");
-        expect(markdown).not.toContain("## 🛠 Agent skills");
+        expect(markdown).toContain("## Commands");
+        expect(markdown).not.toContain("## Git hooks");
+        expect(markdown).not.toContain("## Workflows");
+        expect(markdown).not.toContain("## Agent skills");
     });
 
     it("marks an undocumented capability with a dash instead of leaving the cell blank", () => {
@@ -49,8 +49,6 @@ describe("render", () => {
 
         const markdown = render(capabilities, []);
 
-        expect(markdown.indexOf("## ⌨️ Commands")).toBeLessThan(
-            markdown.indexOf("## 🛠 Agent skills"),
-        );
+        expect(markdown.indexOf("## Commands")).toBeLessThan(markdown.indexOf("## Agent skills"));
     });
 });

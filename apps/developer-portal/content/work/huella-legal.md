@@ -11,7 +11,7 @@ why: The magazine publishes legal analysis for anyone curious, students first. T
 facts:
   - 105 articles
   - 42 authors
-  - 14 topics
+  - 13 topics
 countedOn: 29 Sep 2026
 design:
   - label: Paper

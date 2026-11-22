@@ -4,7 +4,7 @@ The tokens for the rebuild of [marinaroustan.com](https://marinaroustan.com/), e
 live site with [`pnpm brand:extract`](../../infrastructure/scripts/src/brand/README.md) on
 15 Nov 2026. Tone is the one row a person wrote.
 
-## 🧩 What stays recognizably Marina
+## What stays recognizably Marina
 
 | Ingredient | Direction |
 | --- | --- |
@@ -15,7 +15,7 @@ live site with [`pnpm brand:extract`](../../infrastructure/scripts/src/brand/REA
 | Type | Lato throughout: 700 for headings, 300 for body text at 21 px |
 | Tone | A calm clinical practice: flat illustrations on pale blue, one ochre button per section, rounded cards, no photography beyond the portrait |
 
-## 🗂 Structure
+## Structure
 
 | Path | Role |
 | --- | --- |
@@ -23,7 +23,7 @@ live site with [`pnpm brand:extract`](../../infrastructure/scripts/src/brand/REA
 | [`layers/design/app/app.config.ts`](./layers/design/app/app.config.ts) | Nuxt UI's colour aliases: primary tide, secondary ochre, neutral ink, error danger |
 | [`layers/design/nuxt.config.ts`](./layers/design/nuxt.config.ts) | Loads `main.css`, turns colour mode off and has `@nuxt/fonts` serve Lato at the four weights the site uses |
 
-## 🎨 Tokens
+## Tokens
 
 Palettes `paper`, `ink`, `tide`, `ochre` and `danger` run 50–950, with each live colour unchanged at
 its step. `danger` is invented; the site has no error colour.
@@ -87,7 +87,7 @@ Colour reaches a component through Nuxt UI's roles (`bg-muted`, `text-primary`�
 step: [`eslint.config.ts`](./eslint.config.ts) rejects every `-50`…`-950` colour utility and any
 arbitrary type or colour value. Need a new one? Add a role or token to `main.css`.
 
-## 🧭 Not done yet
+## Not done yet
 
 Dark theme (`ui.colorMode` is off), small-screen type (only 1280 px was extracted), and per-component
 theme files.
