@@ -221,40 +221,11 @@
         "profileCount": "Ver su publicación | Ver sus {count} publicaciones"
     },
     "authors": {
-        "about": {
-            "contact": "Contactar",
-            "kicker": "Sobre Huella Legal",
-            "lead": "Huella Legal nació para acercar el Derecho a cualquier lector sin rebajar el rigor. Hoy reúne a {count} colaboradores de España, Argentina, Chile, México, Cuba y Colombia: estudiantes, abogados, fiscales, jueces y profesores.",
-            "publish": "Publicar un artículo",
-            "thanks": "Valoramos enormemente cada aportación. Por eso cada colaborador tiene aquí su ficha, con su trayectoria y el enlace a todo lo que ha publicado.",
-            "title": "Una revista escrita por quienes practican, enseñan y estudian el Derecho."
-        },
-        "principles": {
-            "accessibility": {
-                "body": "Escribimos para que un lector sin formación jurídica pueda seguir el razonamiento sin perder el hilo.",
-                "title": "Accesibilidad"
-            },
-            "label": "Principios editoriales",
-            "openAccess": {
-                "body": "Todo lo publicado se puede leer sin registro y sin muro de pago.",
-                "title": "Acceso libre"
-            },
-            "rigour": {
-                "body": "Cada entrada se apoya en fuentes verificables: legislación, jurisprudencia y doctrina citadas con precisión.",
-                "title": "Rigor"
-            }
-        },
         "title": "Colaboradores"
     },
     "categories": {
         "kicker": "Índice",
         "lead": "Cada texto pertenece a un área y tiene un formato. Los temas cruzan todas las áreas.",
-        "sections": {
-            "formats": "{count} formato | {count} formatos",
-            "label": "En esta página",
-            "subjects": "{count} área | {count} áreas",
-            "topics": "{count} tema | {count} temas"
-        },
         "title": "Áreas"
     },
     "category": {
@@ -401,6 +372,14 @@
     "directoryCard": {
         "count": "{count} publicación | {count} publicaciones"
     },
+    "directoryIntro": {
+        "contact": "Contactar",
+        "kicker": "Sobre Huella Legal",
+        "lead": "Huella Legal nació para acercar el Derecho a cualquier lector sin rebajar el rigor. Hoy reúne a {count} colaboradores de España, Argentina, Chile, México, Cuba y Colombia: estudiantes, abogados, fiscales, jueces y profesores.",
+        "publish": "Publicar un artículo",
+        "thanks": "Valoramos enormemente cada aportación. Por eso cada colaborador tiene aquí su ficha, con su trayectoria y el enlace a todo lo que ha publicado.",
+        "title": "Una revista escrita por quienes practican, enseñan y estudian el Derecho."
+    },
     "directoryListing": {
         "count": "{count} autor · por número de publicaciones | {count} autores · por número de publicaciones",
         "filter": {
@@ -415,6 +394,21 @@
             "title": "Ningún colaborador se llama «{query}»"
         },
         "title": "Colaboradores"
+    },
+    "directoryPrinciples": {
+        "accessibility": {
+            "body": "Escribimos para que un lector sin formación jurídica pueda seguir el razonamiento sin perder el hilo.",
+            "title": "Accesibilidad"
+        },
+        "label": "Principios editoriales",
+        "openAccess": {
+            "body": "Todo lo publicado se puede leer sin registro y sin muro de pago.",
+            "title": "Acceso libre"
+        },
+        "rigour": {
+            "body": "Cada entrada se apoya en fuentes verificables: legislación, jurisprudencia y doctrina citadas con precisión.",
+            "title": "Rigor"
+        }
     },
     "emptyState": {
         "browse": "Ver otras áreas",
@@ -456,22 +450,6 @@
         "description": "Tu mensaje nos llega igual, pero estos días tardaremos más de lo habitual en contestarte. Gracias por la paciencia.",
         "title": "Ahora respondemos más despacio"
     },
-    "home": {
-        "hero": {
-            "emphasis": "leído",
-            "lead": "Revista jurídica de acceso libre. Artículos revisados de profesionales, docentes y estudiantes de todo el ámbito hispanohablante.",
-            "title": "Derecho riguroso, escrito para ser {emphasis}."
-        },
-        "publish": {
-            "action": "Cómo publicar",
-            "label": "Publicar en Huella Legal",
-            "prompt": "¿Escribes sobre Derecho? Publicamos artículos, comentarios, ensayos y trabajos académicos, con revisión editorial y respuesta en cinco días."
-        },
-        "recent": {
-            "all": "Ver todas",
-            "title": "Publicaciones recientes"
-        }
-    },
     "homeFeatured": {
         "formats": {
             "article": "Artículo",
@@ -483,6 +461,20 @@
             "all": "Todas las publicaciones",
             "title": "Últimas publicaciones"
         }
+    },
+    "homeHero": {
+        "emphasis": "leído",
+        "lead": "Revista jurídica de acceso libre. Artículos revisados de profesionales, docentes y estudiantes de todo el ámbito hispanohablante.",
+        "title": "Derecho riguroso, escrito para ser {emphasis}."
+    },
+    "homePublishPrompt": {
+        "action": "Cómo publicar",
+        "label": "Publicar en Huella Legal",
+        "prompt": "¿Escribes sobre Derecho? Publicamos artículos, comentarios, ensayos y trabajos académicos, con revisión editorial y respuesta en cinco días."
+    },
+    "homeRecent": {
+        "all": "Ver todas",
+        "title": "Publicaciones recientes"
     },
     "homeSubjects": {
         "all": "Todas las áreas",
@@ -903,6 +895,12 @@
     "subjectsGrid": {
         "count": "{count} publicación | {count} publicaciones",
         "title": "Áreas"
+    },
+    "subjectsSectionNav": {
+        "formats": "{count} formato | {count} formatos",
+        "label": "En esta página",
+        "subjects": "{count} área | {count} áreas",
+        "topics": "{count} tema | {count} temas"
     },
     "subjectsTopics": {
         "count": "{count} publicación | {count} publicaciones",

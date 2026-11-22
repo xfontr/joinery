@@ -1,54 +1,60 @@
 <template>
-    <section :aria-labelledby="headingId">
-        <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-            <div>
-                <h2 :id="headingId" class="font-serif text-section text-highlighted md:text-h2">
-                    {{ $t("directoryListing.title") }}
-                </h2>
-                <p class="mt-1 font-sans text-meta text-muted">
-                    {{ $t("directoryListing.count", authors.length) }}
-                </p>
+    <section :aria-labelledby="headingId" class="border-t border-default bg-muted">
+        <UContainer class="py-16 lg:py-20">
+            <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+                <div>
+                    <h2 :id="headingId" class="font-serif text-section text-highlighted md:text-h2">
+                        {{ $t("directoryListing.title") }}
+                    </h2>
+                    <p class="mt-1 font-sans text-meta text-muted">
+                        {{ $t("directoryListing.count", authors.length) }}
+                    </p>
+                </div>
+                <UFormField :label="$t('directoryListing.filter.label')" class="w-full md:w-80">
+                    <UInput
+                        ref="input"
+                        v-model="query"
+                        type="search"
+                        icon="i-lucide-search"
+                        :placeholder="$t('directoryListing.filter.placeholder')"
+                        class="w-full"
+                    />
+                </UFormField>
             </div>
-            <UFormField :label="$t('directoryListing.filter.label')" class="w-full md:w-80">
-                <UInput
-                    ref="input"
-                    v-model="query"
-                    type="search"
-                    icon="i-lucide-search"
-                    :placeholder="$t('directoryListing.filter.placeholder')"
-                    class="w-full"
-                />
-            </UFormField>
-        </div>
 
-        <output class="sr-only">
-            {{ normalizedQuery ? $t("directoryListing.matches", matches.length) : "" }}
-        </output>
+            <output class="sr-only">
+                {{ normalizedQuery ? $t("directoryListing.matches", matches.length) : "" }}
+            </output>
 
-        <DirectoryReveal
-            v-if="matches.length"
-            v-slot="{ items }"
-            :items="matches"
-            :limit="normalizedQuery ? Infinity : PAGE_SIZE"
-            :label="$t('directoryListing.more', { count: matches.length })"
-        >
-            <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <li v-for="{ value, count } in items" :key="value.id">
-                    <DirectoryCard :author="value" :count />
-                </li>
-            </ul>
-        </DirectoryReveal>
+            <DirectoryReveal
+                v-if="matches.length"
+                v-slot="{ items }"
+                :items="matches"
+                :limit="normalizedQuery ? Infinity : PAGE_SIZE"
+                :label="$t('directoryListing.more', { count: matches.length })"
+            >
+                <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <li v-for="{ value, count } in items" :key="value.id">
+                        <DirectoryCard :author="value" :count />
+                    </li>
+                </ul>
+            </DirectoryReveal>
 
-        <UEmpty
-            v-else
-            icon="i-lucide-users"
-            :title="$t('directoryListing.noMatch.title', { query: trimmedQuery })"
-            :description="$t('directoryListing.noMatch.description')"
-            :actions="[
-                { label: $t('directoryListing.noMatch.reset'), variant: 'link', onClick: reset },
-            ]"
-            class="mt-8 border border-dashed border-accented"
-        />
+            <UEmpty
+                v-else
+                icon="i-lucide-users"
+                :title="$t('directoryListing.noMatch.title', { query: trimmedQuery })"
+                :description="$t('directoryListing.noMatch.description')"
+                :actions="[
+                    {
+                        label: $t('directoryListing.noMatch.reset'),
+                        variant: 'link',
+                        onClick: reset,
+                    },
+                ]"
+                class="mt-8 border border-dashed border-accented"
+            />
+        </UContainer>
     </section>
 </template>
 

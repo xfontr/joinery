@@ -1,62 +1,10 @@
 <template>
     <div>
         <BasePageIntro :breadcrumbs="[{ label: $t('authors.title') }]">
-            <div class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-x-12">
-                <BasePageHeading
-                    :kicker="$t('authors.about.kicker')"
-                    :title="$t('authors.about.title')"
-                    class="lg:col-span-7"
-                />
-                <div
-                    class="flex max-w-measure flex-col gap-5 font-serif text-reading text-toned lg:col-span-5 lg:pt-10"
-                >
-                    <p>{{ $t("authors.about.lead", { count: authors.length }) }}</p>
-                    <p>{{ $t("authors.about.thanks") }}</p>
-                    <div class="flex flex-col gap-3 pt-1 sm:flex-row">
-                        <UButton
-                            :label="$t('authors.about.publish')"
-                            :to="{ name: 'publish' }"
-                            class="justify-center"
-                        />
-                        <UButton
-                            variant="outline"
-                            color="neutral"
-                            :label="$t('authors.about.contact')"
-                            :to="nav.contact"
-                            class="justify-center"
-                        />
-                    </div>
-                </div>
-            </div>
+            <DirectoryIntro :count="authors.length" />
         </BasePageIntro>
-
-        <UContainer
-            as="section"
-            :aria-label="$t('authors.principles.label')"
-            class="py-16 lg:py-20"
-        >
-            <ol class="grid gap-x-10 gap-y-8 lg:grid-cols-3">
-                <li v-for="(key, index) in PRINCIPLES" :key class="border-t-2 border-inverted pt-4">
-                    <span
-                        class="font-serif text-2xl leading-none text-secondary tabular-nums"
-                        aria-hidden="true"
-                        >{{ index + 1 }}</span
-                    >
-                    <h2 class="mt-3 font-serif text-h3 text-highlighted">
-                        {{ $t(`authors.principles.${key}.title`) }}
-                    </h2>
-                    <p class="mt-2 font-serif text-base/relaxed text-toned">
-                        {{ $t(`authors.principles.${key}.body`) }}
-                    </p>
-                </li>
-            </ol>
-        </UContainer>
-
-        <div class="border-t border-default bg-muted">
-            <UContainer class="py-16 lg:py-20">
-                <DirectoryListing :authors />
-            </UContainer>
-        </div>
+        <DirectoryPrinciples />
+        <DirectoryListing :authors />
     </div>
 </template>
 
@@ -64,14 +12,11 @@
 definePageMeta({ name: "authors", path: "/colaboradores/" });
 
 const { t } = useI18n();
-const { nav } = useAppConfig();
 
-const { authors } = await useAuthorDirectory();
-
-const PRINCIPLES = ["rigour", "accessibility", "openAccess"] as const;
+const authors = await useRequiredFetch<Facet<Author>[]>("/api/authors", () => []);
 
 useSeoMeta({
     title: () => t("authors.title"),
-    description: () => t("authors.about.title"),
+    description: () => t("directoryIntro.title"),
 });
 </script>

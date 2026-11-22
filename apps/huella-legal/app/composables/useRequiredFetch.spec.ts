@@ -2,7 +2,7 @@ import { serveEndpoint, withSetup } from "@monorepo/configs/vitest/utils/nuxt";
 import { fakeAuthor } from "@monorepo/content/testing";
 import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useAuthorDirectory } from "./useAuthorDirectory";
+import { useRequiredFetch } from "./useRequiredFetch";
 
 const AUTHORS: Facet<Author>[] = [{ value: fakeAuthor(), count: 2 }];
 
@@ -18,9 +18,11 @@ const serve = (answer: () => unknown) => {
 };
 
 const setUp = () =>
-    withSetup(() => useAuthorDirectory()).then(
-        ({ value }) => ({ controller: value, failure: undefined }),
-        (failure: unknown) => ({ controller: undefined, failure }),
+    withSetup(async () => ({
+        data: await useRequiredFetch<Facet<Author>[]>("/api/authors", () => []),
+    })).then(
+        ({ value }) => ({ data: value.data, failure: undefined }),
+        (failure: unknown) => ({ data: undefined, failure }),
     );
 
 // useCachedFetch serves a payload it already holds, which would outlive the test that fetched it
@@ -29,16 +31,16 @@ beforeEach(() => {
     clearNuxtData();
 });
 
-describe("useAuthorDirectory", () => {
-    it("reads the authors route", async () => {
+describe("useRequiredFetch", () => {
+    it("reads the route it is given", async () => {
         serve(() => AUTHORS);
-        const { controller } = await setUp();
+        const { data } = await setUp();
 
-        expect(controller?.authors.value).toEqual(AUTHORS);
+        expect(data?.value).toEqual(AUTHORS);
     });
 
-    // The article's author counts read the same route under their own key
-    it("reads it under the route's default key", async () => {
+    // The article's author counts read the authors route under their own key
+    it("reads under the route's default key, so it never takes another read's payload", async () => {
         serve(() => AUTHORS);
         await setUp();
 
@@ -46,7 +48,8 @@ describe("useAuthorDirectory", () => {
         expect(reads[0]![1]).not.toHaveProperty("key");
     });
 
-    it("throws a fatal page error with the route's status when the directory can't be read", async () => {
+    // Thrown during setup, so server rendering answers with the route's own status
+    it("throws a fatal page error with the route's status when the route can't be read", async () => {
         serve(() => new Response("Bad gateway", { status: 502 }));
 
         expect((await setUp()).failure).toMatchObject({ status: 502, fatal: true });

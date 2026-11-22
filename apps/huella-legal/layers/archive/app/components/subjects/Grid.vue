@@ -1,5 +1,5 @@
 <template>
-    <section aria-labelledby="areas">
+    <UContainer as="section" aria-labelledby="areas" class="py-16 lg:py-20">
         <h2 id="areas" class="scroll-mt-6 text-kicker">
             {{ $t("subjectsGrid.title") }}
         </h2>
@@ -23,7 +23,7 @@
                 </p>
             </li>
         </ol>
-    </section>
+    </UContainer>
 </template>
 
 <script setup lang="ts">

@@ -48,7 +48,7 @@ test("follows with the three posts after those", async ({ page }) => {
 
     await expect(
         page
-            .getByRole("region", { name: t("home.recent.title") })
+            .getByRole("region", { name: t("homeRecent.title") })
             .getByRole("heading", { level: 3 }),
     ).toHaveText(titles.slice(6, 6 + shown));
 });
