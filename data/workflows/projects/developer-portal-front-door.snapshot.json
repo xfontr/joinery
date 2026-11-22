@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-22T16:52:26.673Z",
+    "syncedAt": "2026-11-22T22:42:18.610Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -279,6 +279,11 @@
                     "number": 489,
                     "open": true,
                     "closedAt": null
+                },
+                {
+                    "number": 504,
+                    "open": false,
+                    "closedAt": "2026-11-22T22:42:18.610Z"
                 }
             ],
             "branch": false,
@@ -357,19 +362,46 @@
             "number": 504,
             "title": "Visitor area ready for production",
             "url": "https://github.com/xfontr/monorepo/issues/504",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "production-readiness"
             ],
             "createdAt": "2026-11-22T16:52:15Z",
-            "closedAt": null,
-            "activity": [],
+            "closedAt": "2026-11-22T22:42:18.610Z",
+            "activity": [
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22"
+            ],
             "blockedBy": [],
             "branch": false,
             "pr": false,
             "owner": false,
             "complexity": 13
+        },
+        {
+            "number": 505,
+            "title": "404 and error pages",
+            "url": "https://github.com/xfontr/monorepo/issues/505",
+            "state": "closed",
+            "reason": "completed",
+            "caps": [
+                "error-pages"
+            ],
+            "createdAt": "2026-11-22T18:54:54Z",
+            "closedAt": "2026-11-22T19:22:45Z",
+            "activity": [],
+            "blockedBy": [],
+            "branch": false,
+            "pr": true,
+            "owner": false,
+            "complexity": 2
         }
     ],
     "noMilestone": []
