@@ -276,46 +276,6 @@ export const questions = [
     },
 ];
 
-/** F: one real piece of work, from its question to this page. */
-export const journey = [
-    {
-        stop: "A question",
-        text: "How should someone who doesn't write code see this portal?",
-        artefact: "Ticket #474",
-        to: "/decisions/0040-developer-portal-visitor-structure",
-    },
-    {
-        stop: "Look first",
-        text: "Twelve award-juried sites, measured for type, colour and what a reader takes in 30 seconds.",
-        artefact: "Benchmark 0039",
-        to: "/decisions/0039-developer-portal-benchmark",
-    },
-    {
-        stop: "Decide in writing",
-        text: "A 'pick your door' page against landing straight in. Measured, the door cost every visitor a click.",
-        artefact: "Decision 0040",
-        to: "/decisions/0040-developer-portal-visitor-structure",
-    },
-    {
-        stop: "Plan the job",
-        text: "The redesign mapped into twelve blocks, from benchmark to go-live, each knowing what it waits on.",
-        artefact: "The front-door plan",
-        to: "/workflows/developer-portal-front-door",
-    },
-    {
-        stop: "Build and review",
-        text: "Agents build each block; three automated reviewers read it before it merges.",
-        artefact: "The agent pipeline",
-        to: "/docs/docs/concepts/agent-setup",
-    },
-    {
-        stop: "You are here",
-        text: "This page is the design lab that plan asked for.",
-        artefact: "Design lab, #477",
-        to: "/workflows/developer-portal-front-door",
-    },
-];
-
 /** The workflows story: the feature told at a visitor's depth. */
 export const workflows = {
     pitch: "One map that people and AI agents work from together.",

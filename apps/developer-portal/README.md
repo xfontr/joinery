@@ -34,10 +34,10 @@ Under `pnpm dev developer-portal` it reads the working tree live. The deployed s
 
 | Layer | Kind | What it owns |
 | --- | --- | --- |
-| `snapshot` | Core | The `.report/` store, its types, `useSnapshot` |
+| `snapshot` | Core | The `.report/` artifacts, bundled at build time by one `<name>Artifact()` util each, and their types |
 | `design` | Core | Tokens, shared classes and the Nuxt UI theme |
 | `docs` | Core | Link rewriting and `ProseA` for rendered markdown |
-| `github` | Core | Browser-side reads of GitHub issues and deployments |
+| `github` | Core | Browser-side reads of GitHub issues |
 | `decisions`, `audits`, `benchmarks` | Feature | Each record type's list and pages |
 | `projects` | Feature | Projects, Architecture and What's new |
 | `health` | Feature | Work in progress, Coverage, Dependencies |
@@ -99,7 +99,7 @@ layout, which kept it out of every page's payload.
 
 ### GitHub reads
 
-Issues and deployments are fetched unauthenticated from the browser, so the site needs no server or
+Issues are fetched unauthenticated from the browser, so the site needs no server or
 secret. The limit is 60 requests an hour per IP. Board placement (`projectItems`) is GraphQL-only and
 needs a token, so it isn't shown.
 
@@ -110,7 +110,7 @@ GitHub Pages on every push to `master` or by hand: `pnpm test:coverage`, then `c
 `build-static`. Pages must be set to build from GitHub Actions in repo settings. huella-legal's
 Storybook is built into the same artifact under `/huella-legal-storybook/`.
 
-- Every page is as old as the last deploy, except issues and deployments (live) and workflows (as
+- Every page is as old as the last deploy, except issues (live) and workflows (as
   old as the last committed `pnpm workflow:sync`).
 - `NUXT_APP_BASE_URL` and `NUXT_PUBLIC_REPO_URL` are baked in at build time, derived by the workflow.
 - The project overrides its `production` Nx input in [`package.json`](./package.json) so any `*.md`
