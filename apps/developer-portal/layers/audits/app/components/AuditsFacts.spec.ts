@@ -1,7 +1,7 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
 import type { AuditReport } from "#layers/audits/shared/auditReports.ts";
-import AuditsTiles from "./AuditsTiles.vue";
+import AuditsFacts from "./AuditsFacts.vue";
 
 const findings = (status: "open" | "fixed", count: number) =>
     Array.from({ length: count }, (_, index) => ({
@@ -24,9 +24,9 @@ const report = (id: string, open: number, fixed: number): AuditReport => ({
     updatedAt: null,
 });
 
-describe("AuditsTiles", () => {
+describe("AuditsFacts", () => {
     it("sums each finding status across every audit", async () => {
-        const wrapper = await mountSuspended(AuditsTiles, {
+        const wrapper = await mountSuspended(AuditsFacts, {
             props: { reports: [report("a", 2, 1), report("b", 0, 4)] },
         });
 

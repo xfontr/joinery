@@ -6,6 +6,10 @@ milestone: Huella Legal editorial
 summary: The editorial work after the relaunch of huellalegal.com — the published posts tidied, the
   archive drafts finished, the legal terms brought up to date and the readers written to again.
 
+switches:
+  # Huella Legal's own app already serves both pages.
+  error-pages: false
+
 extras:
   - id: archive-index
     stage: plan

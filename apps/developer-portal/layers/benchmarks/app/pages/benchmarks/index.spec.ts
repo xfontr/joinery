@@ -44,14 +44,9 @@ const MESSAGES = {
     benchmarksCard: {
         screenshot: "{title}, first screen",
     },
-    benchmarksTiles: {
-        hints: {
-            avoid: "kept as what not to do",
-            partial: "one or two ideas to take",
-            strong: "worth studying whole",
-        },
+    benchmarksFacts: {
+        provenance: "Read from docs/benchmarks/",
         sites: "Sites",
-        sitesHint: "one file per site",
     },
     benchmarksToolbar: {
         everyKind: "Every kind",

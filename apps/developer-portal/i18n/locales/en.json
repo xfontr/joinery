@@ -1,5 +1,6 @@
 {
     "about": {
+        "github": "GitHub",
         "head": "About",
         "intro": {
             "end": "about Portal, their developer platform built on Backstage. My first thought was: hold on, with a monorepo this big, I can actually build one for my own stuff. So I did.",
@@ -8,7 +9,7 @@
         "lead": "I'm Xifré Font, a senior frontend developer in Barcelona. Before that I was a lawyer, and founded Huella Legal while practising.",
         "linkedin": "LinkedIn",
         "post": "a Spotify post",
-        "repo": "GitHub",
+        "repo": "This repo",
         "story": {
             "label": "How this repo got here",
             "items": {
@@ -147,7 +148,8 @@
         },
         "visitor": {
             "footer": {
-                "builtBy": "Built by Xifré Font",
+                "copyright": "© 2026 Xifré Font",
+                "noTracking": "Nothing here tracks you.",
                 "line": "Every decision, plan, audit and check, raw.",
                 "title": "Want everything?",
                 "titleMark": "Open the developer view."
@@ -172,7 +174,7 @@
             "title": "No such audit"
         },
         "notFound": "Not found",
-        "readAt": "read at {commit}"
+        "provenance": "{source} · read at {commit}"
     },
     "audits": {
         "empty": {
@@ -196,14 +198,9 @@
         },
         "title": "Audits"
     },
-    "auditsTiles": {
+    "auditsFacts": {
         "audits": "Audits",
-        "closed": "{count} closed",
-        "hints": {
-            "fixed": "the fix has landed",
-            "open": "findings still owed work",
-            "wont-fix": "decided against, deliberately"
-        }
+        "provenance": "Read from docs/audits/ · {closed} of {total} closed"
     },
     "auditsToolbar": {
         "everyScope": "Every scope",
@@ -242,17 +239,12 @@
     "benchmarksCard": {
         "screenshot": "{title}, first screen"
     },
+    "benchmarksFacts": {
+        "provenance": "Read from docs/benchmarks/",
+        "sites": "Sites"
+    },
     "benchmarksMeta": {
         "open": "Open site"
-    },
-    "benchmarksTiles": {
-        "hints": {
-            "avoid": "kept as what not to do",
-            "partial": "one or two ideas to take",
-            "strong": "worth studying whole"
-        },
-        "sites": "Sites",
-        "sitesHint": "one file per site"
     },
     "benchmarksToolbar": {
         "everyKind": "Every kind",
@@ -376,17 +368,12 @@
         "supersededBy": "Superseded by {by}",
         "title": "Decisions"
     },
+    "decisionsFacts": {
+        "provenance": "Read from docs/decisions/",
+        "reports": "Reports"
+    },
     "decisionsPreview": {
         "number": "Decision {number}"
-    },
-    "decisionsTiles": {
-        "hints": {
-            "implemented": "the work has landed",
-            "to-implement": "decided, not in the repo yet",
-            "wont-implement": "decided against, deliberately"
-        },
-        "reports": "Reports",
-        "reportsHint": "one file per decision"
     },
     "decisionsToolbar": {
         "everyDecision": "Every decision",

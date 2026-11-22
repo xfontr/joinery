@@ -56,6 +56,10 @@ settled:
     on: 2026-11-04
     note: Axe runs in every e2e page spec; the fixes came through the component
       review.
+  error-pages:
+    status: done
+    on: 2026-08-06
+    note: "`app/error.vue` landed with the first translations, before the map existed."
   legacy-redirects:
     status: done
     on: 2026-11-04

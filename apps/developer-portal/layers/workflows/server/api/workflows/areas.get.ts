@@ -12,7 +12,8 @@ export default defineEventHandler(async () => {
 
     for (const view of projects) {
         const card = projectCard(view);
-        const rows = byArea[view.project.area] ?? [];
+        const folder = view.project.area.split(":").at(-1) ?? "";
+        const rows = byArea[folder] ?? [];
         rows.push({
             id: card.id,
             title: card.title,
@@ -21,7 +22,7 @@ export default defineEventHandler(async () => {
             done: view.progress.done,
             left: view.progress.total - view.progress.done,
         });
-        byArea[view.project.area] = rows;
+        byArea[folder] = rows;
     }
 
     return byArea;
