@@ -122,6 +122,21 @@ button:not(:disabled) {
     to { rotate: 0.4deg; }
 }
 
+/* Switching between the visitor and developer views: the current pill glides to its new place */
+[data-view-switch] [aria-current="true"] {
+    view-transition-name: view-switch-current;
+}
+
+::view-transition-group(view-switch-current) {
+    animation-duration: 0.35s;
+    animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 0.25s;
+}
+
 /* The identity's roles; `:root` so Nuxt UI's teleported overlays take them too */
 :root {
     --ui-bg: var(--color-paper-100);
@@ -254,4 +269,10 @@ td[data-meter] {
 /* A README under a page that already shows its title drops its own `# heading` */
 [data-readme] h1:first-child {
     display: none;
+}
+
+/* A card standing in for the pointer, such as the front page's rule previews, hides the real one */
+[data-cursor-hidden],
+[data-cursor-hidden] * {
+    cursor: none !important;
 }

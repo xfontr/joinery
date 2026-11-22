@@ -1,7 +1,39 @@
 {
+    "about": {
+        "head": "About",
+        "lead": "I'm Xifré Font, a senior frontend developer in Barcelona. This repo holds the websites I build and the tooling they share.",
+        "linkedin": "LinkedIn",
+        "look": {
+            "items": {
+                "developer": {
+                    "detail": "Every decision, audit, test and dependency, as collected from the repo.",
+                    "term": "Developer view"
+                },
+                "maps": {
+                    "detail": "How each project is planned before the first ticket.",
+                    "term": "Project maps"
+                },
+                "method": {
+                    "detail": "The five rules every project follows, and the check behind each one.",
+                    "term": "Method"
+                },
+                "repo": {
+                    "detail": "The code itself.",
+                    "term": "GitHub"
+                },
+                "work": {
+                    "detail": "The two websites, what changed and why.",
+                    "term": "Work"
+                }
+            },
+            "label": "Where to look"
+        },
+        "title": "About",
+        "titleMark": "this repo"
+    },
     "agenticWorkflows": {
-        "head": "Agentic workflows",
-        "lead": "I plan each project as a map of tasks, and AI agents build it ticket by ticket. The maps below are the real ones.",
+        "head": "Project maps",
+        "lead": "I plan each project as a map of tasks and build it ticket by ticket. The maps below are the real ones.",
         "lessons": {
             "all": "Every workflow, in the developer view",
             "items": {
@@ -40,8 +72,8 @@
         },
         "steps": {
             "agents": {
-                "body": "Claude Code agents pick up open tickets, starting with whichever unblocks the most work.",
-                "title": "Agents take ready tickets"
+                "body": "Open tickets are built in the order that unblocks the most work.",
+                "title": "Build what's ready"
             },
             "file": {
                 "body": "The whole map is agreed before the first ticket goes out.",
@@ -60,8 +92,8 @@
                 "title": "Start what's unblocked"
             }
         },
-        "title": "Agentic",
-        "titleMark": "workflows"
+        "title": "Project",
+        "titleMark": "maps"
     },
     "app": {
         "apps": {
@@ -113,14 +145,16 @@
         },
         "visitor": {
             "footer": {
+                "builtBy": "Built by Xifré Font",
                 "line": "Every decision, plan, audit and check, raw.",
                 "title": "Want everything?",
                 "titleMark": "Open the developer view."
             },
             "nav": {
+                "about": "About",
                 "method": "Method",
                 "work": "Work",
-                "workflows": "Agentic workflows"
+                "workflows": "Project maps"
             },
             "navLabel": "Main",
             "wordmark": "monorepo"
@@ -246,6 +280,17 @@
             "title": "Never released"
         }
     },
+    "checksPreview": {
+        "accessibility": "WCAG AA",
+        "lint": {
+            "count": "{count} rules",
+            "none": "Every change"
+        },
+        "tests": {
+            "count": "{count} files",
+            "none": "Every change"
+        }
+    },
     "collectionEmpty": {
         "collect": "; {command} is what reads them in",
         "nothing": "Nothing under {folder} yet.",
@@ -328,6 +373,9 @@
         },
         "supersededBy": "Superseded by {by}",
         "title": "Decisions"
+    },
+    "decisionsPreview": {
+        "number": "Decision {number}"
     },
     "decisionsTiles": {
         "hints": {
@@ -488,17 +536,17 @@
                 "title": "Case studies"
             },
             "workflows": {
-                "kicker": "Agentic workflows",
+                "kicker": "Planning",
                 "title": "Live project maps"
             }
         },
         "head": "Built by rules",
-        "intro": "AI agents write most of the code. I write the rules they follow, and every decision is public.",
+        "intro": "Each one follows the five rules below, and every decision behind them is public.",
         "lead": "Websites for small publications and practices, and the tools that run them.",
         "rules": {
             "agents": {
                 "line": "Tests, lint rules and three review agents decide what gets merged. I step in when they ask.",
-                "proof": "Agent setup"
+                "proof": "How a change gets merged"
             },
             "decide": {
                 "line": "Any call that could go either way gets a short report anyone can read.",
@@ -860,9 +908,9 @@
     },
     "rules": {
         "agents": {
-            "body": "An agent takes a ticket from plan to merge, and no person reads the code. Any of the {steps} steps can stop and ask me.",
-            "more": "Agent setup",
-            "title": "Let agents write the code."
+            "body": "Every change runs the same {steps} steps from plan to merge, and reviews for architecture, correctness and tests must pass before it lands. Any step can stop and ask me.",
+            "more": "How a change gets merged",
+            "title": "Let the checks decide."
         },
         "decide": {
             "body": "When a call could go either way, I write a short report: the question, the options, what was picked and why. The next person, or agent, reads it instead of asking again.",
@@ -879,7 +927,7 @@
         "plan": {
             "body": "Each project starts from a template with every task the job needs, what each one waits on, and what went wrong last time.",
             "count": "{count} lessons from past projects so far.",
-            "more": "Agentic workflows",
+            "more": "Project maps",
             "title": "Plan the whole job."
         },
         "prove": {
@@ -1521,8 +1569,8 @@
     "workflowTeaser": {
         "cta": "See the live maps",
         "glyphLabel": "Huella Legal's project map",
-        "kicker": "Agentic workflows",
-        "line": "This one is Huella Legal's. Each block lists what it waits on, and agents start whatever is free.",
+        "kicker": "Planning",
+        "line": "This one is Huella Legal's. Each block lists what it waits on, and work starts on whatever is free.",
         "title": "Project",
         "titleMark": "maps"
     },

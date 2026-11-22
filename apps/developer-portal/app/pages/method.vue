@@ -72,7 +72,6 @@ const DECISIONS = {
     board: "0035-one-board-area-labels",
     visitor: "0040-developer-portal-visitor-structure",
 } as const;
-const PIPELINE = ["pick", "plan", "build", "review", "polish", "ship"] as const;
 
 const { t } = useI18n();
 useHead({ title: t("method.head") });
