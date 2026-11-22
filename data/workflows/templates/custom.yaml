@@ -1,11 +1,12 @@
-# A project no template fits: its blocks are the project file's `extras`, drafted with the
-# project-workflow skill. Shape, rules and the GitHub contract: docs/workflows/README.md.
+# A project no template fits: the recommended blocks below plus the project file's `extras`, drafted
+# with the project-workflow skill. Shape, rules and the GitHub contract: docs/workflows/README.md.
 id: custom
 title: Custom project
 summary: >-
   Anything no other template fits, such as a developer tool, a package or an internal feature. It
-  starts with no blocks: Claude drafts them with you into the project file, and you check the map
-  here before anything is filed.
+  starts with a few recommended blocks every project tends to need, which the project switches off
+  where they don't fit; Claude drafts the rest with you into the project file, and you check the
+  map here before anything is filed.
 
 stages:
   - id: plan
@@ -22,4 +23,84 @@ stages:
 
 groups: []
 
-capabilities: []
+capabilities:
+  - id: scope-signoff
+    stage: plan
+    kind: owner
+    title: Scope sign-off
+    complexity: 1
+    optional: true
+    default: true
+    summary: You approve what the project builds, and which recommended blocks stay on, before any build ticket is filed.
+    reuse: { plan: new }
+    doneWhen:
+      - Every recommended block is switched on or off in the project file.
+      - The project's own blocks and their `doneWhen` are approved.
+
+  - id: error-pages
+    stage: build
+    title: 404 and error pages
+    complexity: 2
+    optional: true
+    default: true
+    dependsOn: [scope-signoff]
+    summary: The page an unknown URL or a failed request lands on, inside the app's layout, with a way back; off for a project that serves no pages to people.
+    reuse: { plan: method, from: apps/huella-legal/app/error.vue }
+    doneWhen:
+      - An unknown URL answers with status 404 and a not-found page inside the app's layout that links home.
+      - A server error shows its own page with a retry, never the not-found copy or Nuxt's default page.
+      - The production build serves the not-found page for a missing URL, prerendered routes included.
+    lessons:
+      - text: The developer portal shipped with neither page because no block in its map named them.
+        issues: [505]
+
+  - id: build-review
+    stage: ship
+    kind: owner
+    title: Build review
+    complexity: 3
+    optional: true
+    default: true
+    dependsOn: [stage:build]
+    summary: You look at the whole build at once, before it is documented and released; or you settle it as skipped when the build was small.
+    reuse: { plan: method, from: .claude/skills/project-workflow/SKILL.md }
+    doneWhen:
+      - Everything the build made is seen together, and anything off the design system or the repo's conventions is listed.
+      - The features as built are checked against the approved scope, with what to add or drop.
+      - Each build ticket has a line on where its agent departed from the brief.
+      - Every change you ask for is filed as a ticket or settled.
+    lessons:
+      - text: Six build blocks across two designs shipped with no block looking at them together; the review was added after the build had started.
+        issues: [484]
+    tickets:
+      - title: "[OWNER] Review the build as a whole"
+        criteria:
+          - The overview is linked in a comment, and every change asked for is filed or settled.
+
+  - id: docs-update
+    stage: ship
+    title: Docs brought up to date
+    complexity: 2
+    optional: true
+    default: true
+    dependsOn: [build-review]
+    summary: Every README and CLAUDE.md the build touched describes what was built.
+    reuse: { plan: method, from: .claude/skills/doc-drift-check/SKILL.md }
+    doneWhen:
+      - The doc-drift check reports nothing for any project the build touched.
+
+  - id: go-live
+    stage: ship
+    kind: owner
+    title: Go live
+    complexity: 1
+    dependsOn: [stage:ship]
+    summary: You approve the result as released and in use, once every other block is done.
+    reuse: { plan: new }
+    doneWhen:
+      - Every block in the map is done or settled.
+      - The released result works for the people it was built for.
+    tickets:
+      - title: "[OWNER] Approve the release"
+        criteria:
+          - What was released, and where, is linked in a comment.

@@ -30,6 +30,7 @@
 definePageMeta({ layout: "visitor" });
 
 const LINKEDIN = "https://www.linkedin.com/in/xifre/";
+const GITHUB = "https://github.com/xfontr";
 const SPOTIFY_POST =
     "https://portal.spotify.com/blog/portal-by-spotify-cut-my-claude-code-token-usage-by-90";
 const STORY = ["playground", "tooling", "workflows", "apps"] as const;
@@ -49,6 +50,7 @@ const {
 
 const links = [
     { to: LINKEDIN, label: t("about.linkedin") },
+    { to: GITHUB, label: t("about.github") },
     ...(repoUrl ? [{ to: repoUrl, label: t("about.repo") }] : []),
 ];
 

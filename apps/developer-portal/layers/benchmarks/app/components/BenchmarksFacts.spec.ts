@@ -1,7 +1,7 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
 import type { Benchmark } from "#layers/benchmarks/app/types/Benchmark.ts";
-import BenchmarksTiles from "./BenchmarksTiles.vue";
+import BenchmarksFacts from "./BenchmarksFacts.vue";
 
 const site = (id: string, verdict: Benchmark["verdict"]): Benchmark => ({
     path: `/docs/benchmarks/${id}`,
@@ -13,9 +13,9 @@ const site = (id: string, verdict: Benchmark["verdict"]): Benchmark => ({
     description: "",
 });
 
-describe("BenchmarksTiles", () => {
+describe("BenchmarksFacts", () => {
     it("counts the sites and each verdict", async () => {
-        const wrapper = await mountSuspended(BenchmarksTiles, {
+        const wrapper = await mountSuspended(BenchmarksFacts, {
             props: { benchmarks: [site("a", "strong"), site("b", "avoid"), site("c", "avoid")] },
         });
 

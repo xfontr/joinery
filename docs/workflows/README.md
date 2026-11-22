@@ -38,7 +38,7 @@ data/workflows/
 | --- | --- | --- |
 | [`website-rebuild`](../../data/workflows/templates/website-rebuild.yaml) | An existing site, usually WordPress, rebuilt on the same brand: discovery spikes, migration, redirects and a domain cutover | 41 |
 | [`new-website`](../../data/workflows/templates/new-website.yaml) | A site started from nothing: no audit, migration, redirects or cutover, but a brand, a content model and the launch copy to create | 33 |
-| [`custom`](../../data/workflows/templates/custom.yaml) | Anything no template fits, such as a developer tool, a package or an internal feature: three stages and no blocks, so the project's `extras` are its whole map, drafted with the `project-workflow` skill | 0 |
+| [`custom`](../../data/workflows/templates/custom.yaml) | Anything no template fits, such as a developer tool, a package or an internal feature: three stages, five recommended blocks (scope sign-off, 404 and error pages, build review, docs, go live) the project switches off where they don't fit, and the rest of the map in its `extras`, drafted with the `project-workflow` skill | 5 |
 
 ## Three kinds of block
 
@@ -72,7 +72,7 @@ extras:
 | `blog-comments` | A blog whose posts take comments | 13 | `component-kit`, `ci-deploy`, `comments` |
 
 `comments` (8 SP) is `onDemand`: the first blog with comments brings it in. `standard-pages`
-(*Page shell*) is the slug route plus the 404 and error pages.
+(*Page shell*) is the slug route; the 404 and error pages are `error-pages`.
 
 ## The contract with GitHub
 

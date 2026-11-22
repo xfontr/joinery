@@ -24,7 +24,7 @@ Under `pnpm dev developer-portal` it reads the working tree live. The deployed s
 | Path | What lives there |
 | --- | --- |
 | `app/` | The shell: layouts, Home, the visitor front and method pages, and `app/composables/`, which assemble Home's queue and Health, the rail, the status bar and search from several layers |
-| `app/components/`, `app/types/`, `app/utils/` | The kit: shared parts such as `StatTile`, `PageHero` and `EmptyState`, one type per file, pure helpers |
+| `app/components/`, `app/types/`, `app/utils/` | The kit: shared parts such as `PageFacts`, `PageHeader` and `EmptyState`, one type per file, pure helpers |
 | `i18n/locales/en.json` | The interface's copy — see [🔤 Copy](#copy) |
 | `content/work/` | One markdown file per Work entry — see [🔤 Copy](#copy) |
 | `layers/` | One Nuxt layer per capability — see [🧱 Layers](#layers) |
@@ -116,7 +116,7 @@ Storybook is built into the same artifact under `/huella-legal-storybook/`.
 
 - Every page is as old as the last deploy, except issues (live) and workflows (as
   old as the last committed `pnpm workflow:sync`).
-- `NUXT_APP_BASE_URL` and `NUXT_PUBLIC_REPO_URL` are baked in at build time, derived by the workflow.
+- `NUXT_APP_BASE_URL` is baked in at build time, derived by the workflow.
 - The project overrides its `production` Nx input in [`package.json`](./package.json) so any `*.md`
   or `data/workflows/` change makes it affected, and a `runtime` input over
   [`snapshotStamp.ts`](./tools/lib/snapshotStamp.ts) hashes the gitignored `.report/`.

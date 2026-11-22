@@ -1,7 +1,7 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
 import type { DecisionReport } from "#layers/decisions/shared/decisionReports.ts";
-import DecisionsTiles from "./DecisionsTiles.vue";
+import DecisionsFacts from "./DecisionsFacts.vue";
 
 const report = (id: string, status: DecisionReport["status"]): DecisionReport => ({
     path: `docs/decisions/${id}.md`,
@@ -15,9 +15,9 @@ const report = (id: string, status: DecisionReport["status"]): DecisionReport =>
     words: 0,
 });
 
-describe("DecisionsTiles", () => {
+describe("DecisionsFacts", () => {
     it("counts the reports and each status", async () => {
-        const wrapper = await mountSuspended(DecisionsTiles, {
+        const wrapper = await mountSuspended(DecisionsFacts, {
             props: {
                 reports: [
                     report("1", "implemented"),

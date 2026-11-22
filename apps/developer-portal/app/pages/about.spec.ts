@@ -4,6 +4,7 @@ import Page from "./about.vue";
 import en from "../../i18n/locales/en.json";
 
 const LINKEDIN = "https://www.linkedin.com/in/xifre/";
+const GITHUB = "https://github.com/xfontr";
 const REPO = "https://github.com/acme/repo";
 const VIEWS = ["/graph", "/decisions", "/telemetry", "/agentic-workflows"];
 const POST =
@@ -20,14 +21,14 @@ afterEach(() => {
 });
 
 describe("about page", () => {
-    it("links LinkedIn and the repository when one is configured", async () => {
+    it("links LinkedIn, GitHub and the repository when one is configured", async () => {
         useRuntimeConfig().public.repoUrl = REPO;
 
-        expect(await hrefs()).toEqual([POST, LINKEDIN, REPO]);
+        expect(await hrefs()).toEqual([POST, LINKEDIN, GITHUB, REPO]);
     });
 
     it("leaves the repository out rather than linking nowhere when none is configured", async () => {
-        expect(await hrefs()).toEqual([POST, LINKEDIN]);
+        expect(await hrefs()).toEqual([POST, LINKEDIN, GITHUB]);
     });
 
     it("keeps every linked phrase in the copy, so editing one can't drop its link unnoticed", async () => {

@@ -13,6 +13,9 @@
                     />
                     <SnapshotAge :manifest artifact="docs" />
                 </template>
+                <template v-if="reports.length > 0" #intro>
+                    <DecisionsFacts :reports />
+                </template>
             </PageHeader>
 
             <DecisionsToolbar
@@ -36,7 +39,6 @@
                 />
 
                 <template v-else>
-                    <DecisionsTiles :reports />
                     <ListCard
                         :title="$t('decisions.list.title')"
                         :note="$t('decisions.list.note')"

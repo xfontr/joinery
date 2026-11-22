@@ -58,7 +58,7 @@ export default defineNuxtConfig({
 
     runtimeConfig: {
         public: {
-            repoUrl: "",
+            repoUrl: "https://github.com/xfontr/monorepo",
         },
     },
 
