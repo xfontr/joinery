@@ -20,11 +20,7 @@
 </template>
 
 <script setup lang="ts">
-export interface SplitPart {
-    label: string;
-    value: number;
-    tone?: "ink" | "soft" | "good" | "warn" | "bad";
-}
+import type { SplitPart } from "~/types/SplitPart";
 
 interface Props {
     parts: SplitPart[];

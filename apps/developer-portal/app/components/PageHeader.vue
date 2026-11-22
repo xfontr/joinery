@@ -47,13 +47,10 @@
 </template>
 
 <script setup lang="ts">
-import type { PageTab } from "~/components/AppTabs.vue";
-import { appEntries, locate, type NavLink } from "~/utils/apps";
-
-export interface Crumb {
-    label: string;
-    to?: string;
-}
+import type { Crumb } from "~/types/Crumb";
+import type { PageTab } from "~/types/PageTab";
+import { appEntries, locate } from "~/utils/apps";
+import type { NavLink } from "~/types/NavLink";
 
 interface Props {
     title: string;

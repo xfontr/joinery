@@ -141,7 +141,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Tone } from "~/utils/format";
+import type { Tone } from "~/types/Tone";
 import { apps, BASE, type AppId } from "./apps";
 
 export interface RailItem {

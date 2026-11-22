@@ -1,5 +1,6 @@
 import type { CommandPaletteGroup, CommandPaletteItem } from "@nuxt/ui";
-import type { AppEntry, AppGroup } from "~/utils/apps";
+import type { AppEntry } from "~/types/AppEntry";
+import type { AppGroup } from "~/types/AppGroup";
 
 /** One heading of one doc, as `queryCollectionSearchSections` splits it. */
 export interface SearchSection {

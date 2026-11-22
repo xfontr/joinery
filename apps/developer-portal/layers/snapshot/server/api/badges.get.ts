@@ -4,9 +4,8 @@ import type { CoverageArtifact } from "../../shared/types/CoverageArtifact.ts";
 import type { DepsArtifact } from "../../shared/types/DepsArtifact.ts";
 import type { DocsArtifact } from "../../shared/types/DocsArtifact.ts";
 import type { MetricsArtifact } from "../../shared/types/MetricsArtifact.ts";
+import { worstSeverity } from "../../shared/deps.ts";
 import { readArtifact } from "../utils/store.ts";
-
-const SEVERITIES = ["critical", "high", "moderate", "low", "info"] as const;
 
 /** The few figures the shell shows on every page, so no page's payload carries a whole artifact. */
 export default defineEventHandler(async (): Promise<Badges> => {
@@ -17,13 +16,9 @@ export default defineEventHandler(async (): Promise<Badges> => {
         readArtifact<MetricsArtifact>("metrics"),
     ]);
 
-    const counts = deps?.vulnerabilities ?? null;
-
     return {
         advisories: deps?.advisories.length ?? 0,
-        worstSeverity: counts
-            ? (SEVERITIES.find((severity) => counts[severity] > 0) ?? null)
-            : null,
+        worstSeverity: worstSeverity(deps?.vulnerabilities),
         lineCoverage: coverage?.totals?.lines ?? null,
         docPages: docs?.pages.length ?? null,
         brokenLinks: docs?.brokenLinkCount ?? 0,

@@ -1,42 +1,309 @@
 {
-    "visitor": {
-        "apps": {
-            "label": "The apps"
+    "agenticWorkflows": {
+        "head": "Agentic workflows",
+        "lead": "I plan each project as a map of tasks, and AI agents build it ticket by ticket. The maps below are the real ones.",
+        "lessons": {
+            "all": "Every workflow, in the developer view",
+            "items": {
+                "answerFirst": {
+                    "paid": "Build tickets were filed the night before the final design (#208). A newsletter provider was swapped after it was already wired in (#242 → #299).",
+                    "rule": "Answer questions before filing work."
+                },
+                "blockedTicket": {
+                    "paid": "Otherwise an agent could start from a plan that changed an hour ago. The pick command checks GitHub first and refuses.",
+                    "rule": "A blocked ticket can't be picked."
+                },
+                "hostDecision": {
+                    "paid": "A hosting switch slipped in under a lint ticket and was reverted two days later (#377, #378).",
+                    "rule": "Changing host is its own decision."
+                },
+                "realDeploy": {
+                    "paid": "Four bugs only showed up once the site was deployed (#382, #387, #388, #395).",
+                    "rule": "Test deploy work on a real deploy."
+                },
+                "unknownsFirst": {
+                    "paid": "Hosting was picked on paper, then changed five times (#186, #244, #302, #377).",
+                    "rule": "Unknowns go first."
+                }
+            },
+            "line": "Each one cost a real project time. The numbers are the tickets where it happened.",
+            "title": "Lessons from",
+            "titleMark": "past projects"
         },
-        "built": {
-            "figureCaption": "Which app uses which shared piece.",
-            "label": "How it's built",
-            "withNumbers": "Over the last {windowDays} days, AI agents made {agentShare}% of the {runs} tool runs in this repo. {specs} test files check {coverage}% of its code, and {decisions} written decisions and {audits} audits record why it looks the way it does.",
-            "withoutNumbers": "AI agents do much of the work in this repo, checked by tests, written decisions and audits that are all public here."
+        "projects": {
+            "blocks": "{done} of {total} blocks done · {moving} moving",
+            "mapLabel": "{title} as a map of blocks",
+            "open": "Open the live map",
+            "tickets": "{blocks} · {closed} of {total} tickets closed",
+            "title": "Current",
+            "titleMark": "projects"
         },
-        "developer": {
-            "line": "Every page at full detail, for readers who write code.",
-            "link": "Developer view"
+        "steps": {
+            "agents": {
+                "body": "Claude Code agents pick up open tickets, starting with whichever unblocks the most work.",
+                "title": "Agents take ready tickets"
+            },
+            "file": {
+                "body": "The whole map is agreed before the first ticket goes out.",
+                "title": "Plan, then file"
+            },
+            "lessons": {
+                "body": "When something goes wrong, I log it in a diary, then use the diary to improve the workflows.",
+                "title": "Lessons go back in"
+            },
+            "template": {
+                "body": "A ready-made task list for the job: website rebuild, new website, or custom project.",
+                "title": "Start from a template"
+            },
+            "unblocked": {
+                "body": "A task starts once everything it depends on is done.",
+                "title": "Start what's unblocked"
+            }
         },
-        "lead": "One person and a team of AI agents build and run the apps below. Every decision, audit and plan behind them is public here.",
-        "nav": {
-            "audits": "Audits",
-            "decisions": "Decisions",
-            "graph": "How it fits together",
-            "projects": "Apps",
-            "workflows": "Plans"
-        },
-        "statement": "Software made with care, sped up by AI, for the people who use it.",
-        "work": {
-            "label": "How the work is run",
-            "line": "Every change starts as a written question or plan. These are the latest."
+        "title": "Agentic",
+        "titleMark": "workflows"
+    },
+    "app": {
+        "visitor": {
+            "footer": {
+                "line": "Every decision, plan, audit and check, raw.",
+                "title": "Want everything?",
+                "titleMark": "Open the developer view."
+            },
+            "nav": {
+                "method": "Method",
+                "work": "Work",
+                "workflows": "Agentic workflows"
+            },
+            "navLabel": "Main",
+            "wordmark": "monorepo"
         }
     },
-    "project": {
-        "configs": "The shared lint, test and build settings every project starts from.",
-        "content": "Fetches articles and categories from a site's WordPress for any app here.",
-        "developer-portal": "This site: the repo's docs, decisions and health in one place.",
-        "huella-legal": "A Spanish law magazine for students and general readers, being redesigned to read well on a phone.",
-        "i18n": "Loads each site's translations, from files or a translation service.",
-        "marina-roustan": "A psychotherapist's website, being rebuilt from WordPress.",
-        "observability": "Reports errors and slow pages from the browser and the server.",
-        "scripts": "The repo's own command-line tools, run by people and agents alike.",
-        "translations": "A small server for translation files; no site uses it yet.",
-        "wp-editor": "A tool that runs on one computer to review and apply edits across a WordPress site."
+    "index": {
+        "deeper": {
+            "method": {
+                "kicker": "Method",
+                "title": "Five rules, all automated"
+            },
+            "work": {
+                "kicker": "Work",
+                "title": "Case studies"
+            },
+            "workflows": {
+                "kicker": "Agentic workflows",
+                "title": "Live project maps"
+            }
+        },
+        "head": "Built by rules",
+        "intro": "AI agents write most of the code. I write the rules they follow, and every decision is public.",
+        "lead": "Websites for small publications and practices, and the tools that run them.",
+        "rules": {
+            "agents": {
+                "line": "Tests, lint rules and three review agents decide what gets merged. I step in when they ask.",
+                "proof": "Agent setup"
+            },
+            "decide": {
+                "line": "Any call that could go either way gets a short report anyone can read.",
+                "proof": "Keeping Huella Legal's old links working"
+            },
+            "label": "Five rules",
+            "look": {
+                "line": "Each design starts from a study of award-winning sites.",
+                "proof": "The sites studied",
+                "proofCount": "{count} sites studied"
+            },
+            "plan": {
+                "line": "Before the first ticket, I map every task and what it waits on.",
+                "proof": "The project map, below"
+            },
+            "prove": {
+                "line": "Tests, accessibility and lint rules run on every change.",
+                "proof": "What gets checked",
+                "proofCount": "{enabled} lint rules, {inHouse} written in-house"
+            }
+        },
+        "title": "Built by",
+        "titleMark": "rules."
+    },
+    "method": {
+        "agents": {
+            "pipeline": {
+                "build": {
+                    "does": "Writes the change, then runs lint, types and tests.",
+                    "step": "Build"
+                },
+                "pick": {
+                    "does": "Takes the next ticket and reads everything it links to.",
+                    "step": "Pick"
+                },
+                "plan": {
+                    "does": "Lists the files to change, each copied from an existing example.",
+                    "step": "Plan"
+                },
+                "polish": {
+                    "does": "Trims comments and checks the docs still match the code.",
+                    "step": "Polish"
+                },
+                "review": {
+                    "does": "Three agents review architecture, correctness and tests at once.",
+                    "step": "Review"
+                },
+                "ship": {
+                    "does": "Opens the pull request and merges it once CI passes.",
+                    "step": "Ship"
+                }
+            }
+        },
+        "decide": {
+            "decisions": {
+                "board": {
+                    "answer": "On one GitHub board for every project, with a label per area.",
+                    "question": "Where is work tracked?"
+                },
+                "comments": {
+                    "answer": "One fact the code can't show, in one sentence.",
+                    "question": "How much should a code comment say?"
+                },
+                "console": {
+                    "answer": "No. Any console output fails the build, in the source and in tests.",
+                    "question": "Can a stray console message reach production?"
+                },
+                "visitor": {
+                    "answer": "Here, in the visitor view. The developer view is one click away.",
+                    "question": "Where does someone who doesn't code land on this site?"
+                }
+            }
+        },
+        "example": {
+            "kicker": "Case study",
+            "line": "A law magazine rebuilt with these five rules."
+        },
+        "head": "Method",
+        "lead": "Every project here follows them. Each one is backed by a check that fails the build, a skill the agents load, or a public record.",
+        "prove": {
+            "checks": {
+                "accessibility": {
+                    "area": "Accessibility",
+                    "claim": "Pages are tested against WCAG AA in a real browser.",
+                    "cta": "The shared test kit",
+                    "how": "One violation fails the build."
+                },
+                "design": {
+                    "area": "System design",
+                    "claim": "Each app is split into layers, and a layer can only use the ones below it.",
+                    "cta": "Dependency graph",
+                    "how": "Crossing a boundary is a lint error."
+                },
+                "lint": {
+                    "area": "Lint rules",
+                    "claim": "Lint rules, some written for this repo.",
+                    "claimCount": "{enabled} lint rules on, {inHouse} of them written for this repo.",
+                    "cta": "Which rules fire most",
+                    "how": "Turning one off needs a written reason."
+                },
+                "observability": {
+                    "area": "Observability",
+                    "claim": "The apps report their errors and slow requests.",
+                    "cta": "Observability setup",
+                    "how": "A slow click can be traced to the query behind it."
+                },
+                "repository": {
+                    "area": "Repository",
+                    "claim": "Repo-wide rules are checked on every commit, push and CI run.",
+                    "cta": "The checks",
+                    "how": "No hand-edited version numbers, no leftover TODOs."
+                },
+                "tests": {
+                    "area": "Tests",
+                    "claim": "Tests, from single functions to full pages in a real browser.",
+                    "claimCount": "{count} test files, from single functions to full pages in a real browser.",
+                    "cta": "Coverage by project",
+                    "how": "If coverage drops below the minimum, the build fails."
+                }
+            }
+        },
+        "title": "Five rules,",
+        "titleMark": "all automated"
+    },
+    "ruleSection": {
+        "skill": "Skill:"
+    },
+    "rules": {
+        "agents": {
+            "body": "An agent takes a ticket from plan to merge, and no person reads the code. Any of the {steps} steps can stop and ask me.",
+            "more": "Agent setup",
+            "title": "Let agents write the code."
+        },
+        "decide": {
+            "body": "When a call could go either way, I write a short report: the question, the options, what was picked and why. The next person, or agent, reads it instead of asking again.",
+            "count": "{count} written so far.",
+            "more": "All decisions",
+            "title": "Write decisions down."
+        },
+        "look": {
+            "body": "I start each design from sites an awards jury already picked, and measure each one the same way: type, colour, layout.",
+            "count": "{count} sites studied so far.",
+            "more": "All studies",
+            "title": "Look before drawing."
+        },
+        "plan": {
+            "body": "Each project starts from a template with every task the job needs, what each one waits on, and what went wrong last time.",
+            "count": "{count} lessons from past projects so far.",
+            "more": "Agentic workflows",
+            "title": "Plan the whole job."
+        },
+        "prove": {
+            "body": "These run on every push and again in CI.",
+            "title": "Check every change."
+        }
+    },
+    "work": {
+        "cta": "Read the case study",
+        "head": "Work",
+        "lead": "Who each site is for, what changed, and the decisions behind it.",
+        "title": "Case",
+        "titleMark": "studies"
+    },
+    "workApp": {
+        "decisions": {
+            "title": "Key",
+            "titleMark": "decisions"
+        },
+        "facts": "{facts}, as of {date}",
+        "kicker": "Case study · {kind}",
+        "missing": {
+            "back": "Back to the front page",
+            "title": "No such work"
+        }
+    },
+    "workList": {
+        "caseStudy": "Read the case study",
+        "shotAlt": "{name}, the new site",
+        "title": "Sites and",
+        "titleMark": "tools",
+        "tools": {
+            "portal": {
+                "cta": "Open the developer view",
+                "kind": "Developer portal",
+                "name": "This portal",
+                "stage": "Mid-redesign",
+                "what": "The site you're reading, plus the dashboards I run the repo from."
+            },
+            "wpEditor": {
+                "cta": "Read the docs",
+                "kind": "Editing tool",
+                "name": "WP Editor",
+                "stage": "In use, runs locally",
+                "what": "Claude proposes bulk edits to a WordPress blog. I review each one as a diff before it goes live, and can undo it later."
+            }
+        }
+    },
+    "workflowTeaser": {
+        "cta": "See the live maps",
+        "glyphLabel": "Huella Legal's project map",
+        "kicker": "Agentic workflows",
+        "line": "This one is Huella Legal's. Each block lists what it waits on, and agents start whatever is free.",
+        "title": "Project",
+        "titleMark": "maps"
     }
 }

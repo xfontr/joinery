@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { appEntries, locate, type NavLink } from "./apps.ts";
+import type { NavLink } from "../types/NavLink.ts";
+import { appEntries, locate } from "./apps.ts";
 
 const link = (to: string): NavLink => ({ label: to, icon: "i-lucide-circle", to });
 
