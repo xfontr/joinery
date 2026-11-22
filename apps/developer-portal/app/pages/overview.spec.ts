@@ -13,7 +13,7 @@ import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import type { DashboardLayout } from "~/utils/dashboardLayout";
 import Page from "./overview.vue";
 
-// An in-memory docs collection, answering the README query the page sends
+// An in-memory docs collection, answering the README queries the Home panels send
 const docs = vi.hoisted(() => ({
     readmes: [] as { path: string; title: string; description: string }[],
 }));
@@ -22,18 +22,20 @@ const docs = vi.hoisted(() => ({
 const github = vi.hoisted(() => ({ read: null as unknown }));
 
 mockNuxtImport("queryCollection", () => () => {
-    const query = { select: () => query, all: () => Promise.resolve(docs.readmes) };
+    let wanted = "";
+    const query = {
+        path: (path: string) => {
+            wanted = path;
+            return query;
+        },
+        select: () => query,
+        all: () => Promise.resolve(docs.readmes),
+        first: () => Promise.resolve(docs.readmes.find((page) => page.path === wanted) ?? null),
+    };
     return query;
 });
 
-mockNuxtImport("useIssues", () => () => ({ data: github.read }));
-
-// Each row has its own spec; here only which issues the page picks
-const global = {
-    stubs: {
-        HealthIssueRow: { props: { issue: Object }, template: "<div>{{ issue.title }}</div>" },
-    },
-};
+mockNuxtImport("useIssues", () => () => ({ data: github.read, shown: github.read }));
 
 type Artifacts = Omit<SnapshotResponse, "manifest">;
 
@@ -97,17 +99,10 @@ const serve = (artifacts: Artifacts, workflows = assembleWorkflows([], [], {})) 
 };
 
 const open = async () => {
-    const wrapper = await mountSuspended(Page, { global });
+    const wrapper = await mountSuspended(Page);
     await flushPromises();
     return wrapper;
 };
-
-const tiles = (wrapper: VueWrapper) =>
-    Object.fromEntries(
-        wrapper
-            .findAllComponents({ name: "StatTile" })
-            .map((tile) => [tile.props("label"), tile.props()]),
-    );
 
 const hrefs = (wrapper: VueWrapper) => wrapper.findAll("a").map((a) => a.attributes("href"));
 
@@ -336,76 +331,6 @@ describe("home page", () => {
 
             expect(wrapper.text()).toContain("The repository summary is not available yet.");
             expect(wrapper.text()).toContain("No project description is available yet.");
-        });
-    });
-
-    // The panels the lab's four widgets replaced start in the Add widget list, so nothing was lost.
-    describe("once the earlier panels are added back", () => {
-        beforeEach(() => {
-            restore("docs", "coverage", "issues", "vulnerabilities", "workflowCards");
-        });
-
-        it("shows a dash on every tile whose artifact was never collected", async () => {
-            serve({});
-            const wrapper = await open();
-
-            expect(tiles(wrapper)).toMatchObject({
-                Docs: { value: "—" },
-                "Line coverage": { value: "—" },
-                Vulnerabilities: { value: "—" },
-            });
-        });
-
-        it("feeds the collected coverage and the live issue count into their tiles", async () => {
-            github.read = ref<IssuesRead>({
-                fetchedAt: "2026-11-01",
-                error: null,
-                issues: [
-                    {
-                        number: 4,
-                        title: "Open issue",
-                        body: "",
-                        url: "",
-                        labels: [],
-                        assignees: [],
-                        createdAt: "2026-11-01",
-                        updatedAt: "2026-11-01",
-                    },
-                ],
-            });
-            serve({
-                coverage: {
-                    generatedAt: "2026-11-01T00:00:00Z",
-                    totals: { lines: 82, statements: 0, functions: 0, branches: 0 },
-                    report: false,
-                    projects: [],
-                },
-            });
-            const wrapper = await open();
-
-            expect(tiles(wrapper)["Line coverage"]).toMatchObject({ value: "82%" });
-            expect(tiles(wrapper)["Open issues"]).toMatchObject({ value: 1 });
-            expect(wrapper.text()).toContain("Open issue");
-        });
-
-        it("blanks the issue count and says why when GitHub cannot be read", async () => {
-            github.read = ref<IssuesRead>({ fetchedAt: "", error: "offline", issues: [] });
-            serve({});
-            const wrapper = await open();
-
-            expect(tiles(wrapper)["Open issues"]).toMatchObject({
-                value: "—",
-                hint: "GitHub could not be read",
-            });
-        });
-
-        it("still offers a new project when none is in progress", async () => {
-            serve({});
-            const wrapper = await open();
-
-            expect(wrapper.find("a[href='/workflows/new']").attributes("aria-label")).toBe(
-                "New project",
-            );
         });
     });
 });

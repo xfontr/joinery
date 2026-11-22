@@ -5,13 +5,14 @@ import { ref } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { IssuesRead } from "#layers/github/shared/issues.ts";
 import type { Badges } from "#layers/snapshot/shared/types/Badges.ts";
-import type { MenuRow, RailFigure } from "~/utils/apps";
+import type { MenuRow } from "~/types/MenuRow";
+import type { RailFigure } from "~/types/RailFigure";
 import type { SearchSection } from "~/utils/search";
 import Layout from "./default.vue";
 
 // GitHub is read straight from the browser, so the github layer's composable is the boundary
 const github = vi.hoisted(() => ({ read: null as unknown }));
-mockNuxtImport("useIssues", () => () => ({ data: github.read }));
+mockNuxtImport("useIssues", () => () => ({ data: github.read, shown: github.read }));
 
 // Search reads the docs collection, so a call here means the search data was built
 const search = vi.hoisted(() => vi.fn((): Promise<SearchSection[]> => Promise.resolve([])));
@@ -169,7 +170,7 @@ describe("default layout", () => {
     // The menu hands a nested list's open state to the top level's v-model, which folded the app
     it("keeps an app unfolded when a page inside it folds its own rows", async () => {
         serve({ decisions: [DECISION] });
-        const wrapper = await open("/decisions");
+        const wrapper = await open(DECISION.to);
 
         await wrapper.find("nav a[href='/decisions'] [data-slot='linkTrailing']").trigger("click");
         await flushPromises();
@@ -223,6 +224,15 @@ describe("default layout", () => {
             "All projects",
             "Apps",
         ]);
+    });
+
+    it("leaves a page folded on its own landing, and unfolds it on a page below", async () => {
+        serve({ projects: KINDS });
+        const landing = await open("/projects");
+        const below = await open("/projects/blog");
+
+        expect(landing.find("nav a[href='/projects?kind=apps']").exists()).toBe(false);
+        expect(below.find("nav a[href='/projects/site']").exists()).toBe(true);
     });
 
     it("lists a group's members, each in its coverage tone, on a member's own page", async () => {
