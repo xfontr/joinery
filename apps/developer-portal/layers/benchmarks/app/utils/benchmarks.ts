@@ -7,7 +7,7 @@ import { stripLeadingEmoji } from "#layers/docs/shared/docPages.ts";
 export const BENCHMARK_VERDICTS = ["strong", "partial", "avoid"] as const;
 
 /** Each entry opens with its label in bold, as `docs/benchmarks/TEMPLATE.md` lays it out. */
-export const BENCHMARK_VERDICT_LABELS = {
+const BENCHMARK_VERDICT_LABELS = {
     strong: "Strong reference",
     partial: "Take one thing",
     avoid: "Avoid",
