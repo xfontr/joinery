@@ -45,8 +45,6 @@
 <script setup lang="ts">
 import { isStudy } from "#layers/projects/app/utils/work.ts";
 
-const { t } = useI18n();
-
 const { data: work } = await useWorkList();
 
 const items = computed(() =>
@@ -60,7 +58,7 @@ const items = computed(() =>
         cta: entry.live.label,
         href: entry.live.href,
         shot: index === 0 && isStudy(entry) ? workScreenshot(entry) : undefined,
-        shotAlt: t("workList.shotAlt", { name: entry.name }),
+        shotAlt: isStudy(entry) ? entry.screenshot.alt : "",
     })),
 );
 </script>
