@@ -102,4 +102,11 @@ describe("useIssues", () => {
 
         expect(nuxt.options.get("issues")).toMatchObject({ server: false });
     });
+
+    it("shows what was read once mounted, the same issues a render can rely on", async () => {
+        github(() => [githubIssue(1)]);
+        const { shown } = (await use()).issues;
+
+        expect(shown.value.issues.map((issue) => issue.number)).toEqual([1]);
+    });
 });

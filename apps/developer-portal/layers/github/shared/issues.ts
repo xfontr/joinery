@@ -106,3 +106,15 @@ export interface IssuesRead {
 
 export const sortIssues = (issues: Issue[]): Issue[] =>
     issues.slice().sort((a, b) => b.updatedAt.localeCompare(a.updatedAt) || b.number - a.number);
+
+const AREA_PREFIX = new Map([
+    ["apps", "app"],
+    ["packages", "package"],
+    ["infrastructure", "infra"],
+]);
+
+/** The `app:`/`package:`/`infra:` label a project's issues are filed under, from its root. */
+export const areaLabel = (root: string): string => {
+    const [kind = "", folder = ""] = root.split("/");
+    return `${AREA_PREFIX.get(kind) ?? "infra"}:${folder}`;
+};

@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { filterIssues, issuesApiUrl, labelsOf, sortIssues, summarize, toIssues } from "./issues.ts";
+import {
+    areaLabel,
+    filterIssues,
+    issuesApiUrl,
+    labelsOf,
+    sortIssues,
+    summarize,
+    toIssues,
+} from "./issues.ts";
 import type { Issue } from "./issues.ts";
 
 const issueOf = (overrides: Partial<Issue>): Issue => ({
@@ -159,5 +167,15 @@ describe("sortIssues", () => {
         ]);
 
         expect(sorted.map((issue) => issue.number)).toEqual([9, 7]);
+    });
+});
+
+describe("areaLabel", () => {
+    it.each([
+        ["apps/huella-legal", "app:huella-legal"],
+        ["packages/content", "package:content"],
+        ["infrastructure/scripts", "infra:scripts"],
+    ])("files %s under %s, the label its issues carry", (root, label) => {
+        expect(areaLabel(root)).toBe(label);
     });
 });

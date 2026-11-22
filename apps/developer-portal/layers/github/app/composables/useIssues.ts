@@ -42,5 +42,10 @@ export const useIssues = () => {
         server: false, // A baked issue list would ship as old as the deploy.
     });
 
-    return Object.assign(state, { reload: state.refresh });
+    const mounted = ref(false);
+    onMounted(() => (mounted.value = true));
+    // The server never reads GitHub, so every client render before hydration ends must match it
+    const shown = computed(() => (mounted.value ? state.data.value : NO_ISSUES));
+
+    return Object.assign(state, { reload: state.refresh, shown });
 };
