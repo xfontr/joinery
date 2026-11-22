@@ -60,7 +60,7 @@ const opaqueHex = (css: string): string | undefined => {
     return formatHex(colour);
 };
 
-export const chroma = (hex: string): number => oklch(hex)?.c ?? 0;
+const chroma = (hex: string): number => oklch(hex)?.c ?? 0;
 
 const tally = (entries: [string | undefined, number][]): Weighted[] => {
     const totals = new Map<string, number>();

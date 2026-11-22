@@ -10,7 +10,7 @@ import type { Template } from "./types/Template.ts";
 import type { TicketSize } from "./types/TicketSize.ts";
 
 /** The points a shared ticket holds before the next block wraps onto a new one. */
-export const TICKET_WIDTH = { supervised: 13, fast: 21 } as const;
+const TICKET_WIDTH = { supervised: 13, fast: 21 } as const;
 
 /** Puts each block after the ones it needs from the same group, keeping template order otherwise. */
 const inDependencyOrder = (group: Capability[], needs: Map<string, string[]>): Capability[] => {

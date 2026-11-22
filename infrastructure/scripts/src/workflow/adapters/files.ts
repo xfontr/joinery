@@ -5,7 +5,7 @@ import { ExpectedError } from "../../shared/errors.ts";
 import { readMap, type WorkflowMap } from "../domain/filing.ts";
 import type { Snapshot } from "../domain/snapshot.ts";
 
-export const PROJECTS_DIR = "data/workflows/projects";
+const PROJECTS_DIR = "data/workflows/projects";
 
 export const projectIds = (): string[] =>
     existsSync(at(PROJECTS_DIR))

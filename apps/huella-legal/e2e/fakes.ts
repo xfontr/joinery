@@ -27,7 +27,7 @@ const AUTHORS = [fakeAuthor({ bio: faker.lorem.sentence() }), fakeAuthor()];
 
 export const AUTHOR = AUTHORS[0]!;
 
-export const LEAD = fakeEntry({ image: fakeAsset(), authors: AUTHORS });
+const LEAD = fakeEntry({ image: fakeAsset(), authors: AUTHORS });
 
 export const HEADING = faker.lorem.words(2);
 
@@ -152,7 +152,7 @@ export const GUIDE_HEADING = "Cómo utilizar esta calculadora de intereses";
 export const FORMULA =
     "[(Tipo de interés × Importe) ÷ 365] × Días entre las fechas de inicio y fin";
 
-export const GUIDE = fakeEntry({
+const GUIDE = fakeEntry({
     slug: "calculo-intereses",
     terms: [],
     authors: [],

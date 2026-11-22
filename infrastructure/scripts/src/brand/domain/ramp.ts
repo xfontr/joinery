@@ -1,6 +1,6 @@
 import { formatHex, oklch, toGamut } from "culori";
 
-export const STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const;
+const STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const;
 
 /** OKLCH lightness of Tailwind v4's `--color-neutral-*`, so a generated ramp steps like its own. */
 const LIGHTNESS = [0.985, 0.97, 0.922, 0.87, 0.708, 0.556, 0.439, 0.371, 0.269, 0.205, 0.145];

@@ -14,7 +14,7 @@ const RANK = { unreviewed: 0, seen: 1, confirmed: 2 } as const satisfies Record<
     number
 >;
 
-export const slugify = (title: string): string =>
+const slugify = (title: string): string =>
     title
         .normalize("NFD")
         .replace(/\p{Diacritic}/gu, "")

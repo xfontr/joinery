@@ -2,7 +2,7 @@ import { CAPABILITY_LABEL_PREFIX, OWNER_LABEL, type SnapshotIssue } from "./snap
 
 type Kind = "build" | "spike" | "owner";
 
-export const TICKET_SIZES = ["block", "supervised", "fast"] as const;
+const TICKET_SIZES = ["block", "supervised", "fast"] as const;
 export type TicketSize = (typeof TICKET_SIZES)[number];
 
 /** The part of a template or extra capability filing reads; the portal's invariants validate the rest. */
@@ -369,7 +369,7 @@ export const planFiling = (map: WorkflowMap, issues: SnapshotIssue[], ids: strin
 };
 
 /** The points a shared ticket holds before the next block wraps onto a new one. */
-export const TICKET_WIDTH = { supervised: 13, fast: 21 } as const;
+const TICKET_WIDTH = { supervised: 13, fast: 21 } as const;
 
 /** Puts each block after the ones it needs from the same group, keeping template order otherwise. */
 const inDependencyOrder = (group: Block[], needs: Map<string, string[]>): Block[] => {

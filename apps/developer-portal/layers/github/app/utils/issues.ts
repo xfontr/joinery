@@ -19,11 +19,7 @@ export interface Issue {
     updatedAt: string;
 }
 
-/**
- * An issue body is markdown written for GitHub — headings, task lists, a fenced repro. A row shows
- * one line of it, so the syntax is stripped rather than rendered: half-parsed markdown in a clamped
- * string reads as damage, and the full body is one click away on GitHub anyway.
- */
+/** One line of an issue body for a row, its markdown syntax stripped rather than rendered. */
 export const summarize = (body: string, length = 140): string => {
     const text = body
         .replace(FENCE, " ")
@@ -37,8 +33,7 @@ export const summarize = (body: string, length = 140): string => {
 
     if (text.length <= length) return text;
 
-    // Cut on a word boundary when there is one near the limit, so the ellipsis never lands
-    // mid-word — `adfasdf sdfas fasdf…` rather than `adfasdf sdfas fas…`.
+    // Cut on a word boundary when there is one near the limit, so the ellipsis never lands mid-word.
     const cut = text.slice(0, length);
     const space = cut.lastIndexOf(" ");
 
@@ -80,7 +75,7 @@ export interface GithubIssue {
 }
 
 /** `html_url`, not `url` — the latter is the API's own address for the issue and renders as JSON. */
-export const toIssue = (issue: GithubIssue): Issue => ({
+const toIssue = (issue: GithubIssue): Issue => ({
     number: issue.number,
     title: issue.title,
     body: issue.body ?? "",
