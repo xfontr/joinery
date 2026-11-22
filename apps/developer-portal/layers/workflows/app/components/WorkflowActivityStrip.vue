@@ -8,27 +8,29 @@
             <span class="tabular-nums">{{ lastCommit }}</span>
         </figcaption>
 
-        <ol class="flex h-6 items-end gap-px">
-            <li
-                v-for="column in columns"
-                :key="column.day"
-                class="flex h-full min-w-0 flex-1 flex-col-reverse"
-            >
-                <span
-                    v-for="segment in column.segments"
-                    :key="segment.stage"
-                    class="segment w-full first:rounded-b-xs last:rounded-t-xs"
-                    :style="{ height: `${segment.share}%`, background: segment.color }"
-                    :title="segment.label"
-                />
-            </li>
-        </ol>
+        <div ref="track" class="overflow-x-auto">
+            <ol class="flex h-6 w-max items-end gap-px">
+                <li
+                    v-for="column in columns"
+                    :key="column.day"
+                    class="flex h-full w-1.5 shrink-0 flex-col-reverse"
+                >
+                    <span
+                        v-for="segment in column.segments"
+                        :key="segment.stage"
+                        class="segment w-full first:rounded-b-xs last:rounded-t-xs"
+                        :style="{ height: `${segment.share}%`, background: segment.color }"
+                        :title="segment.label"
+                    />
+                </li>
+            </ol>
 
-        <ol class="flex gap-px text-xs text-dimmed" aria-hidden="true">
-            <li v-for="column in columns" :key="column.day" class="min-w-0 flex-1">
-                <span v-if="column.month" class="whitespace-nowrap">{{ column.month }}</span>
-            </li>
-        </ol>
+            <ol class="flex w-max gap-px pt-1 text-xs text-dimmed" aria-hidden="true">
+                <li v-for="column in columns" :key="column.day" class="w-1.5 shrink-0">
+                    <span v-if="column.month" class="whitespace-nowrap">{{ column.month }}</span>
+                </li>
+            </ol>
+        </div>
     </figure>
 </template>
 
@@ -42,6 +44,19 @@ interface Props {
 }
 
 const { activity, stages } = defineProps<Props>();
+
+const track = useTemplateRef("track");
+
+/** Days keep a fixed width, so a timeline longer than the strip scrolls and opens on its latest day. */
+const showLatest = (): void => {
+    if (track.value) track.value.scrollLeft = track.value.scrollWidth;
+};
+
+onMounted(showLatest);
+watch(
+    () => activity.days.length,
+    () => nextTick(showLatest),
+);
 
 const lastCommit = computed(() =>
     activity.lastDay ? `Last commit ${calendarDay(activity.lastDay)}` : "No commits yet",
