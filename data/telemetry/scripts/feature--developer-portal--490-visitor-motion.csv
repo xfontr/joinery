@@ -61,3 +61,14 @@ at,script,command,target,flags,area,caller,tty,exit,ms
 2026-11-22,map,,,check,developer-portal,claude-code,0,0,276
 2026-11-22,map,,,check,developer-portal,claude-code,0,0,105
 2026-11-22,map,,,check,developer-portal,claude-code,0,0,112
+2026-11-22,workflow,sync,,,developer-portal,claude-code,0,1,7877
+2026-11-22,issue,brief,,,developer-portal,claude-code,0,0,1767
+2026-11-22,map,,,,developer-portal,claude-code,0,0,168
+2026-11-22,map,,,check,developer-portal,claude-code,0,0,113
+2026-11-22,workflow,sync,,close,developer-portal,claude-code,0,0,2363
+2026-11-22,workflow,sync,,close,developer-portal,claude-code,0,0,2487
+2026-11-22,map,,,,developer-portal,claude-code,0,0,104
+2026-11-22,map,,,check,developer-portal,claude-code,0,0,110
+2026-11-22,map,,,check,developer-portal,claude-code,0,0,139
+2026-11-22,map,,,check,developer-portal,claude-code,0,0,125
+2026-11-22,map,,,check,developer-portal,claude-code,0,0,125

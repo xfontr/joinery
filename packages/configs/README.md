@@ -44,6 +44,8 @@ export default vitest.createNodeConfig(); // or createVueConfig(viteConfig) / cr
   `vi.spyOn(console, "warn").mockImplementation(() => {})` and assert on the spy.
 - [`prepareNuxt.mjs`](./src/vitest/setup/prepareNuxt.mjs) runs `nuxi prepare` when a Nuxt project
   has no `.nuxt` yet.
+- This package's own `test:e2e` runs its `browser` Vitest project, the specs that launch
+  Playwright; `test` and `test:coverage` leave them out.
 
 ### Nuxt apps
 

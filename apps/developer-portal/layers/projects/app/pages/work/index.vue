@@ -8,13 +8,16 @@
 
     <UContainer as="section" class="flex flex-col">
         <ULink
-            v-for="item in cases"
+            v-for="(item, index) in cases"
             :key="item.slug"
             :to="`/work/${item.slug}`"
             class="group grid gap-6 border-t border-accented py-10 md:grid-cols-12 md:gap-10"
         >
             <img
-                :src="workScreenshot(item)"
+                v-bind="workScreenshot(item)"
+                sizes="(min-width: 48rem) 58vw, 100vw"
+                :loading="index ? 'lazy' : 'eager'"
+                :fetchpriority="index ? 'auto' : 'high'"
                 :alt="item.screenshot.alt"
                 :style="carried(`work-shot-${item.slug}`)"
                 width="1440"
@@ -50,5 +53,5 @@ const { data: work } = await useWorkList();
 
 const cases = computed(() => work.value.filter(isStudy));
 
-useHead({ title: () => t("work.head") });
+useSeoMeta({ title: () => t("work.head"), description: () => t("work.lead") });
 </script>

@@ -1,7 +1,9 @@
 <template>
     <UContainer as="figure" class="pb-16">
         <img
-            :src="screenshot"
+            v-bind="screenshot"
+            sizes="(min-width: 72rem) 72rem, 100vw"
+            fetchpriority="high"
             :alt="work.screenshot.alt"
             :style="carriedShot"
             width="1440"

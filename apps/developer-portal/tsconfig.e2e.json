@@ -1,0 +1,7 @@
+{
+    // Playwright and its static server run on plain Node, outside every tsconfig Nuxt generates
+    "extends": "@monorepo/configs/tsconfig/node.json",
+    // DOM for the callbacks `page.evaluate` runs in the browser
+    "compilerOptions": { "lib": ["ES2022", "DOM"] },
+    "include": ["e2e/**/*.ts", "playwright.config.ts"]
+}
