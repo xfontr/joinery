@@ -1,5 +1,5 @@
 import type { AuditState, FindingStatus } from "#layers/snapshot/shared/audits.ts";
-import type { Tone } from "~/utils/format.ts";
+import type { Tone } from "~/types/Tone";
 
 const FINDING_STATUS_LABELS = {
     open: "Open",
