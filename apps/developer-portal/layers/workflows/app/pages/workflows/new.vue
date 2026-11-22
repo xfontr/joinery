@@ -1,11 +1,14 @@
 <template>
     <UDashboardPanel id="workflow-new">
         <template #header>
-            <PageHeader :crumbs="[{ label: 'workflows', to: '/workflows' }]" title="New project">
+            <PageHeader
+                :crumbs="[{ label: $t('workflows.crumb'), to: '/workflows' }]"
+                :title="$t('workflowNew.title')"
+            >
                 <template #actions>
                     <UButton
                         to="/workflows"
-                        label="Cancel"
+                        :label="$t('workflowNew.cancel')"
                         color="neutral"
                         variant="ghost"
                         size="sm"
@@ -49,9 +52,9 @@
 
             <WorkflowLeaveModal
                 v-model:open="leaving"
-                title="Leave without creating?"
-                description="Nothing picked on this page is in a project file yet."
-                action="Leave without creating"
+                :title="$t('workflowNew.leave.title')"
+                :description="$t('workflowNew.leave.description')"
+                :action="$t('workflowNew.leave.action')"
                 @leave="leave"
             />
         </template>
@@ -59,7 +62,9 @@
 </template>
 
 <script setup lang="ts">
-useHead({ title: "New project" });
+const { t } = useI18n();
+
+useHead({ title: t("workflowNew.title") });
 
 const {
     draft,

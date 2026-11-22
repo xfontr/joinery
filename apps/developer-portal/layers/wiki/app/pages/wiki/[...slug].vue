@@ -2,8 +2,8 @@
     <UDashboardPanel id="doc">
         <template #header>
             <PageHeader
-                :crumbs="[{ label: 'wiki', to: '/wiki' }]"
-                :title="here?.entry.label ?? page?.title ?? 'Not found'"
+                :crumbs="[{ label: $t('wikiPage.crumb'), to: '/wiki' }]"
+                :title="here?.entry.label ?? page?.title ?? $t('wikiPage.notFound')"
             >
                 <template #actions>
                     <DocSource :source :words="meta?.words" :updated-at="meta?.updatedAt" />
@@ -26,8 +26,8 @@
                         color="neutral"
                         variant="subtle"
                         icon="i-lucide-file-question"
-                        title="No such page"
-                        :description="`Nothing in the workspace matches ${path}. The wiki links only to files that exist, so this is a hand-typed or stale URL.`"
+                        :title="$t('wikiPage.missing.title')"
+                        :description="$t('wikiPage.missing.description', { path })"
                     />
 
                     <template v-else>
@@ -36,7 +36,7 @@
                             color="warning"
                             variant="subtle"
                             icon="i-lucide-link-2-off"
-                            title="This page links to something that is not there"
+                            :title="$t('wikiPage.broken')"
                             :description="brokenLinks"
                             :ui="{ description: 'text-xs font-mono' }"
                         />
@@ -58,8 +58,10 @@
 const { path, sections, page, here, crumbs, around, meta, source, brokenLinks, ready } =
     useWikiPage();
 
-const before = computed(() => `Previous in ${here.value?.group.label ?? ""}`);
-const after = computed(() => `Next in ${here.value?.group.label ?? ""}`);
+const { t } = useI18n();
+
+const before = computed(() => t("wikiPage.before", { group: here.value?.group.label ?? "" }));
+const after = computed(() => t("wikiPage.after", { group: here.value?.group.label ?? "" }));
 
 await ready;
 

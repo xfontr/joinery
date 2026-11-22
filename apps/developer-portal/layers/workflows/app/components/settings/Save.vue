@@ -1,14 +1,19 @@
 <template>
     <div class="flex items-center justify-end gap-3">
-        <span v-if="changed" class="text-sm text-muted">Unsaved changes</span>
+        <span v-if="changed" class="text-sm text-muted">{{ $t("settingsSave.unsaved") }}</span>
         <UButton
-            label="Discard"
+            :label="$t('settingsSave.discard')"
             color="neutral"
             variant="ghost"
             :disabled="!changed"
             @click="emit('discard')"
         />
-        <UButton label="Save" :disabled="!changed" :loading="saving" @click="emit('save')" />
+        <UButton
+            :label="$t('settingsSave.save')"
+            :disabled="!changed"
+            :loading="saving"
+            @click="emit('save')"
+        />
     </div>
 </template>
 

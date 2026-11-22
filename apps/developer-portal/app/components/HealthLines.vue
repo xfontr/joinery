@@ -1,5 +1,9 @@
 <template>
-    <WidgetPanel title="Health" :meta="`Snapshot collected ${collectedAge}`" to="/coverage">
+    <WidgetPanel
+        :title="$t('healthLines.title')"
+        :meta="$t('healthLines.meta', { age: collectedAge })"
+        to="/coverage"
+    >
         <dl class="divide-y divide-default">
             <div
                 v-for="line in rows"

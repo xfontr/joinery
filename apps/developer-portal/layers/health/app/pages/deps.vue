@@ -1,7 +1,7 @@
 <template>
     <UDashboardPanel id="deps">
         <template #header>
-            <PageHeader title="Dependencies">
+            <PageHeader :title="$t('deps.title')">
                 <template #intro>
                     <PageFacts :provenance :facts />
                 </template>

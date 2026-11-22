@@ -1,7 +1,7 @@
 <template>
     <UDashboardPanel id="telemetry">
         <template #header>
-            <PageHeader title="Tooling usage">
+            <PageHeader :title="$t('telemetry.title')">
                 <template #intro>
                     <PageFacts v-model:series="series" :provenance :facts />
                 </template>
@@ -9,13 +9,23 @@
         </template>
 
         <template #body>
-            <WidgetPanel v-if="!hasRuns" title="No runs committed yet">
-                <p class="px-4 py-6 text-sm text-muted">
-                    Scripts record each run into <code class="font-mono">.git</code>, and the next
-                    commit carries the rows into
-                    <code class="font-mono">data/telemetry/scripts</code>. Commit, then run
-                    <code class="font-mono">pnpm exec nx collect @monorepo/developer-portal</code>.
-                </p>
+            <WidgetPanel v-if="!hasRuns" :title="$t('telemetry.empty.title')">
+                <I18nT
+                    keypath="telemetry.empty.body"
+                    tag="p"
+                    scope="global"
+                    class="px-4 py-6 text-sm text-muted"
+                >
+                    <template #git>
+                        <code class="font-mono">{{ GIT }}</code>
+                    </template>
+                    <template #folder>
+                        <code class="font-mono">{{ FOLDER }}</code>
+                    </template>
+                    <template #command>
+                        <code class="font-mono">{{ COLLECT }}</code>
+                    </template>
+                </I18nT>
             </WidgetPanel>
 
             <template v-if="usage">
@@ -32,6 +42,10 @@
 </template>
 
 <script setup lang="ts">
+const GIT = ".git";
+const FOLDER = "data/telemetry/scripts";
+const COLLECT = "pnpm exec nx collect @monorepo/developer-portal";
+
 const { usage, hasRuns, provenance, facts } = useTelemetryPage();
 const series = ref("runs");
 </script>

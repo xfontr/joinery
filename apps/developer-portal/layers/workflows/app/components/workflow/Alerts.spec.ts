@@ -20,7 +20,8 @@ const STRAY = {
         owner: false,
         complexity: null,
     },
-    reason: "no cap: label",
+    reason: "noLabel",
+    detail: "cap:",
 } satisfies UnsortedIssue;
 
 describe("WorkflowAlerts", () => {

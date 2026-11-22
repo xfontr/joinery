@@ -1,11 +1,8 @@
 <template>
     <UCard variant="flush">
         <template #header>
-            <h2 class="font-semibold">Tags and edges</h2>
-            <p class="text-xs text-muted">
-                What the picture does not answer: which tags a project carries, and what breaks if
-                it changes.
-            </p>
+            <h2 class="font-semibold">{{ $t("graphEdges.title") }}</h2>
+            <p class="text-xs text-muted">{{ $t("graphEdges.lead") }}</p>
         </template>
 
         <div class="divide-y divide-default">
@@ -33,12 +30,14 @@
 
                 <div class="flex min-w-0 flex-1 flex-col gap-0.5 text-xs text-muted">
                     <div v-if="project.uses" class="truncate">
-                        <span class="text-dimmed">uses </span>{{ project.uses }}
+                        {{ $t("graphEdges.uses", { list: project.uses }) }}
                     </div>
                     <div v-if="project.usedBy" class="truncate">
-                        <span class="text-dimmed">used by </span>{{ project.usedBy }}
+                        {{ $t("graphEdges.usedBy", { list: project.usedBy }) }}
                     </div>
-                    <div v-if="!project.uses && !project.usedBy" class="text-dimmed">leaf</div>
+                    <div v-if="!project.uses && !project.usedBy" class="text-dimmed">
+                        {{ $t("graphEdges.leaf") }}
+                    </div>
                 </div>
             </div>
         </div>

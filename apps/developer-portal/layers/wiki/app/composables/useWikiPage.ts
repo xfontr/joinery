@@ -8,6 +8,7 @@ const slugOf = (param: string | string[] | undefined): string[] =>
 /** One rendered doc, where it sits in the tree and what the snapshot knows of it. */
 export const useWikiPage = () => {
     const route = useRoute();
+    const { t } = useI18n();
     const path = computed(() => `/${slugOf(route.params.slug).join("/")}`.toLowerCase());
 
     const wiki = useWiki();
@@ -21,7 +22,7 @@ export const useWikiPage = () => {
     const here = computed(() => locate(sections.value, path.value));
 
     const crumbs = computed<BreadcrumbItem[]>(() => [
-        { label: "Wiki", to: "/wiki", icon: "i-lucide-library" },
+        { label: t("wiki.title"), to: "/wiki", icon: "i-lucide-library" },
         ...(here.value
             ? [
                   { label: here.value.section.label, icon: here.value.section.icon },

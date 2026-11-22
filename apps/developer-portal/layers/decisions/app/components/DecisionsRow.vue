@@ -27,18 +27,20 @@ interface Props {
 
 const { report } = defineProps<Props>();
 
+const { t } = useI18n();
+
 const superseded = computed(() =>
     report.decision === "superseded"
         ? {
-              label: decisionOutcomeLabel(report.decision),
-              hint: `Superseded by ${report.supersededBy}`,
+              label: t("decisions.outcome.superseded"),
+              hint: t("decisions.supersededBy", { by: report.supersededBy }),
           }
         : null,
 );
 const status = computed(() =>
     report.status
-        ? { label: decisionStatusLabel(report.status), tone: decisionStatusTone(report.status) }
+        ? { label: t(`decisions.status.${report.status}`), tone: decisionStatusTone(report.status) }
         : null,
 );
-const updated = computed(() => relativeTime(report.updatedAt));
+const updated = computed(() => relativeTime(report.updatedAt, t));
 </script>

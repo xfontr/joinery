@@ -9,7 +9,8 @@ export const useRailEntries = (
     figures: ComputedRef<Record<string, { badge?: { label: string; class: string } }>>,
 ) => {
     const { nav }: { nav: Record<string, NavLink | undefined> } = useAppConfig();
-    const apps = appEntries(nav);
+    const { t } = useI18n();
+    const apps = appEntries(nav, t);
     const route = useRoute();
 
     const menus: Record<string, Ref<MenuRow[]>> = {};

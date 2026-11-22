@@ -1,19 +1,19 @@
 <template>
     <section class="grid gap-4 border-t border-default pt-8 md:grid-cols-3">
         <header>
-            <h2 class="font-semibold">Remove</h2>
-            <p class="text-sm text-muted">Rarely needed.</p>
+            <h2 class="font-semibold">{{ $t("settingsRemove.title") }}</h2>
+            <p class="text-sm text-muted">{{ $t("settingsRemove.rarely") }}</p>
         </header>
         <div
             class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-default p-4 md:col-span-2"
         >
-            <p class="text-sm text-muted">
-                Removes the project file and its snapshot. Run
-                <code>pnpm workflow:drop {{ project }}</code> first to close the tickets nobody
-                started; the rest stay on GitHub.
-            </p>
+            <I18nT keypath="settingsRemove.lead" tag="p" scope="global" class="text-sm text-muted">
+                <template #command>
+                    <code>{{ drop }}</code>
+                </template>
+            </I18nT>
             <UButton
-                label="Delete project…"
+                :label="$t('settingsRemove.deleteOpen')"
                 icon="i-lucide-trash-2"
                 color="error"
                 variant="soft"
@@ -25,25 +25,37 @@
 
     <UModal
         v-model:open="deleting"
-        :title="`Delete ${title}?`"
-        description="The project file and its snapshot go. Deleting closes nothing on GitHub."
+        :title="$t('settingsRemove.modal.title', { title })"
+        :description="$t('settingsRemove.modal.description')"
     >
         <template #body>
-            <p v-if="dropping.close > 0" class="mb-4 text-sm text-muted">
-                As of the last sync, {{ dropping.close }} tickets are untouched and
-                {{ dropping.keep }} already started or closed. Close the untouched ones first with
-                <code>pnpm workflow:drop {{ project }} --yes</code>, since it reads the milestone
-                from this project file.
-            </p>
-            <UFormField :label="`Type ${project} to confirm`">
+            <I18nT
+                v-if="dropping.close > 0"
+                keypath="settingsRemove.drop"
+                tag="p"
+                scope="global"
+                class="mb-4 text-sm text-muted"
+            >
+                <template #close>{{ dropping.close }}</template>
+                <template #keep>{{ dropping.keep }}</template>
+                <template #command>
+                    <code>{{ dropYes }}</code>
+                </template>
+            </I18nT>
+            <UFormField :label="$t('settingsRemove.confirm', { project })">
                 <UInput v-model="confirmation" class="w-full" autofocus />
             </UFormField>
         </template>
         <template #footer>
             <div class="flex w-full justify-end gap-2">
-                <UButton label="Cancel" color="neutral" variant="ghost" @click="deleting = false" />
                 <UButton
-                    label="Delete project"
+                    :label="$t('settingsRemove.cancel')"
+                    color="neutral"
+                    variant="ghost"
+                    @click="deleting = false"
+                />
+                <UButton
+                    :label="$t('settingsRemove.delete')"
                     icon="i-lucide-trash-2"
                     color="error"
                     :disabled="confirmation !== project"
@@ -66,6 +78,9 @@ interface Props {
 
 const { project, title, issues } = defineProps<Props>();
 const emit = defineEmits<{ remove: [] }>();
+
+const drop = computed(() => `pnpm workflow:drop ${project}`);
+const dropYes = computed(() => `${drop.value} --yes`);
 
 const dropping = computed(() => {
     const { close, keep } = dropPlan(issues);

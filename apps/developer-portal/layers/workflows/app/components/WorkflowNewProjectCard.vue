@@ -1,8 +1,8 @@
 <template>
     <NuxtLink
         to="/workflows/new"
-        :aria-label="label"
-        :title="label"
+        :aria-label="label ?? $t('workflowNewProjectCard.label')"
+        :title="label ?? $t('workflowNewProjectCard.label')"
         class="group flex min-h-24 w-24 items-center justify-center justify-self-start rounded-lg border border-dashed border-default bg-default p-4 text-dimmed transition-colors hover:border-inverted hover:bg-elevated/50 hover:text-highlighted"
     >
         <UIcon
@@ -18,5 +18,5 @@ interface Props {
     label?: string;
 }
 
-const { label = "New project" } = defineProps<Props>();
+const { label } = defineProps<Props>();
 </script>

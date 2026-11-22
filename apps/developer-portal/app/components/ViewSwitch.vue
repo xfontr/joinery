@@ -1,7 +1,7 @@
 <template>
     <nav
         class="inline-flex shrink-0 items-center gap-0.5 rounded-md p-0.5 font-mono text-xs ring ring-default"
-        aria-label="Switch view"
+        :aria-label="$t('viewSwitch.label')"
     >
         <NuxtLink
             v-for="view in VIEWS"
@@ -15,7 +15,7 @@
                     : 'text-muted hover:text-highlighted'
             "
         >
-            {{ view.label }}
+            {{ $t(`viewSwitch.${view.id}`) }}
         </NuxtLink>
     </nav>
 </template>
@@ -29,8 +29,8 @@ interface Props {
 
 const { current } = defineProps<Props>();
 
-const VIEWS: { id: View; label: string; to: string }[] = [
-    { id: "visitor", label: "Visitor", to: "/" },
-    { id: "dev", label: "Dev", to: "/overview" },
+const VIEWS: { id: View; to: string }[] = [
+    { id: "visitor", to: "/" },
+    { id: "dev", to: "/overview" },
 ];
 </script>

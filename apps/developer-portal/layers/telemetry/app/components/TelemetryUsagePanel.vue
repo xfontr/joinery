@@ -1,10 +1,10 @@
 <template>
     <WidgetPanel
-        title="Tooling usage"
-        :meta="`Repo scripts over the last ${WINDOW_DAYS} days`"
+        :title="$t('telemetryUsagePanel.title')"
+        :meta="$t('telemetryUsagePanel.meta', { days: WINDOW_DAYS })"
         to="/telemetry"
     >
-        <EmptyState v-if="!totals">Not collected.</EmptyState>
+        <EmptyState v-if="!totals">{{ $t("telemetryUsagePanel.notCollected") }}</EmptyState>
         <template v-else>
             <dl class="grid grid-cols-3 gap-3 border-b border-default px-4 py-3">
                 <div v-for="figure in totals.figures" :key="figure.label">
@@ -22,11 +22,11 @@
                 >
                     <span class="min-w-0 flex-1 truncate font-mono text-sm">{{ script.name }}</span>
                     <span class="tone-bad shrink-0 font-mono text-xs">
-                        {{ script.failed }}% failed
+                        {{ $t("telemetryUsagePanel.failed", { percent: script.failed }) }}
                     </span>
                 </li>
                 <li v-if="totals.failing.length === 0" class="px-4 py-2 text-xs text-muted">
-                    No script is failing.
+                    {{ $t("telemetryUsagePanel.noneFailing") }}
                 </li>
                 <li v-if="totals.idle" class="px-4 py-2 text-xs text-muted">{{ totals.idle }}</li>
             </ul>
@@ -37,6 +37,8 @@
 <script setup lang="ts">
 import { WINDOW_DAYS } from "#layers/telemetry/shared/usage.ts";
 import { isFailing, scriptRows, sumDays } from "#layers/telemetry/shared/usageView.ts";
+
+const { t } = useI18n();
 
 const usage = usageArtifact();
 
@@ -49,15 +51,20 @@ const totals = computed(() => {
 
     return {
         figures: [
-            { label: "Runs", value: sum.runs, unit: "", class: "text-highlighted" },
             {
-                label: "By agents",
+                label: t("telemetryUsagePanel.figures.runs"),
+                value: sum.runs,
+                unit: "",
+                class: "text-highlighted",
+            },
+            {
+                label: t("telemetryUsagePanel.figures.agent"),
                 value: percentOf(sum.agent, sum.runs),
                 unit: "%",
                 class: "text-highlighted",
             },
             {
-                label: "Failed",
+                label: t("telemetryUsagePanel.figures.failed"),
                 value: percentOf(sum.failures, sum.runs),
                 unit: "%",
                 class: isFailing(sum) ? toneClass("bad") : "text-highlighted",
@@ -66,7 +73,7 @@ const totals = computed(() => {
         failing: rows
             .filter((row) => row.failing)
             .map((row) => ({ name: row.name, failed: percentOf(row.failures, row.runs) })),
-        idle: idle ? `${counted(idle, "script")} never run in the window.` : "",
+        idle: idle ? t("telemetryUsagePanel.idle", idle) : "",
     };
 });
 </script>

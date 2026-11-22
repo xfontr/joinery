@@ -1,4 +1,5 @@
 import type { Tone } from "~/types/Tone";
+import type { Translate } from "~/types/Translate";
 
 const TONE_CLASSES = {
     good: "tone-good",
@@ -19,8 +20,8 @@ export const calendarDay = (day: string, month: "short" | "only" = "short"): str
             : { timeZone: "UTC", day: "numeric", month: "short" },
     );
 
-export const relativeTime = (iso: string | null | undefined): string => {
-    if (!iso) return "never";
+export const relativeTime = (iso: string | null | undefined, t: Translate): string => {
+    if (!iso) return t("common.never");
 
     const seconds = Math.round((Date.now() - new Date(iso).getTime()) / 1000);
 
@@ -61,26 +62,24 @@ export const severityTone = (severity: "info" | "low" | "moderate" | "high" | "c
 };
 
 const SHORT_UNITS = [
-    { label: "y", size: 31_536_000 },
-    { label: "mo", size: 2_592_000 },
-    { label: "d", size: 86_400 },
-    { label: "h", size: 3600 },
-    { label: "min", size: 60 },
+    { unit: "years", size: 31_536_000 },
+    { unit: "months", size: 2_592_000 },
+    { unit: "days", size: 86_400 },
+    { unit: "hours", size: 3600 },
+    { unit: "minutes", size: 60 },
 ] as const;
 
 /** "23 h", "2 d": an age that fits a figure column on a phone. */
-export const shortAge = (iso: string | null | undefined): string => {
-    if (!iso) return "never";
+export const shortAge = (iso: string | null | undefined, t: Translate): string => {
+    if (!iso) return t("common.never");
 
     const seconds = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
-    const unit = SHORT_UNITS.find((entry) => seconds >= entry.size);
+    const step = SHORT_UNITS.find((entry) => seconds >= entry.size);
 
-    return unit ? `${Math.floor(seconds / unit.size)} ${unit.label}` : "now";
+    return step
+        ? t(`common.shortAge.${step.unit}`, { count: Math.floor(seconds / step.size) })
+        : t("common.now");
 };
-
-/** "1 broken link", "3 broken links": a count with its noun, for nouns that just take an s. */
-export const counted = (count: number, noun: string): string =>
-    `${count} ${noun}${count === 1 ? "" : "s"}`;
 
 /** The last path segment, which names a project's page under `/projects/`. */
 export const folderOf = (root: string): string => root.split("/").at(-1) ?? root;

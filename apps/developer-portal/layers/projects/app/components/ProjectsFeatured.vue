@@ -2,14 +2,12 @@
     <section class="flex flex-col gap-3">
         <div class="flex items-center justify-between gap-3">
             <div>
-                <h2 class="text-xl font-semibold">Featured projects</h2>
-                <p class="mt-1 text-sm text-muted">
-                    Applications that show what this repository produces.
-                </p>
+                <h2 class="text-xl font-semibold">{{ $t("projectsFeatured.title") }}</h2>
+                <p class="mt-1 text-sm text-muted">{{ $t("projectsFeatured.lead") }}</p>
             </div>
             <UButton
                 to="/projects"
-                label="All projects"
+                :label="$t('projectsFeatured.all')"
                 size="xs"
                 variant="ghost"
                 color="neutral"
@@ -31,14 +29,16 @@
                                 {{ project.description }}
                             </p>
                         </div>
-                        <span class="shrink-0 font-mono text-xs text-muted">app</span>
+                        <span class="shrink-0 font-mono text-xs text-muted">
+                            {{ $t("projectsFeatured.kind") }}
+                        </span>
                     </div>
                 </template>
                 <div class="flex items-center justify-between gap-3">
                     <span class="truncate font-mono text-xs text-dimmed">{{ project.root }}</span>
                     <UButton
                         :to="`/wiki/${project.root}/readme`"
-                        label="Read more"
+                        :label="$t('projectsFeatured.readMore')"
                         icon="i-lucide-book-open"
                         size="xs"
                         variant="soft"
@@ -52,6 +52,7 @@
 <script setup lang="ts">
 const FEATURED = 2;
 
+const { t } = useI18n();
 const { projects, readmeFor, ready } = useCatalog();
 
 await ready;
@@ -63,8 +64,7 @@ const featured = computed(() =>
         .map((project) => ({
             root: project.root,
             title: readmeFor(project)?.title ?? project.name,
-            description:
-                readmeFor(project)?.description ?? "No project description is available yet.",
+            description: readmeFor(project)?.description ?? t("projectsFeatured.noDescription"),
         })),
 );
 </script>

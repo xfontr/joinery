@@ -1,25 +1,39 @@
 <template>
     <form class="flex flex-col gap-4" @submit.prevent="emit('submit')">
-        <UFormField label="Title" required>
+        <UFormField :label="$t('wizardDetails.title.label')" required>
             <UInput
                 v-model="title"
-                placeholder="Harbour Notes"
+                :placeholder="$t('wizardDetails.title.placeholder')"
                 size="lg"
                 class="w-full"
                 autofocus
             />
         </UFormField>
-        <UFormField label="Summary" help="One line on what the site is and who reads it">
+        <UFormField
+            :label="$t('wizardDetails.summary.label')"
+            :help="$t('wizardDetails.summary.help')"
+        >
             <UTextarea v-model="summary" :rows="2" class="w-full" />
         </UFormField>
         <div class="grid gap-4 sm:grid-cols-3">
-            <UFormField label="Id" help="kebab-case; the file name" :error="idError">
+            <UFormField
+                :label="$t('wizardDetails.id.label')"
+                :help="$t('wizardDetails.id.help')"
+                :error="idError"
+            >
                 <UInput v-model="id" class="w-full" />
             </UFormField>
-            <UFormField label="Milestone" help="Its tickets live here" :error="milestoneError">
+            <UFormField
+                :label="$t('wizardDetails.milestone.label')"
+                :help="$t('wizardDetails.milestone.help')"
+                :error="milestoneError"
+            >
                 <UInput v-model="milestone" class="w-full" />
             </UFormField>
-            <UFormField label="Area label" help="Where its code lives">
+            <UFormField
+                :label="$t('wizardDetails.area.label')"
+                :help="$t('wizardDetails.area.help')"
+            >
                 <UInput v-model="area" class="w-full" />
             </UFormField>
         </div>

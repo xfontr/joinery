@@ -2,7 +2,7 @@
     <footer class="flex items-center justify-between gap-3 pt-2">
         <UButton
             v-if="!first"
-            label="Back"
+            :label="$t('wizardFooter.back')"
             icon="i-lucide-arrow-left"
             color="neutral"
             variant="ghost"
@@ -11,27 +11,27 @@
         <span v-else />
         <UButton
             v-if="!last"
-            label="Next"
+            :label="$t('wizardFooter.next')"
             trailing-icon="i-lucide-arrow-right"
             :disabled="!canAdvance"
             @click="emit('next')"
         />
         <UButton
             v-else-if="editable"
-            label="Create project"
+            :label="$t('wizardFooter.create')"
             icon="i-lucide-check"
             :loading="creating"
             @click="emit('create')"
         />
         <span v-else class="flex items-center gap-2">
             <UButton
-                label="Download YAML"
+                :label="$t('wizardFooter.download')"
                 icon="i-lucide-download"
                 color="neutral"
                 variant="outline"
                 @click="emit('download')"
             />
-            <UButton label="Create project" icon="i-lucide-check" disabled />
+            <UButton :label="$t('wizardFooter.create')" icon="i-lucide-check" disabled />
         </span>
     </footer>
 
@@ -40,8 +40,8 @@
         color="warning"
         variant="subtle"
         icon="i-lucide-lock"
-        title="You're not authorised to create projects here"
-        :description="`This portal is a read-only snapshot. Download the file and add it to data/workflows/projects/${id}.yaml in a pull request.`"
+        :title="$t('wizardFooter.readOnly.title')"
+        :description="$t('wizardFooter.readOnly.description', { id })"
     />
 </template>
 

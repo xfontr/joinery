@@ -5,7 +5,7 @@
     >
         <img
             :src="screenshot"
-            :alt="`${benchmark.title}, first screen`"
+            :alt="$t('benchmarksCard.screenshot', { title: benchmark.title })"
             loading="lazy"
             class="aspect-video w-full border-b border-default object-cover object-top"
         />
@@ -31,10 +31,12 @@ interface Props {
 const { benchmark } = defineProps<Props>();
 
 const screenshot = computed(() => embedUrl(screenshotOf(benchmark)));
+const { t } = useI18n();
+
 const verdict = computed(() =>
     benchmark.verdict
         ? {
-              label: benchmarkVerdictLabel(benchmark.verdict),
+              label: t(`benchmarks.verdict.${benchmark.verdict}`),
               tone: benchmarkVerdictTone(benchmark.verdict),
           }
         : null,

@@ -1,12 +1,12 @@
 <template>
     <WidgetPanel
-        title="Workflows"
-        meta="Projects working through their map"
+        :title="$t('workflowHomePanel.title')"
+        :meta="$t('workflowHomePanel.meta')"
         :count="rows.length"
         to="/workflows"
-        :all="{ label: 'New workflow', to: '/workflows/new' }"
+        :all="{ label: $t('workflowHomePanel.new'), to: '/workflows/new' }"
     >
-        <EmptyState v-if="rows.length === 0">No workflow is running.</EmptyState>
+        <EmptyState v-if="rows.length === 0">{{ $t("workflowHomePanel.none") }}</EmptyState>
         <ul v-else class="divide-y divide-default">
             <li v-for="card in rows" :key="card.id">
                 <NuxtLink
@@ -37,14 +37,19 @@
 import { activeProjects, projectCard } from "#layers/workflows/shared/workflows.ts";
 import type { SplitPart } from "~/types/SplitPart";
 
+const { t } = useI18n();
 const { data: workflows } = await useWorkflows();
 
 const rows = computed(() =>
     activeProjects(workflows.value.projects).map((view) => ({
         ...projectCard(view),
         parts: [
-            { label: "done", value: view.progress.done, tone: "ink" },
-            { label: "to go", value: view.progress.total - view.progress.done, tone: "soft" },
+            { label: t("workflowHomePanel.parts.done"), value: view.progress.done, tone: "ink" },
+            {
+                label: t("workflowHomePanel.parts.left"),
+                value: view.progress.total - view.progress.done,
+                tone: "soft",
+            },
         ] satisfies SplitPart[],
     })),
 );

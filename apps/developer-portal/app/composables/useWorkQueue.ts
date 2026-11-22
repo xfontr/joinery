@@ -9,6 +9,7 @@ import type { QueueRow } from "~/types/QueueRow";
 
 /** Everything open across the repo for Home's queue, one list per kind of work. */
 export const useWorkQueue = () => {
+    const { t } = useI18n();
     const { shown: issues } = useIssues();
     const decisions = useDecisionReports();
     const audits = useAuditReports();
@@ -20,7 +21,7 @@ export const useWorkQueue = () => {
             key: `issue-${issue.number}`,
             id: `#${issue.number}`,
             title: issue.title,
-            meta: shortAge(issue.updatedAt),
+            meta: shortAge(issue.updatedAt, t),
             to: issue.url,
             external: true,
         })),
@@ -28,36 +29,41 @@ export const useWorkQueue = () => {
             key: `decision-${report.id}`,
             id: report.number,
             title: report.title,
-            meta: "to implement",
+            meta: t("workQueue.rows.toImplement"),
             to: `/decisions/${report.id}`,
         })),
         audits: openAudits(audits.value).map((report) => ({
             key: `audit-${report.id}`,
             id: report.date.slice("YYYY-".length),
             title: report.title,
-            meta: `${report.counts.open} of ${report.findings.length} open`,
+            meta: t("workQueue.rows.auditOpen", {
+                open: report.counts.open,
+                total: report.findings.length,
+            }),
             to: `/audits/${report.id}`,
         })),
         releases: unreleased(metrics?.projects).map((project) => ({
             key: `release-${project.root}`,
             id: `+${project.unreleasedCommits}`,
             title: project.name,
-            meta: `${project.currentVersion ?? "unversioned"} · unreleased`,
+            meta: t("workQueue.rows.release", {
+                version: project.currentVersion ?? t("workQueue.rows.unversioned"),
+            }),
             to: `/projects/${folderOf(project.root)}`,
         })),
         attention: [
             ...(metrics?.invariantFindings ?? []).map((finding) => ({
                 key: `finding-${finding.id}`,
-                id: "invariant",
+                id: t("workQueue.rows.invariant"),
                 title: finding.title,
                 meta: finding.detail,
                 to: null,
             })),
             ...brokenPages(docs).map((page) => ({
                 key: `docs-${page.path}`,
-                id: "link",
+                id: t("workQueue.rows.link"),
                 title: page.path,
-                meta: `${page.brokenLinks.length} broken`,
+                meta: t("workQueue.rows.brokenLinks", { count: page.brokenLinks.length }),
                 to: `/wiki${toCollectionPath(page.path)}`,
             })),
         ],

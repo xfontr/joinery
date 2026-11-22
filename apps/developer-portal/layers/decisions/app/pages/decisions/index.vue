@@ -1,11 +1,11 @@
 <template>
     <UDashboardPanel id="decisions">
         <template #header>
-            <PageHeader title="Decisions">
+            <PageHeader :title="$t('decisions.title')">
                 <template #actions>
                     <UButton
                         to="/wiki/docs/decisions/readme"
-                        label="How a report is written"
+                        :label="$t('decisions.guide')"
                         icon="i-lucide-ruler"
                         color="neutral"
                         variant="ghost"
@@ -25,25 +25,21 @@
 
         <template #body>
             <div class="flex flex-col gap-4">
-                <p class="max-w-3xl text-sm text-muted">
-                    Decisions record why the repository works the way it does. Each report preserves
-                    an architectural or product choice after its originating issue is finished, and
-                    its status shows whether an accepted result has been implemented.
-                </p>
+                <p class="max-w-3xl text-sm text-muted">{{ $t("decisions.intro") }}</p>
 
                 <CollectionEmpty
                     v-if="reports.length === 0"
                     icon="i-lucide-compass"
                     folder="docs/decisions/"
                     skill="decision-report"
-                    each="them, one numbered file per decision"
+                    :each="$t('decisions.empty.each')"
                 />
 
                 <template v-else>
                     <DecisionsTiles :reports />
                     <ListCard
-                        title="Every decision, as it was recorded"
-                        note="The number is consecutive, not the issue's — a listing reads in the order the decisions were made. Status and decision come from each report's own frontmatter."
+                        :title="$t('decisions.list.title')"
+                        :note="$t('decisions.list.note')"
                         :shown="visible.length"
                         :total="reports.length"
                     >

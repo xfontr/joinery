@@ -2,7 +2,11 @@
     <section class="rounded-2xl border border-default">
         <header class="border-b border-default px-4 py-3">
             <h2 class="text-sm font-semibold">
-                Dependency graph<template v-if="selected"> · {{ selected.title }}</template>
+                {{
+                    selected
+                        ? $t("workflowGraphSection.titleSelected", { title: selected.title })
+                        : $t("workflowGraphSection.title")
+                }}
             </h2>
             <p class="text-xs text-muted">{{ note }}</p>
         </header>
@@ -30,12 +34,16 @@ interface Props {
 const { view, selected, titles } = defineProps<Props>();
 const emit = defineEmits<{ select: [capability: string]; details: [capability: string] }>();
 
+const { t } = useI18n();
+
 const note = computed(() => {
     if (!selected) return "";
 
     const chain = view.critical.map((capability) => titles[capability]).join(" → ");
-    const status = `${capabilityStateLabel(selected.state)}. Its path stays lit; click an empty spot for the whole map.`;
+    const status = t("workflowGraphSection.status", {
+        state: t(`workflows.capabilityState.${selected.state}`),
+    });
 
-    return chain ? `${status} Longest chain left: ${chain}.` : status;
+    return chain ? t("workflowGraphSection.chain", { status, chain }) : status;
 });
 </script>

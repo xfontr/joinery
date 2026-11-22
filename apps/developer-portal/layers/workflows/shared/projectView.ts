@@ -248,25 +248,23 @@ export const projectView = (
         ]),
     ) as Record<CapabilityState, number>;
 
-    const unsorted: UnsortedIssue[] = issues.flatMap((issue) => {
+    const unsorted: UnsortedIssue[] = issues.flatMap((issue): UnsortedIssue[] => {
         if (issue.caps.length === 0) {
-            return [{ issue, reason: `no ${CAPABILITY_LABEL_PREFIX} label` }];
+            return [{ issue, reason: "noLabel", detail: CAPABILITY_LABEL_PREFIX }];
         }
 
         const group = template.groups.find(({ id }) => issue.caps.includes(id));
         if (group) {
-            return [
-                { issue, reason: `${group.id} is a group; label one of its capabilities instead` },
-            ];
+            return [{ issue, reason: "group", detail: group.id }];
         }
 
         const unknown = issue.caps.filter((cap) => !viewById.has(cap));
         if (unknown.length > 0) {
-            return [{ issue, reason: `unknown capability ${unknown.join(", ")}` }];
+            return [{ issue, reason: "unknown", detail: unknown.join(", ") }];
         }
 
         if (issue.state === "open" && issue.caps.every((cap) => !enabled.get(cap))) {
-            return [{ issue, reason: "its capability is switched off" }];
+            return [{ issue, reason: "off", detail: "" }];
         }
 
         return [];
@@ -276,7 +274,8 @@ export const projectView = (
         asOf === null && left.length > 0
             ? (snapshot?.noMilestone ?? []).map((issue) => ({
                   issue,
-                  reason: "not in the milestone",
+                  reason: "noMilestone",
+                  detail: "",
               }))
             : [];
 

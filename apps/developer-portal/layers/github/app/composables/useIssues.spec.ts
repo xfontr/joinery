@@ -55,7 +55,7 @@ describe("useIssues", () => {
         github(() => []);
         const { data } = (await use("")).issues;
 
-        expect(data.value.error).toContain("no repo to read");
+        expect(data.value.error).toBe("issuesRead.noRepo");
         expect(requests).toEqual([]);
     });
 

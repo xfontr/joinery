@@ -2,24 +2,21 @@ import type { ProjectRow } from "#layers/projects/app/types/ProjectRow.ts";
 
 type KindId = "all" | "apps" | "packages" | "infrastructure";
 
-const KINDS = [
-    { id: "all", label: "All projects" },
-    { id: "apps", label: "Apps" },
-    { id: "packages", label: "Packages" },
-    { id: "infrastructure", label: "Infrastructure" },
-] as const satisfies { id: KindId; label: string }[];
+const KINDS = ["all", "apps", "packages", "infrastructure"] as const satisfies KindId[];
 
 /** The catalog as table rows, narrowed by the `kind` query and a search; `ready` settles on load. */
 export const useProjectList = () => {
     const route = useRoute();
-    const filter = computed<KindId>(
-        () => KINDS.find((kind) => kind.id === route.query.kind)?.id ?? "all",
-    );
-    const current = computed(() => KINDS.find((kind) => kind.id === filter.value) ?? KINDS[0]);
+    const { t } = useI18n();
+    const filter = computed<KindId>(() => KINDS.find((kind) => kind === route.query.kind) ?? "all");
+    const current = computed(() => ({
+        id: filter.value,
+        label: t(`projects.kinds.${filter.value}`),
+    }));
     const crumbs = computed(() =>
         filter.value === "all"
             ? []
-            : [{ label: "projects", to: "/projects" }, { label: filter.value }],
+            : [{ label: t("projects.crumb"), to: "/projects" }, { label: filter.value }],
     );
 
     const search = ref("");
@@ -50,8 +47,8 @@ export const useProjectList = () => {
                     usedBy,
                     compact: [
                         version,
-                        unreleased ? `+${unreleased} unreleased` : null,
-                        `used by ${usedBy}`,
+                        unreleased ? t("projects.row.unreleased", { count: unreleased }) : null,
+                        t("projects.row.usedBy", { count: usedBy }),
                     ]
                         .filter(Boolean)
                         .join(" · "),
@@ -69,8 +66,12 @@ export const useProjectList = () => {
     );
 
     const groups = computed(() =>
-        KINDS.filter((kind) => kind.id !== "all")
-            .map((kind) => ({ ...kind, rows: shown.value.filter((row) => row.kind === kind.id) }))
+        KINDS.filter((kind) => kind !== "all")
+            .map((kind) => ({
+                id: kind,
+                label: t(`projects.kinds.${kind}`),
+                rows: shown.value.filter((row) => row.kind === kind),
+            }))
             .filter((group) => group.rows.length > 0),
     );
 

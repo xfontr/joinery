@@ -1,18 +1,20 @@
 <template>
     <span class="flex items-center gap-1.5 text-xs text-muted">
         <UIcon name="i-lucide-refresh-cw" class="size-3.5" />
-        <template v-if="syncedAt">Snapshot updated {{ synced }}</template>
-        <template v-else>
-            Never synced — run
-            <code class="font-mono text-default">pnpm workflow:setup {{ project }}</code>
-            then
-            <code class="font-mono text-default">pnpm workflow:sync {{ project }}</code>
-        </template>
+        <template v-if="syncedAt">{{ $t("workflowActions.synced", { age: synced }) }}</template>
+        <I18nT v-else keypath="workflowActions.never" scope="global">
+            <template #setup>
+                <code class="font-mono text-default">{{ `pnpm workflow:setup ${project}` }}</code>
+            </template>
+            <template #sync>
+                <code class="font-mono text-default">{{ `pnpm workflow:sync ${project}` }}</code>
+            </template>
+        </I18nT>
     </span>
     <UButton
         v-if="found"
         :to="`/workflows/${project}/settings`"
-        label="Settings"
+        :label="$t('workflowActions.settings')"
         icon="i-lucide-settings"
         color="neutral"
         variant="outline"
@@ -30,5 +32,7 @@ interface Props {
 
 const { project, found, syncedAt = null } = defineProps<Props>();
 
-const synced = computed(() => relativeTime(syncedAt));
+const { t } = useI18n();
+
+const synced = computed(() => relativeTime(syncedAt, t));
 </script>

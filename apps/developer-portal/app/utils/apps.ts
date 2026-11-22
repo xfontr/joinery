@@ -1,25 +1,19 @@
 import type { AppEntry } from "~/types/AppEntry";
 import type { AppGroup } from "~/types/AppGroup";
 import type { NavLink } from "~/types/NavLink";
+import type { Translate } from "~/types/Translate";
 
-const APPS: readonly AppGroup[] = [
-    { id: "home", label: "Home", icon: "i-lucide-house", items: ["overview"] },
-    {
-        id: "catalog",
-        label: "Catalog",
-        icon: "i-lucide-boxes",
-        items: ["projects", "graph", "changelog"],
-    },
+const APPS: readonly Omit<AppGroup, "label">[] = [
+    { id: "home", icon: "i-lucide-house", items: ["overview"] },
+    { id: "catalog", icon: "i-lucide-boxes", items: ["projects", "graph", "changelog"] },
     {
         id: "docs",
-        label: "Docs",
         icon: "i-lucide-book-open",
         items: ["docs", "decisions", "audits", "benchmarks"],
     },
-    { id: "work", label: "Work", icon: "i-lucide-kanban", items: ["workflows", "issues"] },
+    { id: "work", icon: "i-lucide-kanban", items: ["workflows", "issues"] },
     {
         id: "health",
-        label: "Health",
         icon: "i-lucide-heart-pulse",
         items: ["coverage", "deps", "telemetry"],
         tabs: true,
@@ -29,12 +23,14 @@ const APPS: readonly AppGroup[] = [
 /** Each app with the entries its layers declare; an app left with none is dropped. */
 export const appEntries = (
     nav: Record<string, NavLink | undefined>,
+    t: Translate,
 ): (AppGroup & { entries: AppEntry[] })[] =>
     APPS.map((app) => ({
         ...app,
+        label: t(`app.apps.${app.id}`),
         entries: app.items.flatMap((key) => {
             const link = nav[key];
-            return link ? [{ key, ...link }] : [];
+            return link ? [{ key, ...link, label: t(`app.nav.${key}`) }] : [];
         }),
     })).filter((app) => app.entries.length > 0);
 

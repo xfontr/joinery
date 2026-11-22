@@ -1,9 +1,9 @@
 <template>
     <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatTile
-            label="Audits"
+            :label="$t('auditsTiles.audits')"
             :value="reports.length"
-            :hint="`${totals.states.closed} closed`"
+            :hint="$t('auditsTiles.closed', { count: totals.states.closed })"
             icon="i-lucide-scan-search"
         />
         <StatTile
@@ -27,19 +27,17 @@ interface Props {
 
 const { reports } = defineProps<Props>();
 
-const TILES: { status: FindingStatus; hint: string }[] = [
-    { status: "open", hint: "findings still owed work" },
-    { status: "fixed", hint: "the fix has landed" },
-    { status: "wont-fix", hint: "decided against, deliberately" },
-];
+const TILES: FindingStatus[] = ["open", "fixed", "wont-fix"];
+
+const { t } = useI18n();
 
 const totals = computed(() => countAll(reports));
 
 const tiles = computed(() =>
-    TILES.map(({ status, hint }) => ({
+    TILES.map((status) => ({
         status,
-        hint,
-        label: findingStatusLabel(status),
+        hint: t(`auditsTiles.hints.${status}`),
+        label: t(`audits.findingStatus.${status}`),
         value: totals.value.findings[status],
         tone: findingStatusTone(status),
     })),

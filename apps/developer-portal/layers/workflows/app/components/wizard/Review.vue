@@ -13,7 +13,7 @@
 
         <section v-if="preview" class="rounded-2xl border border-default">
             <header class="border-b border-default px-4 py-3">
-                <h2 class="text-sm font-semibold">Dependency graph</h2>
+                <h2 class="text-sm font-semibold">{{ $t("wizardReview.graph") }}</h2>
             </header>
             <WorkflowGraph
                 :capabilities="preview.capabilities"

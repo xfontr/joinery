@@ -4,7 +4,7 @@
     <UButton
         v-if="benchmark?.url"
         :to="benchmark.url"
-        label="Open site"
+        :label="$t('benchmarksMeta.open')"
         icon="i-lucide-external-link"
         color="neutral"
         variant="ghost"
@@ -26,10 +26,12 @@ interface Props {
 
 const { benchmark, source } = defineProps<Props>();
 
+const { t } = useI18n();
+
 const verdict = computed(() =>
     benchmark?.verdict
         ? {
-              label: benchmarkVerdictLabel(benchmark.verdict),
+              label: t(`benchmarks.verdict.${benchmark.verdict}`),
               tone: benchmarkVerdictTone(benchmark.verdict),
           }
         : null,

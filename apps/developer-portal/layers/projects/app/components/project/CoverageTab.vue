@@ -1,7 +1,11 @@
 <template>
     <WidgetPanel
-        title="Coverage"
-        :meta="coverage ? `Vitest · ${coverage.files} files · collected ${age}` : 'Not collected'"
+        :title="$t('projectCoverageTab.title')"
+        :meta="
+            coverage
+                ? $t('projectCoverageTab.meta', { files: coverage.files, age })
+                : $t('projectCoverageTab.notCollected')
+        "
         to="/coverage"
     >
         <dl v-if="rows.length > 0" class="grid sm:grid-cols-2">
@@ -19,7 +23,7 @@
                 <SplitBar :parts="row.parts" />
             </div>
         </dl>
-        <EmptyState v-else>No usable coverage report for this project.</EmptyState>
+        <EmptyState v-else>{{ $t("projectCoverageTab.empty") }}</EmptyState>
     </WidgetPanel>
 </template>
 
@@ -35,6 +39,8 @@ interface Props {
 
 const { coverage, age } = defineProps<Props>();
 
+const { t } = useI18n();
+
 const rows = computed(() =>
     (["lines", "statements", "functions", "branches"] as const).flatMap((key) => {
         const value = coverage?.[key];
@@ -42,13 +48,17 @@ const rows = computed(() =>
         return value
             ? [
                   {
-                      label: key,
+                      label: t(`common.metrics.${key}`),
                       pct: value.pct,
                       tone: toneClass(coverageTone(value.pct)),
                       parts: [
-                          { label: "covered", value: value.covered, tone: "ink" },
                           {
-                              label: "not covered",
+                              label: t("projectCoverageTab.parts.covered"),
+                              value: value.covered,
+                              tone: "ink",
+                          },
+                          {
+                              label: t("projectCoverageTab.parts.uncovered"),
                               value: value.total - value.covered,
                               tone: "soft",
                           },

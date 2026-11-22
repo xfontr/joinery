@@ -6,7 +6,7 @@
         variant="ghost"
         size="xs"
         :loading="reloading"
-        aria-label="Re-read the issues from GitHub"
+        :aria-label="$t('healthIssuesRead.refresh')"
         @click="emit('refresh')"
     />
 </template>
@@ -21,5 +21,11 @@ interface Props {
 const { fetchedAt, reloading } = defineProps<Props>();
 const emit = defineEmits<{ refresh: [] }>();
 
-const read = computed(() => (fetchedAt ? `read ${relativeTime(fetchedAt)}` : "not read yet"));
+const { t } = useI18n();
+
+const read = computed(() =>
+    fetchedAt
+        ? t("healthIssuesRead.read", { age: relativeTime(fetchedAt, t) })
+        : t("healthIssuesRead.notRead"),
+);
 </script>

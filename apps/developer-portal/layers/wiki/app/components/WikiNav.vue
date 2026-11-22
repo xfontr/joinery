@@ -90,6 +90,8 @@ interface Props {
 
 const { sections, current = "" } = defineProps<Props>();
 
+const { t } = useI18n();
+
 const holdsCurrent = (group: WikiGroup): boolean =>
     group.entries.some((entry) => entry.path === current);
 
@@ -99,7 +101,7 @@ const soleEntry = (group: WikiGroup): WikiEntry | null =>
 
 /** Every group lists its directory's own README first, so the group label doubles as a link to it. */
 const overviewPath = (group: WikiGroup): string | null =>
-    group.entries.find((entry) => entry.label === "Overview")?.path ?? null;
+    group.entries.find((entry) => entry.label === t("wiki.overview"))?.path ?? null;
 
 const opensByDefault = (group: WikiGroup): boolean => holdsCurrent(group);
 

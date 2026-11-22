@@ -2,8 +2,8 @@
     <UDashboardPanel id="decision">
         <template #header>
             <PageHeader
-                :crumbs="[{ label: 'decisions', to: '/decisions' }]"
-                :title="report?.title ?? page?.title ?? 'Not found'"
+                :crumbs="[{ label: $t('decision.crumb'), to: '/decisions' }]"
+                :title="report?.title ?? page?.title ?? $t('decision.notFound')"
             >
                 <template #actions>
                     <DecisionsMeta :report :source />
@@ -21,8 +21,8 @@
                         color="neutral"
                         variant="subtle"
                         icon="i-lucide-file-question"
-                        title="No such report"
-                        :description="`Nothing under docs/decisions/ matches ${id}. Reports are numbered consecutively, so a gap is a report that was never filed.`"
+                        :title="$t('decision.missing.title')"
+                        :description="$t('decision.missing.description', { id })"
                     />
 
                     <template v-else>
@@ -34,8 +34,8 @@
 
                         <NeighbourLinks
                             v-bind="around"
-                            before="Decided before"
-                            after="Decided after"
+                            :before="$t('decision.before')"
+                            :after="$t('decision.after')"
                         />
                     </template>
                 </div>

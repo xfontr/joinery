@@ -1,11 +1,18 @@
 <template>
     <UDashboardPanel id="workflow-settings">
         <template #header>
-            <PageHeader :crumbs :title="base ? `${base.project.title} · Settings` : 'Settings'">
+            <PageHeader
+                :crumbs
+                :title="
+                    base
+                        ? $t('workflowSettings.titleOf', { project: base.project.title })
+                        : $t('workflowSettings.title')
+                "
+            >
                 <template #actions>
                     <UButton
                         :to="`/workflows/${id}`"
-                        label="Back to the project"
+                        :label="$t('workflowSettings.back')"
                         icon="i-lucide-arrow-left"
                         color="neutral"
                         variant="ghost"
@@ -16,10 +23,7 @@
         </template>
 
         <template #body>
-            <EmptyState v-if="!base">
-                No project <code class="font-mono">{{ id }}</code> under
-                <code class="font-mono">data/workflows/projects/</code>.
-            </EmptyState>
+            <WorkflowMissing v-if="!base" :id />
 
             <div v-else class="mx-auto flex w-full max-w-4xl flex-col gap-10">
                 <SettingsReadOnly v-if="!editable" />
@@ -50,9 +54,9 @@
 
             <WorkflowLeaveModal
                 v-model:open="leaving"
-                title="Leave without saving?"
-                description="The changes on this page aren't in the project file yet."
-                action="Leave without saving"
+                :title="$t('workflowSettings.leave.title')"
+                :description="$t('workflowSettings.leave.description')"
+                :action="$t('workflowSettings.leave.action')"
                 @leave="leave"
             />
         </template>
@@ -60,6 +64,8 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n();
+
 const {
     id,
     base,
@@ -79,11 +85,16 @@ const {
 } = useWorkflowSettings();
 
 const crumbs = computed(() => [
-    { label: "workflows", to: "/workflows" },
+    { label: t("workflows.crumb"), to: "/workflows" },
     { label: id.value, to: `/workflows/${id.value}` },
 ]);
 
-useHead({ title: () => `${base.value?.project.title ?? "Workflow"} · Settings` });
+useHead({
+    title: () =>
+        t("workflowSettings.titleOf", {
+            project: base.value?.project.title ?? t("workflow.fallback"),
+        }),
+});
 
 await ready;
 </script>

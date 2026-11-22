@@ -4,6 +4,7 @@ import { sortDecisions } from "#layers/decisions/shared/decisionReports.ts";
 /** One decision's rendered report and the ones decided either side of it; `ready` settles on load. */
 export const useDecisionPage = () => {
     const route = useRoute();
+    const { t } = useI18n();
     const id = computed(() => (typeof route.params.id === "string" ? route.params.id : ""));
     const path = computed(() => `/docs/decisions/${id.value}`);
 
@@ -30,7 +31,7 @@ export const useDecisionPage = () => {
     });
 
     const crumbs = computed<BreadcrumbItem[]>(() => [
-        { label: "Decisions", to: "/decisions", icon: "i-lucide-compass" },
+        { label: t("decisions.title"), to: "/decisions", icon: "i-lucide-compass" },
         { label: report.value?.number ?? id.value, class: "font-mono" },
     ]);
 

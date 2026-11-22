@@ -21,9 +21,9 @@
                     v-if="!collapsed"
                     to="/"
                     class="min-w-0 flex-1 font-display text-xl text-highlighted italic"
-                    aria-label="Monorepo visitor view"
+                    :aria-label="$t('app.dev.visitorLabel')"
                 >
-                    monorepo
+                    {{ $t("app.dev.wordmark") }}
                 </NuxtLink>
                 <UDashboardSidebarCollapse
                     color="neutral"
@@ -40,8 +40,8 @@
                     color="neutral"
                     variant="ghost"
                     class="mx-auto text-muted"
-                    aria-label="Switch to the visitor view"
-                    title="Visitor view"
+                    :aria-label="$t('app.dev.visitorSwitch')"
+                    :title="$t('app.dev.visitorSwitchTitle')"
                 />
                 <ViewSwitch v-else current="dev" class="self-start" />
 
@@ -75,14 +75,14 @@
                         linkTrailingBadge:
                             'bg-transparent px-0 font-mono text-xs text-muted ring-0',
                     }"
-                    aria-label="Developer view"
+                    :aria-label="$t('app.dev.navLabel')"
                 />
             </template>
 
             <template #footer="{ collapsed }">
                 <div class="flex w-full items-center gap-1" :class="collapsed && 'flex-col'">
                     <UColorModeButton
-                        :label="collapsed ? undefined : 'Theme'"
+                        :label="collapsed ? undefined : $t('app.dev.colorMode')"
                         color="neutral"
                         variant="ghost"
                         size="xs"
@@ -97,11 +97,11 @@
                         color="neutral"
                         variant="ghost"
                         size="xs"
-                        :label="collapsed ? undefined : 'Source'"
+                        :label="collapsed ? undefined : $t('app.dev.source')"
                         :ui="{ leadingIcon: 'size-3.5' }"
                         class="text-muted"
                         :class="!collapsed && 'ml-auto'"
-                        aria-label="View source on GitHub"
+                        :aria-label="$t('app.dev.sourceLabel')"
                     />
                 </div>
             </template>
@@ -111,7 +111,7 @@
             v-model:open="search.open.value"
             :groups="search.groups.value"
             :loading="search.loading.value"
-            placeholder="Search pages, projects and docs…"
+            :placeholder="$t('app.dev.search')"
         />
 
         <!-- The status bar spans this column, so it starts where the rail ends at any width -->

@@ -1,11 +1,11 @@
 <template>
     <UDashboardPanel id="overview">
         <template #header>
-            <PageHeader title="Home">
+            <PageHeader :title="$t('overview.title')">
                 <template #actions>
                     <SnapshotAge class="mr-3 hidden sm:flex" :manifest />
                     <UButton
-                        :label="editing ? 'Done' : 'Customize'"
+                        :label="editing ? $t('overview.done') : $t('overview.customize')"
                         :icon="editing ? 'i-lucide-check' : 'i-lucide-layout-grid'"
                         size="sm"
                         :variant="editing ? 'solid' : 'outline'"
@@ -17,12 +17,7 @@
         </template>
 
         <template #body>
-            <DashboardGrid
-                v-model:editing="editing"
-                :widgets="HOME_WIDGETS"
-                :empty
-                storage-key="home-layout"
-            >
+            <DashboardGrid v-model:editing="editing" :widgets :empty storage-key="home-layout">
                 <template #queue>
                     <WorkQueue :rows :issues-read :issues-error />
                 </template>
@@ -41,13 +36,20 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n();
+
 const editing = ref(false);
+
+const widgets = HOME_WIDGETS.map((widget) => ({
+    ...widget,
+    label: t(`overview.widgets.${widget.id}`),
+}));
 
 const { rows, issues } = useWorkQueue();
 const health = useHealthLines();
 
 const manifest = snapshotManifest();
-const collectedAge = relativeTime(metricsArtifact()?.generatedAt);
+const collectedAge = relativeTime(metricsArtifact()?.generatedAt, t);
 const issuesRead = computed(() => Boolean(issues.value.fetchedAt));
 const issuesError = computed(() => Boolean(issues.value.error));
 const empty = usageArtifact() ? [] : ["activity"];

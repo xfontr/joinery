@@ -1,11 +1,11 @@
 <template>
     <UCard>
-        <p class="text-xs text-muted">{{ template ?? "No template" }}</p>
-        <p class="truncate font-semibold">{{ title || "Untitled project" }}</p>
+        <p class="text-xs text-muted">{{ template ?? $t("wizardSummary.noTemplate") }}</p>
+        <p class="truncate font-semibold">{{ title || $t("wizardSummary.untitled") }}</p>
         <div class="mt-4 flex gap-6 tabular-nums">
-            <div v-for="figure in figures" :key="figure.unit">
+            <div v-for="figure in figures" :key="figure.id">
                 <p class="text-2xl font-semibold">{{ figure.value }}</p>
-                <p class="text-xs text-muted">{{ figure.unit }}</p>
+                <p class="text-xs text-muted">{{ $t(`wizardSummary.units.${figure.id}`) }}</p>
             </div>
         </div>
         <WorkflowEstimateReceipt
@@ -15,7 +15,7 @@
             class="mt-4 border-t border-default pt-4"
         />
         <div class="mt-4 border-t border-default pt-4">
-            <p class="mb-2 text-xs font-medium text-muted">Ticket size</p>
+            <p class="mb-2 text-xs font-medium text-muted">{{ $t("wizardSummary.ticketSize") }}</p>
             <WorkflowTicketSizePicker v-model="ticketSize" :counts="tickets" editable compact />
         </div>
     </UCard>
@@ -38,8 +38,8 @@ const { template, title, blocks, tickets, points, receipt } = defineProps<Props>
 const ticketSize = defineModel<TicketSize>("ticketSize", { required: true });
 
 const figures = computed(() => [
-    { unit: "blocks", value: blocks },
-    { unit: "tickets", value: tickets[ticketSize.value] },
-    { unit: "SP", value: points },
+    { id: "blocks", value: blocks },
+    { id: "tickets", value: tickets[ticketSize.value] },
+    { id: "points", value: points },
 ]);
 </script>

@@ -76,10 +76,10 @@ describe("pageProblems", () => {
         ];
 
         expect(pageProblems(pages, new Set(["search-page"]))).toEqual([
-            "Name the page, or remove it",
-            "`search-page` is already a block of the template",
+            { code: "untitled", id: "" },
+            { code: "taken", id: "search-page" },
             null,
-            "Another page has this name",
+            { code: "duplicate", id: "about-page" },
         ]);
     });
 });

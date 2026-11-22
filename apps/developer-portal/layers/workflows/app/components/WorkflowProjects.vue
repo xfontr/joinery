@@ -1,10 +1,18 @@
 <template>
     <section class="flex flex-col gap-3">
-        <h2 class="font-semibold">Projects</h2>
+        <h2 class="font-semibold">{{ $t("workflowProjects.title") }}</h2>
 
-        <p v-if="projects.length === 0" class="text-sm text-muted">
-            No project under <code class="font-mono">data/workflows/projects/</code> yet.
-        </p>
+        <I18nT
+            v-if="projects.length === 0"
+            keypath="workflowProjects.empty"
+            tag="p"
+            scope="global"
+            class="text-sm text-muted"
+        >
+            <template #folder>
+                <code class="font-mono">{{ FOLDER }}</code>
+            </template>
+        </I18nT>
 
         <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             <WorkflowCard v-for="view in projects" :key="view.project.id" :project="view" />
@@ -21,4 +29,6 @@ interface Props {
 }
 
 const { projects } = defineProps<Props>();
+
+const FOLDER = "data/workflows/projects/";
 </script>

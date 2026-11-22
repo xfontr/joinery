@@ -1,19 +1,14 @@
 <template>
-    <WidgetPanel
-        title="Lint rules × projects"
-        meta="Hits per project in the last 90 days, darker for more; the last two columns say what a rule costs"
-    >
+    <WidgetPanel :title="$t('telemetryLintUsage.title')" :meta="$t('telemetryLintUsage.meta')">
         <p class="border-b border-default px-4 py-2 text-xs text-muted">
-            Agent edits only: the counts come from the hook that lints every file an agent edits.
-            Your own edits are fixed by the editor on save and never counted, so a rule that only
-            catches people reads as quiet here.
+            {{ $t("telemetryLintUsage.scope") }}
         </p>
 
         <div data-scroll-x class="overflow-x-auto">
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Rule</th>
+                        <th>{{ $t("telemetryLintUsage.columns.rule") }}</th>
                         <th
                             v-for="project in table.projects"
                             :key="project"
@@ -21,9 +16,13 @@
                         >
                             {{ project }}
                         </th>
-                        <th class="numeric">Total</th>
-                        <th class="numeric whitespace-nowrap">Auto-fixed</th>
-                        <th class="numeric whitespace-nowrap">Disabled inline</th>
+                        <th class="numeric">{{ $t("telemetryLintUsage.columns.total") }}</th>
+                        <th class="numeric whitespace-nowrap">
+                            {{ $t("telemetryLintUsage.columns.fixed") }}
+                        </th>
+                        <th class="numeric whitespace-nowrap">
+                            {{ $t("telemetryLintUsage.columns.disabled") }}
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,20 +53,24 @@
         <div class="flex flex-col gap-2 border-t border-default px-4 py-3">
             <div class="flex flex-wrap items-baseline justify-between gap-2">
                 <h2 class="text-sm font-semibold">
-                    Never fired: {{ quiet.length }} of {{ enabledCount }} enabled rules
+                    {{
+                        $t("telemetryLintUsage.neverFired", {
+                            quiet: quiet.length,
+                            enabled: enabledCount,
+                        })
+                    }}
                 </h2>
                 <UButton
                     v-if="quiet.length > 0"
                     variant="link"
                     size="xs"
-                    :label="showQuiet ? 'Hide the list' : 'Show the list'"
+                    :label="
+                        showQuiet ? $t('telemetryLintUsage.hide') : $t('telemetryLintUsage.show')
+                    "
                     @click="showQuiet = !showQuiet"
                 />
             </div>
-            <p class="text-xs text-muted">
-                {{ watching }} Quiet can also mean the rule works: agents follow what the docs say,
-                or it guards something rare.
-            </p>
+            <p class="text-xs text-muted">{{ $t("telemetryLintUsage.quiet", { watching }) }}</p>
             <p v-if="showQuiet" class="font-mono text-xs/relaxed text-muted">
                 {{ quietList }}
             </p>
@@ -85,6 +88,8 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const { t } = useI18n();
 
 const showQuiet = ref(false);
 
@@ -118,7 +123,7 @@ const rows = computed(() => {
 
 const watching = computed(() =>
     props.lint.since
-        ? `Watching since ${props.lint.since}: nothing here means much until that's weeks ago.`
-        : "Nothing recorded yet, so every rule is listed.",
+        ? t("telemetryLintUsage.since", { since: props.lint.since })
+        : t("telemetryLintUsage.nothingYet"),
 );
 </script>

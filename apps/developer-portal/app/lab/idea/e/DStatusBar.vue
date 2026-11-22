@@ -53,6 +53,8 @@ import { useSignals } from "./signals";
 
 const { signals, manifest } = useSignals();
 
-const age = computed(() => relativeTime(manifest?.generatedAt));
+const { t } = useI18n();
+
+const age = computed(() => relativeTime(manifest?.generatedAt, t));
 const commit = computed(() => manifest?.commit.slice(0, 7) ?? "");
 </script>

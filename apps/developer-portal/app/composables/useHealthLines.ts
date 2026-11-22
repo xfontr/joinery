@@ -8,6 +8,7 @@ const FULL = 100;
 
 /** Home's Health panel: one figure per area, each with the split behind it. */
 export const useHealthLines = () => {
+    const { t } = useI18n();
     const coverage = coverageArtifact();
     const deps = depsArtifact();
     const usage = usageArtifact();
@@ -25,72 +26,98 @@ export const useHealthLines = () => {
 
         return [
             {
-                label: "Line coverage",
+                label: t("healthLines.lines.coverage"),
                 value: dash(lines, "%"),
                 tone: coverageTone(lines),
                 to: "/coverage",
                 legend: false,
                 parts: [
-                    { label: "covered", value: lines ?? 0, tone: "ink" },
-                    { label: "uncovered", value: FULL - (lines ?? 0), tone: "soft" },
+                    { label: t("healthLines.parts.covered"), value: lines ?? 0, tone: "ink" },
+                    {
+                        label: t("healthLines.parts.uncovered"),
+                        value: FULL - (lines ?? 0),
+                        tone: "soft",
+                    },
                 ],
             },
             {
-                label: "Advisories",
+                label: t("healthLines.lines.advisories"),
                 value: counts ? String(deps?.advisories.length ?? 0) : "—",
                 tone: worst ? severityTone(worst) : "neutral",
                 to: "/deps",
                 legend: true,
                 parts: [
-                    { label: "critical", value: counts?.critical ?? 0, tone: "bad" },
-                    { label: "high", value: counts?.high ?? 0, tone: "bad" },
-                    { label: "moderate", value: counts?.moderate ?? 0, tone: "warn" },
-                    { label: "low", value: counts?.low ?? 0, tone: "soft" },
+                    {
+                        label: t("healthLines.parts.critical"),
+                        value: counts?.critical ?? 0,
+                        tone: "bad",
+                    },
+                    { label: t("healthLines.parts.high"), value: counts?.high ?? 0, tone: "bad" },
+                    {
+                        label: t("healthLines.parts.moderate"),
+                        value: counts?.moderate ?? 0,
+                        tone: "warn",
+                    },
+                    { label: t("healthLines.parts.low"), value: counts?.low ?? 0, tone: "soft" },
                 ],
             },
             {
-                label: "Tooling runs failed",
+                label: t("healthLines.lines.tooling"),
                 value: runs.runs ? `${percentOf(runs.failures, runs.runs)}%` : "—",
                 tone: runs.runs && isFailing(runs) ? "bad" : "neutral",
                 to: "/telemetry",
                 legend: true,
                 parts: [
-                    { label: "passed", value: runs.runs - runs.failures, tone: "ink" },
-                    { label: "failed", value: runs.failures, tone: "bad" },
+                    {
+                        label: t("healthLines.parts.passed"),
+                        value: runs.runs - runs.failures,
+                        tone: "ink",
+                    },
+                    { label: t("healthLines.parts.failed"), value: runs.failures, tone: "bad" },
                 ],
             },
             {
-                label: "Decisions implemented",
+                label: t("healthLines.lines.decisions"),
                 value: String(decided.implemented),
                 tone: "neutral",
                 to: "/decisions",
                 legend: true,
                 parts: [
-                    { label: "implemented", value: decided.implemented, tone: "ink" },
-                    { label: "to implement", value: decided["to-implement"], tone: "soft" },
+                    {
+                        label: t("healthLines.parts.implemented"),
+                        value: decided.implemented,
+                        tone: "ink",
+                    },
+                    {
+                        label: t("healthLines.parts.toImplement"),
+                        value: decided["to-implement"],
+                        tone: "soft",
+                    },
                 ],
             },
             {
-                label: "Audit findings open",
+                label: t("healthLines.lines.audits"),
                 value: String(findings.open),
                 tone: "neutral",
                 to: "/audits",
                 legend: false,
                 parts: [
-                    { label: "open", value: findings.open, tone: "warn" },
-                    { label: "fixed", value: findings.fixed ?? 0, tone: "soft" },
+                    { label: t("healthLines.parts.open"), value: findings.open, tone: "warn" },
+                    {
+                        label: t("healthLines.parts.fixed"),
+                        value: findings.fixed ?? 0,
+                        tone: "soft",
+                    },
                 ],
             },
             {
-                label: "Doc pages",
+                label: t("healthLines.lines.docs"),
                 value: docs ? String(docs.pages.length) : "—",
                 tone: docs?.brokenLinkCount ? "bad" : "neutral",
                 to: "/wiki",
                 legend: false,
                 parts: [],
-                note: docs?.brokenLinkCount
-                    ? counted(docs.brokenLinkCount, "broken link")
-                    : "No broken links",
+                note: t("healthLines.brokenLinks", docs?.brokenLinkCount ?? 0),
             },
         ];
     });

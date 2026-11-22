@@ -3,7 +3,7 @@
         <template #header>
             <PageHeader
                 :title="project?.name ?? name"
-                :crumbs="[{ label: 'projects', to: '/projects' }, { label: name }]"
+                :crumbs="[{ label: $t('projects.crumb'), to: '/projects' }, { label: name }]"
                 :tabs="project ? tabs : []"
             >
                 <template #title>
@@ -25,8 +25,8 @@
                 color="neutral"
                 variant="subtle"
                 icon="i-lucide-box"
-                title="No such project"
-                :description="`No collected project lives in a folder called ${name}.`"
+                :title="$t('project.missing.title')"
+                :description="$t('project.missing.description', { name })"
             />
 
             <div v-else class="grid items-start gap-6 lg:grid-cols-4">
@@ -42,7 +42,7 @@
                         class="overflow-x-auto border border-default bg-default px-6 py-5"
                     >
                         <ContentRenderer v-if="readme" :value="readme" />
-                        <p v-else class="text-muted">This project has no README.</p>
+                        <p v-else class="text-muted">{{ $t("project.noReadme") }}</p>
                     </article>
                     <ProjectCoverageTab
                         v-else-if="tab === 'coverage'"

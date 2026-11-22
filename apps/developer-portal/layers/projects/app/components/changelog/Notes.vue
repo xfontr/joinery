@@ -4,8 +4,8 @@
         color="warning"
         variant="subtle"
         icon="i-lucide-package-open"
-        title="Never released"
-        :description="`${unreleased} — commits waiting on a first release, so no changelog yet.`"
+        :title="$t('changelogNotes.unreleased.title')"
+        :description="$t('changelogNotes.unreleased.description', { projects: unreleased })"
     />
 
     <!-- Changelogs and versions both come from commit subjects, so one commitlint would reject never ships. -->
@@ -14,8 +14,8 @@
         :color="conventional === 100 ? 'neutral' : 'warning'"
         variant="subtle"
         icon="i-lucide-git-commit-horizontal"
-        title="Conventional subjects"
-        :description="`${conventional}% of the last 100 commits parse as a version bump.`"
+        :title="$t('changelogNotes.conventional.title')"
+        :description="$t('changelogNotes.conventional.description', { percent: conventional })"
         :ui="{ description: 'text-xs' }"
     />
 </template>

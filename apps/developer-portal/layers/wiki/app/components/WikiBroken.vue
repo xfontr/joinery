@@ -4,7 +4,7 @@
         color="warning"
         variant="subtle"
         icon="i-lucide-link-2-off"
-        title="Broken relative links"
+        :title="$t('wikiBroken.title')"
     >
         <template #description>
             <div class="mt-1 flex flex-col gap-1">

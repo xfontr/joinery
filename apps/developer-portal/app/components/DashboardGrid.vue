@@ -20,7 +20,7 @@
                         size="xs"
                         variant="ghost"
                         color="neutral"
-                        :aria-label="`Drag ${labelFor(widget.id)}`"
+                        :aria-label="$t('dashboardGrid.drag', { widget: labelFor(widget.id) })"
                     />
                     <span class="mr-auto truncate font-medium">{{ labelFor(widget.id) }}</span>
                     <UButton
@@ -28,7 +28,7 @@
                         size="xs"
                         variant="ghost"
                         color="neutral"
-                        :aria-label="`Move ${labelFor(widget.id)} earlier`"
+                        :aria-label="$t('dashboardGrid.earlier', { widget: labelFor(widget.id) })"
                         @click="apply(moveWidget(layout, widget.id, -1))"
                     />
                     <UButton
@@ -36,7 +36,7 @@
                         size="xs"
                         variant="ghost"
                         color="neutral"
-                        :aria-label="`Move ${labelFor(widget.id)} later`"
+                        :aria-label="$t('dashboardGrid.later', { widget: labelFor(widget.id) })"
                         @click="apply(moveWidget(layout, widget.id, 1))"
                     />
                     <UButton
@@ -44,7 +44,12 @@
                         size="xs"
                         variant="ghost"
                         color="neutral"
-                        :aria-label="`Resize ${labelFor(widget.id)}, now ${widget.size}`"
+                        :aria-label="
+                            $t('dashboardGrid.resize', {
+                                widget: labelFor(widget.id),
+                                size: $t(`dashboardGrid.sizes.${widget.size}`),
+                            })
+                        "
                         @click="apply(cycleSize(layout, widget.id))"
                     />
                     <UButton
@@ -52,7 +57,7 @@
                         size="xs"
                         variant="ghost"
                         color="error"
-                        :aria-label="`Remove ${labelFor(widget.id)}`"
+                        :aria-label="$t('dashboardGrid.remove', { widget: labelFor(widget.id) })"
                         @click="apply(removeWidget(layout, widget.id))"
                     />
                 </div>
@@ -72,11 +77,11 @@
             class="sticky bottom-4 z-10 flex flex-wrap items-center justify-center gap-2 self-center rounded-sm border border-default bg-default/90 px-3 py-2 shadow-lg backdrop-blur-sm"
         >
             <span class="hidden px-1 text-xs text-muted sm:inline">
-                Drag, resize or remove widgets
+                {{ $t("dashboardGrid.hint") }}
             </span>
             <UDropdownMenu :items="addItems" :disabled="addItems.length === 0">
                 <UButton
-                    label="Add widget"
+                    :label="$t('dashboardGrid.add')"
                     icon="i-lucide-plus"
                     size="sm"
                     variant="soft"
@@ -84,14 +89,19 @@
                 />
             </UDropdownMenu>
             <UButton
-                label="Reset"
+                :label="$t('dashboardGrid.reset')"
                 icon="i-lucide-rotate-ccw"
                 size="sm"
                 variant="ghost"
                 color="neutral"
                 @click="reset"
             />
-            <UButton label="Done" icon="i-lucide-check" size="sm" @click="editing = false" />
+            <UButton
+                :label="$t('dashboardGrid.done')"
+                icon="i-lucide-check"
+                size="sm"
+                @click="editing = false"
+            />
         </div>
     </div>
 </template>
@@ -141,13 +151,14 @@ const LONG_PRESS_MS = 500;
 /** Further than this and the pointer is scrolling or dragging, not pressing. */
 const PRESS_SLOP_PX = 8;
 
+const { t } = useI18n();
 const toast = useToast();
 let warned = false;
 const warnUnsaved = () => {
     if (warned) return;
     warned = true;
     toast.add({
-        title: "This browser can't keep the dashboard layout, so changes last this visit only",
+        title: t("dashboardGrid.unsaved"),
         color: "warning",
         icon: "i-lucide-triangle-alert",
     });

@@ -6,7 +6,7 @@
             <p class="mt-1 text-xs text-dimmed tabular-nums">{{ estimate }}</p>
             <p class="mt-1 flex items-center gap-1 text-xs text-dimmed">
                 <UIcon name="i-lucide-toggle-left" class="size-3.5" />
-                Optional: each project switches it on or off.
+                {{ $t("workflowTemplateCard.optional") }}
             </p>
         </template>
 
@@ -39,9 +39,16 @@ interface Props {
 
 const { template } = defineProps<Props>();
 
+const { t } = useI18n();
+
 const estimate = computed(() => {
     const { blocks, tickets, points } = templateEstimate(template);
-    return `${blocks} blocks by default · ${points} SP · ${tickets.block} tickets one per block, ${tickets.fast} fast`;
+    return t("workflowTemplateCard.estimate", {
+        blocks,
+        points,
+        block: tickets.block,
+        fast: tickets.fast,
+    });
 });
 
 const stages = computed(() =>

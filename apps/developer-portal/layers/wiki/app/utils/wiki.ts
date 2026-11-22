@@ -1,5 +1,6 @@
 import type { DocKind } from "#layers/snapshot/shared/types/DocKind.ts";
 import { stripLeadingEmoji, toTitleCase } from "#layers/docs/shared/docPages.ts";
+import type { Translate } from "~/types/Translate";
 
 /** Nothing below may compare against a capitalised path — `@nuxt/content` lower-cases every path it finds. */
 
@@ -50,52 +51,23 @@ const SECTION_ORDER = ["workspace", "docs", ...PROJECT_AREAS, "agents"] as const
 
 type SectionId = (typeof SECTION_ORDER)[number];
 
-const SECTIONS = {
-    workspace: {
-        label: "Workspace",
-        icon: "i-lucide-home",
-        blurb: "The two files at the root, and the generated index of everything the repo can do.",
-    },
-    docs: {
-        label: "Docs",
-        icon: "i-lucide-library",
-        blurb: "Subjects no single project owns — the models, the procedures, the answered decisions.",
-    },
-    apps: {
-        label: "Apps",
-        icon: "i-lucide-app-window",
-        blurb: "Each app's own reference, colocated with its code so it changes in the same diff.",
-    },
-    packages: {
-        label: "Packages",
-        icon: "i-lucide-package",
-        blurb: "Each package's own reference, colocated with its code so it changes in the same diff.",
-    },
-    infrastructure: {
-        label: "Infrastructure",
-        icon: "i-lucide-server",
-        blurb: "Each service's own reference, colocated with its code so it changes in the same diff.",
-    },
-    agents: {
-        label: "Agent setup",
-        icon: "i-lucide-bot",
-        blurb: "The skills and subagents an agent working in this repo loads.",
-    },
-} as const satisfies Record<SectionId, { label: string; icon: string; blurb: string }>;
+const SECTION_ICONS = {
+    workspace: "i-lucide-home",
+    docs: "i-lucide-library",
+    apps: "i-lucide-app-window",
+    packages: "i-lucide-package",
+    infrastructure: "i-lucide-server",
+    agents: "i-lucide-bot",
+} as const satisfies Record<SectionId, string>;
 
 /** Ordered where the order carries meaning; anything new falls through to alphabetical. */
 const DOCS_GROUPS = ["concepts", "guides", "decisions", "audits", "workflows", "benchmarks"];
 
-const GROUP_LABELS: Record<string, string> = {
-    concepts: "Concepts",
-    guides: "Guides",
-    decisions: "Decisions",
-    audits: "Audits",
-    workflows: "Workflows",
-    benchmarks: "Benchmarks",
-    skills: "Skills",
-    agents: "Subagents",
-};
+/** The folders with a `wiki.groups.<folder>` label; any other folder is title-cased. */
+const NAMED_GROUPS = new Set([...DOCS_GROUPS, "skills", "agents"]);
+
+const groupLabel = (group: string, t: Translate, fallback: string): string =>
+    NAMED_GROUPS.has(group) ? t(`wiki.groups.${group}`) : fallback;
 
 const segmentsOf = (path: string): string[] => path.split("/").filter(Boolean);
 
@@ -115,19 +87,19 @@ interface Placed {
 }
 
 /** A generic label for a README, since its group already names the project. */
-const labelWithin = (root: string, path: string, title: string): string => {
+const labelWithin = (root: string, path: string, title: string, t: Translate): string => {
     const raw = segmentsOf(path.slice(root.length));
     const rest = raw[0] === "src" ? raw.slice(1) : raw;
     const file = rest.at(-1) ?? "";
     const directory = rest.slice(0, -1).join("/");
 
     if (file === "skill") return stripLeadingEmoji(title);
-    if (file === "readme") return directory === "" ? "Overview" : directory;
+    if (file === "readme") return directory === "" ? t("wiki.overview") : directory;
 
     return stripLeadingEmoji(title);
 };
 
-const place = (page: WikiPage): Placed => {
+const place = (page: WikiPage, t: Translate): Placed => {
     const { path } = page;
     const title = page.title ?? path;
     const segments = segmentsOf(path);
@@ -139,7 +111,7 @@ const place = (page: WikiPage): Placed => {
         return {
             section: "agents",
             group,
-            groupLabel: GROUP_LABELS[group] ?? group,
+            groupLabel: groupLabel(group, t, group),
             entry: { path, label: stripLeadingEmoji(title), kind },
         };
     }
@@ -152,8 +124,10 @@ const place = (page: WikiPage): Placed => {
             section: "docs",
             group,
             groupLabel:
-                group === "docs" ? "Start here" : (GROUP_LABELS[group] ?? toTitleCase(group)),
-            entry: { path, label: labelWithin(root, path, title), kind },
+                group === "docs"
+                    ? t("wiki.groups.start")
+                    : groupLabel(group, t, toTitleCase(group)),
+            entry: { path, label: labelWithin(root, path, title, t), kind },
         };
     }
 
@@ -161,7 +135,7 @@ const place = (page: WikiPage): Placed => {
         return {
             section: "workspace",
             group: "root",
-            groupLabel: "The root",
+            groupLabel: t("wiki.groups.root"),
             entry: { path, label: stripLeadingEmoji(title), kind },
         };
     }
@@ -174,12 +148,9 @@ const place = (page: WikiPage): Placed => {
         section: area,
         group,
         groupLabel: toTitleCase(group),
-        entry: { path, label: labelWithin(root, path, title), kind },
+        entry: { path, label: labelWithin(root, path, title, t), kind },
     };
 };
-
-/** Overview first, then everything else by label. */
-const rankEntry = (entry: WikiEntry): number => (entry.label === "Overview" ? 0 : 1);
 
 const rankGroup = (section: SectionId, key: string): number => {
     if (section === "docs") {
@@ -193,10 +164,13 @@ const rankGroup = (section: SectionId, key: string): number => {
     return 0;
 };
 
-export const buildWiki = (pages: WikiPage[]): WikiSection[] => {
+export const buildWiki = (pages: WikiPage[], t: Translate): WikiSection[] => {
     const placed = pages
         .filter((page) => !EXCLUDED.some((pattern) => pattern.test(page.path)))
-        .map(place);
+        .map((page) => place(page, t));
+
+    /** Overview first, then everything else by label. */
+    const rankEntry = (entry: WikiEntry): number => (entry.label === t("wiki.overview") ? 0 : 1);
 
     return SECTION_ORDER.map((id) => {
         const mine = placed.filter((item) => item.section === id);
@@ -215,7 +189,13 @@ export const buildWiki = (pages: WikiPage[]): WikiSection[] => {
                 (a, b) => rankGroup(id, a.key) - rankGroup(id, b.key) || a.key.localeCompare(b.key),
             );
 
-        return { id, ...SECTIONS[id], groups };
+        return {
+            id,
+            label: t(`wiki.sections.${id}.label`),
+            icon: SECTION_ICONS[id],
+            blurb: t(`wiki.sections.${id}.blurb`),
+            groups,
+        };
     }).filter((section) => section.groups.length > 0);
 };
 

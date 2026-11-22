@@ -4,7 +4,7 @@
             <UInput
                 v-model="search"
                 icon="i-lucide-search"
-                placeholder="Search title or scope…"
+                :placeholder="$t('auditsToolbar.search')"
                 size="sm"
                 class="w-56"
             />
@@ -12,7 +12,7 @@
             <USelect v-model="scope" :items="scopeItems" value-key="value" size="sm" class="w-56" />
         </template>
         <template #right>
-            <USelect v-model="sort" :items="SORTS" value-key="value" size="sm" class="w-44" />
+            <USelect v-model="sort" :items="sortItems" value-key="value" size="sm" class="w-44" />
         </template>
     </UDashboardToolbar>
 </template>
@@ -33,19 +33,19 @@ const state = defineModel<AuditState | "all">("state", { required: true });
 const scope = defineModel<string>("scope", { required: true });
 const sort = defineModel<AuditSort>("sort", { required: true });
 
+const SORTS: AuditSort[] = ["newest", "oldest", "most-open"];
+
+const { t } = useI18n();
+
 const STATES = [
-    { label: "Every state", value: "all" },
-    ...AUDIT_STATES.map((value) => ({ label: auditStateLabel(value), value })),
+    { label: t("auditsToolbar.everyState"), value: "all" },
+    ...AUDIT_STATES.map((value) => ({ label: t(`audits.state.${value}`), value })),
 ];
 
-const SORTS: { label: string; value: AuditSort }[] = [
-    { label: "Newest first", value: "newest" },
-    { label: "Oldest first", value: "oldest" },
-    { label: "Most open", value: "most-open" },
-];
+const sortItems = SORTS.map((value) => ({ label: t(`auditsToolbar.sorts.${value}`), value }));
 
 const scopeItems = computed(() => [
-    { label: "Every scope", value: "all" },
+    { label: t("auditsToolbar.everyScope"), value: "all" },
     ...scopes.map((value) => ({ label: value, value })),
 ]);
 </script>

@@ -3,6 +3,7 @@ import type { PageFact } from "~/types/PageFact";
 
 /** The usage snapshot and the header facts drawn from it. */
 export const useTelemetryPage = () => {
+    const { t } = useI18n();
     const usage = usageArtifact();
     const rows = usage ? scriptRows(usage) : [];
     const sum = sumDays(rows);
@@ -10,22 +11,28 @@ export const useTelemetryPage = () => {
     const share = (part: number): string => (sum.runs ? `${percentOf(part, sum.runs)}%` : "—");
 
     const facts: PageFact[] = [
-        { label: "Runs", value: String(sum.runs), series: "runs" },
-        { label: "By agents", value: share(sum.agent), series: "agent" },
+        { label: t("telemetry.facts.runs"), value: String(sum.runs), series: "runs" },
+        { label: t("telemetry.facts.agent"), value: share(sum.agent), series: "agent" },
         {
-            label: "Failed",
+            label: t("telemetry.facts.failed"),
             value: share(sum.failures),
             class: isFailing(sum) ? "tone-bad" : "",
             series: "failures",
         },
-        { label: "Scripts", value: String(rows.length) },
-        { label: "Never run", value: String(rows.filter((row) => row.runs === 0).length) },
+        { label: t("telemetry.facts.scripts"), value: String(rows.length) },
+        {
+            label: t("telemetry.facts.neverRun"),
+            value: String(rows.filter((row) => row.runs === 0).length),
+        },
     ];
 
     return {
         usage,
         hasRuns: Object.keys(usage?.scripts ?? {}).length > 0,
-        provenance: `Usage log · last ${usage?.windowDays ?? "—"} days · collected ${relativeTime(usage?.generatedAt)}`,
+        provenance: t("telemetry.provenance", {
+            days: usage?.windowDays ?? "—",
+            age: relativeTime(usage?.generatedAt, t),
+        }),
         facts,
     };
 };

@@ -1,11 +1,11 @@
 <template>
     <UDashboardPanel id="benchmarks">
         <template #header>
-            <PageHeader title="Benchmarks">
+            <PageHeader :title="$t('benchmarks.title')">
                 <template #actions>
                     <UButton
                         to="/wiki/docs/benchmarks/readme"
-                        label="How an entry is written"
+                        :label="$t('benchmarks.guide')"
                         icon="i-lucide-ruler"
                         color="neutral"
                         variant="ghost"
@@ -24,26 +24,22 @@
 
         <template #body>
             <div class="flex flex-col gap-4">
-                <p class="max-w-3xl text-sm text-muted">
-                    Sites reviewed as design references, kept so the next redesign starts from what
-                    has already been studied. Each entry is a verdict, a screenshot and a short
-                    critique; what a project takes from them lives in its own decision report.
-                </p>
+                <p class="max-w-3xl text-sm text-muted">{{ $t("benchmarks.intro") }}</p>
 
                 <CollectionEmpty
                     v-if="benchmarks.length === 0"
                     icon="i-lucide-bookmark"
                     folder="docs/benchmarks/"
                     skill="benchmark"
-                    each="one file per site"
+                    :each="$t('benchmarks.empty.each')"
                     :collected="false"
                 />
 
                 <template v-else>
                     <BenchmarksTiles :benchmarks />
-                    <EmptyState v-if="visible.length === 0"
-                        >Nothing matches that filter.</EmptyState
-                    >
+                    <EmptyState v-if="visible.length === 0">
+                        {{ $t("benchmarks.noMatch") }}
+                    </EmptyState>
                     <div v-else class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                         <BenchmarksCard
                             v-for="benchmark in visible"

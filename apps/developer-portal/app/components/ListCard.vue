@@ -7,13 +7,13 @@
                     <p class="text-xs text-muted">{{ note }}</p>
                 </div>
                 <span class="shrink-0 text-xs text-dimmed tabular-nums">
-                    {{ shown }} of {{ total }}
+                    {{ $t("listCard.shown", { shown, total }) }}
                 </span>
             </div>
         </template>
 
         <slot v-if="shown === 0" name="empty">
-            <EmptyState>Nothing matches that filter.</EmptyState>
+            <EmptyState>{{ $t("listCard.empty") }}</EmptyState>
         </slot>
         <div v-else class="divide-y divide-default"><slot /></div>
     </UCard>

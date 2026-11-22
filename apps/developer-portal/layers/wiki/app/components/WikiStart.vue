@@ -28,58 +28,40 @@ const { known } = defineProps<Props>();
 
 const GROUPS = [
     {
-        label: "Explore",
+        id: "explore",
         items: [
-            {
-                to: "/wiki/readme",
-                label: "Repository overview",
-                hint: "What this monorepo contains",
-                icon: "i-lucide-map",
-            },
-            {
-                to: "/projects",
-                label: "Project catalog",
-                hint: "Applications, packages, and tooling",
-                icon: "i-lucide-boxes",
-            },
+            { id: "overview", to: "/wiki/readme", icon: "i-lucide-map" },
+            { id: "catalog", to: "/projects", icon: "i-lucide-boxes" },
         ],
     },
     {
-        label: "Understand",
+        id: "understand",
         items: [
-            {
-                to: "/wiki/docs/concepts/boundaries",
-                label: "Architecture and boundaries",
-                hint: "How projects are allowed to depend",
-                icon: "i-lucide-git-branch",
-            },
-            {
-                to: "/graph",
-                label: "Architecture view",
-                hint: "How the collected projects fit together",
-                icon: "i-lucide-git-fork",
-            },
+            { id: "boundaries", to: "/wiki/docs/concepts/boundaries", icon: "i-lucide-git-branch" },
+            { id: "graph", to: "/graph", icon: "i-lucide-git-fork" },
         ],
     },
     {
-        label: "Contribute",
-        items: [
-            {
-                to: "/wiki/docs/guides/first-hour",
-                label: "First hour",
-                hint: "An ordered way into the repository",
-                icon: "i-lucide-play",
-            },
-        ],
+        id: "contribute",
+        items: [{ id: "firstHour", to: "/wiki/docs/guides/first-hour", icon: "i-lucide-play" }],
     },
 ];
 
+const { t } = useI18n();
+
 const groups = computed(() =>
     GROUPS.map((group) => ({
-        ...group,
-        items: group.items.filter(
-            (entry) => !entry.to.startsWith("/wiki/") || known.has(entry.to.slice("/wiki".length)),
-        ),
+        label: t(`wikiStart.groups.${group.id}`),
+        items: group.items
+            .filter(
+                (entry) =>
+                    !entry.to.startsWith("/wiki/") || known.has(entry.to.slice("/wiki".length)),
+            )
+            .map((entry) => ({
+                ...entry,
+                label: t(`wikiStart.items.${entry.id}.label`),
+                hint: t(`wikiStart.items.${entry.id}.hint`),
+            })),
     })).filter((group) => group.items.length > 0),
 );
 </script>
