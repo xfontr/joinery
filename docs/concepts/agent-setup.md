@@ -20,6 +20,7 @@ command.
 | [`eslint-fix.sh`](../../.claude/hooks/eslint-fix.sh) | Runs `eslint --fix` on the touched file, so style is corrected mechanically, and records each rule hit first for the portal's [lint usage](../../infrastructure/scripts/src/usage/README.md) |
 | [`check-invariants.sh`](../../.claude/hooks/check-invariants.sh) | Runs [`pnpm invariants:check`](../../infrastructure/scripts/src/invariants/README.md) after a manifest edit, and reminds about the cross-file steps of a new project or a boundary change |
 | [`guard-live.sh`](../../.claude/hooks/guard-live.sh) | Refuses `pnpm start`, `nuxt preview`, requests to the live WordPress site, force pushes and pushes to `master`: the things an unattended run must never do, whatever its prompt says |
+| [`reap-processes.sh`](../../.claude/hooks/reap-processes.sh) | On `SessionEnd`, kills every `nuxt dev` and `playwright test` the session started, so a closed session leaves no server or Chromium behind |
 
 The hooks are early feedback; `pre-commit` and CI run the same gates on edits made by hand.
 

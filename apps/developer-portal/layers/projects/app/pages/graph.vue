@@ -19,7 +19,7 @@
                     :title="finding.title"
                     :description="finding.detail"
                 />
-                <GraphNxEmbed />
+                <GraphMap :projects />
                 <GraphGroups :projects />
                 <GraphEdges :projects />
             </div>

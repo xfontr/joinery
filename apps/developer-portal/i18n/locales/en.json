@@ -436,10 +436,10 @@
         "usedBy": "Used by: {list}",
         "uses": "Uses: {list}"
     },
-    "graphNxEmbed": {
-        "frame": "Nx project graph",
-        "lead": "Nx's own graph client, vendored in by the collector rather than redrawn.",
-        "title": "Detailed Nx graph"
+    "graphMap": {
+        "empty": "No projects collected yet.",
+        "lead": "Each arrow points from a project to one it depends on. Select a project to open it.",
+        "title": "Project map"
     },
     "healthAdvisories": {
         "columns": {
