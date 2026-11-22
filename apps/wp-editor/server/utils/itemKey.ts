@@ -1,4 +1,4 @@
-import type { PostType } from "./types/PostType.ts";
+import type { PostType } from "../../shared/types/PostType.ts";
 
 export const parseKey = (key: string): { type: PostType; id: number } | null => {
     const match = /^(posts|pages)-(\d+)$/.exec(key);
