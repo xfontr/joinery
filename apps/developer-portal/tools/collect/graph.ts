@@ -2,7 +2,7 @@ import { mkdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 import type { ProjectsArtifact } from "#layers/snapshot/shared/types/ProjectsArtifact.ts";
-import { GRAPH_DIR, SNAPSHOT_DIR } from "../lib/paths.ts";
+import { SNAPSHOT_DIR } from "../lib/paths.ts";
 import { run } from "../lib/run.ts";
 
 interface RawGraph {
@@ -58,9 +58,6 @@ export const collectGraph = async (
     // branch writes the file directly without creating its parent.
     await mkdir(SNAPSHOT_DIR, { recursive: true });
     await run("pnpm", ["exec", "nx", "graph", "--file", jsonPath]);
-
-    await mkdir(GRAPH_DIR, { recursive: true });
-    await run("pnpm", ["exec", "nx", "graph", "--file", resolve(GRAPH_DIR, "index.html")]);
 
     return normalizeGraph(JSON.parse(await readFile(jsonPath, "utf8")) as RawGraph, generatedAt);
 };
