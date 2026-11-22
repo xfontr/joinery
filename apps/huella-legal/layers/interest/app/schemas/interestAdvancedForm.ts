@@ -1,7 +1,7 @@
 import * as v from "valibot";
 import { calendarDate, parseDecimal } from "../utils/interest";
 
-export type InterestAdvancedFormIssue =
+type InterestAdvancedFormIssue =
     "principal" | "customPercent" | "from" | "fromInvalid" | "to" | "toInvalid" | "order";
 
 const CONCEPT_MAX_LENGTH = 120;

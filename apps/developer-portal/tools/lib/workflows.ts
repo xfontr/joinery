@@ -8,10 +8,7 @@ import {
 } from "#layers/workflows/shared/workflows.ts";
 
 /** Paths a capability's `reuse.from` points at that don't exist, relative to the workspace root. */
-export const missingReusePaths = (
-    templates: Template[],
-    workspaceRoot: string,
-): WorkflowProblem[] =>
+const missingReusePaths = (templates: Template[], workspaceRoot: string): WorkflowProblem[] =>
     templates.flatMap((template) =>
         [...template.capabilities, ...template.types].flatMap((capability) => {
             const from = capability.reuse?.from;

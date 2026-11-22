@@ -2,7 +2,7 @@ import type { CapabilityState, ProjectView } from "#layers/workflows/shared/work
 
 export type MapTone = "done" | "moving" | "waiting";
 
-export interface MapNode {
+interface MapNode {
     id: string;
     title: string;
     tone: MapTone;
@@ -11,12 +11,12 @@ export interface MapNode {
     y: number;
 }
 
-export interface MapEdge {
+interface MapEdge {
     id: string;
     d: string;
 }
 
-export interface MapColumn {
+interface MapColumn {
     title: string;
     x: number;
 }

@@ -167,7 +167,7 @@ export const readMap = (template: unknown, project: unknown): WorkflowMap => {
     };
 };
 
-export interface PlannedTicket {
+interface PlannedTicket {
     title: string;
     body: string;
     labels: string[];
@@ -175,7 +175,7 @@ export interface PlannedTicket {
     complexity: number | null;
 }
 
-export type Filing = { ok: true; tickets: PlannedTicket[] } | { ok: false; reason: string };
+type Filing = { ok: true; tickets: PlannedTicket[] } | { ok: false; reason: string };
 
 export const KIND_LABELS = { build: "enhancement", spike: "spike", owner: OWNER_LABEL } as const;
 

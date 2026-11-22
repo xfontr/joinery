@@ -1,7 +1,7 @@
 import { getWebInstrumentations, initializeFaro, type Faro } from "@grafana/faro-web-sdk";
 import { TracingInstrumentation } from "@grafana/faro-web-tracing";
 
-export interface WebTelemetryConfig {
+interface WebTelemetryConfig {
     url: string;
 
     app: {

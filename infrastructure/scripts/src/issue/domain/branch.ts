@@ -1,7 +1,7 @@
 /** The four prefixes `.husky/pre-push` accepts; anything else is unpushable. */
 export const BRANCH_TYPES = ["feature", "fix", "hotfix", "release"] as const;
 
-export type BranchType = (typeof BRANCH_TYPES)[number];
+type BranchType = (typeof BRANCH_TYPES)[number];
 
 export const slugify = (title: string): string =>
     title
@@ -13,7 +13,7 @@ export const slugify = (title: string): string =>
         .replace(/-$/, "");
 
 /** What an issue with no `app:`, `package:` or `infra:` label is about: the repo as a whole. */
-export const REPO_AREA = "repo";
+const REPO_AREA = "repo";
 
 const AREA_PREFIXES = ["app", "package", "infra"] as const;
 
@@ -29,7 +29,7 @@ export const areaFor = (labels: string[]): string => {
 export const branchName = (type: BranchType, area: string, issue: number, title: string): string =>
     `${type}/${slugify(area)}/${issue}-${slugify(title)}`;
 
-export interface BranchIssue {
+interface BranchIssue {
     area: string;
     number: number;
 }

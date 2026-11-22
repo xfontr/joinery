@@ -119,7 +119,7 @@ export const itemFingerprint = (item: Pick<Item, "base" | "state" | "proposal">)
 };
 
 /** Why the last dry run doesn't cover the pending articles, or null when it does. */
-export const dryRunBlocker = (items: Item[], lastDryRun: RunReport | null): string | null => {
+const dryRunBlocker = (items: Item[], lastDryRun: RunReport | null): string | null => {
     if (!lastDryRun) return "Run a dry run first.";
     if (lastDryRun.incomplete) return "The last dry run didn't finish; run it again.";
 
@@ -197,7 +197,7 @@ export const parseSettings = (patch: unknown, current: Settings = DEFAULT_SETTIN
 export const driftRefusal = (expected: string, live: string): string | null =>
     expected === live ? null : "Changed in WordPress since pull, re-pull.";
 
-export interface StackEntry {
+interface StackEntry {
     changeset: Changeset;
     item: Item | undefined;
 }

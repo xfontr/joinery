@@ -1,6 +1,6 @@
-export type IssueSource = "live" | "cache" | "auth-error";
+type IssueSource = "live" | "cache" | "auth-error";
 
-export interface IssueSourceInput {
+interface IssueSourceInput {
     knownOffline: boolean;
     requestFailed: boolean;
     online: boolean;

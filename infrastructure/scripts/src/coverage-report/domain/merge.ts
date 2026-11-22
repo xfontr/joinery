@@ -3,7 +3,7 @@ import type { CoverageMap, CoverageMapData } from "istanbul-lib-coverage";
 import libCoverage from "istanbul-lib-coverage";
 import { ExpectedError } from "../../shared/errors.ts";
 
-export interface LoadedReport {
+interface LoadedReport {
     name: string;
     data: CoverageMapData | undefined; // undefined when coverage-final.json wasn't found on disk
 }

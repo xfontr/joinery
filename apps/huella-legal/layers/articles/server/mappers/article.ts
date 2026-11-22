@@ -6,7 +6,7 @@ import { toArticleSummary } from "./articleSummary";
 import { toCitations } from "./citation";
 import { toPage } from "./page";
 
-export interface Publication extends Origins {
+interface Publication extends Origins {
     journal: Journal;
 }
 

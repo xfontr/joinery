@@ -7,12 +7,12 @@ export interface Check {
     description: string;
 }
 
-export interface Job {
+interface Job {
     run: string;
     job: string;
 }
 
-export interface Grouped {
+interface Grouped {
     failed: Check[];
     pending: Check[];
     passed: number;

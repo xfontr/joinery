@@ -1,9 +1,9 @@
-export interface ShipOutcome {
+interface ShipOutcome {
     checksPassed: boolean;
     merged: boolean;
 }
 
-export interface ShipReport {
+interface ShipReport {
     message: string;
     exitCode: number | undefined;
     syncMaster: boolean;

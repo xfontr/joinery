@@ -19,7 +19,7 @@ export interface Sample {
     textChars: number;
 }
 
-export interface TypeStep {
+interface TypeStep {
     tag: string;
     family: string;
     size: string;
@@ -33,7 +33,7 @@ export interface Weighted {
     weight: number;
 }
 
-export interface BrandSummary {
+interface BrandSummary {
     paper: string;
     ink: string;
     headingInk: string;
