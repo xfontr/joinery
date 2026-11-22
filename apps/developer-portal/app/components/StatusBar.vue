@@ -1,6 +1,6 @@
 <template>
     <footer
-        class="fixed inset-x-0 bottom-0 z-40 flex h-7 items-center justify-between gap-4 border-t border-default pr-3 font-mono text-xs surface-ink text-muted"
+        class="absolute inset-x-0 bottom-0 z-40 flex h-7 items-center justify-between gap-4 border-t border-default pr-3 font-mono text-xs surface-ink text-muted"
         aria-label="Status"
     >
         <p class="flex h-full min-w-0 items-center gap-2">
@@ -38,16 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Tone } from "~/utils/format";
-
-export interface StatusItem {
-    id: string;
-    label: string;
-    value: string;
-    detail: string;
-    tone: Tone;
-    to: string;
-}
+import type { StatusItem } from "~/types/StatusItem";
 
 interface Props {
     collected: { branch: string; commit: string; at: string } | null;

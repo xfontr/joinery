@@ -27,14 +27,9 @@
 </template>
 
 <script setup lang="ts">
-import { appEntries, locate, type NavLink } from "~/utils/apps";
-
-export interface PageTab {
-    label: string;
-    to: string;
-    active: boolean;
-    count?: number | string;
-}
+import type { PageTab } from "~/types/PageTab";
+import { appEntries, locate } from "~/utils/apps";
+import type { NavLink } from "~/types/NavLink";
 
 interface Props {
     /** A page's own sections; without them the tabs are the app's sibling pages. */

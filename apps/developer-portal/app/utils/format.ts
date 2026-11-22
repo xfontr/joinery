@@ -1,4 +1,4 @@
-export type Tone = "good" | "warn" | "bad" | "neutral";
+import type { Tone } from "~/types/Tone";
 
 const TONE_CLASSES = {
     good: "tone-good",

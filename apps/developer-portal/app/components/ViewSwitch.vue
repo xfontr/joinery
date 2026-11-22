@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-export type View = "visitor" | "dev";
+import type { View } from "~/types/View";
 
 interface Props {
     current: View;

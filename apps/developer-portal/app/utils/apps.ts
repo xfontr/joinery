@@ -1,38 +1,6 @@
-export interface NavLink {
-    label: string;
-    icon: string;
-    to: string;
-    /** A route answering with the submenu, so every page's payload carries a few rows, not the feature's data. */
-    menu?: string;
-    /** A route answering with the `RailFigure` the rail prints beside the entry. */
-    figure?: string;
-}
-
-/** A figure beside a rail entry; `alert` prints it in the bad tone. */
-export interface RailFigure {
-    value: string;
-    alert: boolean;
-}
-
-/** A row a `menu` route answers with; a `coverage` row's badge takes the coverage tone. */
-export interface MenuRow {
-    label: string;
-    to: string;
-    icon?: string;
-    badge?: string;
-    coverage?: number | null;
-    children?: MenuRow[];
-}
-
-export interface AppGroup {
-    id: string;
-    label: string;
-    icon: string;
-    /** Keys into the layers' `nav`; a key no layer declares is skipped, so removing a layer drops its entry. */
-    items: string[];
-    /** Its pages also show as tabs under the page title. */
-    tabs?: boolean;
-}
+import type { AppEntry } from "~/types/AppEntry";
+import type { AppGroup } from "~/types/AppGroup";
+import type { NavLink } from "~/types/NavLink";
 
 export const APPS: readonly AppGroup[] = [
     { id: "home", label: "Home", icon: "i-lucide-house", items: ["overview"] },
@@ -58,10 +26,6 @@ export const APPS: readonly AppGroup[] = [
     },
 ];
 
-export interface AppEntry extends NavLink {
-    key: string;
-}
-
 /** Each app with the entries its layers declare; an app left with none is dropped. */
 export const appEntries = (
     nav: Record<string, NavLink | undefined>,
@@ -85,22 +49,3 @@ export const locate = <T extends { entries: AppEntry[] }>(
         .flatMap((app) => app.entries.map((entry) => ({ app, entry })))
         .filter(({ entry }) => owns(entry.to, path))
         .toSorted((a, b) => b.entry.to.length - a.entry.to.length)[0] ?? null;
-
-/** A tab a feature layer adds to every project page, fetched without the page importing the layer. */
-export interface ProjectTab {
-    label: string;
-    /** A route answering with `ProjectTabRow[]` for every project, keyed by its folder. */
-    rows: string;
-    /** The page the whole dataset lives on. */
-    to: string;
-    empty: string;
-}
-
-export interface ProjectTabRow {
-    id: string;
-    title: string;
-    to: string;
-    percent: number;
-    done: number;
-    left: number;
-}

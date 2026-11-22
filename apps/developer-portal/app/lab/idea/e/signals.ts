@@ -3,7 +3,7 @@ import type { DepsArtifact } from "#layers/snapshot/shared/types/DepsArtifact.ts
 import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import type { IssuesRead } from "#layers/github/shared/issues.ts";
-import type { Tone } from "~/utils/format";
+import type { Tone } from "~/types/Tone";
 import { BASE } from "./apps";
 
 const SEVERITIES = ["critical", "high", "moderate", "low", "info"] as const;
