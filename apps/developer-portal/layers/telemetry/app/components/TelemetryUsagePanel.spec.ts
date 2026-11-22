@@ -1,11 +1,16 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
-import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ScriptUsage } from "#layers/snapshot/shared/types/ScriptUsage.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import TelemetryUsagePanel from "./TelemetryUsagePanel.vue";
+
+const artifacts = vi.hoisted(() => ({ usage: null as UsageArtifact | null }));
+mockNuxtImport("usageArtifact", () => () => artifacts.usage);
+
+beforeEach(() => {
+    artifacts.usage = null;
+});
 
 const script = (runs: number, agent: number, failures: number): ScriptUsage => ({
     runs,
@@ -35,7 +40,7 @@ const USAGE: UsageArtifact = {
 };
 
 const open = async (usage: UsageArtifact | null) => {
-    serveEndpoint("/api/snapshot/usage", (): SnapshotResponse => ({ manifest: null, usage }));
+    artifacts.usage = usage;
     const wrapper = await mountSuspended(TelemetryUsagePanel);
     await flushPromises();
     return wrapper;

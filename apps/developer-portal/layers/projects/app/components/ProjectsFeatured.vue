@@ -57,7 +57,7 @@ const { projects, readmeFor, ready } = useCatalog();
 await ready;
 
 const featured = computed(() =>
-    projects.value
+    projects
         .filter((project) => project.root.startsWith("apps/"))
         .slice(0, FEATURED)
         .map((project) => ({

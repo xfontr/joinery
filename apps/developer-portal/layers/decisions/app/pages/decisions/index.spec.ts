@@ -1,11 +1,17 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
-import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DecisionOutcome, DecisionStatus } from "#layers/snapshot/shared/decisions.ts";
 import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
+import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import Page from "./index.vue";
+
+const artifacts = vi.hoisted(() => ({ docs: null as DocsArtifact | null }));
+mockNuxtImport("docsArtifact", () => () => artifacts.docs);
+
+beforeEach(() => {
+    artifacts.docs = null;
+});
 
 const report = (
     id: string,
@@ -34,10 +40,7 @@ type Wrapper = VueWrapper;
 
 // The report list is fetched without `await`, so it lands after the first render
 const open = async (pages: DocPage[] = [NEW, OLD]) => {
-    serveEndpoint("/api/snapshot/docs", (): SnapshotResponse => ({
-        manifest: null,
-        docs: { generatedAt: "2026-11-01T00:00:00Z", pages, brokenLinkCount: 0 },
-    }));
+    artifacts.docs = { generatedAt: "2026-11-01T00:00:00Z", pages, brokenLinkCount: 0 };
     const wrapper = await mountSuspended(Page);
     await flushPromises();
     return wrapper;

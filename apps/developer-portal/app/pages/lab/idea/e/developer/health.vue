@@ -280,11 +280,9 @@ const current = computed(
 );
 const tab = computed(() => current.value.id);
 
-const [{ data: coverage }, { data: deps }, { data: usage }] = await Promise.all([
-    useSnapshot("coverage"),
-    useSnapshot("deps"),
-    useSnapshot("usage"),
-]);
+const coverage = coverageArtifact();
+const deps = depsArtifact();
+const usage = usageArtifact();
 
 const percent = (value: number | null | undefined): string =>
     value === null || value === undefined ? "—" : `${value}%`;
@@ -304,12 +302,12 @@ const cellsOf = (
     });
 
 const coverageRows = computed(() =>
-    (coverage.value?.coverage?.projects ?? [])
+    (coverage?.projects ?? [])
         .map((row) => ({ ...row, cells: cellsOf(row) }))
         .toSorted((a, b) => (a.lines?.pct ?? 101) - (b.lines?.pct ?? 101)),
 );
 const collected = computed(() => coverageRows.value.filter((row) => row.collected).length);
-const totals = computed(() => coverage.value?.coverage?.totals ?? null);
+const totals = computed(() => coverage?.totals ?? null);
 const totalCells = computed(() =>
     METRICS.map((key) => {
         const pct = totals.value?.[key] ?? null;
@@ -321,12 +319,12 @@ const totalFiles = computed(() =>
     coverageRows.value.reduce((sum, row) => sum + (row.files ?? 0), 0),
 );
 
-const counts = computed(() => deps.value?.deps?.vulnerabilities ?? null);
-const advisories = computed(() => deps.value?.deps?.advisories ?? []);
+const counts = computed(() => deps?.vulnerabilities ?? null);
+const advisories = computed(() => deps?.advisories ?? []);
 const advisoryRows = computed(() =>
     advisories.value.map((item) => ({ ...item, tone: toneClass(severityTone(item.severity)) })),
 );
-const outdated = computed(() => deps.value?.deps?.outdated ?? []);
+const outdated = computed(() => deps?.outdated ?? []);
 
 const severityParts = computed((): SplitPart[] => [
     { label: "critical", value: counts.value?.critical ?? 0, tone: "bad" },
@@ -336,10 +334,7 @@ const severityParts = computed((): SplitPart[] => [
 ]);
 
 const scripts = computed(() =>
-    (usage.value?.usage
-        ? scriptRows(usage.value.usage).toSorted((a, b) => b.runs - a.runs)
-        : []
-    ).map((row) => ({
+    (usage ? scriptRows(usage).toSorted((a, b) => b.runs - a.runs) : []).map((row) => ({
         ...row,
         agentShare: row.runs ? `${percentOf(row.agent, row.runs)}%` : "—",
         failShare: row.runs ? `${percentOf(row.failures, row.runs)}%` : "—",
@@ -359,7 +354,7 @@ const SERIES = {
 const series = ref<Series>("runs");
 const chartView = ref("chart");
 
-const days = computed(() => (usage.value?.usage ? shownDays(usage.value.usage) : []));
+const days = computed(() => (usage ? shownDays(usage) : []));
 const daily = computed(() => dailyTotals(scripts.value));
 
 const dayRows = computed(() =>
@@ -395,11 +390,11 @@ const chart = computed(() => {
 
 const provenance = computed(() => {
     if (tab.value === "coverage")
-        return `Vitest coverage · ${collected.value} of ${coverageRows.value.length} projects · collected ${relativeTime(coverage.value?.coverage?.generatedAt)}`;
+        return `Vitest coverage · ${collected.value} of ${coverageRows.value.length} projects · collected ${relativeTime(coverage?.generatedAt)}`;
     if (tab.value === "deps")
-        return `pnpm audit and pnpm outdated · collected ${relativeTime(deps.value?.deps?.generatedAt)}`;
+        return `pnpm audit and pnpm outdated · collected ${relativeTime(deps?.generatedAt)}`;
 
-    return `Usage log · last ${WINDOW_DAYS} days · collected ${relativeTime(usage.value?.usage?.generatedAt)}`;
+    return `Usage log · last ${WINDOW_DAYS} days · collected ${relativeTime(usage?.generatedAt)}`;
 });
 
 interface Fact {
@@ -429,7 +424,7 @@ const facts = computed((): Fact[] => {
             { label: "Outdated", value: String(outdated.value.length), class: "" },
             {
                 label: "Dependencies",
-                value: String(deps.value?.deps?.totalDependencies ?? "—"),
+                value: String(deps?.totalDependencies ?? "—"),
                 class: "",
             },
         ];

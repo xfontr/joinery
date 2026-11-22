@@ -1,11 +1,16 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import Page from "./changelog.vue";
+
+const artifacts = vi.hoisted(() => ({ metrics: null as MetricsArtifact | null }));
+mockNuxtImport("metricsArtifact", () => () => artifacts.metrics);
+
+beforeEach(() => {
+    artifacts.metrics = null;
+});
 
 // An in-memory docs collection, answering the two query shapes the page sends
 const docs = vi.hoisted(() => ({
@@ -53,10 +58,7 @@ const METRICS = {
 } satisfies MetricsArtifact;
 
 const serve = (metrics: Partial<MetricsArtifact> = {}) => {
-    serveEndpoint("/api/snapshot/metrics", (): SnapshotResponse => ({
-        manifest: null,
-        metrics: { ...METRICS, ...metrics },
-    }));
+    artifacts.metrics = { ...METRICS, ...metrics };
 };
 
 const entries = (wrapper: VueWrapper) =>

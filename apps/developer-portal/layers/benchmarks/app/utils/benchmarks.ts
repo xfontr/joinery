@@ -62,7 +62,7 @@ export const toBenchmarks = (pages: BenchmarkPage[]): Benchmark[] =>
 export const screenshotOf = (benchmark: Benchmark): string =>
     `${DOC_ASSETS}${BENCHMARKS_PATH}images/${benchmark.id}.webp`;
 
-export interface BenchmarkFilter {
+interface BenchmarkFilter {
     verdict?: BenchmarkVerdict | "all";
     kind?: string;
     search?: string;

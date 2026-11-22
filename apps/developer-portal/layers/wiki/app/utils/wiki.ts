@@ -3,7 +3,7 @@ import { stripLeadingEmoji, toTitleCase } from "#layers/docs/shared/docPages.ts"
 
 /** Nothing below may compare against a capitalised path — `@nuxt/content` lower-cases every path it finds. */
 
-export interface WikiPage {
+interface WikiPage {
     path: string;
     title?: string;
 }

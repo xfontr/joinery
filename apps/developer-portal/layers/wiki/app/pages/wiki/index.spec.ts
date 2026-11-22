@@ -1,10 +1,16 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
+import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import Page from "./index.vue";
+
+const artifacts = vi.hoisted(() => ({ docs: null as DocsArtifact | null }));
+mockNuxtImport("docsArtifact", () => () => artifacts.docs);
+
+beforeEach(() => {
+    artifacts.docs = null;
+});
 
 // An in-memory docs collection, which the real useWiki groups into sections
 const docs = vi.hoisted(() => ({ entries: [] as { path: string; title: string }[] }));
@@ -33,14 +39,11 @@ const page = (path: string, overrides: Partial<DocPage> = {}): DocPage => ({
 });
 
 const serve = (pages: DocPage[]) => {
-    serveEndpoint("/api/snapshot/docs", (): SnapshotResponse => ({
-        manifest: null,
-        docs: {
-            generatedAt: "2026-11-01T00:00:00Z",
-            pages,
-            brokenLinkCount: pages.filter((found) => found.brokenLinks.length > 0).length,
-        },
-    }));
+    artifacts.docs = {
+        generatedAt: "2026-11-01T00:00:00Z",
+        pages,
+        brokenLinkCount: pages.filter((found) => found.brokenLinks.length > 0).length,
+    };
 };
 
 const hrefs = (wrapper: VueWrapper) => wrapper.findAll("a").map((a) => a.attributes("href"));

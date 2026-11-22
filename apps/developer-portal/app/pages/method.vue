@@ -89,13 +89,10 @@ const pipeline = PIPELINE.map((id) => ({
     detail: t(`method.agents.pipeline.${id}.does`),
 }));
 
-const [{ data: benchmarks }, { data: workflows }, { data: metrics }, { data: usage }] =
-    await Promise.all([
-        useBenchmarks(),
-        useWorkflows(),
-        useSnapshot("metrics"),
-        useSnapshot("usage"),
-    ]);
+const [{ data: benchmarks }, { data: workflows }] = await Promise.all([
+    useBenchmarks(),
+    useWorkflows(),
+]);
 const decisions = useDecisionReports();
 
 const sites = computed(() => benchmarks.value.map((item) => item.title).join(" · "));
@@ -104,8 +101,8 @@ const templates = computed(() =>
         .filter((template) => template.capabilities.length)
         .map(({ id, title, summary }) => ({ id, term: title, detail: summary })),
 );
-const specs = computed(() => specTotal(metrics.value?.metrics?.projects));
-const rules = computed(() => ruleCounts(usage.value?.usage?.lint));
+const specs = specTotal(metricsArtifact()?.projects);
+const rules = ruleCounts(usageArtifact()?.lint);
 
 const lessons = computed(() => lessonCount(workflows.value.templates));
 </script>

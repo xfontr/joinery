@@ -4,10 +4,14 @@ import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { ref } from "vue";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { IssuesRead } from "#layers/github/app/utils/issues.ts";
+import type { CoverageArtifact } from "#layers/snapshot/shared/types/CoverageArtifact.ts";
+import type { DepsArtifact } from "#layers/snapshot/shared/types/DepsArtifact.ts";
+import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
+import type { ProjectsArtifact } from "#layers/snapshot/shared/types/ProjectsArtifact.ts";
+import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import type { Snapshot } from "#layers/workflows/shared/types/Snapshot.ts";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import type { DashboardLayout } from "~/utils/dashboardLayout";
@@ -37,7 +41,22 @@ mockNuxtImport("queryCollection", () => () => {
 
 mockNuxtImport("useIssues", () => () => ({ data: github.read, shown: github.read }));
 
-type Artifacts = Omit<SnapshotResponse, "manifest">;
+interface Artifacts {
+    projects?: ProjectsArtifact | null;
+    coverage?: CoverageArtifact | null;
+    metrics?: MetricsArtifact | null;
+    deps?: DepsArtifact | null;
+    docs?: DocsArtifact | null;
+    usage?: UsageArtifact | null;
+}
+
+const snapshot = vi.hoisted(() => ({ artifacts: {} as Artifacts }));
+mockNuxtImport("projectsArtifact", () => () => snapshot.artifacts.projects ?? null);
+mockNuxtImport("coverageArtifact", () => () => snapshot.artifacts.coverage ?? null);
+mockNuxtImport("metricsArtifact", () => () => snapshot.artifacts.metrics ?? null);
+mockNuxtImport("depsArtifact", () => () => snapshot.artifacts.deps ?? null);
+mockNuxtImport("docsArtifact", () => () => snapshot.artifacts.docs ?? null);
+mockNuxtImport("usageArtifact", () => () => snapshot.artifacts.usage ?? null);
 
 const app = (name: string): ProjectNode => ({
     name: `@monorepo/${name}`,
@@ -89,12 +108,7 @@ const doneSnapshot = (id: string) => ({
 });
 
 const serve = (artifacts: Artifacts, workflows = assembleWorkflows([], [], {})) => {
-    for (const artifact of ["projects", "coverage", "docs", "deps", "metrics", "usage"] as const) {
-        serveEndpoint(`/api/snapshot/${artifact}`, (): SnapshotResponse => ({
-            manifest: null,
-            [artifact]: artifacts[artifact] ?? null,
-        }));
-    }
+    snapshot.artifacts = artifacts;
     serveEndpoint("/api/workflows", () => workflows);
 };
 
@@ -153,6 +167,7 @@ const projects = (nodes: ProjectNode[]): Artifacts => ({
 });
 
 beforeEach(() => {
+    snapshot.artifacts = {};
     docs.readmes = [];
     github.read = ref<IssuesRead>({ fetchedAt: "2026-11-01", error: null, issues: [] });
 });

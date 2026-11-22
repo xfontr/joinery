@@ -5,10 +5,25 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { LintRuleUsage } from "#layers/snapshot/shared/types/LintRuleUsage.ts";
 import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
+import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import Page from "./method.vue";
+
+const artifacts = vi.hoisted(() => ({
+    docs: null as DocsArtifact | null,
+    metrics: null as MetricsArtifact | null,
+    usage: null as UsageArtifact | null,
+}));
+mockNuxtImport("docsArtifact", () => () => artifacts.docs);
+mockNuxtImport("metricsArtifact", () => () => artifacts.metrics);
+mockNuxtImport("usageArtifact", () => () => artifacts.usage);
+
+beforeEach(() => {
+    artifacts.docs = null;
+    artifacts.metrics = null;
+    artifacts.usage = null;
+});
 
 const docs = vi.hoisted(() => ({ benchmarks: [] as { path: string; title: string }[] }));
 
@@ -107,15 +122,8 @@ const open = async (snapshot: { metrics?: MetricsArtifact; usage?: UsageArtifact
             {},
         ),
     );
-    serveEndpoint("/api/snapshot/docs", (): SnapshotResponse => ({ manifest: null, docs: null }));
-    serveEndpoint("/api/snapshot/metrics", (): SnapshotResponse => ({
-        manifest: null,
-        metrics: snapshot.metrics ?? null,
-    }));
-    serveEndpoint("/api/snapshot/usage", (): SnapshotResponse => ({
-        manifest: null,
-        usage: snapshot.usage ?? null,
-    }));
+    artifacts.metrics = snapshot.metrics ?? null;
+    artifacts.usage = snapshot.usage ?? null;
     const wrapper = await mountSuspended(Page);
     await flushPromises();
     return wrapper;

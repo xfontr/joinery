@@ -1,10 +1,15 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
-import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DepsArtifact } from "#layers/snapshot/shared/types/DepsArtifact.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import Page from "./deps.vue";
+
+const artifacts = vi.hoisted(() => ({ deps: null as DepsArtifact | null }));
+mockNuxtImport("depsArtifact", () => () => artifacts.deps);
+
+beforeEach(() => {
+    artifacts.deps = null;
+});
 
 const NONE = { info: 0, low: 0, moderate: 0, high: 0, critical: 0 };
 
@@ -44,10 +49,7 @@ const UNCOLLECTED = {
 } satisfies DepsArtifact;
 
 const serve = (deps: DepsArtifact) => {
-    serveEndpoint("/api/snapshot/deps", (): SnapshotResponse => ({
-        manifest: null,
-        deps,
-    }));
+    artifacts.deps = deps;
 };
 
 const cells = (wrapper: VueWrapper, name: string) =>

@@ -18,6 +18,9 @@ mockNuxtImport("useIssues", () => () => ({ data: github.read, shown: github.read
 const search = vi.hoisted(() => vi.fn((): Promise<SearchSection[]> => Promise.resolve([])));
 mockNuxtImport("queryCollectionSearchSections", () => search);
 
+const shell = vi.hoisted(() => ({ badges: null as Badges | null }));
+mockNuxtImport("shellBadges", () => () => shell.badges);
+
 const MENUS = [
     "/api/decisions/menu",
     "/api/audits/menu",
@@ -40,7 +43,7 @@ const serve = ({
     projects = [] as MenuRow[],
     tooling = { value: "—", alert: false } as RailFigure,
 } = {}) => {
-    serveEndpoint("/api/badges", () => ({ ...NEVER_COLLECTED, ...badges }));
+    shell.badges = { ...NEVER_COLLECTED, ...badges };
     serveEndpoint("/api/telemetry/figure", () => tooling);
     const answers: Record<string, MenuRow[]> = {
         "/api/decisions/menu": decisions,

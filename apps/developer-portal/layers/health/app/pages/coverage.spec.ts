@@ -1,9 +1,7 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
-import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { CoverageArtifact } from "#layers/snapshot/shared/types/CoverageArtifact.ts";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
 import Page from "./coverage.vue";
 
 const COVERAGE = {
@@ -25,11 +23,11 @@ const COVERAGE = {
     ],
 } satisfies CoverageArtifact;
 
+const artifacts = vi.hoisted(() => ({ coverage: null as CoverageArtifact | null }));
+mockNuxtImport("coverageArtifact", () => () => artifacts.coverage);
+
 const serve = (coverage: CoverageArtifact) => {
-    serveEndpoint("/api/snapshot/coverage", (): SnapshotResponse => ({
-        manifest: null,
-        coverage,
-    }));
+    artifacts.coverage = coverage;
 };
 
 const row = (wrapper: VueWrapper, project: string) =>

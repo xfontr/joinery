@@ -3,7 +3,7 @@
         <template #header>
             <PageHeader title="Home">
                 <template #actions>
-                    <SnapshotAge class="mr-3 hidden sm:flex" :manifest="docs?.manifest ?? null" />
+                    <SnapshotAge class="mr-3 hidden sm:flex" :manifest />
                     <UButton
                         :label="editing ? 'Done' : 'Customize'"
                         :icon="editing ? 'i-lucide-check' : 'i-lucide-layout-grid'"
@@ -46,14 +46,9 @@ const editing = ref(false);
 const { rows, issues } = useWorkQueue();
 const health = useHealthLines();
 
-const [{ data: docs }, { data: metrics }, { data: usage }] = await Promise.all([
-    useSnapshot("docs"),
-    useSnapshot("metrics"),
-    useSnapshot("usage"),
-]);
-
-const collectedAge = computed(() => relativeTime(metrics.value?.metrics?.generatedAt));
+const manifest = snapshotManifest();
+const collectedAge = relativeTime(metricsArtifact()?.generatedAt);
 const issuesRead = computed(() => Boolean(issues.value.fetchedAt));
 const issuesError = computed(() => Boolean(issues.value.error));
-const empty = computed(() => (usage.value?.usage ? [] : ["activity"]));
+const empty = usageArtifact() ? [] : ["activity"];
 </script>

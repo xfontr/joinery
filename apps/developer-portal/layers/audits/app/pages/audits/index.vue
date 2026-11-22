@@ -59,8 +59,6 @@
 <script setup lang="ts">
 import { scopesOf } from "#layers/audits/shared/auditReports.ts";
 
-const { manifest, reports, state, scope, search, sort, visible, ready } = useAuditList();
+const { manifest, reports, state, scope, search, sort, visible } = useAuditList();
 const scopes = computed(() => scopesOf(reports.value));
-
-await ready;
 </script>

@@ -73,13 +73,10 @@ const DEEPER = [
 const { t } = useI18n();
 useHead({ title: t("index.head") });
 
-const [{ data: benchmarks }, { data: usage }] = await Promise.all([
-    useBenchmarks(),
-    useSnapshot("usage"),
-]);
+const { data: benchmarks } = await useBenchmarks();
+const rules = ruleCounts(usageArtifact()?.lint);
 
 const counted = computed((): Partial<Record<RuleId, string>> => {
-    const rules = ruleCounts(usage.value?.usage?.lint);
     return {
         ...(benchmarks.value.length && {
             look: t("index.rules.look.proofCount", { count: benchmarks.value.length }),

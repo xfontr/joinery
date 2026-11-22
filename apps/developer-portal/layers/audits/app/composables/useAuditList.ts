@@ -1,9 +1,8 @@
 import { filterAudits, sortAudits, type AuditSort } from "#layers/audits/shared/auditReports.ts";
 import type { AuditState } from "#layers/snapshot/shared/audits.ts";
 
-/** Every collected audit and the filtered, sorted slice the list shows; `ready` settles on load. */
+/** Every collected audit and the filtered, sorted slice the list shows. */
 export const useAuditList = () => {
-    const snapshot = useSnapshot("docs");
     const reports = useAuditReports();
 
     const state = ref<AuditState | "all">("all");
@@ -23,13 +22,12 @@ export const useAuditList = () => {
     );
 
     return {
-        manifest: computed(() => snapshot.data.value?.manifest ?? null),
+        manifest: snapshotManifest(),
         reports,
         state,
         scope,
         search,
         sort,
         visible,
-        ready: snapshot,
     };
 };

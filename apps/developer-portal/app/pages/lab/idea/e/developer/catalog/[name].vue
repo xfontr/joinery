@@ -256,26 +256,21 @@ const tab = computed(() =>
     TABS.some((item) => item.id === route.query.tab) ? String(route.query.tab) : "readme",
 );
 
-const [{ data: projects }, { data: metrics }, { data: coverageSnapshot }, { data: deps }] =
-    await Promise.all([
-        useSnapshot("projects"),
-        useSnapshot("metrics"),
-        useSnapshot("coverage"),
-        useSnapshot("deps"),
-    ]);
+const projects = projectsArtifact();
+const metrics = metricsArtifact();
+const coverageSnapshot = coverageArtifact();
+const deps = depsArtifact();
 
-const nodes = computed(() => projects.value?.projects?.projects ?? []);
+const nodes = computed(() => projects?.projects ?? []);
 const project = computed(
     () => nodes.value.find((node) => folderOf(node.root) === folder.value) ?? null,
 );
-const metric = computed(() =>
-    metrics.value?.metrics?.projects.find((item) => item.root === project.value?.root),
-);
+const metric = computed(() => metrics?.projects.find((item) => item.root === project.value?.root));
 const coverage = computed(() =>
-    coverageSnapshot.value?.coverage?.projects.find((item) => item.root === project.value?.root),
+    coverageSnapshot?.projects.find((item) => item.root === project.value?.root),
 );
-const coverageAge = computed(() => relativeTime(coverageSnapshot.value?.coverage?.generatedAt));
-const depsAge = computed(() => relativeTime(deps.value?.deps?.generatedAt));
+const coverageAge = computed(() => relativeTime(coverageSnapshot?.generatedAt));
+const depsAge = computed(() => relativeTime(deps?.generatedAt));
 
 const { data: readme } = await useAsyncData(
     () => `lab-e-readme-${folder.value}`,
@@ -288,9 +283,7 @@ const { data: readme } = await useAsyncData(
 
 const outdated = computed(
     () =>
-        deps.value?.deps?.outdated?.filter((item) =>
-            item.dependents.includes(project.value?.root ?? ""),
-        ) ?? [],
+        deps?.outdated?.filter((item) => item.dependents.includes(project.value?.root ?? "")) ?? [],
 );
 
 const { data: read } = useIssues();
@@ -387,7 +380,7 @@ const links = computed(() => [
 const sections = computed(() => {
     const kind = project.value?.root.split("/")[0] ?? "";
     const coverageByRoot = new Map(
-        (metrics.value?.metrics?.projects ?? []).map((item) => [item.root, item.coverageLinesPct]),
+        (metrics?.projects ?? []).map((item) => [item.root, item.coverageLinesPct]),
     );
 
     return nodes.value

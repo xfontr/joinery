@@ -1,10 +1,15 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
-import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
-import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import TelemetryRunsPanel from "./TelemetryRunsPanel.vue";
+
+const artifacts = vi.hoisted(() => ({ usage: null as UsageArtifact | null }));
+mockNuxtImport("usageArtifact", () => () => artifacts.usage);
+
+beforeEach(() => {
+    artifacts.usage = null;
+});
 
 const USAGE = {
     generatedAt: "2026-11-10T00:00:00Z",
@@ -31,7 +36,7 @@ const USAGE = {
 } satisfies UsageArtifact;
 
 const open = async (usage: UsageArtifact | null) => {
-    serveEndpoint("/api/snapshot/usage", (): SnapshotResponse => ({ manifest: null, usage }));
+    artifacts.usage = usage;
     const wrapper = await mountSuspended(TelemetryRunsPanel);
     await flushPromises();
     return wrapper;

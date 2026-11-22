@@ -38,12 +38,12 @@
 import { WINDOW_DAYS } from "#layers/telemetry/shared/usage.ts";
 import { isFailing, scriptRows, sumDays } from "#layers/telemetry/shared/usageView.ts";
 
-const { data: usage } = await useSnapshot("usage");
+const usage = usageArtifact();
 
 const totals = computed(() => {
-    if (!usage.value?.usage) return null;
+    if (!usage) return null;
 
-    const rows = scriptRows(usage.value.usage);
+    const rows = scriptRows(usage);
     const sum = sumDays(rows);
     const idle = rows.filter((row) => row.runs === 0).length;
 

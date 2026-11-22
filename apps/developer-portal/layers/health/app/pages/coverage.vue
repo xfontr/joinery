@@ -16,7 +16,5 @@
 </template>
 
 <script setup lang="ts">
-const { coverage, projects, provenance, facts, ready } = useCoveragePage();
-
-await ready;
+const { coverage, projects, provenance, facts } = useCoveragePage();
 </script>
