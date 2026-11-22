@@ -17,6 +17,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Challenge } from "../types/Challenge";
 import { until } from "@vueuse/core";
 
 const TOKEN_TIMEOUT_MS = 30_000;

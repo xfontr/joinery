@@ -12,6 +12,7 @@ export default vitest.createNuxtConfig({
         "app/utils/coverHeight.spec.ts",
         "app/utils/initials.spec.ts",
         "layers/articles/app/utils/bylineAuthors.spec.ts",
+        "layers/articles/app/utils/citationMeta.spec.ts",
         "layers/articles/app/utils/formatKeys.spec.ts",
         "layers/interest/app/{schemas,utils}/**/*.spec.ts",
         "layers/tracking/app/utils/consentTranslation.spec.ts",

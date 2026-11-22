@@ -1,3 +1,4 @@
+import type { Challenge } from "#layers/forms/app/types/Challenge";
 import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
 import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";

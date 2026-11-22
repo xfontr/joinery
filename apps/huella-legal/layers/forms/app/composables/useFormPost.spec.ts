@@ -1,3 +1,4 @@
+import type { Challenge } from "../types/Challenge";
 import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
 import type { FormError } from "@nuxt/ui";
 import { mockNuxtImport } from "@nuxt/test-utils/runtime";

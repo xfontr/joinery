@@ -1,4 +1,4 @@
-import type { SUBMISSION_KINDS } from "../schemas/submission";
+import type { SUBMISSION_KINDS } from "../../shared/schemas/submission";
 
 export interface SubmissionRequest extends FormRequest {
     name: string;
