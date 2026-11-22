@@ -64,5 +64,5 @@ const LESSONS = [
 
 const { t } = useI18n();
 
-useHead({ title: t("agenticWorkflows.head") });
+useSeoMeta({ title: t("agenticWorkflows.head"), description: t("agenticWorkflows.lead") });
 </script>

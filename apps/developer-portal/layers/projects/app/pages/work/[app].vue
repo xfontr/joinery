@@ -67,5 +67,8 @@ const facts = computed(() =>
 
 if (!work.value) setResponseStatus(404);
 
-useHead({ title: () => work.value?.name ?? t("workApp.missing.title") });
+useSeoMeta({
+    title: () => work.value?.name ?? t("workApp.missing.title"),
+    description: () => work.value?.line,
+});
 </script>
