@@ -1,5 +1,5 @@
-import type { Benchmark } from "./types/Benchmark.ts";
-import type { BenchmarkVerdict } from "./types/BenchmarkVerdict.ts";
+import type { Benchmark } from "../types/Benchmark.ts";
+import type { BenchmarkVerdict } from "../types/BenchmarkVerdict.ts";
 import { DOC_ASSETS } from "#layers/docs/shared/docLinks.ts";
 import { stripLeadingEmoji } from "#layers/docs/shared/docPages.ts";
 

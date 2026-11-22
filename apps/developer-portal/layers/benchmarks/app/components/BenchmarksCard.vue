@@ -21,8 +21,8 @@
 </template>
 
 <script setup lang="ts">
-import { screenshotOf } from "#layers/benchmarks/shared/benchmarks.ts";
-import type { Benchmark } from "#layers/benchmarks/shared/types/Benchmark.ts";
+import { screenshotOf } from "#layers/benchmarks/app/utils/benchmarks.ts";
+import type { Benchmark } from "#layers/benchmarks/app/types/Benchmark.ts";
 
 interface Props {
     benchmark: Benchmark;

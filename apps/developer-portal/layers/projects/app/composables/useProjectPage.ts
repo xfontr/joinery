@@ -1,4 +1,4 @@
-import { areaLabel } from "#layers/github/shared/issues.ts";
+import { areaLabel } from "#layers/github/app/utils/issues.ts";
 import type { PageTab } from "~/types/PageTab";
 import type { ProjectTab } from "~/types/ProjectTab";
 import type { ProjectTabRow } from "~/types/ProjectTabRow";

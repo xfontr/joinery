@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { workFor } from "#layers/projects/shared/work.ts";
-import { specTotal } from "#layers/snapshot/shared/metrics.ts";
+import { specTotal } from "#layers/snapshot/app/utils/metrics.ts";
 import { ruleCounts } from "#layers/telemetry/shared/lintUsage.ts";
 import { lessonCount } from "#layers/workflows/shared/workflows.ts";
 

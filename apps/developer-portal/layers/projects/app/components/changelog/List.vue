@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { changelogRoot, projectDisplayName } from "#layers/projects/shared/changelogs.ts";
+import { changelogRoot, projectDisplayName } from "#layers/projects/app/utils/changelogs.ts";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 
 interface Props {

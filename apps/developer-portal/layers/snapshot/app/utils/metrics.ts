@@ -1,4 +1,4 @@
-import type { ProjectMetrics } from "./types/ProjectMetrics.ts";
+import type { ProjectMetrics } from "../../shared/types/ProjectMetrics.ts";
 
 /** Spec files across every project; `null` when nothing was collected. */
 export const specTotal = (projects: readonly ProjectMetrics[] | undefined): number | null =>

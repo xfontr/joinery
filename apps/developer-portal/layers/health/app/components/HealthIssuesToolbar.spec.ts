@@ -1,6 +1,6 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
-import type { Issue } from "#layers/github/shared/issues.ts";
+import type { Issue } from "#layers/github/app/utils/issues.ts";
 import HealthIssuesToolbar from "./HealthIssuesToolbar.vue";
 
 const issue = (number: number, labels: string[]): Issue => ({

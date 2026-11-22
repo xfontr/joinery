@@ -5,7 +5,7 @@ import {
     type DeploymentStatus,
     type EnvironmentDeployment,
 } from "#layers/github/shared/deployments.ts";
-import { messageOf } from "#layers/github/shared/github.ts";
+import { messageOf } from "#layers/github/app/utils/github.ts";
 
 interface DeploymentsResponse {
     deployments: EnvironmentDeployment[];

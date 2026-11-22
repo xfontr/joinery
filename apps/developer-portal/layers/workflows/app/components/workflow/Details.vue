@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import type { CapabilityView, SettledState } from "#layers/workflows/shared/workflows.ts";
-import type { CapabilityActivity } from "#layers/workflows/shared/workflowActivity.ts";
+import type { CapabilityActivity } from "#layers/workflows/app/utils/workflowActivity.ts";
 
 interface Props {
     capability?: CapabilityView;

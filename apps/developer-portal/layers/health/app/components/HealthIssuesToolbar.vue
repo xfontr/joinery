@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { labelsOf, type Issue } from "#layers/github/shared/issues.ts";
+import { labelsOf, type Issue } from "#layers/github/app/utils/issues.ts";
 
 interface Props {
     /** Every live issue, whose labels the filter offers. */

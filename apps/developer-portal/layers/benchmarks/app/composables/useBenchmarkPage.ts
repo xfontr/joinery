@@ -1,5 +1,5 @@
 import type { BreadcrumbItem } from "@nuxt/ui";
-import { BENCHMARKS_PATH } from "#layers/benchmarks/shared/benchmarks.ts";
+import { BENCHMARKS_PATH } from "#layers/benchmarks/app/utils/benchmarks.ts";
 
 /** One benchmark's rendered page and its gallery neighbours; `ready` settles once both load. */
 export const useBenchmarkPage = () => {

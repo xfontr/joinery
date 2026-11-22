@@ -1,4 +1,4 @@
-import type { ProjectView } from "./workflows.ts";
+import type { ProjectView } from "../../shared/workflows.ts";
 
 const DAY_MS = 86_400_000;
 const WEEK_MS = 7 * DAY_MS;

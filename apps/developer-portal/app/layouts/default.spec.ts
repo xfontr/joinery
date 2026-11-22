@@ -3,7 +3,7 @@ import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { ref } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { IssuesRead } from "#layers/github/shared/issues.ts";
+import type { IssuesRead } from "#layers/github/app/utils/issues.ts";
 import type { Badges } from "#layers/snapshot/shared/types/Badges.ts";
 import type { MenuRow } from "~/types/MenuRow";
 import type { RailFigure } from "~/types/RailFigure";

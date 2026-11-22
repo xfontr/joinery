@@ -2,7 +2,7 @@ import { isFailing, scriptRows, sumDays } from "#layers/telemetry/shared/usageVi
 import type { DepsArtifact } from "#layers/snapshot/shared/types/DepsArtifact.ts";
 import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
-import type { IssuesRead } from "#layers/github/shared/issues.ts";
+import type { IssuesRead } from "#layers/github/app/utils/issues.ts";
 import type { Tone } from "~/types/Tone";
 import { BASE } from "./apps";
 

@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import type { CapabilityView, StageView } from "#layers/workflows/shared/workflows.ts";
-import type { ProjectActivity } from "#layers/workflows/shared/workflowActivity.ts";
+import type { ProjectActivity } from "#layers/workflows/app/utils/workflowActivity.ts";
 
 interface Props {
     stages: StageView[];

@@ -2,7 +2,7 @@ import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
 import { ref } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Issue, IssuesRead } from "#layers/github/shared/issues.ts";
+import type { Issue, IssuesRead } from "#layers/github/app/utils/issues.ts";
 import Page from "./issues.vue";
 
 // GitHub is read straight from the browser, so the github layer's composable is the boundary

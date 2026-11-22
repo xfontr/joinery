@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Issue } from "#layers/github/shared/issues.ts";
+import type { Issue } from "#layers/github/app/utils/issues.ts";
 
 interface Props {
     issues: (Issue & { age: string })[];

@@ -1,7 +1,7 @@
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { BenchmarkPage } from "#layers/benchmarks/shared/benchmarks.ts";
+import type { BenchmarkPage } from "#layers/benchmarks/app/utils/benchmarks.ts";
 import Page from "./[id].vue";
 
 // An in-memory docs collection, answering both the gallery list and the page's own lookup

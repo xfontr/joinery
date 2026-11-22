@@ -1,4 +1,4 @@
-import { repoApiUrl } from "./github.ts";
+import { repoApiUrl } from "../app/utils/github.ts";
 
 export interface Deployment {
     id: number;

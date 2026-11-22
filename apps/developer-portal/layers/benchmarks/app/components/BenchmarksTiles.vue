@@ -18,9 +18,9 @@
 </template>
 
 <script setup lang="ts">
-import { countByVerdict } from "#layers/benchmarks/shared/benchmarks.ts";
-import type { Benchmark } from "#layers/benchmarks/shared/types/Benchmark.ts";
-import type { BenchmarkVerdict } from "#layers/benchmarks/shared/types/BenchmarkVerdict.ts";
+import { countByVerdict } from "#layers/benchmarks/app/utils/benchmarks.ts";
+import type { Benchmark } from "#layers/benchmarks/app/types/Benchmark.ts";
+import type { BenchmarkVerdict } from "#layers/benchmarks/app/types/BenchmarkVerdict.ts";
 
 interface Props {
     benchmarks: Benchmark[];

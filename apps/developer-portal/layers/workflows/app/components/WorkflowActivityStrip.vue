@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProjectActivity } from "#layers/workflows/shared/workflowActivity.ts";
+import type { ProjectActivity } from "#layers/workflows/app/utils/workflowActivity.ts";
 import type { StageView } from "#layers/workflows/shared/workflows.ts";
 
 interface Props {

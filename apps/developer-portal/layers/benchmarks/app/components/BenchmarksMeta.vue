@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Benchmark } from "#layers/benchmarks/shared/types/Benchmark.ts";
+import type { Benchmark } from "#layers/benchmarks/app/types/Benchmark.ts";
 
 interface Props {
     benchmark: Benchmark | null;

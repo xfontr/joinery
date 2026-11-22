@@ -1,6 +1,6 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
-import type { Benchmark } from "#layers/benchmarks/shared/types/Benchmark.ts";
+import type { Benchmark } from "#layers/benchmarks/app/types/Benchmark.ts";
 import BenchmarksCard from "./BenchmarksCard.vue";
 
 const SITE = {

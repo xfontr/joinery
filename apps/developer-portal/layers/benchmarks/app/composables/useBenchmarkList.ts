@@ -1,5 +1,5 @@
-import { filterBenchmarks } from "#layers/benchmarks/shared/benchmarks.ts";
-import type { BenchmarkVerdict } from "#layers/benchmarks/shared/types/BenchmarkVerdict.ts";
+import { filterBenchmarks } from "#layers/benchmarks/app/utils/benchmarks.ts";
+import type { BenchmarkVerdict } from "#layers/benchmarks/app/types/BenchmarkVerdict.ts";
 
 /** Every benchmark and the filtered slice the gallery shows; `ready` settles once they load. */
 export const useBenchmarkList = () => {
