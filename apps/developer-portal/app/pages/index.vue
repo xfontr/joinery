@@ -19,7 +19,7 @@
             <p class="font-display text-title text-primary md:col-span-2">{{ index + 1 }}</p>
             <div class="flex flex-col gap-4 md:col-span-7">
                 <h2 class="font-display text-section text-highlighted" :style="item.carry">
-                    {{ $t(`rules.${item.id}.title`) }}
+                    {{ $t(`index.rules.${item.id}.title`) }}
                 </h2>
                 <p class="max-w-xl text-lg">{{ $t(`index.rules.${item.id}.line`) }}</p>
             </div>

@@ -546,31 +546,36 @@
             }
         },
         "head": "This is a developer platform",
-        "intro": "The five rules below run on every change, and every decision behind them is written down.",
+        "intro": "Every piece below opens, so have a look around.",
         "lead": "Huh? Let me explain. It's the tooling, rules and agents every app here is built with. Most companies keep theirs behind closed doors, but I'm not a company, so this one's public.",
         "rules": {
             "agents": {
-                "line": "Tests, lint rules and three review agents decide what gets merged. I step in when they ask.",
-                "proof": "How a change gets merged"
+                "line": "Agents take a ticket from plan to merge, with three reviews on the way.",
+                "proof": "How a change gets merged",
+                "title": "Agent pipeline"
             },
             "decide": {
-                "line": "Any call that could go either way gets a short report anyone can read.",
-                "proof": "Keeping Huella Legal's old links working"
+                "line": "Any call that could go either way gets a short write-up anyone can read.",
+                "proof": "Keeping Huella Legal's old links working",
+                "title": "Decision records"
             },
-            "label": "Five rules",
+            "label": "What's inside",
             "look": {
-                "line": "Each design starts from a study of award-winning sites.",
+                "line": "Every design starts from a study of award-winning sites.",
                 "proof": "The sites studied",
-                "proofCount": "{count} sites studied"
+                "proofCount": "{count} sites studied",
+                "title": "UI/UX benchmarking"
             },
             "plan": {
-                "line": "Before the first ticket, I map every task and what it waits on.",
-                "proof": "The project map, below"
+                "line": "Every project is mapped as tickets before the first line of code.",
+                "proof": "The project map, below",
+                "title": "Project maps"
             },
             "prove": {
                 "line": "Tests, accessibility and lint rules run on every change.",
                 "proof": "What gets checked",
-                "proofCount": "{enabled} lint rules, {inHouse} written in-house"
+                "proofCount": "{enabled} lint rules, {inHouse} written in-house",
+                "title": "Automated checks"
             }
         },
         "title": "This is a",
@@ -915,7 +920,7 @@
         "agents": {
             "body": "Every change runs the same {steps} steps from plan to merge, and reviews for architecture, correctness and tests must pass before it lands. Any step can stop and ask me.",
             "more": "How a change gets merged",
-            "title": "Let the checks decide."
+            "title": "Let agents do the legwork."
         },
         "decide": {
             "body": "When a call could go either way, I write a short report: the question, the options, what was picked and why. The next person, or agent, reads it instead of asking again.",
