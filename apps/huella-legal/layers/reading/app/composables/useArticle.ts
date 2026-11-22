@@ -9,7 +9,15 @@ export const useArticle = async () => {
         },
     );
 
-    const { data: comments } = useArticleComments(route.params.slug);
+    // Read in the browser, so a prerendered article never shows a stale thread
+    const { data: comments } = useCachedFetch<ArticleComments>(
+        `/api/articles/${route.params.slug}/comments`,
+        {
+            key: `article-comments-${route.params.slug}`,
+            server: false,
+            lazy: true,
+        },
+    );
 
     const { data: authorCounts } = useCachedFetch("/api/authors", {
         key: "author-counts",
