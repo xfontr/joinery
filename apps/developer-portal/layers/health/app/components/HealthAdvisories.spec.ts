@@ -1,7 +1,31 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { VulnerabilityAdvisory } from "#layers/snapshot/shared/types/VulnerabilityAdvisory.ts";
 import HealthAdvisories from "./HealthAdvisories.vue";
+
+const MESSAGES = {
+    common: {
+        severity: {
+            critical: "critical",
+            high: "high",
+            low: "low",
+            moderate: "moderate",
+        },
+    },
+    healthAdvisories: {
+        columns: {
+            advisory: "Advisory",
+            package: "Package",
+            patched: "Patched",
+            severity: "Severity",
+            via: "Pulled in via",
+        },
+        meta: "Every finding pnpm audit reports, over the whole workspace lockfile",
+        none: "No known vulnerabilities.",
+        notCollected: "Not collected.",
+        title: "Advisories",
+    },
+};
 
 const ADVISORY = {
     id: 1,
@@ -14,6 +38,10 @@ const ADVISORY = {
 } satisfies VulnerabilityAdvisory;
 
 const COUNTS = { info: 0, low: 0, moderate: 0, high: 1, critical: 0 };
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("HealthAdvisories", () => {
     it("lists each advisory with its fix and every chain that pulls it in", async () => {

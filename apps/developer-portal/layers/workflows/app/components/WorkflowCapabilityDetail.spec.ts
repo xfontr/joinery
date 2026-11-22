@@ -1,5 +1,5 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import {
     projectView,
     readProject,
@@ -7,6 +7,56 @@ import {
     type CapabilityView,
 } from "#layers/workflows/shared/workflows.ts";
 import WorkflowCapabilityDetail from "./WorkflowCapabilityDetail.vue";
+
+const MESSAGES = {
+    workflowCapabilityDetail: {
+        blockedBy: "Blocked by {blockers}",
+        headings: {
+            doneWhen: "Done when",
+            needs: "Needs",
+            settle: "Settle",
+            startFrom: "Start from",
+            tickets: "Tickets",
+            unblocks: "Unblocks",
+        },
+        optional: "Optional",
+        settle: {
+            done: "Mark done",
+            noteLabel: "Why it is settled",
+            notePlaceholder: "Why, in one line",
+            skip: "Skip",
+        },
+        switch: {
+            on: "On for this project",
+        },
+        why: {
+            blocked: "Blocked: it waits on {waiting}.",
+            canFile: "Nothing it needs is undecided, so its tickets can be filed now.",
+            waits: "Not fileable yet: it waits on {waiting}, which can still change what its tickets say.",
+            yoursSettle:
+                "Only you can approve this: mark it done below, or file its ticket and close it. Everything after it waits.",
+            yoursUnfiled:
+                "Only you can approve this: file its ticket and close it, or settle it in the project file. Everything after it waits.",
+        },
+    },
+    workflows: {
+        blockKind: {
+            owner: "Yours — only you can close it",
+        },
+        capabilityState: {
+            blocked: "Blocked",
+            "can-file": "Can file now",
+            "waiting-on-you": "Waiting on you",
+            waits: "Waits on a decision",
+        },
+        reusePlan: {
+            copy: "Copy and adapt",
+        },
+        ticketStatus: {
+            ready: "Ready",
+        },
+    },
+};
 
 const capabilityWith = (issues: object[], optional = true, id = "comments"): CapabilityView => {
     const { template } = readTemplate({
@@ -50,6 +100,10 @@ const capabilityWith = (issues: object[], optional = true, id = "comments"): Cap
 
     return view.stages[0]!.capabilities.find((capability) => capability.id === id)!;
 };
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowCapabilityDetail", () => {
     it("never colours a ticket closed as not planned as delivered", async () => {

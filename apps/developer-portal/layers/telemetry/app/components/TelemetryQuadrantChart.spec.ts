@@ -1,5 +1,5 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { Quadrants } from "#layers/telemetry/shared/usageView.ts";
 import TelemetryQuadrantChart from "./TelemetryQuadrantChart.vue";
 
@@ -7,7 +7,7 @@ const axis = { ticks: [{ label: "10", at: 50 }], threshold: 40 };
 
 const point = (name: string, x: number, labelled = true) => ({
     name,
-    title: `${name} title`,
+    detail: {},
     kind: "dot" as const,
     x,
     y: 20,
@@ -31,6 +31,7 @@ const mount = () =>
             chart: CHART,
             kinds: { dot: { label: "Dots", color: "red" } },
             quadrants: [{ corner: "top-right", label: "Fix first", bad: true }],
+            pointKey: "telemetry.point",
             xLabel: "Runs",
             yLabel: "Failures",
         },
@@ -40,6 +41,10 @@ const labelOf = async (name: string) =>
     (await mount()).findAll("span.font-mono").find((label) => label.text() === name);
 
 describe("TelemetryQuadrantChart", () => {
+    beforeEach(() => {
+        useNuxtApp().$i18n.mergeLocaleMessage("en", { telemetry: { point: "{name} title" } });
+    });
+
     it("names only the points marked labelled", async () => {
         expect(await labelOf("left")).toBeDefined();
         expect(await labelOf("quiet")).toBeUndefined();

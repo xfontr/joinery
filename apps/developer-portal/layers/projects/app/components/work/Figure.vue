@@ -19,10 +19,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Work } from "#layers/projects/shared/types/Work.ts";
+import type { WorkCase } from "#layers/projects/app/types/WorkCase.ts";
 
 interface Props {
-    work: Work;
+    work: WorkCase;
 }
 
 const { work } = defineProps<Props>();

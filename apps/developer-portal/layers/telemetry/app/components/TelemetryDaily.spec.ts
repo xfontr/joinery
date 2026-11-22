@@ -1,7 +1,28 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import TelemetryDaily from "./TelemetryDaily.vue";
+
+const MESSAGES = {
+    telemetryDaily: {
+        endLabel: "last day",
+        reading: "{average} {unit} a day on average; the busiest day was {day}, with {peak}.",
+        series: {
+            failures: {
+                title: "Failed runs per day",
+                unit: "failed runs",
+            },
+            runs: {
+                title: "Runs per day",
+                unit: "runs",
+            },
+        },
+        views: {
+            chart: "Chart",
+            table: "Table",
+        },
+    },
+};
 
 const USAGE = {
     generatedAt: "2026-11-10T00:00:00Z",
@@ -29,6 +50,10 @@ const USAGE = {
     },
     lint: { since: null, rules: {} },
 } satisfies UsageArtifact;
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("TelemetryDaily", () => {
     it("charts the series picked in the page's facts", async () => {

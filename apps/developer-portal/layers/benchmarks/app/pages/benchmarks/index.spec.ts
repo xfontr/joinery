@@ -3,6 +3,70 @@ import type { VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import Page from "./index.vue";
 
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
+    },
+    benchmarks: {
+        empty: {
+            each: "one file per site",
+        },
+        guide: "How an entry is written",
+        intro: "Sites reviewed as design references, kept so the next redesign starts from what has already been studied. Each entry is a verdict, a screenshot and a short critique; what a project takes from them lives in its own decision report.",
+        title: "Benchmarks",
+        verdict: {
+            avoid: "Avoid",
+            partial: "Take one thing",
+            strong: "Strong reference",
+        },
+    },
+    benchmarksCard: {
+        screenshot: "{title}, first screen",
+    },
+    benchmarksTiles: {
+        hints: {
+            avoid: "kept as what not to do",
+            partial: "one or two ideas to take",
+            strong: "worth studying whole",
+        },
+        sites: "Sites",
+        sitesHint: "one file per site",
+    },
+    benchmarksToolbar: {
+        everyKind: "Every kind",
+        everyVerdict: "Every verdict",
+        search: "Search site or verdict…",
+    },
+    collectionEmpty: {
+        nothing: "Nothing under {folder} yet.",
+        writes: "The {skill} skill writes {each}{collect}.",
+    },
+    pageHeader: {
+        wordmark: "monorepo",
+    },
+};
+
 const docs = vi.hoisted(() => ({ pages: [] as Record<string, string>[] }));
 
 mockNuxtImport("queryCollection", () => () => {
@@ -37,6 +101,10 @@ beforeEach(() => {
 
 const cards = (wrapper: VueWrapper) =>
     wrapper.findAll("a[href^='/benchmarks/']").map((card) => card.attributes("href"));
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("benchmarks index", () => {
     it("shows one card per site, strongest first, each linking to its page", async () => {

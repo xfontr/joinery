@@ -1,7 +1,22 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import Summary from "./Summary.vue";
+
+const MESSAGES = {
+    workflowSummary: {
+        done: "{done} of {total} done",
+        milestone: "Milestone {milestone}",
+        points: "{done} of {total} SP done",
+        tickets: "{blocks} blocks · {filed} tickets filed · {toFile} to file",
+        unestimated: "{count} unestimated",
+    },
+    workflows: {
+        capabilityState: {
+            "can-file": "Can file now",
+        },
+    },
+};
 
 const TEMPLATE = {
     id: "site",
@@ -35,6 +50,10 @@ const mount = () => {
     if (!VIEW) throw new Error("the fixture project did not assemble");
     return mountSuspended(Summary, { props: { view: VIEW, selected: null, blank: false } });
 };
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowSummary", () => {
     it("counts the blocks done, filed and still to file", async () => {

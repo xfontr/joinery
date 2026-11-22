@@ -1,8 +1,14 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import DocSource from "./DocSource.vue";
 
 describe("DocSource", () => {
+    beforeEach(() => {
+        useNuxtApp().$i18n.mergeLocaleMessage("en", {
+            docSource: { meta: "{words} words, updated {updated}" },
+        });
+    });
+
     it("counts the doc's words beside its path", async () => {
         const wrapper = await mountSuspended(DocSource, {
             props: { source: "docs/a.md", words: 120, updatedAt: new Date().toISOString() },

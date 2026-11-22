@@ -16,6 +16,7 @@ import type { Snapshot } from "#layers/workflows/shared/types/Snapshot.ts";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import type { DashboardLayout } from "~/utils/dashboardLayout";
 import Page from "./overview.vue";
+import en from "../../i18n/locales/en.json";
 
 const docs = vi.hoisted(() => ({
     readmes: [] as { path: string; title: string; description: string }[],
@@ -172,6 +173,10 @@ beforeEach(() => {
 
 afterEach(() => {
     localStorage.clear();
+});
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", en);
 });
 
 describe("home page", () => {

@@ -43,40 +43,24 @@
 </template>
 
 <script setup lang="ts">
-import { WORK } from "#layers/projects/shared/work.ts";
-
-/** Apps and tools with no case study, linked to where they can be seen instead. */
-const TOOLS = [
-    { key: "wpEditor", slug: "wp-editor", href: "/wiki/apps/wp-editor/readme" },
-    { key: "portal", slug: "portal", href: "/overview" },
-] as const;
+import { isStudy } from "#layers/projects/app/utils/work.ts";
 
 const { t } = useI18n();
 
-const items = computed(() => [
-    ...WORK.map((work, index) => ({
-        slug: work.slug,
-        name: work.name,
-        kind: work.kind,
-        what: work.line,
-        stage: work.stage,
-        story: `/work/${work.slug}`,
-        cta: work.live.label,
-        href: work.live.href,
-        shot: index === 0 ? workScreenshot(work) : undefined,
-        shotAlt: t("workList.shotAlt", { name: work.name }),
+const { data: work } = await useWorkList();
+
+const items = computed(() =>
+    work.value.map((entry, index) => ({
+        slug: entry.slug,
+        name: entry.name,
+        kind: entry.kind,
+        what: entry.line,
+        stage: entry.stage,
+        story: entry.caseStudy ? `/work/${entry.slug}` : null,
+        cta: entry.live.label,
+        href: entry.live.href,
+        shot: index === 0 && isStudy(entry) ? workScreenshot(entry) : undefined,
+        shotAlt: t("workList.shotAlt", { name: entry.name }),
     })),
-    ...TOOLS.map(({ key, slug, href }) => ({
-        slug,
-        name: t(`workList.tools.${key}.name`),
-        kind: t(`workList.tools.${key}.kind`),
-        what: t(`workList.tools.${key}.what`),
-        stage: t(`workList.tools.${key}.stage`),
-        story: null,
-        cta: t(`workList.tools.${key}.cta`),
-        href,
-        shot: undefined,
-        shotAlt: "",
-    })),
-]);
+);
 </script>

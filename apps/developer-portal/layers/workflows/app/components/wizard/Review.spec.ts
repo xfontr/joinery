@@ -1,7 +1,26 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import Review from "./Review.vue";
+
+const MESSAGES = {
+    wizardReview: {
+        graph: "Dependency graph",
+    },
+    workflowGraph: {
+        details: "Details for {title}",
+        fit: "Fit the selected path",
+        full: "Full screen",
+        node: "{title}, {state}",
+        zoomIn: "Zoom in",
+        zoomOut: "Zoom out",
+    },
+    workflows: {
+        capabilityState: {
+            "can-file": "Can file now",
+        },
+    },
+};
 
 const TEMPLATE = {
     id: "site",
@@ -24,6 +43,10 @@ const PREVIEW =
     ).projects[0] ?? null;
 
 const ROWS = [{ label: "Title", value: "Harbour Notes" }];
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WizardReview", () => {
     it("lists each answer under its label", async () => {

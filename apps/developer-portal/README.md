@@ -25,7 +25,8 @@ Under `pnpm dev developer-portal` it reads the working tree live. The deployed s
 | --- | --- |
 | `app/` | The shell: layouts, Home, the visitor front and method pages, and `app/composables/`, which assemble Home's queue and Health, the rail, the status bar and search from several layers |
 | `app/components/`, `app/types/`, `app/utils/` | The kit: shared parts such as `StatTile`, `PageHero` and `EmptyState`, one type per file, pure helpers |
-| `i18n/locales/en.json` | The visitor pages' copy — see [🔤 Copy](#-copy) |
+| `i18n/locales/en.json` | The interface's copy — see [🔤 Copy](#-copy) |
+| `content/work/` | One markdown file per Work entry — see [🔤 Copy](#-copy) |
 | `layers/` | One Nuxt layer per capability — see [🧱 Layers](#-layers) |
 | `tools/collect/` | The collector that builds the snapshot |
 | `tools/lib/` | Node-only helpers: paths, `git`, the shape checks, the doc-link rewriter |
@@ -60,9 +61,12 @@ cores but never another feature. `eslint.layerBoundaries` in [`eslint.config.ts`
 
 ## 🔤 Copy
 
-The visitor pages read their copy from [`en.json`](./i18n/locales/en.json) through `$t()`, keyed the
+The interface's copy is in [`en.json`](./i18n/locales/en.json) through `$t()`, keyed the
 way [huella-legal's are](../huella-legal/README.md#-copy-keys); `rules` holds the five rules both the
-front page and Method number. The developer view's copy is still written in its templates.
+front page and Method number. `/work` and the front page's Work list read their prose from
+[`content/work/*.md`](./content/work) through the `work` collection in
+[`content.config.ts`](./content.config.ts): the frontmatter holds the facts, the body is the case
+study's story, and `caseStudy: false` marks a tool that links straight to its `live` URL.
 Specs see keys, not copy: [`vitest.setup.ts`](./vitest.setup.ts) empties the messages.
 
 ## 📄 What each page reads

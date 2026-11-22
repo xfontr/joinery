@@ -1,8 +1,18 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { ProjectActivity } from "#layers/workflows/app/utils/workflowActivity.ts";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import WorkflowActivityStrip from "./WorkflowActivityStrip.vue";
+
+const MESSAGES = {
+    workflowActivityStrip: {
+        lastCommit: "Last commit {day}",
+        moved: "{count} capabilities | {count} capability | {count} capabilities",
+        segment: "{stage} · {day} · {moved}",
+        title: "Activity",
+        tooltip: "Capabilities moved per day, from commits tagged with a ticket number",
+    },
+};
 
 const TEMPLATE = {
     id: "site",
@@ -39,6 +49,10 @@ const ACTIVITY = {
     capabilities: {},
     lastDay: "2026-11-06",
 } satisfies ProjectActivity;
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowActivityStrip", () => {
     it("labels each day's segment with its stage, day and count, and skips a stage with none", async () => {

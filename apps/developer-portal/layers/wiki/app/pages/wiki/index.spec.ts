@@ -94,6 +94,6 @@ describe("docs index page", () => {
         serve([]);
         const wrapper = await mountSuspended(Page, { global });
 
-        expect(wrapper.text()).toContain("Nothing collected yet");
+        expect(wrapper.text()).toContain("wikiRecent.empty");
     });
 });

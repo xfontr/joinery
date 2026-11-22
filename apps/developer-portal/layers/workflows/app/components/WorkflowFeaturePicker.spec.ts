@@ -1,7 +1,15 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { Feature } from "#layers/workflows/shared/workflows.ts";
 import WorkflowFeaturePicker from "./WorkflowFeaturePicker.vue";
+
+const MESSAGES = {
+    workflowFeaturePicker: {
+        block: "{title} · {points} SP",
+        needs: "Needs {feature}",
+        points: "{points} SP",
+    },
+};
 
 const feature = (overrides: Partial<Feature>): Feature => ({
     id: "",
@@ -37,6 +45,10 @@ const FEATURES = [
 
 const mount = (editable: boolean) =>
     mountSuspended(WorkflowFeaturePicker, { props: { features: FEATURES, editable } });
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowFeaturePicker", () => {
     it("puts a feature right after the one it sits inside, wherever the list had it", async () => {

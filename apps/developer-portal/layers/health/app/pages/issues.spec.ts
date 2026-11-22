@@ -5,6 +5,62 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Issue, IssuesRead } from "#layers/github/app/utils/issues.ts";
 import Page from "./issues.vue";
 
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
+    },
+    healthIssuesRead: {
+        read: "read {age}",
+        refresh: "Re-read the issues from GitHub",
+    },
+    healthIssuesToolbar: {
+        everyLabel: "Every label",
+        search: "Search issues…",
+    },
+    issues: {
+        empty: "No open issues.",
+        error: {
+            description:
+                "{error} — this page reads GitHub from your browser, unauthenticated, which allows 60 requests an hour per address.",
+            title: "GitHub could not be reached",
+        },
+        file: "File one with {command}.",
+        intro: "Planned and active repository work appears here as issues from GitHub. The issue read is live in your browser; the rest of this portal remains a collected snapshot.",
+        list: {
+            note: "Read live from GitHub by your own browser. Nothing is stored here — the issue is the record, and this is a window onto it.",
+            title: "Open issues",
+        },
+        title: "Work in progress",
+    },
+    listCard: {
+        shown: "{shown} of {total}",
+    },
+    pageHeader: {
+        wordmark: "monorepo",
+    },
+};
+
 const github = vi.hoisted(() => ({ read: null as unknown, reload: vi.fn() }));
 
 mockNuxtImport("useIssues", () => () => ({ data: github.read, reload: github.reload }));
@@ -43,6 +99,10 @@ beforeEach(() => {
             issue(1, "Fix portal", ["bug"], "2026-09-20"),
         ],
     });
+});
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
 });
 
 describe("issues page", () => {

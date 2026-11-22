@@ -1,7 +1,13 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import WorkflowLeaveModal from "./WorkflowLeaveModal.vue";
+
+const MESSAGES = {
+    workflowLeaveModal: {
+        stay: "Stay",
+    },
+};
 
 const press = async (label: string) => {
     [...document.body.querySelectorAll<HTMLButtonElement>("[role=dialog] button")]
@@ -14,6 +20,10 @@ const mount = () =>
     mountSuspended(WorkflowLeaveModal, {
         props: { open: true, title: "Leave?", description: "Unsaved", action: "Leave anyway" },
     });
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowLeaveModal", () => {
     it("leaves only through the button that says so", async () => {

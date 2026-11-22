@@ -1,7 +1,19 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { readTemplate } from "#layers/workflows/shared/workflows.ts";
 import WorkflowPagePicker from "./WorkflowPagePicker.vue";
+
+const MESSAGES = {
+    workflowPagePicker: {
+        add: "{type} · {points} SP",
+        counted: "{block} already counted",
+        includes: "Includes {block}, {points} SP",
+        name: "{type} name",
+        points: "{points} SP",
+        remove: "Remove {page}",
+        rename: "Rename {page}",
+    },
+};
 
 const { template } = readTemplate({
     id: "site",
@@ -26,6 +38,10 @@ const mount = (pages: Page[] = [], errors: (string | null)[] = []) =>
 
 const lastModel = (wrapper: Awaited<ReturnType<typeof mount>>) =>
     wrapper.emitted("update:modelValue")?.at(-1)?.[0] as Page[] | undefined;
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowPagePicker", () => {
     it("offers one button per page type, priced, so a page's cost is known before it is added", async () => {

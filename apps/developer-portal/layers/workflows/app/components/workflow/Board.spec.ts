@@ -1,7 +1,29 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import Board from "./Board.vue";
+
+const MESSAGES = {
+    workflowReplay: {
+        label: "Day to replay",
+        title: "Replay",
+        today: "Today",
+    },
+    workflowSkyline: {
+        label: "{title}, {state}",
+        title: "{title} · {state}",
+    },
+    workflowStageCards: {
+        details: "Details for {title}",
+        progress: "{done} of {total} · {points}",
+        stagePoints: "{done}/{total} SP",
+    },
+    workflows: {
+        capabilityState: {
+            "can-file": "Can file now",
+        },
+    },
+};
 
 const TEMPLATE = {
     id: "site",
@@ -38,6 +60,10 @@ const mount = (days: number) => {
         },
     });
 };
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowBoard", () => {
     it("scrolls to the picked block's card from the label under the skyline", async () => {

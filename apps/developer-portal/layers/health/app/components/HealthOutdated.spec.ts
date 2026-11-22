@@ -1,7 +1,24 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { OutdatedPackage } from "#layers/snapshot/shared/types/OutdatedPackage.ts";
 import HealthOutdated from "./HealthOutdated.vue";
+
+const MESSAGES = {
+    healthOutdated: {
+        columns: {
+            current: "Current",
+            latest: "Latest",
+            package: "Package",
+            projects: "Projects",
+            usedBy: "Used by",
+            wanted: "Wanted",
+        },
+        meta: "pnpm outdated -r · wanted is what the range in package.json already allows",
+        notCollected: "Not collected.",
+        title: "Outdated",
+        upToDate: "Everything is on its wanted version.",
+    },
+};
 
 const OLD = {
     name: "left-pad",
@@ -11,6 +28,10 @@ const OLD = {
     isDeprecated: false,
     dependents: ["packages/ui", "apps/blog"],
 } satisfies OutdatedPackage;
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("HealthOutdated", () => {
     it("lists every project that uses an outdated package", async () => {

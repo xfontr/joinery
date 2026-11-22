@@ -1,9 +1,30 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 import About from "./About.vue";
+
+const MESSAGES = {
+    projectAbout: {
+        facts: {
+            changelog: "Changelog",
+            lines: "Lines covered",
+            recent: "Commits, 2 wk",
+            specs: "Specs",
+            unreleased: "Unreleased",
+            version: "Version",
+        },
+        none: "None",
+        relations: {
+            dependsOn: "Depends on",
+            usedBy: "Used by",
+        },
+        tags: "Tags",
+        title: "About",
+        yes: "yes",
+    },
+};
 
 const UI = {
     name: "@monorepo/ui",
@@ -36,6 +57,10 @@ const fact = (wrapper: VueWrapper, label: string) =>
         .findAll("dl > div")
         .find((row) => row.find("dt").text().startsWith(label))
         ?.find("dd");
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("ProjectAbout", () => {
     it("states the metrics, marking unreleased commits as a gain", async () => {

@@ -1,6 +1,18 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import TelemetryDayStrip from "./TelemetryDayStrip.vue";
+
+const MESSAGES = {
+    telemetryDayStrip: {
+        cell: "{day} · {runs}",
+        cellFailed: "{day} · {runs} · {failures} failed",
+        runs: "{count} runs | {count} run | {count} runs",
+    },
+};
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("TelemetryDayStrip", () => {
     it("names each day's runs and failures on hover, counting a single run as one", async () => {

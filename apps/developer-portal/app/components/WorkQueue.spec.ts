@@ -34,7 +34,7 @@ describe("WorkQueue", () => {
         await wrapper.findComponent({ name: "UTabs" }).setValue("decisions");
 
         expect(wrapper.findAll("li")).toHaveLength(8);
-        expect(wrapper.find('a[href="/decisions"]').text()).toContain("All 10");
+        expect(wrapper.find('a[href="/decisions"]').text()).toContain("workQueue.all");
     });
 
     it("offers no 'All' link for a kind with no page of its own", async () => {
@@ -43,7 +43,7 @@ describe("WorkQueue", () => {
 
         await wrapper.findComponent({ name: "UTabs" }).setValue("attention");
 
-        expect(wrapper.text()).not.toContain("All 10");
+        expect(wrapper.text()).not.toContain("workQueue.all");
     });
 
     it("leaves the issue count blank until GitHub has answered", async () => {
@@ -61,6 +61,6 @@ describe("WorkQueue", () => {
 
         await wrapper.findComponent({ name: "UTabs" }).setValue("issues");
 
-        expect(wrapper.text()).toContain("GitHub could not be read");
+        expect(wrapper.text()).toContain("workQueue.githubError");
     });
 });

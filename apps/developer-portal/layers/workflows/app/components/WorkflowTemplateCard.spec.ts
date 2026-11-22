@@ -1,7 +1,15 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import WorkflowTemplateCard from "./WorkflowTemplateCard.vue";
+
+const MESSAGES = {
+    workflowTemplateCard: {
+        estimate:
+            "{blocks} blocks by default · {points} SP · {block} tickets one per block, {fast} fast",
+        optional: "Optional: each project switches it on or off.",
+    },
+};
 
 const TEMPLATE = {
     id: "site",
@@ -27,6 +35,10 @@ const mount = () => {
     if (!SITE) throw new Error("the fixture template did not assemble");
     return mountSuspended(WorkflowTemplateCard, { props: { template: SITE } });
 };
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowTemplateCard", () => {
     it("lists each stage's blocks under it, in order", async () => {

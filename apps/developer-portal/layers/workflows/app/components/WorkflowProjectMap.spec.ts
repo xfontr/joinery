@@ -1,7 +1,18 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { assembleWorkflows, projectMap } from "#layers/workflows/shared/workflows.ts";
 import WorkflowProjectMap from "./WorkflowProjectMap.vue";
+
+const MESSAGES = {
+    workflowProjectMap: {
+        legend: {
+            done: "done",
+            moving: "moving now",
+            waiting: "waiting on another block",
+        },
+        owner: "the owner's call",
+    },
+};
 
 const TEMPLATE = {
     id: "site",
@@ -33,6 +44,10 @@ const mount = () => {
     if (!VIEW) throw new Error("the fixture project did not assemble");
     return mountSuspended(WorkflowProjectMap, { props: { map: projectMap(VIEW), label: "Blog" } });
 };
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowProjectMap", () => {
     it("lists the switched-on blocks under their stage, leaving out a feature switched off", async () => {

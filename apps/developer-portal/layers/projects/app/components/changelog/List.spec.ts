@@ -1,7 +1,14 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import List from "./List.vue";
+
+const MESSAGES = {
+    changelogList: {
+        unreleased: "+{count} unreleased",
+        version: "v{version}",
+    },
+};
 
 const UI = {
     name: "@monorepo/ui",
@@ -16,6 +23,10 @@ const UI = {
 } satisfies ProjectMetrics;
 
 const CHANGELOGS = [{ path: "/packages/ui/changelog" }, { path: "/packages/content/changelog" }];
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("ChangelogList", () => {
     it("names each changelog by project with its version and unreleased commits", async () => {

@@ -1,6 +1,7 @@
 import type { AppEntry } from "~/types/AppEntry";
 import type { AppGroup } from "~/types/AppGroup";
 import type { MenuRow } from "~/types/MenuRow";
+import { menuLabel } from "~/utils/menuLabel";
 import { matchPages, searchGroups } from "~/utils/search";
 
 /** ⌘K search over the pages, the projects and the docs; the docs load on first open. */
@@ -33,8 +34,8 @@ export const useShellSearch = (
         postFilter: matchPages,
         items: (projects?.value ?? []).flatMap((kind) =>
             (kind.children ?? []).map((row) => ({
-                label: row.label,
-                suffix: kind.label,
+                label: menuLabel(row, t),
+                suffix: menuLabel(kind, t),
                 to: row.to,
                 icon: "i-lucide-box",
             })),

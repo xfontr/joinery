@@ -1,5 +1,5 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { StatusItem } from "~/types/StatusItem";
 import StatusBar from "./StatusBar.vue";
 
@@ -13,6 +13,12 @@ const item = (id: string, tone: StatusItem["tone"]): StatusItem => ({
 });
 
 describe("StatusBar", () => {
+    beforeEach(() => {
+        useNuxtApp().$i18n.mergeLocaleMessage("en", {
+            statusBar: { collected: "{'@'}{commit} collected {age}" },
+        });
+    });
+
     it("names the collected branch and its short commit", async () => {
         const wrapper = await mountSuspended(StatusBar, {
             props: {
@@ -29,7 +35,7 @@ describe("StatusBar", () => {
     it("says the portal was never collected instead of naming a branch", async () => {
         const wrapper = await mountSuspended(StatusBar, { props: { collected: null, items: [] } });
 
-        expect(wrapper.text()).toContain("never collected");
+        expect(wrapper.text()).toContain("statusBar.neverCollected");
     });
 
     it("keeps a warning in view on a narrow screen and folds a quiet item away", async () => {

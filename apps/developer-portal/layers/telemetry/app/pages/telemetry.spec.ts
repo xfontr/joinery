@@ -8,6 +8,68 @@ import PageFacts from "~/components/PageFacts.vue";
 import type { PageFact } from "~/types/PageFact";
 import Page from "./telemetry.vue";
 
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
+    },
+    common: {
+        never: "never",
+    },
+    pageHeader: {
+        wordmark: "monorepo",
+    },
+    telemetry: {
+        empty: {
+            body: "Scripts record each run into {git}, and the next commit carries the rows into {folder}. Commit, then run {command}.",
+            title: "No runs committed yet",
+        },
+        facts: {
+            agent: "By agents",
+            failed: "Failed",
+            neverRun: "Never run",
+            runs: "Runs",
+            scripts: "Scripts",
+        },
+        provenance: "Usage log · last {days} days · collected {age}",
+        title: "Tooling usage",
+    },
+    telemetryDaily: {
+        endLabel: "last day",
+        reading: "{average} {unit} a day on average; the busiest day was {day}, with {peak}.",
+        series: {
+            runs: {
+                title: "Runs per day",
+                unit: "runs",
+            },
+        },
+        views: {
+            chart: "Chart",
+            table: "Table",
+        },
+    },
+};
+
 const artifacts = vi.hoisted(() => ({ usage: null as UsageArtifact | null }));
 mockNuxtImport("usageArtifact", () => () => artifacts.usage);
 
@@ -65,6 +127,10 @@ const facts = (wrapper: VueWrapper) =>
 
 const peak = (wrapper: VueWrapper) =>
     Math.max(...(wrapper.findComponent(DailyChart).props("values") as number[]));
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("telemetry page", () => {
     it("says nothing has been folded yet instead of showing an empty matrix as a result", async () => {

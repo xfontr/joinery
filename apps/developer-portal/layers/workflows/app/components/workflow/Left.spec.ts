@@ -1,8 +1,23 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import Left from "./Left.vue";
+
+const MESSAGES = {
+    workflowLeft: {
+        blocks: "{state} blocks",
+        done: "Everything switched on is done.",
+        none: "No blocks yet.",
+        unblocks: "unblocks {count}",
+    },
+    workflows: {
+        capabilityState: {
+            "can-file": "Can file now",
+            waits: "Waits on a decision",
+        },
+    },
+};
 
 const TEMPLATE = {
     id: "site",
@@ -27,6 +42,10 @@ const LEFT =
         ],
         {},
     ).projects[0]?.left ?? [];
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowLeft", () => {
     it("groups the blocks left by state, each with its count", async () => {

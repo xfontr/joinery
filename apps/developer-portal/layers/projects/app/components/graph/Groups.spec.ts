@@ -1,8 +1,24 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 import Groups from "./Groups.vue";
+
+const MESSAGES = {
+    graphGroups: {
+        groups: {
+            apps: "Applications",
+            packages: "Shared building blocks",
+            tooling: "Repository tooling",
+        },
+        lead: "The repository groups applications, shared building blocks, and the tooling that supports them.",
+        noRelations: "No project relationships recorded.",
+        none: "No projects in this group.",
+        title: "How the pieces fit",
+        usedBy: "Used by: {list}",
+        uses: "Uses: {list}",
+    },
+};
 
 const node = (root: string, links: Partial<ProjectNode> = {}): ProjectNode => ({
     name: root,
@@ -22,6 +38,10 @@ const groups = (wrapper: VueWrapper) => {
         ]),
     );
 };
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("GraphGroups", () => {
     it("files each project under apps, packages or tooling by where it lives", async () => {

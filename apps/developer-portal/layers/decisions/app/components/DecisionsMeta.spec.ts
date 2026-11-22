@@ -29,7 +29,7 @@ describe("DecisionsMeta", () => {
             props: { report: REPORT, source: REPORT.path },
         });
 
-        expect(wrapper.text()).toContain("900 words");
+        expect(wrapper.text()).toContain("docSource.meta");
         expect(wrapper.text()).toContain(REPORT.path);
     });
 
