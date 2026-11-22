@@ -6,6 +6,8 @@ export interface Work {
     title: string;
     mark: string;
     kind: string;
+    /** Where the work stands, as the front page lists it. */
+    stage: string;
     line: string;
     why: string;
     story: readonly string[];

@@ -1,12 +1,5 @@
 <template>
-    <section class="mx-auto flex max-w-6xl flex-col gap-6 px-4 pt-10 pb-12 md:px-10 md:pt-20">
-        <h1 class="font-display text-section text-highlighted md:text-title lg:text-statement">
-            Case <mark>studies</mark>
-        </h1>
-        <p class="max-w-2xl text-2xl text-highlighted">
-            Who each site is for, what changed, and the decisions behind it.
-        </p>
-    </section>
+    <PageHero :title="$t('work.title')" :mark="$t('work.titleMark')" :lead="$t('work.lead')" />
 
     <section class="mx-auto flex max-w-6xl flex-col px-4 md:px-10">
         <ULink
@@ -16,7 +9,7 @@
             class="group grid gap-6 border-t border-accented py-10 md:grid-cols-12 md:gap-10"
         >
             <img
-                :src="SCREENSHOTS[`../../assets/work/${item.screenshot.file}`]"
+                :src="workScreenshot(item)"
                 :alt="item.screenshot.alt"
                 width="1440"
                 height="900"
@@ -30,7 +23,7 @@
                 <p class="text-lg">{{ item.line }}</p>
                 <p class="font-mono text-sm text-muted">{{ item.facts.join(" · ") }}</p>
                 <span class="mt-2 text-primary underline underline-offset-4">
-                    Read the case study →
+                    {{ $t("work.cta") }} →
                 </span>
             </div>
         </ULink>
@@ -41,10 +34,8 @@
 import { WORK } from "#layers/projects/shared/work.ts";
 
 definePageMeta({ layout: "visitor" });
-useHead({ title: "Work" });
 
-const SCREENSHOTS = import.meta.glob<string>("../../assets/work/*.jpg", {
-    eager: true,
-    import: "default",
-});
+const { t } = useI18n();
+
+useHead({ title: t("work.head") });
 </script>

@@ -10,7 +10,7 @@ import type { ProjectCoverage } from "#layers/snapshot/shared/types/ProjectCover
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 import type { SnapshotResponse } from "#layers/snapshot/shared/types/SnapshotResponse.ts";
-import type { ProjectTabRow } from "~/utils/apps";
+import type { ProjectTabRow } from "~/types/ProjectTabRow";
 import Page from "./[name].vue";
 
 // An in-memory docs collection, answering the README query the page sends

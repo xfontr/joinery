@@ -7,6 +7,7 @@ export const WORK: readonly Work[] = [
         title: "Huella",
         mark: "Legal",
         kind: "Law magazine",
+        stage: "Redesign on staging",
         line: "A free law magazine, written by students, teachers and lawyers since 2020.",
         why: "The magazine publishes legal analysis for anyone curious, students first. The redesign makes a long case comment as easy to read on a phone as on paper.",
         story: [
@@ -49,6 +50,7 @@ export const WORK: readonly Work[] = [
         title: "Marina",
         mark: "Roustan",
         kind: "Psychology practice",
+        stage: "In design",
         line: "A clinical psychologist's practice in Barcelona.",
         why: "People looking for a therapist are often having a hard week. The new site is calm and clear, and getting in touch takes one form.",
         story: [
