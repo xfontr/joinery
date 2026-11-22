@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { workScreenshot } from "./workScreenshot.ts";
+import { workScreenshot, workShareImage } from "./workScreenshot.ts";
 
 const WORK_DIR = resolve(import.meta.dirname, "../../../../content/work");
 
@@ -24,5 +24,11 @@ describe("workScreenshot", () => {
     it("answers nothing for an entry with no screenshot or an unknown file", () => {
         expect(workScreenshot({})).toBeUndefined();
         expect(workScreenshot(screenshotOf("nope.jpg"))).toBeUndefined();
+    });
+});
+
+describe("workShareImage", () => {
+    it.each(named)("finds the share image %s names, so its card never goes blank", (_, file) => {
+        expect(workShareImage(screenshotOf(file))).toBeTypeOf("string");
     });
 });

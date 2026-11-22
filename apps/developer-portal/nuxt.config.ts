@@ -6,8 +6,7 @@ await import("vue-router/unplugin");
 
 const WORKSPACE_ROOT = resolve(import.meta.dirname, "../..");
 
-// The origin only: `@nuxtjs/sitemap` and `nuxt-seo-utils` append `app.baseURL` themselves.
-const SITE_URL = "https://xfontr.github.io";
+const SITE_URL = "https://xfontr-monorepo.pages.dev";
 
 export default defineNuxtConfig({
     compatibilityDate: "2025-01-15",
@@ -68,8 +67,6 @@ export default defineNuxtConfig({
 
     robots: {
         header: false,
-        // A robots.txt only counts at an origin's root, and the module refuses one under a base path.
-        robotsTxt: (process.env.NUXT_APP_BASE_URL ?? "/") === "/",
     },
 
     schemaOrg: {
@@ -87,7 +84,7 @@ export default defineNuxtConfig({
 
     nitro: {
         prerender: {
-            ignore: [`${process.env.NUXT_APP_BASE_URL ?? "/"}huella-legal-storybook/`],
+            ignore: ["/huella-legal-storybook/"],
         },
 
         watchOptions: {
