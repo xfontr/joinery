@@ -6,6 +6,7 @@ import type { LintRuleUsage } from "#layers/snapshot/shared/types/LintRuleUsage.
 import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
+import { ruleCounts } from "#layers/telemetry/shared/lintUsage.ts";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import Page from "./method.vue";
@@ -13,16 +14,13 @@ import Page from "./method.vue";
 const artifacts = vi.hoisted(() => ({
     docs: null as DocsArtifact | null,
     metrics: null as MetricsArtifact | null,
-    usage: null as UsageArtifact | null,
 }));
 mockNuxtImport("docsArtifact", () => () => artifacts.docs);
 mockNuxtImport("metricsArtifact", () => () => artifacts.metrics);
-mockNuxtImport("usageArtifact", () => () => artifacts.usage);
 
 beforeEach(() => {
     artifacts.docs = null;
     artifacts.metrics = null;
-    artifacts.usage = null;
 });
 
 const WORK = [
@@ -149,8 +147,8 @@ const open = async (snapshot: { metrics?: MetricsArtifact; usage?: UsageArtifact
             {},
         ),
     );
+    serveEndpoint("/api/telemetry/rules", () => ruleCounts(snapshot.usage?.lint));
     artifacts.metrics = snapshot.metrics ?? null;
-    artifacts.usage = snapshot.usage ?? null;
     const wrapper = await mountSuspended(Page);
     await flushPromises();
     return wrapper;

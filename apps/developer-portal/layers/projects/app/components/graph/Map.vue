@@ -73,6 +73,11 @@
 
 <script setup lang="ts">
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
+import {
+    architectureMap,
+    MAP_NODE_HEIGHT,
+    MAP_NODE_WIDTH,
+} from "#layers/projects/app/utils/architectureMap.ts";
 
 interface Props {
     projects: ProjectNode[];
@@ -81,7 +86,7 @@ interface Props {
 const { projects } = defineProps<Props>();
 
 const uid = useId();
-const map = computed(() => projectMap(projects));
+const map = computed(() => architectureMap(projects));
 const nodes = computed(() =>
     map.value.nodes.map(({ project, x, y }) => ({
         name: project.name,

@@ -33,7 +33,7 @@
         <CursorPreview v-slot="{ subject }" :subject="hovered">
             <BenchmarksPreview v-if="subject === 'look'" :benchmarks />
             <DecisionsPreview v-else-if="subject === 'decide' && example" :report="example" />
-            <WorkflowPreview v-else-if="subject === 'plan' && plan" :view="plan" />
+            <WorkflowPreview v-else-if="subject === 'plan' && plan" :map="plan" />
             <PipelinePreview v-else-if="subject === 'agents'" />
             <ChecksPreview v-else-if="subject === 'prove'" :specs :rules />
         </CursorPreview>
@@ -62,7 +62,6 @@
 
 <script setup lang="ts">
 import { specTotal } from "#layers/snapshot/app/utils/metrics.ts";
-import { ruleCounts } from "#layers/telemetry/shared/lintUsage.ts";
 import type { RuleId } from "~/types/RuleId";
 
 definePageMeta({ layout: "visitor" });
@@ -86,18 +85,17 @@ const DEEPER = [
 ] as const;
 
 const { t } = useI18n();
-useHead({ title: t("index.head") });
+useSeoMeta({ title: t("index.head"), description: t("index.lead") });
 
-const [{ data: benchmarks }, { data: workflows }] = await Promise.all([
+const [{ data: benchmarks }, { data: plan }, { data: rules }] = await Promise.all([
     useBenchmarks(),
-    useWorkflows(),
+    useWorkflowGlyph(PLAN),
+    useRuleCounts(),
 ]);
-const rules = ruleCounts(usageArtifact()?.lint);
 const specs = specTotal(metricsArtifact()?.projects);
 const decisions = useDecisionReports();
 
 const example = computed(() => decisions.value.find((report) => report.id === DECISION));
-const plan = computed(() => workflows.value.projects.find((view) => view.project.id === PLAN));
 
 const hovered = ref<RuleId | null>(null);
 const hover = (id: RuleId, event: PointerEvent) => {
@@ -109,7 +107,7 @@ const counted = computed((): Partial<Record<RuleId, string>> => {
         ...(benchmarks.value.length && {
             look: t("index.rules.look.proofCount", { count: benchmarks.value.length }),
         }),
-        ...(rules && { prove: t("index.rules.prove.proofCount", rules) }),
+        ...(rules.value && { prove: t("index.rules.prove.proofCount", rules.value) }),
     };
 });
 

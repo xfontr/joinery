@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-22T21:15:18.930Z",
+    "syncedAt": "2026-11-22T22:44:01.572Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -121,21 +121,16 @@
                 "developer-view"
             ],
             "createdAt": "2026-11-18T18:44:00Z",
-            "closedAt": "2026-11-19T09:19:27Z",
+            "closedAt": "2026-11-19T09:17:38.804Z",
             "activity": [
-                "2026-11-19",
-                "2026-11-19",
-                "2026-11-19",
-                "2026-11-19",
-                "2026-11-19",
                 "2026-11-19",
                 "2026-11-19",
                 "2026-11-19",
                 "2026-11-19"
             ],
             "blockedBy": [],
-            "branch": false,
-            "pr": true,
+            "branch": true,
+            "pr": false,
             "owner": false,
             "complexity": 13
         },
@@ -149,9 +144,8 @@
                 "front-page"
             ],
             "createdAt": "2026-11-18T18:57:42Z",
-            "closedAt": "2026-11-19T15:44:44Z",
+            "closedAt": "2026-11-19T15:40:43.070Z",
             "activity": [
-                "2026-11-19",
                 "2026-11-19",
                 "2026-11-19"
             ],
@@ -159,11 +153,11 @@
                 {
                     "number": 484,
                     "open": false,
-                    "closedAt": "2026-11-19T09:19:27Z"
+                    "closedAt": "2026-11-19T09:17:38.804Z"
                 }
             ],
-            "branch": false,
-            "pr": true,
+            "branch": true,
+            "pr": false,
             "owner": false,
             "complexity": 8
         },
@@ -177,14 +171,11 @@
                 "visitor-pages"
             ],
             "createdAt": "2026-11-18T18:57:54Z",
-            "closedAt": "2026-11-19T15:01:03Z",
-            "activity": [
-                "2026-11-19",
-                "2026-11-19"
-            ],
+            "closedAt": "2026-11-19T14:57:40.685Z",
+            "activity": [],
             "blockedBy": [],
-            "branch": false,
-            "pr": true,
+            "branch": true,
+            "pr": false,
             "owner": false,
             "complexity": 8
         },
@@ -200,7 +191,6 @@
             "createdAt": "2026-11-18T18:58:03Z",
             "closedAt": "2026-11-19T09:21:42Z",
             "activity": [
-                "2026-11-19",
                 "2026-11-19",
                 "2026-11-19"
             ],
@@ -221,11 +211,7 @@
             ],
             "createdAt": "2026-11-18T18:58:14Z",
             "closedAt": "2026-11-19T09:12:24Z",
-            "activity": [
-                "2026-11-19",
-                "2026-11-19",
-                "2026-11-19"
-            ],
+            "activity": [],
             "blockedBy": [],
             "branch": false,
             "pr": true,
@@ -248,12 +234,12 @@
                 {
                     "number": 485,
                     "open": false,
-                    "closedAt": "2026-11-19T15:44:44Z"
+                    "closedAt": "2026-11-19T15:40:43.070Z"
                 },
                 {
                     "number": 486,
                     "open": false,
-                    "closedAt": "2026-11-19T15:01:03Z"
+                    "closedAt": "2026-11-19T14:57:40.685Z"
                 },
                 {
                     "number": 487,
@@ -286,8 +272,6 @@
                 "2026-11-22",
                 "2026-11-22",
                 "2026-11-22",
-                "2026-11-22",
-                "2026-11-22",
                 "2026-11-22"
             ],
             "blockedBy": [
@@ -298,8 +282,8 @@
                 },
                 {
                     "number": 504,
-                    "open": true,
-                    "closedAt": null
+                    "open": false,
+                    "closedAt": "2026-11-22T22:44:01.572Z"
                 }
             ],
             "branch": false,
@@ -317,18 +301,51 @@
                 "build-review"
             ],
             "createdAt": "2026-11-19T09:21:04Z",
-            "closedAt": "2026-11-22T13:19:11Z",
-            "activity": [],
+            "closedAt": "2026-11-22T13:06:53.742Z",
+            "activity": [
+                "2026-11-20",
+                "2026-11-20",
+                "2026-11-20",
+                "2026-11-20",
+                "2026-11-20",
+                "2026-11-20",
+                "2026-11-20",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22"
+            ],
             "blockedBy": [
                 {
                     "number": 485,
                     "open": false,
-                    "closedAt": "2026-11-19T15:44:44Z"
+                    "closedAt": "2026-11-19T15:40:43.070Z"
                 },
                 {
                     "number": 486,
                     "open": false,
-                    "closedAt": "2026-11-19T15:01:03Z"
+                    "closedAt": "2026-11-19T14:57:40.685Z"
                 },
                 {
                     "number": 487,
@@ -337,7 +354,7 @@
                 }
             ],
             "branch": false,
-            "pr": true,
+            "pr": false,
             "owner": false,
             "complexity": 3
         },
@@ -345,14 +362,24 @@
             "number": 504,
             "title": "Visitor area ready for production",
             "url": "https://github.com/xfontr/monorepo/issues/504",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "production-readiness"
             ],
             "createdAt": "2026-11-22T16:52:15Z",
-            "closedAt": null,
-            "activity": [],
+            "closedAt": "2026-11-22T22:44:01.572Z",
+            "activity": [
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22",
+                "2026-11-22"
+            ],
             "blockedBy": [],
             "branch": false,
             "pr": false,
@@ -369,11 +396,13 @@
                 "error-pages"
             ],
             "createdAt": "2026-11-22T18:54:54Z",
-            "closedAt": "2026-11-22T19:22:45Z",
-            "activity": [],
+            "closedAt": "2026-11-22T19:19:15.243Z",
+            "activity": [
+                "2026-11-22"
+            ],
             "blockedBy": [],
-            "branch": false,
-            "pr": true,
+            "branch": true,
+            "pr": false,
             "owner": false,
             "complexity": 2
         }

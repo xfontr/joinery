@@ -14,6 +14,7 @@ Under `pnpm dev developer-portal` it reads the working tree live. The deployed s
 | `pnpm exec nx collect @monorepo/developer-portal` | Rebuild the snapshot in `.report/`: graph, coverage, metrics, docs, usage |
 | `pnpm exec nx build-static @monorepo/developer-portal` | `nuxt build --prerender`, the build that deploys |
 | `pnpm exec nx nuxt-prepare @monorepo/developer-portal` | Regenerate `.nuxt` by hand; Nx already runs it before lint, typecheck, test and build |
+| `pnpm exec nx test:e2e @monorepo/developer-portal` | Playwright over the built visitor pages: axe in light and dark, keyboard, motion, SEO tags, sitemap |
 
 - Coverage is only as fresh as the last root `pnpm test:coverage`.
 - `build` delegates to `build-static`, so CI builds what deploys.
@@ -118,12 +119,29 @@ the same output under `/huella-legal-storybook/`.
 
 - Every page is as old as the last deploy, except issues (live) and workflows (as
   old as the last committed `pnpm workflow:sync`).
-- `NUXT_APP_BASE_URL` is baked in at build time; the workflow sets `/`.
+- The site is served from the root of `SITE_URL` in [`nuxt.config.ts`](./nuxt.config.ts), which
+  canonical, sitemap and share-image URLs are built on.
+- `NUXT_PUBLIC_REPO_URL` is baked in at build time, derived by the workflow.
 - Cloudflare Pages rejects any file over 25 MiB, which is why the Architecture map is drawn from
   `projects.json` rather than Nx's exported graph viewer.
 - The project overrides its `production` Nx input in [`package.json`](./package.json) so any `*.md`
   or `data/workflows/` change makes it affected, and a `runtime` input over
   [`snapshotStamp.ts`](./tools/lib/snapshotStamp.ts) hashes the gitignored `.report/`.
+
+## Search and speed
+
+| Concern | Where |
+| --- | --- |
+| Title, description, canonical, OG | `useSeoMeta` on each visitor page; `nuxt-seo-utils` signs the title with the site name |
+| Indexing | Visitor pages only; each developer layer's `nuxt.config.ts` sets `noindex, follow` on its routes |
+| Sitemap, robots.txt | `@nuxtjs/sitemap` and `@nuxtjs/robots`; robots.txt points crawlers at the sitemap |
+| Share image | `public/og-image.png` (1200×630) by default; a case study uses its own screenshot, cropped to that size |
+| Structured data | A `Person` identity in `schemaOrg`, from `nuxt-schema-org` |
+| Payload | Visitor pages read the cuts in [`useWorkflowMaps.ts`](./layers/workflows/app/composables/useWorkflowMaps.ts) and `useRuleCounts()`, never the whole workflows set or `usageArtifact()` |
+| Stylesheets | Each layout imports its own: `main.css` for the developer view, [`visitor.css`](./layers/design/app/assets/visitor.css) for the visitor pages, which leaves developer-only sources and Nuxt UI themes out of the scan. A component a visitor page starts rendering from an excluded folder needs that folder let back in |
+| First paint | Styles inlined; no script preload or chunk prefetch; links prefetch on interaction |
+| Hydration | Deferred to `load` or the first input by [`deferHydration.ts`](./server/plugins/deferHydration.ts), copied from huella-legal; a click made before then is replayed |
+| Images | Work screenshots go through `vite-imagetools` as WebP at 480, 960 and 1440 px |
 
 ## Checks it surfaces
 

@@ -21,7 +21,7 @@ const smoothPath = (points: { x: number; y: number }[]): string => {
 };
 
 /** Dependents above what they depend on, one arrow per `dependsOn` edge between listed projects. */
-export const projectMap = (projects: ProjectNode[]) => {
+export const architectureMap = (projects: ProjectNode[]) => {
     const graph = new Graph<object, NodeLabel, EdgeLabel>();
     graph.setGraph({
         rankdir: "TB",

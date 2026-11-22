@@ -63,6 +63,14 @@ button:not(:disabled) {
 .tone-warn { color: var(--tone-warn); }
 .tone-bad { color: var(--tone-bad); }
 
+@layer base {
+    /* Any utility outranks this layer, so a component only spells out how its ring differs */
+    :focus-visible {
+        outline: 2px solid var(--ui-primary);
+        outline-offset: 2px;
+    }
+}
+
 /* The V8 coverage report and the Nx graph client are iframed in as-is and only render on white. */
 .embedded-report {
     @apply w-full bg-white;

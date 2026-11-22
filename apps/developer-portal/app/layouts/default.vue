@@ -1,5 +1,11 @@
 <template>
     <UDashboardGroup unit="rem">
+        <a
+            href="#content"
+            class="sr-only z-50 bg-primary text-sm font-semibold text-inverted focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:px-4 focus:py-3"
+            >{{ $t("app.skipLink") }}</a
+        >
+
         <UDashboardSidebar
             id="dashboard"
             resizable
@@ -116,13 +122,17 @@
 
         <!-- The status bar spans this column, so it starts where the rail ends at any width -->
         <div class="relative flex min-w-0 flex-1 flex-col">
-            <slot />
+            <main id="content" tabindex="-1" class="flex min-h-0 flex-1 flex-col outline-none">
+                <slot />
+            </main>
             <StatusBar :collected :items="statusItems" />
         </div>
     </UDashboardGroup>
 </template>
 
 <script setup lang="ts">
+import "#layers/design/app/assets/main.css";
+
 const route = useRoute();
 const {
     public: { repoUrl },

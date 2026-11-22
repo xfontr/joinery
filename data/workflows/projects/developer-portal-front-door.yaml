@@ -180,3 +180,24 @@ extras:
       - Each shipped app has its page with a current screenshot, its line and its live link.
       - Screenshots and lines live as data, not inside a component.
       - Its words are written in place as the page is built; the owner reviews them on the page.
+
+  - id: production-readiness
+    stage: build
+    title: Visitor area ready for production
+    complexity: 13
+    dependsOn: [front-page, visitor-pages, visitor-workflows, project-showcase]
+    summary: The visitor pages and their layout brought up to huella-legal's accessibility, SEO and
+      performance standard before the portal goes public on its own domain — skip link, focus ring,
+      reduced motion, per-page meta, robots, sitemap, JSON-LD, lean payloads and fonts, and a
+      Playwright suite with axe scans. The developer view is only kept out of search.
+    reuse: { plan: method, from: apps/huella-legal }
+    doneWhen:
+      - Every visitor page and the 404 page pass an axe WCAG AA scan in e2e.
+      - "The skip link is the first Tab stop and moves focus to `main`; every focusable element
+        shows a ring; no view transition animates under `prefers-reduced-motion: reduce`."
+      - Every visitor page has its own title, description, canonical and OG tags, and the site has a
+        `Person` JSON-LD, a robots.txt and a sitemap listing only visitor URLs.
+      - Every developer page is `noindex, follow`.
+      - Mobile Lighthouse for `/`, `/work` and `/about` is measured before and after, and no
+        visitor page preloads a payload over 50 KB.
+
