@@ -49,19 +49,14 @@ jobs:
             - name: Build Huella Legal Storybook
               run: pnpm --filter @monorepo/huella-legal run build:storybook --output-dir ../developer-portal/public/huella-legal-storybook
               env:
-                  STORYBOOK_BASE_URL: ${{ steps.pages.outputs.base_path }}/huella-legal-storybook/
+                  STORYBOOK_BASE_URL: /huella-legal-storybook/
 
             # An Nx cache restore would never hit: the step above re-stamps the snapshot, which this
             # project's `production` input hashes, so every run is a new task hash by construction.
             - name: Prerender the site
               run: pnpm exec nx build-static @monorepo/developer-portal
               env:
-                  # `base_path` is "/<repo>" on a project page and "" on a user one, and the
-                  # trailing slash is what keeps the second case a valid URL.
-                  NUXT_APP_BASE_URL: ${{ steps.pages.outputs.base_path }}/
                   NUXT_PUBLIC_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
-                  # Every page asks not to be indexed until the portal moves to its own domain.
-                  NUXT_SITE_ENV: preview
 
             - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
               with:

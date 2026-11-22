@@ -55,6 +55,8 @@
 </template>
 
 <script setup lang="ts">
+import "#layers/design/app/assets/visitor.css";
+
 const NAV = [
     { to: "/method", key: "method" },
     { to: "/agentic-workflows", key: "workflows" },

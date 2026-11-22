@@ -117,9 +117,9 @@ Storybook is built into the same artifact under `/huella-legal-storybook/`.
 
 - Every page is as old as the last deploy, except issues (live) and workflows (as
   old as the last committed `pnpm workflow:sync`).
-- `NUXT_APP_BASE_URL` and `NUXT_PUBLIC_REPO_URL` are baked in at build time, derived by the workflow.
-- The deploy sets `NUXT_SITE_ENV=preview`, so every page asks not to be indexed. When the portal
-  moves to its own domain, drop that line and swap `SITE_URL` in [`nuxt.config.ts`](./nuxt.config.ts).
+- The site is served from the root of `SITE_URL` in [`nuxt.config.ts`](./nuxt.config.ts), which
+  canonical, sitemap and share-image URLs are built on.
+- `NUXT_PUBLIC_REPO_URL` is baked in at build time, derived by the workflow.
 - The project overrides its `production` Nx input in [`package.json`](./package.json) so any `*.md`
   or `data/workflows/` change makes it affected, and a `runtime` input over
   [`snapshotStamp.ts`](./tools/lib/snapshotStamp.ts) hashes the gitignored `.report/`.
@@ -130,10 +130,13 @@ Storybook is built into the same artifact under `/huella-legal-storybook/`.
 | --- | --- |
 | Title, description, canonical, OG | `useSeoMeta` on each visitor page; `nuxt-seo-utils` signs the title with the site name |
 | Indexing | Visitor pages only; each developer layer's `nuxt.config.ts` sets `noindex, follow` on its routes |
-| Sitemap, robots.txt | `@nuxtjs/sitemap` and `@nuxtjs/robots`; robots.txt is skipped under a base path |
+| Sitemap, robots.txt | `@nuxtjs/sitemap` and `@nuxtjs/robots`; robots.txt points crawlers at the sitemap |
+| Share image | `public/og-image.png` (1200×630) by default; a case study uses its own screenshot, cropped to that size |
 | Structured data | A `Person` identity in `schemaOrg`, from `nuxt-schema-org` |
-| Payload | Visitor pages read `useWorkflowMaps()` and `useRuleCounts()`, never the whole workflows set or `usageArtifact()` |
+| Payload | Visitor pages read the cuts in [`useWorkflowMaps.ts`](./layers/workflows/app/composables/useWorkflowMaps.ts) and `useRuleCounts()`, never the whole workflows set or `usageArtifact()` |
+| Stylesheets | Each layout imports its own: `main.css` for the developer view, [`visitor.css`](./layers/design/app/assets/visitor.css) for the visitor pages, which leaves developer-only sources and Nuxt UI themes out of the scan. A component a visitor page starts rendering from an excluded folder needs that folder let back in |
 | First paint | Styles inlined; no script preload or chunk prefetch; links prefetch on interaction |
+| Hydration | Deferred to `load` or the first input by [`deferHydration.ts`](./server/plugins/deferHydration.ts), copied from huella-legal; a click made before then is replayed |
 | Images | Work screenshots go through `vite-imagetools` as WebP at 480, 960 and 1440 px |
 
 ## Checks it surfaces

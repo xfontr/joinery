@@ -23,9 +23,22 @@ test.describe("@any-width", () => {
 
             const canonical = /<link[^>]*rel="canonical"[^>]*href="([^"]*)"/.exec(html)?.[1];
             expect(new URL(canonical ?? "").pathname).toBe(path);
+            expect(meta("name", "twitter:card")).toBe("summary_large_image");
+
+            // A share card whose image 404s renders as a bare link, so the file must be served
+            const image = new URL(meta("property", "og:image") ?? "");
+            expect(image.origin).toBe(new URL(canonical ?? "").origin);
+            expect((await request.get(image.pathname)).ok()).toBe(true);
             expect(meta("property", "og:url")).toBe(canonical);
         });
     }
+
+    test("a case study shares its own screenshot, not the default card", async ({ request }) => {
+        const html = await (await request.get("/work/huella-legal/")).text();
+        const image = /<meta[^>]*property="og:image"[^>]*content="([^"]*)"/.exec(html)?.[1];
+
+        expect(new URL(image ?? "").pathname).toMatch(/^\/_nuxt\/huella-legal\.[\w-]+\.jpg$/);
+    });
 
     test("no two visitor pages share a description", async ({ request }) => {
         const descriptions = await Promise.all(

@@ -11,7 +11,7 @@ const options = {
     directoryListing: false,
 };
 
-// Answers as GitHub Pages does: `/about` redirects to `/about/`, and a miss gets `404.html`
+// Answers as Cloudflare Pages does: `/about` redirects to `/about/`, and a miss gets `404.html`
 createServer((request, response) => {
     void handler(request, response, options);
 }).listen(Number(process.env.PORT));

@@ -70,5 +70,7 @@ if (!work.value) setResponseStatus(404);
 useSeoMeta({
     title: () => work.value?.name ?? t("workApp.missing.title"),
     description: () => work.value?.line,
+    ogImage: () => work.value && workShareImage(work.value),
+    ogImageAlt: () => work.value?.screenshot.alt,
 });
 </script>

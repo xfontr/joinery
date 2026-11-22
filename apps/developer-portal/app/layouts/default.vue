@@ -131,6 +131,8 @@
 </template>
 
 <script setup lang="ts">
+import "#layers/design/app/assets/main.css";
+
 const route = useRoute();
 const {
     public: { repoUrl },
