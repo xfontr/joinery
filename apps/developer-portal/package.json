@@ -80,6 +80,7 @@
     "typescript": "catalog:",
     "vite-imagetools": "^12.0.2",
     "vitest": "catalog:",
-    "vue-tsc": "catalog:"
+    "vue-tsc": "catalog:",
+    "wrangler": "^4.166.0"
   }
 }
