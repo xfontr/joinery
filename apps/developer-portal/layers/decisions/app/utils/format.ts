@@ -1,5 +1,5 @@
 import type { DecisionOutcome, DecisionStatus } from "#layers/snapshot/shared/decisions.ts";
-import type { Tone } from "~/utils/format.ts";
+import type { Tone } from "~/types/Tone";
 
 const DECISION_STATUS_LABELS = {
     "to-implement": "To implement",
