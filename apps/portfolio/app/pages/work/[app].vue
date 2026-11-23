@@ -8,6 +8,13 @@
             :lead="work.line"
         >
             <p class="font-mono text-sm text-muted">{{ facts }}</p>
+            <aside
+                v-if="work.inProgress"
+                class="flex max-w-2xl items-center gap-2 border-l-2 border-primary bg-muted px-4 py-3 font-mono text-xs text-primary uppercase"
+            >
+                <span class="size-2 animate-pulse rounded-full bg-primary" aria-hidden="true" />
+                {{ $t("workApp.inProgress", { stage: work.stage }) }}
+            </aside>
         </PageHero>
 
         <WorkFigure :work />

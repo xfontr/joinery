@@ -15,6 +15,7 @@ const WORK_ITEM: WorkCase = {
     why: "Why.",
     facts: [],
     countedOn: "29 Sep 2026",
+    inProgress: false,
     design: [],
     decisions: [],
     screenshot: { file: "huella-legal.jpg", alt: "The new home page", caption: "On staging." },
