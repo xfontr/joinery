@@ -18,7 +18,7 @@ jobs:
         runs-on: ubuntu-latest
         environment:
             name: developer-portal
-            url: https://xifre-dev.pages.dev/portal/
+            url: https://xifre.dev/portal/
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:
@@ -63,7 +63,7 @@ jobs:
             - name: Point the old address at the new one
               run: |
                   mkdir -p "$RUNNER_TEMP/redirect"
-                  echo '/* https://xifre-dev.pages.dev/portal/:splat 301' > "$RUNNER_TEMP/redirect/_redirects"
+                  echo '/* https://xifre.dev/portal/:splat 301' > "$RUNNER_TEMP/redirect/_redirects"
 
             - uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3
               with:

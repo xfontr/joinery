@@ -6,7 +6,7 @@ import { parse } from "yaml";
 // `@nuxtjs/i18n` imports this too, and loading both at once trips a Node ESM-loader assert
 await import("vue-router/unplugin");
 
-const SITE_URL = "https://xifre-dev.pages.dev";
+const SITE_URL = "https://xifre.dev";
 
 const SITE_REVEAL = readFileSync(resolve(import.meta.dirname, "app/assets/siteReveal.js"), "utf8");
 

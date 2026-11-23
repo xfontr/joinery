@@ -6,7 +6,7 @@ await import("vue-router/unplugin");
 
 const WORKSPACE_ROOT = resolve(import.meta.dirname, "../..");
 
-const SITE_URL = "https://xifre-dev.pages.dev";
+const SITE_URL = "https://xifre.dev";
 
 // Served beneath the personal site's origin, since a view transition can't cross origins
 const BASE_URL = "/portal/";

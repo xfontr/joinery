@@ -126,7 +126,7 @@ needs a token, so it isn't shown.
 push to `master` or by hand: `pnpm test:coverage`, then `collect`, then `build-static`, then it
 uploads the build as the `developer-portal-site` artifact. The
 [portfolio's deploy](../portfolio/README.md#deploy) publishes that artifact at
-[xifre-dev.pages.dev/portal/](https://xifre-dev.pages.dev/portal/), so the portal goes live only when
+[xifre.dev/portal/](https://xifre.dev/portal/), so the portal goes live only when
 that run succeeds. Cloudflare only hosts: the build runs in Actions, and the site has no Functions.
 huella-legal's Storybook is built into the same output under `/huella-legal-storybook/`.
 
