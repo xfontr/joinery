@@ -42,7 +42,7 @@ Every count, map and benchmark comes from the portal's `/embed/data.json`, fetch
 ## Deploy
 
 [`portfolio-deploy.yml`](../../.github/workflows/portfolio-deploy.yml) runs after each successful portal
-deploy, or by hand. It prerenders with the payload URL set and publishes to the `portfolio` Cloudflare
+deploy, or by hand. It prerenders with the payload URL set and publishes to the `xifre-dev` Cloudflare
 Pages project with `wrangler pages deploy`. Cloudflare only hosts.
 
 - The site is served from the root of `SITE_URL` in [`nuxt.config.ts`](./nuxt.config.ts), which

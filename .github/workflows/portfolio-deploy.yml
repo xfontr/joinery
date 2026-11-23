@@ -21,7 +21,7 @@ jobs:
         runs-on: ubuntu-latest
         environment:
             name: portfolio
-            url: https://portfolio.pages.dev
+            url: https://xifre-dev.pages.dev
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:
@@ -44,4 +44,4 @@ jobs:
                   accountId: fb3cf13b48ae51ed991e8f95c68d173b
                   # The action `pnpm add`s a missing wrangler at the workspace root, which pnpm refuses.
                   workingDirectory: apps/portfolio
-                  command: pages deploy .output/public --project-name=portfolio --branch=master
+                  command: pages deploy .output/public --project-name=xifre-dev --branch=master
