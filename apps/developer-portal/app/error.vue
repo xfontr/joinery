@@ -1,6 +1,6 @@
 <template>
     <UApp>
-        <NuxtLayout name="visitor">
+        <main id="content">
             <section
                 v-if="error.status === 404"
                 data-error="not-found"
@@ -15,14 +15,6 @@
                 <p class="max-w-xl text-lg text-muted">{{ $t("error.notFound.lead") }}</p>
                 <div class="flex flex-col gap-3 sm:flex-row">
                     <UButton to="/" :label="$t('error.notFound.home')" class="justify-center" />
-                    <UButton
-                        to="/overview"
-                        variant="outline"
-                        color="neutral"
-                        trailing-icon="i-lucide-arrow-right"
-                        :label="$t('error.notFound.developer')"
-                        class="justify-center"
-                    />
                 </div>
             </section>
 
@@ -54,12 +46,13 @@
                     />
                 </div>
             </section>
-        </NuxtLayout>
+        </main>
     </UApp>
 </template>
 
 <script lang="ts" setup>
 import type { NuxtError } from "#app";
+import "#layers/design/app/assets/main.css";
 
 interface Props {
     error: NuxtError;

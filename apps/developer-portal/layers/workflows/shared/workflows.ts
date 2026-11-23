@@ -39,4 +39,3 @@ export {
     type NewPage,
 } from "./projectFile.ts";
 export { assembleWorkflows, type ParsedFile, type Workflows } from "./directory.ts";
-export { GLYPH_MAP, projectMap, type ProjectMap } from "./projectMap.ts";

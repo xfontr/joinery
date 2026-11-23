@@ -1,0 +1,254 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme static {
+    --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+    /* Warm neutrals; every surface, text and border role of the identity is a step of this ramp */
+    --color-paper-50: #f8f5ef;
+    --color-paper-100: #f1ece3;
+    --color-paper-200: #e8e1d4;
+    --color-paper-300: #ddd5c6;
+    --color-paper-400: #a89f90;
+    --color-paper-500: #857d70;
+    --color-paper-600: #5f594f;
+    --color-paper-700: #29251f;
+    --color-paper-800: #221f1a;
+    --color-paper-900: #1c1915;
+    --color-paper-950: #12100e;
+
+    /* The one accent: 600 on light surfaces, 300 on dark ones */
+    --color-terracotta-50: #fdf3ee;
+    --color-terracotta-100: #fbe3d6;
+    --color-terracotta-200: #f7c3a8;
+    --color-terracotta-300: #f08a5d;
+    --color-terracotta-400: #e0703f;
+    --color-terracotta-500: #c4582c;
+    --color-terracotta-600: #994021;
+    --color-terracotta-700: #7a331b;
+    --color-terracotta-800: #5c2715;
+    --color-terracotta-900: #3f1b0f;
+    --color-terracotta-950: #261009;
+
+    --font-display: Fraunces, Georgia, serif;
+
+    /* Display steps; with `text-2xl`, `base`, `sm` and `xs` they make the scale's eight */
+    --text-statement: 8rem;
+    --text-statement--line-height: 1;
+    --text-statement--letter-spacing: -0.02em;
+    --text-statement--font-weight: 300;
+    --text-title: 4.5rem;
+    --text-title--line-height: 1;
+    --text-title--letter-spacing: -0.02em;
+    --text-title--font-weight: 300;
+    --text-section: 3rem;
+    --text-section--line-height: 1;
+    --text-section--letter-spacing: -0.02em;
+    --text-section--font-weight: 300;
+    --text-heading: 2.25rem;
+    --text-heading--line-height: 1.1;
+    --text-heading--letter-spacing: -0.02em;
+    --text-heading--font-weight: 300;
+}
+
+/* Tailwind v4 preflight leaves native <button> at the browser default (`cursor: default`) rather
+   than resetting it to a pointer, and Nuxt UI's clickable components — UButton included — render
+   as <button> underneath. Without this every button in the app looks unclickable on hover. */
+button:not(:disabled) {
+    cursor: pointer;
+}
+
+.tone-good { color: var(--tone-good); }
+.tone-warn { color: var(--tone-warn); }
+.tone-bad { color: var(--tone-bad); }
+
+@layer base {
+    /* Any utility outranks this layer, so a component only spells out how its ring differs */
+    :focus-visible {
+        outline: 2px solid var(--ui-primary);
+        outline-offset: 2px;
+    }
+}
+
+/* Page changes; `pageTransition.client.ts` sets `data-page-transition` for the length of each one */
+[data-identity] > header {
+    view-transition-name: visitor-header;
+}
+
+::view-transition-group(*) {
+    animation-duration: 0.45s;
+    animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+:root[data-page-transition]::view-transition-old(root) {
+    animation: page-out 0.2s ease-in both;
+}
+
+:root[data-page-transition]::view-transition-new(root) {
+    animation: page-in 0.4s cubic-bezier(0.2, 0, 0, 1) 0.08s both;
+}
+
+@keyframes page-out {
+    to {
+        opacity: 0;
+        translate: 0 -0.5rem;
+    }
+}
+
+@keyframes page-in {
+    from {
+        opacity: 0;
+        translate: 0 1.5rem;
+    }
+}
+
+/* The identity's roles; `:root` so Nuxt UI's teleported overlays take them too */
+:root {
+    --ui-bg: var(--color-paper-100);
+    --ui-bg-muted: var(--color-paper-200);
+    --ui-bg-elevated: var(--color-paper-50);
+    --ui-bg-accented: var(--color-paper-300);
+    --ui-bg-inverted: var(--color-paper-900);
+
+    --ui-text-dimmed: var(--color-paper-600);
+    --ui-text-muted: var(--color-paper-600);
+    --ui-text-toned: var(--color-paper-700);
+    --ui-text: var(--color-paper-800);
+    --ui-text-highlighted: var(--color-paper-900);
+    --ui-text-inverted: var(--color-paper-50);
+
+    --ui-border: var(--color-paper-300);
+    --ui-border-muted: var(--color-paper-200);
+    --ui-border-accented: var(--color-paper-400);
+    --ui-border-inverted: var(--color-paper-900);
+
+    --ui-primary: var(--color-terracotta-600);
+    --ui-radius: 0.125rem;
+    --ui-container: 72rem;
+    --radius-xs: 0.125rem;
+    --radius-sm: 0.125rem;
+    --radius-md: 0.125rem;
+    --radius-lg: 0;
+    --radius-xl: 0;
+    --radius-2xl: 0;
+
+    /* Validated as a set with the `dataviz` skill's validator; five steps failed, three pass */
+    --tone-good: #006641;
+    --tone-warn: #7a4100;
+    --tone-bad: #b30942;
+}
+
+body {
+    font-family: var(--font-sans);
+    background: var(--ui-bg);
+    color: var(--ui-text);
+}
+
+/* With macOS set to always show scrollbars, every scrolling column otherwise gets a grey OS bar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--ui-border-accented) transparent;
+}
+
+.dark {
+    --ui-bg: var(--color-paper-900);
+    --ui-bg-muted: var(--color-paper-950);
+    --ui-bg-elevated: var(--color-paper-800);
+    --ui-bg-accented: var(--color-paper-700);
+    --ui-bg-inverted: var(--color-paper-100);
+
+    --ui-text-dimmed: var(--color-paper-400);
+    --ui-text-muted: var(--color-paper-400);
+    --ui-text-toned: var(--color-paper-300);
+    --ui-text: var(--color-paper-200);
+    --ui-text-highlighted: var(--color-paper-50);
+    --ui-text-inverted: var(--color-paper-900);
+
+    --ui-border: var(--color-paper-700);
+    --ui-border-muted: var(--color-paper-800);
+    --ui-border-accented: var(--color-paper-500);
+    --ui-border-inverted: var(--color-paper-100);
+
+    --ui-primary: var(--color-terracotta-300);
+
+    --tone-good: #36a184;
+    --tone-warn: #ad8c1f;
+    --tone-bad: #e4676b;
+}
+
+/* A marked word in a headline takes the accent instead of a highlight */
+mark {
+    background: none;
+    color: var(--ui-primary);
+    font-style: italic;
+}
+
+/* A card standing in for the pointer, such as the front page's rule previews, hides the real one */
+[data-cursor-hidden],
+[data-cursor-hidden] * {
+    cursor: none !important;
+}
+
+/* The workflow maps' tones, read from the identity's roles so they follow light and dark */
+[data-workflow-map] [data-column] {
+    fill: var(--ui-text-muted);
+    text-transform: uppercase;
+}
+
+[data-workflow-map] [data-edge] {
+    fill: none;
+    stroke: var(--ui-border-accented);
+}
+
+[data-workflow-map] g[data-tone="done"] rect {
+    fill: var(--ui-primary);
+}
+
+[data-workflow-map] g[data-tone="done"] text {
+    fill: var(--ui-text-inverted);
+}
+
+[data-workflow-map] g[data-tone="moving"] rect {
+    fill: var(--ui-bg-elevated);
+    stroke: var(--ui-primary);
+    stroke-width: 2;
+}
+
+[data-workflow-map] g[data-tone="moving"] text {
+    fill: var(--ui-text-highlighted);
+}
+
+[data-workflow-map] g[data-tone="waiting"] rect {
+    fill: var(--ui-bg);
+    stroke: var(--ui-border-accented);
+    stroke-dasharray: 4 3;
+}
+
+[data-workflow-map] g[data-tone="waiting"] text {
+    fill: var(--ui-text-muted);
+}
+
+[data-workflow-map] li[data-tone="done"] > [aria-hidden] {
+    color: var(--ui-primary);
+}
+
+[data-workflow-glyph] {
+    max-width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+[data-workflow-glyph] [data-edge] {
+    fill: none;
+    stroke: var(--ui-border-accented);
+}
+
+[data-workflow-glyph] rect {
+    fill: var(--ui-primary);
+}
+
+[data-workflow-glyph] rect[data-tone="waiting"] {
+    fill: var(--ui-bg);
+    stroke: var(--ui-primary);
+}

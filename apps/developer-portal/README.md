@@ -14,7 +14,7 @@ Under `pnpm dev developer-portal` it reads the working tree live. The deployed s
 | `pnpm exec nx collect @monorepo/developer-portal` | Rebuild the snapshot in `.report/`: graph, coverage, metrics, docs, usage |
 | `pnpm exec nx build-static @monorepo/developer-portal` | `nuxt build --prerender`, the build that deploys |
 | `pnpm exec nx nuxt-prepare @monorepo/developer-portal` | Regenerate `.nuxt` by hand; Nx already runs it before lint, typecheck, test and build |
-| `pnpm exec nx test:e2e @monorepo/developer-portal` | Playwright over the built visitor pages: axe in light and dark, keyboard, motion, SEO tags, sitemap |
+| `pnpm exec nx test:e2e @monorepo/developer-portal` | Playwright over the build: skip link, SEO tags, the published payload, axe on the 404 page |
 
 - Coverage is only as fresh as the last root `pnpm test:coverage`.
 - `build` delegates to `build-static`, so CI builds what deploys.
@@ -24,10 +24,10 @@ Under `pnpm dev developer-portal` it reads the working tree live. The deployed s
 
 | Path | What lives there |
 | --- | --- |
-| `app/` | The shell: layouts, Home, the visitor front and method pages, and `app/composables/`, which assemble Home's queue and Health, the rail, the status bar and search from several layers |
+| `app/` | The shell: the layout, Home at `/`, and `app/composables/`, which assemble Home's queue and Health, the rail, the status bar and search from several layers |
 | `app/components/`, `app/types/`, `app/utils/` | The kit: shared parts such as `PageFacts`, `PageHeader` and `EmptyState`, one type per file, pure helpers |
 | `i18n/locales/en.json` | The interface's copy — see [🔤 Copy](#copy) |
-| `content/work/` | One markdown file per Work entry — see [🔤 Copy](#copy) |
+| `server/routes/embed/data.json.ts` | The figures [`apps/portfolio`](../portfolio/README.md) shows, prerendered — see [📤 The payload](#the-payload) |
 | `layers/` | One Nuxt layer per capability — see [🧱 Layers](#layers) |
 | `tools/collect/` | The collector that builds the snapshot |
 | `tools/lib/` | Node-only helpers: paths, `git`, the shape checks, the doc-link rewriter |
@@ -63,12 +63,24 @@ cores but never another feature. `eslint.layerBoundaries` in [`eslint.config.ts`
 ## Copy
 
 The interface's copy is in [`en.json`](./i18n/locales/en.json) through `$t()`, keyed the
-way [huella-legal's are](../huella-legal/README.md#copy-keys); `rules` holds the five rules both the
-front page and Method number. `/work` and the front page's Work list read their prose from
-[`content/work/*.md`](./content/work) through the `work` collection in
-[`content.config.ts`](./content.config.ts): the frontmatter holds the facts, the body is the case
-study's story, and `caseStudy: false` marks a tool that links straight to its `live` URL.
-Specs see keys, not copy: [`vitest.setup.ts`](./vitest.setup.ts) empties the messages.
+way [huella-legal's are](../huella-legal/README.md#copy-keys). Specs see keys, not copy:
+[`vitest.setup.ts`](./vitest.setup.ts) empties the messages.
+
+## The payload
+
+The personal site, [`apps/portfolio`](../portfolio/README.md), shows figures only this app can compute. It
+imports none of its code: [`data.json.ts`](./server/routes/embed/data.json.ts) prerenders
+`/embed/data.json` and that site fetches it at build, after this one deploys.
+
+| Key | From |
+| --- | --- |
+| `benchmarks` | `docs/benchmarks/` through the `docs` collection: id, title, screenshot path |
+| `decisions` | The collected docs artifact: id, number, title, status |
+| `workflows` | `data/workflows/`: each project's map at full and glyph scale, the templates, the lesson count |
+| `rules` | Enabled and in-house lint rules from the usage artifact |
+| `specs` | Spec files across every project, from the metrics artifact |
+
+Its spec pins the keys, since renaming one blanks that site's figures without failing its build.
 
 ## What each page reads
 
@@ -120,7 +132,7 @@ the same output under `/huella-legal-storybook/`.
 - Every page is as old as the last deploy, except issues (live) and workflows (as
   old as the last committed `pnpm workflow:sync`).
 - The site is served from the root of `SITE_URL` in [`nuxt.config.ts`](./nuxt.config.ts), which
-  canonical, sitemap and share-image URLs are built on.
+  canonical URLs are built on.
 - `NUXT_PUBLIC_REPO_URL` is baked in at build time, derived by the workflow.
 - Cloudflare Pages rejects any file over 25 MiB, which is why the Architecture map is drawn from
   `projects.json` rather than Nx's exported graph viewer.
@@ -132,16 +144,9 @@ the same output under `/huella-legal-storybook/`.
 
 | Concern | Where |
 | --- | --- |
-| Title, description, canonical, OG | `useSeoMeta` on each visitor page; `nuxt-seo-utils` signs the title with the site name |
-| Indexing | Visitor pages only; each developer layer's `nuxt.config.ts` sets `noindex, follow` on its routes |
-| Sitemap, robots.txt | `@nuxtjs/sitemap` and `@nuxtjs/robots`; robots.txt points crawlers at the sitemap |
-| Share image | `public/og-image.png` (1200×630) by default; a case study uses its own screenshot, cropped to that size |
-| Structured data | A `Person` identity in `schemaOrg`, from `nuxt-schema-org` |
-| Payload | Visitor pages read the cuts in [`useWorkflowMaps.ts`](./layers/workflows/app/composables/useWorkflowMaps.ts) and `useRuleCounts()`, never the whole workflows set or `usageArtifact()` |
-| Stylesheets | Each layout imports its own: `main.css` for the developer view, [`visitor.css`](./layers/design/app/assets/visitor.css) for the visitor pages, which leaves developer-only sources and Nuxt UI themes out of the scan. A component a visitor page starts rendering from an excluded folder needs that folder let back in |
+| Title, description, canonical | `useSeoMeta` on the dashboard; `nuxt-seo-utils` signs the title with the site name |
+| Indexing | None: one `/**` route rule in [`nuxt.config.ts`](./nuxt.config.ts) sets `noindex, follow` on every page, so links out are still followed |
 | First paint | Styles inlined; no script preload or chunk prefetch; links prefetch on interaction |
-| Hydration | Deferred to `load` or the first input by [`deferHydration.ts`](./server/plugins/deferHydration.ts), copied from huella-legal; a click made before then is replayed |
-| Images | Work screenshots go through `vite-imagetools` as WebP at 480, 960 and 1440 px |
 
 ## Checks it surfaces
 
@@ -177,8 +182,7 @@ ESLint also rejects raw palette classes (`bg-slate-500`, `text-white`) everywher
 ### The identity
 
 Direction E, approved in [`0039`](../../docs/decisions/0039-developer-portal-benchmark.md), is one
-system in [`main.css`](./layers/design/app/assets/main.css) for the visitor pages and the developer
-view alike, set on `:root` so Nuxt UI's overlays take it too. Nothing is set under 12 px.
+system in [`main.css`](./layers/design/app/assets/main.css), whose tokens [`apps/portfolio`](../portfolio/README.md) copies, set on `:root` so Nuxt UI's overlays take it too. Nothing is set under 12 px.
 
 | Piece | What it is |
 | --- | --- |
@@ -187,12 +191,11 @@ view alike, set on `:root` so Nuxt UI's overlays take it too. Nothing is set und
 | `text-statement`, `title`, `section`, `heading` | The display steps; with `text-2xl`, `base`, `sm` and `xs` they make the scale's eight |
 | `--ui-primary` | Terracotta 600 in light, 300 in dark |
 | `--tone-*` | The status colours, re-picked for these surfaces with the `dataviz` validator |
-| `UContainer` | Every visitor band's measure: 72 rem wide (`--ui-container`), 16 px gutter, 40 px from `md` |
 | `surface-ink` | A fill that stays dark in both modes, such as the developer rail, with its own tones |
 | `<mark>` | A marked word takes the accent in italic |
 | `data-figure` | A count or percentage that leads a panel: tabular, semibold |
 | `data-scroll-x` | A row or table that scrolls sideways fades at its right edge |
-| `data-page-transition` | Set on `<html>` for one page change: visitor pages rise in, the developer view crossfades, switching between them opens as a circle. A title or screenshot named with `carried()` flies to its namesake on the next page |
+| View transitions | Every page change crossfades in 0.15 s |
 | `data-prose`, `data-readme` | Rendered markdown keeps a 72-character measure; a README drops its own `#` title |
 
 Every text role clears 4.5:1 on every surface. Each cell is light / dark:

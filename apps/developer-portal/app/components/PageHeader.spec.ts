@@ -26,7 +26,7 @@ describe("PageHeader", () => {
     it("draws no breadcrumb on a page with nothing above it but the portal", async () => {
         const wrapper = await mountSuspended(PageHeader, {
             props: { title: "Home" },
-            route: "/overview",
+            route: "/",
         });
 
         expect(wrapper.find("nav[aria-label='pageHeader.breadcrumb']").exists()).toBe(false);

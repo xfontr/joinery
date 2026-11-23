@@ -1,0 +1,56 @@
+{
+  "name": "@monorepo/portfolio",
+  "description": "Xifré Font's personal site: the method, the work and the project maps",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nx build-static",
+    "dev": "nuxt dev",
+    "lint": "nx eslint:lint",
+    "nuxt-prepare": "nuxi prepare",
+    "typecheck": "nuxt typecheck",
+    "test": "vitest . --watch=false",
+    "test:dev": "vitest .",
+    "test:coverage": "vitest . --watch=false --coverage",
+    "test:e2e": "playwright test"
+  },
+  "nx": {
+    "tags": [
+      "type:app",
+      "scope:portfolio"
+    ]
+  },
+  "dependencies": {
+    "@iconify-json/lucide": "^1.2.128",
+    "@nuxt/content": "^3.16.0",
+    "@nuxt/ui": "^4.11.0",
+    "@nuxtjs/i18n": "catalog:",
+    "@nuxtjs/robots": "^7.0.2",
+    "@nuxtjs/sitemap": "^9.1.0",
+    "@vueuse/core": "^15.0.0",
+    "nuxt": "catalog:",
+    "nuxt-schema-org": "^7.0.1",
+    "nuxt-seo-utils": "^9.0.2",
+    "vue": "catalog:",
+    "vue-router": "^5.4.0",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@monorepo/configs": "workspace:*",
+    "@nuxt/test-utils": "^4.3.2",
+    "@playwright/test": "catalog:",
+    "@types/node": "catalog:",
+    "@types/serve-handler": "^6.1.4",
+    "@vitest/coverage-v8": "catalog:",
+    "@vue/test-utils": "^2.4.11",
+    "eslint": "catalog:",
+    "happy-dom": "^21.0.1",
+    "serve-handler": "^6.1.8",
+    "tailwindcss": "^4.3.3",
+    "typescript": "catalog:",
+    "vite-imagetools": "^12.0.2",
+    "vitest": "catalog:",
+    "vue-tsc": "catalog:",
+    "wrangler": "^4.166.0"
+  }
+}

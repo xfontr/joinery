@@ -27,7 +27,6 @@
                     v-if="!collapsed"
                     to="/"
                     class="min-w-0 flex-1 font-display text-xl text-highlighted italic"
-                    :aria-label="$t('app.dev.visitorLabel')"
                 >
                     {{ $t("app.dev.wordmark") }}
                 </NuxtLink>
@@ -40,16 +39,15 @@
 
             <template #default="{ collapsed }">
                 <UButton
-                    v-if="collapsed"
-                    to="/"
-                    icon="i-lucide-arrow-left-right"
+                    :to="appConfig.personalSite"
+                    icon="i-lucide-arrow-up-right"
                     color="neutral"
                     variant="ghost"
-                    class="mx-auto text-muted"
-                    :aria-label="$t('app.dev.visitorSwitch')"
-                    :title="$t('app.dev.visitorSwitchTitle')"
+                    size="sm"
+                    :class="collapsed ? 'mx-auto text-muted' : 'self-start text-muted'"
+                    :label="collapsed ? undefined : $t('app.dev.personalSite')"
+                    :aria-label="collapsed ? $t('app.dev.personalSite') : undefined"
                 />
-                <ViewSwitch v-else current="dev" class="self-start" />
 
                 <UDashboardSearchButton
                     :collapsed
@@ -134,6 +132,7 @@
 import "#layers/design/app/assets/main.css";
 
 const route = useRoute();
+const appConfig = useAppConfig();
 const {
     public: { repoUrl },
 } = useRuntimeConfig();
