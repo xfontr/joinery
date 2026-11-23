@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-23T17:22:48.797Z",
+    "syncedAt": "2026-11-23T17:30:52.978Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -409,26 +409,26 @@
             "pr": false,
             "owner": false,
             "complexity": 2
-        }
-    ],
-    "noMilestone": [
+        },
         {
             "number": 512,
             "title": "Split the visitor pages into their own app",
             "url": "https://github.com/xfontr/monorepo/issues/512",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [],
             "createdAt": "2026-11-23T10:35:39Z",
-            "closedAt": null,
+            "closedAt": "2026-11-23T17:30:52.978Z",
             "activity": [
+                "2026-11-23",
                 "2026-11-23"
             ],
             "blockedBy": [],
-            "branch": false,
+            "branch": true,
             "pr": false,
             "owner": false,
             "complexity": null
         }
-    ]
+    ],
+    "noMilestone": []
 }
