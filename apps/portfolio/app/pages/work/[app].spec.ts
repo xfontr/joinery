@@ -26,6 +26,13 @@ const HUELLA = {
     ],
 };
 
+const MARINA = {
+    ...HUELLA,
+    path: "/work/marina-roustan",
+    name: "Marina Roustan",
+    inProgress: true,
+};
+
 const TOOL = {
     path: "/work/wp-editor",
     name: "WP Editor",
@@ -38,7 +45,8 @@ const TOOL = {
 
 mockNuxtImport("queryCollection", () => () => ({
     path: (path: string) => ({
-        first: () => Promise.resolve([HUELLA, TOOL].find((row) => row.path === path) ?? null),
+        first: () =>
+            Promise.resolve([HUELLA, MARINA, TOOL].find((row) => row.path === path) ?? null),
     }),
 }));
 
@@ -60,6 +68,18 @@ describe("/work/<app>", () => {
             ).toBe(true);
         }
         expect(setStatus).not.toHaveBeenCalled();
+    });
+
+    it("flags a study still under way", async () => {
+        const wrapper = await mountSuspended(Page, { route: "/work/marina-roustan" });
+
+        expect(wrapper.find("aside").exists()).toBe(true);
+    });
+
+    it("shows no in-progress flag on a study that doesn't claim one", async () => {
+        const wrapper = await mountSuspended(Page, { route: "/work/huella-legal" });
+
+        expect(wrapper.find("aside").exists()).toBe(false);
     });
 
     it("answers an unknown app with a 404 instead of an empty case page", async () => {

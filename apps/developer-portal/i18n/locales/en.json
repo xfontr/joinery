@@ -1013,7 +1013,6 @@
         "all": "All {count}",
         "empty": "Nothing open here.",
         "filters": {
-            "all": "All",
             "attention": "Attention",
             "audits": "Audits",
             "decisions": "Decisions",
@@ -1022,6 +1021,7 @@
         },
         "githubError": "GitHub could not be read from this browser.",
         "meta": "What's open across issues, decisions, audits, releases and docs",
+        "reading": "Reading open issues…",
         "rows": {
             "auditOpen": "{open} of {total} open",
             "brokenLinks": "{count} broken",

@@ -10,8 +10,7 @@
             ref="card"
             data-cursor-preview
             aria-hidden="true"
-            class="pointer-events-none fixed top-0 left-0 z-50 w-72 border border-default bg-elevated p-4 shadow-lg"
-            :style="placement"
+            class="pointer-events-none fixed top-0 left-0 z-50 w-72 border border-default bg-elevated p-4 shadow-lg will-change-transform"
         >
             <Transition
                 mode="out-in"
@@ -29,7 +28,7 @@
 </template>
 
 <script setup lang="ts" generic="Subject extends string">
-import { useElementSize, useMediaQuery, useMouse, useWindowSize } from "@vueuse/core";
+import { useElementSize, useEventListener, useMediaQuery } from "@vueuse/core";
 
 interface Props {
     /** What the pointer is over; `null` hides the card. */
@@ -44,24 +43,47 @@ const finePointer = useMediaQuery("(hover: hover) and (pointer: fine)");
 
 const card = useTemplateRef<HTMLElement>("card");
 const { width, height } = useElementSize(card);
-const { x: pointerX, y: pointerY } = useMouse({ type: "client" });
-const { width: viewportWidth, height: viewportHeight } = useWindowSize();
 
 const shown = ref<Subject | null>(null);
-const open = computed(() => finePointer.value && subject !== null);
+/** A scroll fires no `pointerleave`, so the subject stays stale until the pointer next moves. */
+const scrolled = ref(false);
+const open = computed(() => finePointer.value && subject !== null && !scrolled.value);
 
-/** A corner of the card always sits on the pointer; it flips to another corner near an edge. */
-const placement = computed(() => {
-    const left = pointerX.value + width.value > viewportWidth.value;
-    const up = pointerY.value + height.value > viewportHeight.value;
+const pointer = { x: 0, y: 0 };
+let frame = 0;
 
-    return {
-        translate: `${left ? pointerX.value - width.value : pointerX.value}px ${
-            up ? pointerY.value - height.value : pointerY.value
-        }px`,
-        transformOrigin: `${up ? "bottom" : "top"} ${left ? "right" : "left"}`,
-    };
-});
+/**
+ * A corner of the card always sits on the pointer; it flips to another corner near an edge.
+ * Written straight to the element, since a re-render per `pointermove` re-runs the slot too.
+ */
+const place = () => {
+    frame = 0;
+    const element = card.value;
+    if (!element) return;
+
+    const left = pointer.x + width.value > window.innerWidth;
+    const up = pointer.y + height.value > window.innerHeight;
+
+    element.style.transform = `translate(${left ? pointer.x - width.value : pointer.x}px, ${
+        up ? pointer.y - height.value : pointer.y
+    }px)`;
+    element.style.transformOrigin = `${up ? "bottom" : "top"} ${left ? "right" : "left"}`;
+};
+
+useEventListener(
+    "pointermove",
+    (event: PointerEvent) => {
+        pointer.x = event.clientX;
+        pointer.y = event.clientY;
+        scrolled.value = false;
+        if (card.value && !frame) frame = requestAnimationFrame(place);
+    },
+    { passive: true },
+);
+
+useEventListener("scroll", () => (scrolled.value = true), { passive: true });
+
+watch([card, width, height], place, { flush: "post" });
 
 watch(
     () => subject,
@@ -72,5 +94,8 @@ watch(
 
 watch(open, (hidden) => document.documentElement.toggleAttribute("data-cursor-hidden", hidden));
 
-onBeforeUnmount(() => document.documentElement.removeAttribute("data-cursor-hidden"));
+onBeforeUnmount(() => {
+    cancelAnimationFrame(frame);
+    document.documentElement.removeAttribute("data-cursor-hidden");
+});
 </script>

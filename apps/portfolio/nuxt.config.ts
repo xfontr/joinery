@@ -10,9 +10,17 @@ const SITE_URL = "https://xifre-dev.pages.dev";
 
 const SITE_REVEAL = readFileSync(resolve(import.meta.dirname, "app/assets/siteReveal.js"), "utf8");
 
-// The developer portal is deployed beneath this origin at `/portal/`
+// The developer portal is deployed beneath this origin at `/portal/`; a prerender boots a whole
+// portal page, so only the view switch earns one, not every proof link a hovering pointer crosses.
 const PRERENDER_PORTAL = {
-    prerender: [{ where: { href_matches: "/portal/*" }, eagerness: "moderate" }],
+    prerender: [
+        {
+            where: {
+                and: [{ href_matches: "/portal/*" }, { selector_matches: "[data-view-switch] a" }],
+            },
+            eagerness: "moderate",
+        },
+    ],
 };
 
 const WORK = resolve(import.meta.dirname, "content/work");
@@ -42,6 +50,9 @@ export default defineNuxtConfig({
 
     ssr: true,
     devtools: false,
+
+    // `@nuxt/schema` 4.6 resolves an unset host to `{}`, which `nuxt dev` then crashes on
+    devServer: { host: "localhost" },
 
     css: ["~/assets/main.css"],
 

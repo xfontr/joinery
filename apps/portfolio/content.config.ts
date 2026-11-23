@@ -18,6 +18,7 @@ export default defineContentConfig({
                 why: z.string().optional(),
                 facts: z.array(z.string()).optional(),
                 countedOn: z.string().optional(),
+                inProgress: z.boolean().optional(),
                 design: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
                 screenshot: z
                     .object({ file: z.string(), alt: z.string(), caption: z.string() })

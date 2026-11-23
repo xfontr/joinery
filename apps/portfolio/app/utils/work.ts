@@ -39,7 +39,10 @@ export const toWork = (row: WorkRow): Work => {
     return { ...base, caseStudy: false };
 };
 
-type WorkCaseRow = WorkRow & Partial<Pick<WorkCase, "why" | "countedOn" | "design" | "decisions">>;
+type WorkCaseRow = WorkRow &
+    Partial<Pick<WorkCase, "why" | "countedOn" | "design" | "decisions">> & {
+        inProgress?: boolean;
+    };
 
 /** A case study is an entry with every field its page prints; one missing one reads as no study. */
 export const toWorkCase = (row: WorkCaseRow | null | undefined): WorkCase | null => {
@@ -50,5 +53,5 @@ export const toWorkCase = (row: WorkCaseRow | null | undefined): WorkCase | null
 
     if (!isStudy(work) || !why || !countedOn || !design || !decisions) return null;
 
-    return { ...work, why, countedOn, design, decisions };
+    return { ...work, why, countedOn, design, decisions, inProgress: row.inProgress ?? false };
 };

@@ -52,8 +52,15 @@ describe("WorkQueue", () => {
         const tabs = wrapper.findComponent({ name: "UTabs" }).props("items") as {
             badge?: number;
         }[];
-        expect(tabs[1]?.badge).toBeUndefined();
-        expect(tabs[2]?.badge).toBe(0);
+        expect(tabs[0]?.badge).toBeUndefined();
+        expect(tabs[1]?.badge).toBe(0);
+    });
+
+    it("opens on issues and says they're still loading rather than that none are open", async () => {
+        const wrapper = await open({ issuesRead: false });
+
+        expect(wrapper.text()).toContain("workQueue.reading");
+        expect(wrapper.text()).not.toContain("workQueue.empty");
     });
 
     it("says GitHub couldn't be read rather than that nothing is open", async () => {

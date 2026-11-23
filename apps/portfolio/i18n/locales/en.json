@@ -16,7 +16,7 @@
                 "workflows": "Project maps"
             },
             "navLabel": "Main",
-            "wordmark": "joinery"
+            "wordmark": "xifre.dev"
         }
     },
     "index": {
@@ -34,41 +34,35 @@
                 "title": "Live project maps"
             }
         },
-        "head": "This is a developer platform",
-        "intro": "Every piece below opens, so have a look around.",
-        "lead": "Huh? Let me explain. It's the tooling, rules and agents every app here is built with. Most companies keep theirs behind closed doors, but I'm not a company, so this one's public.",
+        "head": "This is where I build things",
+        "lead": "Websites, mostly. And the tools I made to build them, the plans, and every decision I wasn't sure about, written down. Most companies keep that stuff behind closed doors, but I'm not a company, so it's all here.",
         "rules": {
             "agents": {
-                "line": "Agents take a ticket from plan to merge, with three reviews on the way.",
-                "proof": "How a change gets merged",
-                "title": "Agent pipeline"
+                "line": "Each ticket runs the same steps from plan to merge, with three reviews on the way.",
+                "proof": "How a change gets merged"
             },
             "decide": {
-                "line": "Any call that could go either way gets a short write-up anyone can read.",
-                "proof": "Keeping Huella Legal's old links working",
-                "title": "Decision records"
+                "line": "A call that could go either way gets a short write-up anyone can read.",
+                "proof": "Keeping Huella Legal's old links working"
             },
-            "label": "What's inside",
+            "label": "How a site gets made here",
             "look": {
-                "line": "Every design starts from a study of award-winning sites.",
+                "line": "A design starts from a study of other sites, each measured the same way: type, colour, layout.",
                 "proof": "The sites studied",
-                "proofCount": "{count} sites studied",
-                "title": "UI/UX benchmarking"
+                "proofCount": "{count} sites studied"
             },
             "plan": {
-                "line": "Every project is mapped as tickets before the first line of code.",
-                "proof": "The project map, below",
-                "title": "Project maps"
+                "line": "A project is mapped as tickets, with what each one waits on, before any code.",
+                "proof": "The project map, below"
             },
             "prove": {
-                "line": "Tests, accessibility and lint rules run on every change.",
+                "line": "Tests, accessibility and lint run on every change, and a failure blocks the merge.",
                 "proof": "What gets checked",
-                "proofCount": "{enabled} lint rules, {inHouse} written in-house",
-                "title": "Automated checks"
+                "proofCount": "{enabled} lint rules, {inHouse} written in-house"
             }
         },
-        "title": "This is a",
-        "titleMark": "developer platform."
+        "title": "This is where",
+        "titleMark": "I build things."
     },
     "method": {
         "agents": {
@@ -183,7 +177,7 @@
             "title": "Write decisions down."
         },
         "look": {
-            "body": "I start each design from sites an awards jury already picked, and measure each one the same way: type, colour, layout.",
+            "body": "I start each design from a study of other sites, some an awards jury picked and some that just caught my eye, and measure each one the same way: type, colour, layout.",
             "count": "{count} sites studied so far.",
             "more": "All studies",
             "title": "Look before drawing."
@@ -203,15 +197,16 @@
         "github": "GitHub",
         "head": "About",
         "intro": {
-            "end": "about Portal, their developer platform built on Backstage. My first thought was: hold on, with a monorepo this big, I can actually build one for my own stuff. So I did.",
-            "start": "The portal came later, after reading"
+            "start": "The",
+            "middle": "came about after I read a",
+            "end": "about Portal, their developer platform built on Backstage. My first thought was: hold on, with a monorepo this big, I can actually build one for my own stuff. So I did."
         },
-        "lead": "I'm Xifré Font, a senior frontend developer in Barcelona. Before that I was a lawyer, and founded Huella Legal while practising.",
+        "lead": "I'm Xifré Font, a senior frontend developer in Barcelona, and a lawyer in a previous life.",
         "linkedin": "LinkedIn",
         "post": "a Spotify post",
         "repo": "This repo",
         "story": {
-            "label": "How this repo got here",
+            "label": "How we got here",
             "items": {
                 "playground": {
                     "term": "A playground",
@@ -227,12 +222,13 @@
                 },
                 "apps": {
                     "term": "Real apps",
-                    "detail": "At some point it stopped being just a playground: it was good enough to grow **real apps** on. Huella Legal moved in, then Marina Roustan, and there are more to come."
+                    "detail": "At some point it stopped being just a playground: it was good enough to grow **real apps** on. First **Huella Legal**, the law magazine I founded while studying, then Marina Roustan, and there are more to come."
                 }
             }
         },
-        "title": "About",
-        "titleMark": "this repo"
+        "title": "Ok cool, but",
+        "titleMark": "who is this?",
+        "developerView": "developer view"
     },
     "work": {
         "cta": "Read the case study",
@@ -247,6 +243,7 @@
             "titleMark": "decisions"
         },
         "facts": "{facts}, as of {date}",
+        "inProgress": "In progress · {stage}",
         "kicker": "Case study · {kind}",
         "missing": {
             "back": "Back to the front page",

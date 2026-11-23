@@ -56,26 +56,23 @@ const { rows, issuesRead, issuesError } = defineProps<Props>();
 const PAGE_SIZE = 8;
 
 const FILTERS = [
-    { value: "all", to: null },
     { value: "issues", to: "/issues" },
     { value: "decisions", to: "/decisions" },
     { value: "audits", to: "/audits" },
     { value: "releases", to: "/projects" },
     { value: "attention", to: null },
-] as const satisfies { value: QueueKind | "all"; to: string | null }[];
+] as const satisfies { value: QueueKind; to: string | null }[];
 
 const { t } = useI18n();
 
-const kind = ref("all");
+const kind = ref<string>("issues");
 
 const isKind = (value: string): value is QueueKind => Object.hasOwn(rows, value);
 
-const every = computed(() => Object.values(rows).flat());
-const shown = computed(() => (isKind(kind.value) ? rows[kind.value] : every.value));
+const shown = computed(() => (isKind(kind.value) ? rows[kind.value] : []));
 const page = computed(() => shown.value.slice(0, PAGE_SIZE));
 
-const badgeFor = (value: QueueKind | "all"): number | undefined => {
-    if (value === "all") return every.value.length;
+const badgeFor = (value: QueueKind): number | undefined => {
     if (value === "issues" && !issuesRead) return undefined;
     return rows[value].length;
 };
@@ -95,7 +92,9 @@ const all = computed(() => {
         : null;
 });
 
-const empty = computed(() =>
-    kind.value === "issues" && issuesError ? t("workQueue.githubError") : t("workQueue.empty"),
-);
+const empty = computed(() => {
+    if (kind.value !== "issues") return t("workQueue.empty");
+    if (!issuesRead) return t("workQueue.reading");
+    return issuesError ? t("workQueue.githubError") : t("workQueue.empty");
+});
 </script>
