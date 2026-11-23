@@ -5,6 +5,7 @@ const files = vi.hoisted(() => ({
     readPackages: vi.fn(),
     readTableSources: vi.fn(),
     readNuxtSources: vi.fn(),
+    readWorkflows: vi.fn(),
     projectRoots: vi.fn(),
 }));
 const git = vi.hoisted(() => ({ assertCommit: vi.fn(), manifestAt: vi.fn() }));
@@ -28,6 +29,7 @@ beforeEach(() => {
     files.readPackages.mockReturnValue([]);
     files.readTableSources.mockReturnValue({ boundaries: "", readme: "" });
     files.readNuxtSources.mockReturnValue([]);
+    files.readWorkflows.mockReturnValue([]);
     files.projectRoots.mockReturnValue([]);
     git.assertCommit.mockImplementation((ref: string) => ref);
     git.manifestAt.mockReturnValue({ version: "0.0.1" });

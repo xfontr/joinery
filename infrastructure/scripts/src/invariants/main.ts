@@ -8,6 +8,7 @@ import {
     readNuxtSources,
     readPackages,
     readTableSources,
+    readWorkflows,
 } from "./adapters/files.ts";
 import { assertCommit, manifestAt } from "./adapters/git.ts";
 import { manifestBans } from "./domain/bans.ts";
@@ -15,6 +16,7 @@ import { contractFindings, validatePackage } from "./domain/contracts.ts";
 import { blocking, type Finding } from "./domain/findings.ts";
 import { oneSidedShared } from "./domain/sides.ts";
 import { compareLayoutBlock, compareTagTables } from "./domain/tables.ts";
+import { misnamedWorkflow } from "./domain/workflows.ts";
 
 const versionOf = (manifest: unknown): string | undefined => {
     const version = (manifest as { version?: unknown } | undefined)?.version;
@@ -36,6 +38,7 @@ const collect = (base: string | undefined): Finding[] => {
         ...readNuxtSources().flatMap(oneSidedShared),
         ...compareTagTables(boundaries, readme),
         ...compareLayoutBlock(readme, projectRoots()),
+        ...readWorkflows().flatMap(misnamedWorkflow),
     ];
 };
 

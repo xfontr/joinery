@@ -19,8 +19,8 @@ seconds, such as no unused exports, goes in `pnpm unused:check`, which runs at p
 ```
 index.ts       hands main to run()
 main.ts        collects every finding, prints it, fails on a blocking one
-adapters/      reads manifests, package files and the README; reads a manifest at a git ref
-domain/        the bans, the package contracts, the shared/ sides and the tag-table comparisons
+adapters/      reads manifests, package files, workflows and the README; reads a manifest at a git ref
+domain/        the bans, the package contracts, the shared/ sides, workflow names and the tag tables
 ```
 
 ## What blocks and what warns
@@ -32,6 +32,7 @@ domain/        the bans, the package contracts, the shared/ sides and the tag-ta
 | `version` differs from `--base` | every project manifest | Yes, and only with `--base`, since a release commit moves every version |
 | Name, version, `type`, export targets, peer metadata | `packages/*` | Yes |
 | A `shared/` file reached from only `app/`, or only from `server/`, `tools/`, `modules/` or a `nuxt.config.ts` | every app with a `nuxt.config.ts` | Yes. `shared/` is for code both sides use; specs and stories don't count, and a file nothing uses yet passes |
+| A workflow's file isn't its `name` slugged (`Deploy · Portfolio` → `deploy-portfolio.yml`) | `.github/workflows/` | Yes. The Actions sidebar is flat and sorts by name, so the category prefix is what groups it |
 | The README tag table names the same tags as [`boundaries.ts`](../../../../packages/configs/src/eslint/lib/boundaries.ts) | `README.md` | No. Docs checks stay advisory, per [`0025`](../../../../docs/decisions/0025-check-docs-removal.md) |
 | Every project is in the README's workspace-layout block | `README.md` | No |
 
