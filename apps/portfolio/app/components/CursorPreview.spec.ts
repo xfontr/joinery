@@ -48,6 +48,31 @@ describe("CursorPreview", () => {
         await vi.waitFor(() => expect(wrapper.find("[data-cursor-preview]").text()).toBe("decide"));
     });
 
+    it("pins a corner of the card to the pointer as it moves, since the card stands in for it", async () => {
+        pointer(true);
+        const wrapper = await open("look");
+
+        window.dispatchEvent(new PointerEvent("pointermove", { clientX: 40, clientY: 60 }));
+
+        await vi.waitFor(() =>
+            expect(
+                (wrapper.find("[data-cursor-preview]").element as HTMLElement).style.transform,
+            ).toBe("translate(40px, 60px)"),
+        );
+    });
+
+    it("drops the card on scroll, since the row under a still pointer never reports leaving", async () => {
+        pointer(true);
+        const wrapper = await open("look");
+        const card = () => wrapper.find("[data-cursor-preview]");
+
+        window.dispatchEvent(new Event("scroll"));
+        await vi.waitFor(() => expect(card().exists()).toBe(false));
+
+        window.dispatchEvent(new PointerEvent("pointermove", { clientX: 40, clientY: 60 }));
+        await vi.waitFor(() => expect(card().exists()).toBe(true));
+    });
+
     it("hides the real pointer only while the card stands in for it", async () => {
         pointer(true);
         const wrapper = await open(null);

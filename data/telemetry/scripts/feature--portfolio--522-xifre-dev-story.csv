@@ -1,0 +1,11 @@
+at,script,command,target,flags,area,caller,tty,exit,ms
+2026-11-23,map,,,check,repo,claude-code,0,0,161
+2026-11-23,map,,,check,repo,claude-code,0,0,131
+2026-11-23,map,,,check,repo,claude-code,0,0,130
+2026-11-23,map,,,check,repo,claude-code,0,0,129
+2026-11-23,dev,,,,repo,human,1,1,4109
+2026-11-23,dev,,,,repo,human,1,1,1726
+2026-11-23,dev,,,,repo,human,1,0,24346
+2026-11-23,dev,,,,repo,human,1,0,59583
+2026-11-23,map,,,check,repo,claude-code,0,0,152
+2026-11-23,issue,pick,,title,portfolio,claude-code,0,0,14264

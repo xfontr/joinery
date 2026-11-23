@@ -5,6 +5,7 @@
             :key="item.id"
             :src="item.screenshot"
             alt=""
+            decoding="async"
             class="absolute inset-x-6 top-2 aspect-video border border-default bg-default object-cover object-top shadow-md"
             :class="FAN[index]"
         />
