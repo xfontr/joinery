@@ -7,7 +7,7 @@ export interface WorkflowSource {
     text: string;
 }
 
-const SEPARATOR = " · ";
+const SEPARATOR = " / ";
 
 const fileFor = (name: string): string =>
     `${name.split(SEPARATOR).join("-").toLowerCase().replaceAll(/\s+/g, "-")}.yml`;
@@ -17,7 +17,7 @@ const nameOf = (text: string): string | undefined => {
     return typeof name === "string" ? name : undefined;
 };
 
-/** A workflow whose file isn't its `name` slugged, so `Deploy · Portfolio` sits in `deploy-portfolio.yml`. */
+/** A workflow whose file isn't its `name` slugged, so `Deploy / Portfolio` sits in `deploy-portfolio.yml`. */
 export const misnamedWorkflow = ({ file, text }: WorkflowSource): Finding[] => {
     const name = nameOf(text);
     const expected = name === undefined ? undefined : fileFor(name);

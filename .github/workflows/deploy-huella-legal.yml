@@ -1,4 +1,4 @@
-name: Deploy · Huella Legal
+name: Deploy / Huella Legal
 
 on:
     push:

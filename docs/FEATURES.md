@@ -93,12 +93,12 @@ GitHub Actions, named as the Actions tab shows them rather than by filename.
 | Capability | Declared in | Explained in |
 | --- | --- | --- |
 | `CI` | [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) | [`README.md`](../README.md) |
-| `Deploy · Developer portal` | [`.github/workflows/deploy-developer-portal.yml`](../.github/workflows/deploy-developer-portal.yml) | [`README.md`](../README.md) |
-| `Deploy · Huella Legal` | [`.github/workflows/deploy-huella-legal.yml`](../.github/workflows/deploy-huella-legal.yml) | [`README.md`](../README.md) |
-| `Deploy · Portfolio` | [`.github/workflows/deploy-portfolio.yml`](../.github/workflows/deploy-portfolio.yml) | [`apps/portfolio/README.md`](../apps/portfolio/README.md) |
-| `PR · Docs review` | [`.github/workflows/pr-docs-review.yml`](../.github/workflows/pr-docs-review.yml) | [`README.md`](../README.md) |
-| `PR · Labeler` | [`.github/workflows/pr-labeler.yml`](../.github/workflows/pr-labeler.yml) | [`README.md`](../README.md) |
-| `PR · Metadata` | [`.github/workflows/pr-metadata.yml`](../.github/workflows/pr-metadata.yml) | [`README.md`](../README.md) |
+| `Deploy / Developer portal` | [`.github/workflows/deploy-developer-portal.yml`](../.github/workflows/deploy-developer-portal.yml) | [`README.md`](../README.md) |
+| `Deploy / Huella Legal` | [`.github/workflows/deploy-huella-legal.yml`](../.github/workflows/deploy-huella-legal.yml) | [`README.md`](../README.md) |
+| `Deploy / Portfolio` | [`.github/workflows/deploy-portfolio.yml`](../.github/workflows/deploy-portfolio.yml) | [`apps/portfolio/README.md`](../apps/portfolio/README.md) |
+| `PR / Docs review` | [`.github/workflows/pr-docs-review.yml`](../.github/workflows/pr-docs-review.yml) | [`README.md`](../README.md) |
+| `PR / Labeler` | [`.github/workflows/pr-labeler.yml`](../.github/workflows/pr-labeler.yml) | [`README.md`](../README.md) |
+| `PR / Metadata` | [`.github/workflows/pr-metadata.yml`](../.github/workflows/pr-metadata.yml) | [`README.md`](../README.md) |
 | `Release` | [`.github/workflows/release.yml`](../.github/workflows/release.yml) | [`README.md`](../README.md) |
 | `Security` | [`.github/workflows/security.yml`](../.github/workflows/security.yml) | — |
 

@@ -1,4 +1,4 @@
-name: Deploy · Portfolio
+name: Deploy / Portfolio
 
 # After the portal's deploy rather than on push, because it publishes that run's portal build
 # beneath `/portal/` and prerenders from its `/embed/data.json`.
@@ -6,7 +6,7 @@ on:
     # Only a successful master push gets past the job's `if`, and the checkout is master, never the
     # triggering run's code.
     workflow_run: # zizmor: ignore[dangerous-triggers]
-        workflows: [Deploy · Developer portal]
+        workflows: [Deploy / Developer portal]
         types: [completed]
         branches: [master]
     workflow_dispatch:

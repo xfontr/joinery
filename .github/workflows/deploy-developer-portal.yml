@@ -1,4 +1,4 @@
-name: Deploy · Developer portal
+name: Deploy / Developer portal
 
 on:
     push:

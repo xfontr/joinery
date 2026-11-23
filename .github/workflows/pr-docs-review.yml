@@ -1,4 +1,4 @@
-name: PR · Docs review
+name: PR / Docs review
 
 on:
     pull_request:

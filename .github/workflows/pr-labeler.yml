@@ -1,4 +1,4 @@
-name: PR · Labeler
+name: PR / Labeler
 
 # Labels from the changed paths alone and never checks out the PR's code
 on:

@@ -9,15 +9,15 @@ const flagged = (file: string, name?: string): boolean =>
 
 describe("misnamedWorkflow", () => {
     it.each([
-        ["deploy-developer-portal.yml", "Deploy · Developer portal"],
-        ["pr-docs-review.yml", "PR · Docs review"],
+        ["deploy-developer-portal.yml", "Deploy / Developer portal"],
+        ["pr-docs-review.yml", "PR / Docs review"],
         ["ci.yml", "CI"],
     ])("passes %s named %s", (file, name) => {
         expect(flagged(file, name)).toBe(false);
     });
 
     it("flags a file named after its host rather than its name, as netlify-deployment was", () => {
-        expect(flagged("netlify-deployment.yml", "Deploy · Huella Legal")).toBe(true);
+        expect(flagged("netlify-deployment.yml", "Deploy / Huella Legal")).toBe(true);
     });
 
     it("flags a name whose category drifted from the file's", () => {
