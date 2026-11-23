@@ -1,5 +1,5 @@
 export default defineAppConfig({
-    portalUrl: "https://xifre-dev.pages.dev/portal",
+    portalUrl: "https://xifre.dev/portal",
 
     ui: {
         container: {
