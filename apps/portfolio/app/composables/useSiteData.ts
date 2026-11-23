@@ -27,10 +27,14 @@ const useSiteData = async <T>(key: string, pick: (data: SiteData) => T) => {
     return result;
 };
 
-export const useBenchmarks = () =>
-    useSiteData("benchmarks", ({ benchmarks }) =>
-        benchmarks.map((item) => ({ ...item, screenshot: portalUrl(item.screenshot) })),
+export const useBenchmarks = () => {
+    // Read before the fetch: `useAppConfig()` inside the handler runs after an await, without Nuxt
+    const portal = useAppConfig().portalUrl;
+
+    return useSiteData("benchmarks", ({ benchmarks }) =>
+        benchmarks.map((item) => ({ ...item, screenshot: `${portal}${item.screenshot}` })),
     );
+};
 
 export const useDecisionReports = () => useSiteData("decisions", ({ decisions }) => decisions);
 
