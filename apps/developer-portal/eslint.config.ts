@@ -45,8 +45,6 @@ export default [
         // Pages that predate the length cap; drop a path once its page is split into sections.
         files: [
             "app/pages/index.vue",
-            "app/pages/method.vue",
-            "app/pages/overview.vue",
             "layers/audits/app/pages/audits/index.vue",
             "layers/benchmarks/app/pages/benchmarks/\\[id\\].vue",
             "layers/benchmarks/app/pages/benchmarks/index.vue",
@@ -59,11 +57,9 @@ export default [
             "layers/projects/app/pages/graph.vue",
             "layers/projects/app/pages/projects/\\[name\\].vue",
             "layers/projects/app/pages/projects/index.vue",
-            "layers/projects/app/pages/work/\\[app\\].vue",
             "layers/telemetry/app/pages/telemetry.vue",
             "layers/wiki/app/pages/wiki/\\[...slug\\].vue",
             "layers/wiki/app/pages/wiki/index.vue",
-            "layers/workflows/app/pages/agentic-workflows.vue",
             "layers/workflows/app/pages/workflows/\\[id\\]/index.vue",
             "layers/workflows/app/pages/workflows/\\[id\\]/settings.vue",
             "layers/workflows/app/pages/workflows/index.vue",

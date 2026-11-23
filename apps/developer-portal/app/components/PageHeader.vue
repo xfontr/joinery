@@ -1,7 +1,7 @@
 <template>
     <header class="shrink-0 border-b border-default bg-default pb-5 has-data-tabs:pb-0">
         <div class="flex h-12 items-center gap-2 px-4 surface-ink lg:hidden">
-            <NuxtLink to="/overview" class="font-display text-xl text-highlighted italic">
+            <NuxtLink to="/" class="font-display text-xl text-highlighted italic">
                 {{ $t("pageHeader.wordmark") }}
             </NuxtLink>
             <span v-if="appLabel" class="truncate font-mono text-xs text-muted">
@@ -73,7 +73,7 @@ const trail = computed((): Crumb[] => {
     const app = here.value?.app;
 
     return [
-        { label: t("pageHeader.wordmark"), to: "/overview" },
+        { label: t("pageHeader.wordmark"), to: "/" },
         ...(app && app.id !== "home" ? [{ label: appLabel.value, to: app.entries[0]?.to }] : []),
         ...crumbs,
     ];

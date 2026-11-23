@@ -51,7 +51,7 @@ const serve = ({
     for (const menu of MENUS) serveEndpoint(menu, () => answers[menu] ?? []);
 };
 
-const open = async (route = "/overview") => {
+const open = async (route = "/") => {
     const wrapper = await mountSuspended(Layout, { route });
     await flushPromises();
     return wrapper;
@@ -117,7 +117,7 @@ describe("default layout", () => {
         const wrapper = await open();
 
         expect(tree(wrapper)).toEqual([
-            ["Home", "/overview", []],
+            ["Home", "/", []],
             [
                 "Catalog",
                 "/projects",

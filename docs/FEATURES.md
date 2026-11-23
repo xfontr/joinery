@@ -59,6 +59,8 @@ and are documented once in the [root README](../README.md#getting-started).
 | `pnpm exec nx preview @monorepo/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
 | `pnpm exec nx nuxt-prepare @monorepo/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
 | `pnpm exec nx test:e2e @monorepo/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
+| `pnpm exec nx nuxt-prepare @monorepo/portfolio` | [`apps/portfolio/package.json`](../apps/portfolio/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
+| `pnpm exec nx test:e2e @monorepo/portfolio` | [`apps/portfolio/package.json`](../apps/portfolio/package.json) | [`apps/portfolio/README.md`](../apps/portfolio/README.md) |
 | `pnpm exec nx dev:api @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
 | `pnpm exec nx mocks:reset @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
 | `pnpm exec nx nuxt-prepare @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
@@ -94,6 +96,7 @@ GitHub Actions, named as the Actions tab shows them rather than by filename.
 | `Developer Portal deploy` | [`.github/workflows/developer-portal-deploy.yml`](../.github/workflows/developer-portal-deploy.yml) | [`README.md`](../README.md) |
 | `Focused documentation review` | [`.github/workflows/docs-review.yml`](../.github/workflows/docs-review.yml) | [`README.md`](../README.md) |
 | `Netlify deployment` | [`.github/workflows/netlify-deployment.yml`](../.github/workflows/netlify-deployment.yml) | [`README.md`](../README.md) |
+| `Portfolio deploy` | [`.github/workflows/portfolio-deploy.yml`](../.github/workflows/portfolio-deploy.yml) | [`apps/portfolio/README.md`](../apps/portfolio/README.md) |
 | `PR labeler` | [`.github/workflows/pr-labeler.yml`](../.github/workflows/pr-labeler.yml) | [`README.md`](../README.md) |
 | `PR metadata` | [`.github/workflows/pr-metadata.yml`](../.github/workflows/pr-metadata.yml) | [`README.md`](../README.md) |
 | `Release` | [`.github/workflows/release.yml`](../.github/workflows/release.yml) | [`README.md`](../README.md) |

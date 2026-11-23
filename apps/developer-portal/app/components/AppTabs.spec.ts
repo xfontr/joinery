@@ -21,7 +21,7 @@ describe("AppTabs", () => {
     });
 
     it("renders nothing under an app that does not show its pages as tabs", async () => {
-        const wrapper = await mountSuspended(AppTabs, { route: "/overview" });
+        const wrapper = await mountSuspended(AppTabs, { route: "/" });
 
         expect(wrapper.find("nav").exists()).toBe(false);
     });

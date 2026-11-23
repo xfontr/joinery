@@ -24,6 +24,11 @@ export default {
             // Run by cloudflare/wrangler-action in the deploy workflow, never imported
             ignoreDependencies: ["wrangler"],
         },
+        "apps/portfolio": {
+            entry: ["content.config.ts"],
+            // Run by cloudflare/wrangler-action in the deploy workflow, never imported
+            ignoreDependencies: ["wrangler"],
+        },
         "packages/configs": {
             // A spec runs @playwright/test's `playwright` binary by path
             ignoreDependencies: ["playwright"],

@@ -73,6 +73,7 @@ jobs:
                   path: |
                       apps/huella-legal/.playwright
                       apps/marina-roustan/.playwright
+                      apps/portfolio/.playwright
 
     # Needs a base ref to diff against, so it's meaningless on a push to master.
     dependency-review:

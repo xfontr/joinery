@@ -55,10 +55,8 @@
     "@nuxt/ui": "^4.11.0",
     "@nuxtjs/i18n": "catalog:",
     "@nuxtjs/robots": "^7.0.2",
-    "@nuxtjs/sitemap": "^9.1.0",
     "@vueuse/core": "^15.0.0",
     "nuxt": "catalog:",
-    "nuxt-schema-org": "^7.0.1",
     "nuxt-seo-utils": "^9.0.2",
     "vue": "catalog:",
     "vue-draggable-plus": "^0.6.1",
@@ -78,7 +76,6 @@
     "serve-handler": "^6.1.8",
     "tailwindcss": "^4.3.3",
     "typescript": "catalog:",
-    "vite-imagetools": "^12.0.2",
     "vitest": "catalog:",
     "vue-tsc": "catalog:",
     "wrangler": "^4.166.0"

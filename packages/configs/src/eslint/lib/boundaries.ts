@@ -34,6 +34,10 @@ const boundaries: object = {
                         onlyDependOnLibsWithTags: ["scope:marina-roustan", "scope:shared"],
                     },
                     {
+                        sourceTag: "scope:portfolio",
+                        onlyDependOnLibsWithTags: ["scope:portfolio", "scope:shared"],
+                    },
+                    {
                         sourceTag: "scope:internal",
                         onlyDependOnLibsWithTags: ["scope:internal", "scope:shared"],
                     },

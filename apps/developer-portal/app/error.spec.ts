@@ -22,21 +22,14 @@ beforeEach(() => {
 });
 
 describe("error page", () => {
-    it("renders inside the visitor layout, so a reader who lands on it can still navigate away", async () => {
-        const wrapper = await mountError(NOT_FOUND);
-
-        expect(wrapper.find("[data-identity] header").exists()).toBe(true);
-        expect(wrapper.find("[data-identity] main h1").exists()).toBe(true);
-    });
-
-    it("links a 404 back to the front page and the developer view", async () => {
+    it("links a 404 back to the overview", async () => {
         const wrapper = await mountError(NOT_FOUND);
 
         const links = wrapper
             .findAll("[data-error='not-found'] a")
             .map((a) => a.attributes("href"));
 
-        expect(links).toEqual(["/", "/overview"]);
+        expect(links).toEqual(["/"]);
     });
 
     it.each([500, 503])(

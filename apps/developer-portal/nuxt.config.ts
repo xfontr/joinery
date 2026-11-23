@@ -1,5 +1,4 @@
 import { resolve } from "node:path";
-import { imagetools } from "vite-imagetools";
 
 // `@nuxtjs/i18n` imports this too, and loading both at once trips a Node ESM-loader assert
 await import("vue-router/unplugin");
@@ -11,15 +10,7 @@ const SITE_URL = "https://xfontr-monorepo.pages.dev";
 export default defineNuxtConfig({
     compatibilityDate: "2025-01-15",
 
-    modules: [
-        "@nuxtjs/i18n",
-        "@nuxt/ui",
-        "@nuxt/content",
-        "@nuxtjs/robots",
-        "@nuxtjs/sitemap",
-        "nuxt-schema-org",
-        "nuxt-seo-utils",
-    ],
+    modules: ["@nuxtjs/i18n", "@nuxt/ui", "@nuxt/content", "@nuxtjs/robots", "nuxt-seo-utils"],
 
     ssr: true,
     devtools: false,
@@ -69,21 +60,13 @@ export default defineNuxtConfig({
         header: false,
     },
 
-    schemaOrg: {
-        identity: {
-            type: "Person",
-            name: "Xifré Font",
-            jobTitle: "Senior frontend developer",
-            sameAs: ["https://www.linkedin.com/in/xifre/", "https://github.com/xfontr"],
-        },
-    },
-
     routeRules: {
-        "/overview/**": { robots: "noindex, follow" },
+        "/**": { robots: "noindex, follow" },
     },
 
     nitro: {
         prerender: {
+            routes: ["/embed/data.json"],
             ignore: ["/huella-legal-storybook/"],
         },
 
@@ -93,8 +76,6 @@ export default defineNuxtConfig({
     },
 
     vite: {
-        plugins: [imagetools()],
-
         server: {
             fs: {
                 allow: [WORKSPACE_ROOT],

@@ -6,7 +6,7 @@ const link = (to: string): NavLink => ({ icon: "i-lucide-circle", to });
 const t = (key: string): string => key;
 
 const NAV = {
-    overview: link("/overview"),
+    overview: link("/"),
     projects: link("/projects"),
     coverage: link("/coverage"),
     deps: link("/deps"),

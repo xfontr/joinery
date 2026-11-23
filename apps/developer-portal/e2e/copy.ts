@@ -9,17 +9,6 @@ const MESSAGES = JSON.parse(
 /** The app's copy by key, read from the same file the build bundles. */
 export const t = createT(MESSAGES);
 
-/** Every page the visitor layout serves, and so every page search engines may list. */
-export const VISITOR_PAGES = [
-    "/",
-    "/about/",
-    "/method/",
-    "/agentic-workflows/",
-    "/work/",
-    "/work/huella-legal/",
-    "/work/marina-roustan/",
-];
-
 /**
  * What a missing page logs: the 404 document, then the router's miss, reported as a boot error
  * because a static 404 boots the app from `404.html`. One pattern, since Playwright reads a second

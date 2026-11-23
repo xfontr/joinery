@@ -7,7 +7,7 @@ const link = (to: string): NavLink => ({ icon: "i-lucide-circle", to });
 const t = (key: string): string => key;
 
 const NAV = {
-    overview: link("/overview"),
+    overview: link("/"),
     docs: link("/wiki"),
     decisions: link("/decisions"),
     audits: link("/audits"),
@@ -53,7 +53,7 @@ describe("searchGroups", () => {
         const [pages] = groupsOf(NAV);
 
         expect(pages?.items?.map((item) => [item.label, item.to])).toEqual([
-            ["app.nav.overview", "/overview"],
+            ["app.nav.overview", "/"],
             ["app.nav.docs", "/wiki"],
             ["app.nav.decisions", "/decisions"],
             ["app.nav.audits", "/audits"],
@@ -63,7 +63,7 @@ describe("searchGroups", () => {
 
     it("sends each record to the page that renders it, and its folder's README to the wiki", () => {
         expect(destinations()).toEqual([
-            ["app.search.pages", ["/overview", "/wiki", "/decisions", "/audits", "/benchmarks"]],
+            ["app.search.pages", ["/", "/wiki", "/decisions", "/audits", "/benchmarks"]],
             ["app.nav.decisions", ["/decisions/0036-ui", "/decisions/0036-ui#context"]],
             ["app.nav.audits", ["/audits/2026-09-25-portal"]],
             ["app.nav.benchmarks", ["/benchmarks/rauno-me"]],
