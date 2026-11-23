@@ -188,6 +188,7 @@ describe("home page", () => {
             },
         });
         const wrapper = await open();
+        await wrapper.findComponent({ name: "UTabs" }).setValue("releases");
         const queue = hrefs(wrapper).filter((href) => href?.startsWith("/projects/"));
 
         expect(queue).toEqual(["/projects/big", "/projects/small"]);
@@ -277,6 +278,7 @@ describe("home page", () => {
             },
         });
         const wrapper = await open();
+        await wrapper.findComponent({ name: "UTabs" }).setValue("attention");
 
         expect(hrefs(wrapper)).toContain("/wiki/docs/a");
         expect(wrapper.text()).toContain("Drift");
