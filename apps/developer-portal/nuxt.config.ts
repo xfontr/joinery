@@ -30,6 +30,9 @@ export default defineNuxtConfig({
     ssr: true,
     devtools: false,
 
+    // `@nuxt/schema` 4.6 resolves an unset host to `{}`, which `nuxt dev` then crashes on
+    devServer: { host: "localhost" },
+
     typescript: {
         typeCheck: false,
         tsConfig: {
