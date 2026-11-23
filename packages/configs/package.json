@@ -1,5 +1,5 @@
 {
-  "name": "@monorepo/configs",
+  "name": "@joinery/configs",
   "version": "0.0.18",
   "description": "shared ESLint, Vitest, Playwright and tsconfig presets",
   "private": true,

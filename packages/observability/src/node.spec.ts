@@ -35,7 +35,7 @@ vi.mock("@opentelemetry/instrumentation", () => ({
 }));
 
 const url = "https://otlp-gateway-prod-eu-west-0.grafana.net/otlp";
-const app = { name: "@monorepo/external", version: "1.0.0", environment: "production" };
+const app = { name: "@joinery/external", version: "1.0.0", environment: "production" };
 
 type Config = Parameters<typeof startNodeTelemetry>[0];
 

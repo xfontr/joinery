@@ -47,7 +47,7 @@ interface Props {
 
 const { manifest, artifact, source } = defineProps<Props>();
 
-const COLLECT = "pnpm exec nx collect @monorepo/developer-portal";
+const COLLECT = "pnpm exec nx collect @joinery/developer-portal";
 
 const { t } = useI18n();
 

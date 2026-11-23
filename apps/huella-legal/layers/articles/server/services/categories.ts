@@ -1,4 +1,4 @@
-import { MAX_PER_PAGE } from "@monorepo/content";
+import { MAX_PER_PAGE } from "@joinery/content";
 import type { H3Event } from "h3";
 import type { Category } from "../../shared/types/Category";
 import { toCategory } from "../mappers/articleSummary";

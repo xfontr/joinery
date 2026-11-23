@@ -1,5 +1,5 @@
-import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
-import { fakeAsset, fakeAuthor } from "@monorepo/content/testing";
+import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
+import { fakeAsset, fakeAuthor } from "@joinery/content/testing";
 import { mockNuxtImport, registerEndpoint } from "@nuxt/test-utils/runtime";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useArticle } from "./useArticle";

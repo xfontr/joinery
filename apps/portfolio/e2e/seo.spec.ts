@@ -1,4 +1,4 @@
-import { expect, test } from "@monorepo/configs/playwright/utils/test";
+import { expect, test } from "@joinery/configs/playwright/utils/test";
 import { NOT_FOUND, PAGES } from "./copy.ts";
 
 const SITE_NAME = "Xifré Font";

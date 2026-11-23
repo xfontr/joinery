@@ -1,7 +1,8 @@
 ---
 issue: 474
 status: to-implement
-decision: accepted
+decision: superseded
+supersededBy: 0041-personal-site-splits-from-developer-portal.md
 ---
 
 # 🧭 Visitors land on the front page and toggle to the developer view

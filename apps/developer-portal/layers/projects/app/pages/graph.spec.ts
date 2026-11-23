@@ -61,7 +61,7 @@ const MESSAGES = {
         title: "Project map",
     },
     pageHeader: {
-        wordmark: "monorepo",
+        wordmark: "joinery",
     },
     snapshotAge: {
         at: "At {commit} on {branch}",

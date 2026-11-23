@@ -159,7 +159,7 @@ subdividing `docs/`.
 **Changes 1–6 are in the repo; change 7 is not, which is why `status` stays `to-implement` rather
 than flipping.** Verified per change:
 
-1. `pnpm exec nx check-docs @monorepo/developer-portal` runs in CI (`ci.yml`) and fails on a broken link
+1. `pnpm exec nx check-docs @joinery/developer-portal` runs in CI (`ci.yml`) and fails on a broken link
    or a mirrored-invariant finding, over every tracked doc rather than only a Claude Code edit.
 2. `ls docs/decisions/` runs `0001`–`0012` with no gaps and no repeats, and every report carries an
    `issue:` field. The check in 3 fails if a thirteenth report reuses a number.

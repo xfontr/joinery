@@ -1,5 +1,5 @@
 {
-  "name": "@monorepo/developer-portal",
+  "name": "@joinery/developer-portal",
   "description": "the repository's public portal/front door over its docs, projects, architecture and engineering health",
   "private": true,
   "type": "module",
@@ -64,7 +64,7 @@
     "yaml": "^2.9.1"
   },
   "devDependencies": {
-    "@monorepo/configs": "workspace:*",
+    "@joinery/configs": "workspace:*",
     "@nuxt/test-utils": "^4.3.2",
     "@playwright/test": "catalog:",
     "@types/node": "catalog:",

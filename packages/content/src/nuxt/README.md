@@ -1,6 +1,6 @@
-# 🟢 @monorepo/content/nuxt
+# 🟢 @joinery/content/nuxt
 
-The Nuxt integration for [`@monorepo/content`](../../README.md): one config block gives server code a
+The Nuxt integration for [`@joinery/content`](../../README.md): one config block gives server code a
 cached `useContent(event)`. Nothing is reachable from the browser; an app exposes content through
 its own routes.
 
@@ -8,7 +8,7 @@ its own routes.
 
 ```ts
 export default defineNuxtConfig({
-    modules: ["@monorepo/content/nuxt"],
+    modules: ["@joinery/content/nuxt"],
     content: { vendor: { name: "wordpress", baseURL: "" } }, // filled from NUXT_CONTENT_VENDOR_BASE_URL
 });
 ```

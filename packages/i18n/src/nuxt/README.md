@@ -1,6 +1,6 @@
-# 🟢 @monorepo/i18n/nuxt
+# 🟢 @joinery/i18n/nuxt
 
-The Nuxt integration for [`@monorepo/i18n`](../../README.md). It installs and configures
+The Nuxt integration for [`@joinery/i18n`](../../README.md). It installs and configures
 `@nuxtjs/i18n`, registers a loader per locale, and serves messages through a cached route, so the TMS
 URL and token never reach the browser.
 
@@ -8,7 +8,7 @@ URL and token never reach the browser.
 
 ```ts
 export default defineNuxtConfig({
-    modules: ["@monorepo/i18n/nuxt"],
+    modules: ["@joinery/i18n/nuxt"],
     translations: {
         vendor: { name: "internal", project: "external", baseURL: "" },
     },

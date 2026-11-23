@@ -6,7 +6,7 @@ description: The spec conventions for this repo — globals are off, specs sit b
 # Writing specs here
 
 One recipe. None of it is configured per project — every `vitest.config.ts` in the workspace builds
-on [`@monorepo/configs`](../../../packages/configs/src/vitest/node.ts), so the conventions below are
+on [`@joinery/configs`](../../../packages/configs/src/vitest/node.ts), so the conventions below are
 the whole of what makes a spec fit in. The test a spec has to pass: **a change to behaviour fails
 it, and a change that alters no behaviour — rewording copy, moving a margin, reordering two
 independent calls — leaves it green.**
@@ -20,7 +20,7 @@ independent calls — leaves it green.**
   `translationsKey.spec.ts`. There is no `__tests__` and no fixtures directory anywhere in the
   workspace; the `__mocks__` folders in huella-legal's layers feed Storybook and no spec reads them.
   Test data is a `const` at the top of the file it belongs to, and a content domain value (`Entry`,
-  `Term`, `Author`, `Asset`) comes from the seeded `fake*` factories in `@monorepo/content/testing`,
+  `Term`, `Author`, `Asset`) comes from the seeded `fake*` factories in `@joinery/content/testing`,
   overriding only the fields the test asserts on. Any other incidental value (a bio, a heading, a
   paragraph) comes from the same entry's seeded `faker`. The one exception is an app's `e2e/`:
   Playwright specs, the `server.ts` MSW preload, its `fakes.ts` data, `vendors.ts`, the shared
@@ -29,7 +29,7 @@ independent calls — leaves it green.**
 - **Console output fails the spec.** The presets' setup file records every `console` call and throws
   after the test, so expected output is stubbed and asserted on:
   `vi.spyOn(console, "warn").mockImplementation(() => {})`. The guard restores every spy after each
-  test. Playwright specs import `test` from `@monorepo/configs/playwright/utils/test`, which fails on browser
+  test. Playwright specs import `test` from `@joinery/configs/playwright/utils/test`, which fails on browser
   output. [`0032`](../../../docs/decisions/0032-console-output-policy.md) has the policy.
 
 ## Titles name the failure, not the function
@@ -76,8 +76,8 @@ A mock sits at the edge of what the code owns, never inside it.
 | --- | --- | --- |
 | A Nuxt module | `vi.mock("@nuxt/kit")` | [`module.spec.ts`](../../../packages/content/src/nuxt/module.spec.ts) |
 | A cached server route in a package | `nitropack/runtime` + `ofetch` | [`translations.get.spec.ts`](../../../packages/i18n/src/nuxt/runtime/server/translations.get.spec.ts) |
-| A route, middleware or plugin in an app's `server/` | `stubNitro()` from `@monorepo/configs/vitest/utils/nitro`, before the dynamic `import()` | [`contact.post.spec.ts`](../../../apps/huella-legal/layers/contact/server/api/contact.post.spec.ts) |
-| A page or composable reading the app's own API | `serveEndpoint` from `@monorepo/configs/vitest/utils/nuxt` answers the route until the test ends; the real `useFetch` runs | [`WorkflowHomePanel.spec.ts`](../../../apps/developer-portal/layers/workflows/app/components/WorkflowHomePanel.spec.ts) |
+| A route, middleware or plugin in an app's `server/` | `stubNitro()` from `@joinery/configs/vitest/utils/nitro`, before the dynamic `import()` | [`contact.post.spec.ts`](../../../apps/huella-legal/layers/contact/server/api/contact.post.spec.ts) |
+| A page or composable reading the app's own API | `serveEndpoint` from `@joinery/configs/vitest/utils/nuxt` answers the route until the test ends; the real `useFetch` runs | [`WorkflowHomePanel.spec.ts`](../../../apps/developer-portal/layers/workflows/app/components/WorkflowHomePanel.spec.ts) |
 | A developer-portal page reading a snapshot artifact | `mockNuxtImport("<name>Artifact")` over a `vi.hoisted` state, reset in a `beforeEach` | [`coverage.spec.ts`](../../../apps/developer-portal/layers/health/app/pages/coverage.spec.ts) |
 | A composable reading a third-party API | `serveEndpoint` on the absolute URL | [`useIssues.spec.ts`](../../../apps/developer-portal/layers/github/app/composables/useIssues.spec.ts) |
 | Nuxt Content | `mockNuxtImport("queryCollection")` returning an in-memory collection | [`changelog.spec.ts`](../../../apps/developer-portal/layers/projects/app/pages/changelog.spec.ts) |
@@ -123,8 +123,8 @@ reaching for a module mock there means the injection was skipped.
 | Need | Use |
 | --- | --- |
 | Name a control | `getByRole("button", { name: t("newsletterForm.submit") })`, with `t` from the app's `e2e/copy.ts` — it throws on a missing key, so the spec survives a reword but not a lost key |
-| WCAG 2.1 AA | `expect(await axeViolations(page)).toEqual([])` from `@monorepo/configs/playwright/utils/a11y` |
-| No bare message keys | `rawKeysIn(text, MESSAGES)` from `@monorepo/configs/playwright/utils/i18n`; huella-legal's `smoke.spec.ts` walks the main routes with it |
+| WCAG 2.1 AA | `expect(await axeViolations(page)).toEqual([])` from `@joinery/configs/playwright/utils/a11y` |
+| No bare message keys | `rawKeysIn(text, MESSAGES)` from `@joinery/configs/playwright/utils/i18n`; huella-legal's `smoke.spec.ts` walks the main routes with it |
 
 ## The two specs that pin invariants rather than behaviour
 
@@ -139,7 +139,7 @@ Both are easy to break by accident and neither is optional:
 
 ```sh
 pnpm check                                 # affected lint, typecheck and test, failures inline
-pnpm exec nx test @monorepo/<name>         # the test target alone, full output
+pnpm exec nx test @joinery/<name>         # the test target alone, full output
 pnpm exec nx run-many -t test              # the whole workspace
 ```
 

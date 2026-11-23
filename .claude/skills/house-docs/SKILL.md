@@ -18,7 +18,7 @@ code, ADRs and git history; a doc earns its place by holding what those can't sh
 
 ## Shape
 
-- Title: one emoji, then the name — `# 📦 @monorepo/<name>` for a package.
+- Title: one emoji, then the name — `# 📦 @joinery/<name>` for a package.
 - Open with one or two sentences: what it is and what it's for. No badges, no feature list.
 - `##` and deeper headings are plain text in sentence case, no emoji: the title carries the only one.
   Use only the sections the thing needs.

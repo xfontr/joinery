@@ -44,7 +44,7 @@
 <script setup lang="ts">
 const GIT = ".git";
 const FOLDER = "data/telemetry/scripts";
-const COLLECT = "pnpm exec nx collect @monorepo/developer-portal";
+const COLLECT = "pnpm exec nx collect @joinery/developer-portal";
 
 const { usage, hasRuns, provenance, facts } = useTelemetryPage();
 const series = ref("runs");

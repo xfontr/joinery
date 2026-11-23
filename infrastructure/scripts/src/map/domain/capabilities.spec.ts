@@ -50,18 +50,18 @@ describe("rootCommands", () => {
 describe("projectCommands", () => {
     it("drops the targets every project declares, leaving only what is specific to one", () => {
         const rows = projectCommands(
-            [{ root: "packages/ui", name: "@monorepo/ui", scripts: ["lint", "test", "storybook"] }],
+            [{ root: "packages/ui", name: "@joinery/ui", scripts: ["lint", "test", "storybook"] }],
             [],
         );
 
         expect(rows).toEqual([
-            command("pnpm exec nx storybook @monorepo/ui", "packages/ui/package.json", "storybook"),
+            command("pnpm exec nx storybook @joinery/ui", "packages/ui/package.json", "storybook"),
         ]);
     });
 
     it("drops a script the root already exposes, so one capability never gets two invocations", () => {
         const rows = projectCommands(
-            [{ root: "infrastructure/scripts", name: "@monorepo/scripts", scripts: ["issue:add"] }],
+            [{ root: "infrastructure/scripts", name: "@joinery/scripts", scripts: ["issue:add"] }],
             ["issue:add"],
         );
 
@@ -131,7 +131,7 @@ describe("documentedBy", () => {
             },
         ];
         const capability = command(
-            "pnpm exec nx storybook @monorepo/ui",
+            "pnpm exec nx storybook @joinery/ui",
             "packages/ui/package.json",
             "storybook",
         );

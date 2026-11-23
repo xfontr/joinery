@@ -15,7 +15,7 @@ import {
 import { displayName, projectRootsFor, recordFingerprint, shouldWarn } from "./domain/detect.ts";
 import { changeSize, lastMdCommitMs } from "./domain/size.ts";
 
-const PROJECT = "Monorepo";
+const PROJECT = "Joinery";
 const CACHE_KEY = "drift-fingerprints";
 
 /** Resolves to whether someone answered, which is what makes the diff safe to stop asking about. */

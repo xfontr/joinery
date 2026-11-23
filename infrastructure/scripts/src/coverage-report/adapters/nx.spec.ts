@@ -35,14 +35,14 @@ const spawnProcess = () => {
 
 beforeEach(() => {
     vi.clearAllMocks();
-    fs.readFileSync.mockReturnValue(JSON.stringify(["@monorepo/ui"]));
+    fs.readFileSync.mockReturnValue(JSON.stringify(["@joinery/ui"]));
 });
 
 describe("projectsWithCoverage", () => {
     it("discovers project outputs through Nx and cleans its temporary output", async () => {
         const process = spawnProcess();
         child.spawn.mockReturnValue(process);
-        fs.readFileSync.mockReturnValueOnce(JSON.stringify(["@monorepo/ui"])).mockReturnValueOnce(
+        fs.readFileSync.mockReturnValueOnce(JSON.stringify(["@joinery/ui"])).mockReturnValueOnce(
             JSON.stringify({
                 root: "packages/ui",
                 targets: { "test:coverage": { outputs: ["{projectRoot}/coverage"] } },
@@ -57,7 +57,7 @@ describe("projectsWithCoverage", () => {
         >;
         projectProcess.finish(0);
         await expect(result).resolves.toEqual([
-            { name: "@monorepo/ui", root: "packages/ui", outputs: ["{projectRoot}/coverage"] },
+            { name: "@joinery/ui", root: "packages/ui", outputs: ["{projectRoot}/coverage"] },
         ]);
         expect(fs.rmSync).toHaveBeenCalledWith("/tmp/coverage-run", {
             recursive: true,
@@ -68,7 +68,7 @@ describe("projectsWithCoverage", () => {
     it("rejects with stderr when Nx exits unsuccessfully", async () => {
         const process = spawnProcess();
         child.spawn.mockReturnValue(process);
-        fs.readFileSync.mockReturnValue(JSON.stringify(["@monorepo/ui"]));
+        fs.readFileSync.mockReturnValue(JSON.stringify(["@joinery/ui"]));
         const result = projectsWithCoverage();
         process.stderr.on.mock.calls[0]?.[1](Buffer.from("nx failed"));
         process.finish(1);
@@ -83,7 +83,7 @@ describe("projectsWithCoverage", () => {
     it("uses the exit status when Nx fails without stderr", async () => {
         const process = spawnProcess();
         child.spawn.mockReturnValue(process);
-        fs.readFileSync.mockReturnValue(JSON.stringify(["@monorepo/ui"]));
+        fs.readFileSync.mockReturnValue(JSON.stringify(["@joinery/ui"]));
         const result = projectsWithCoverage();
         process.finish(7);
 

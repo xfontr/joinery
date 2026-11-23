@@ -44,7 +44,7 @@ describe("eslint factories", () => {
         });
 
         expect(result?.messages.map(({ ruleId }) => ruleId)).toContain(
-            "monorepo/require-route-meta",
+            "joinery/require-route-meta",
         );
     });
 
@@ -91,10 +91,10 @@ describe("eslint factories", () => {
         const vue = await resolve(createVueConfig(), "lib/Button.vue");
         const nuxt = await resolve(createNuxtConfig(), "server/api/items.get.ts");
 
-        expect(node?.["monorepo/require-route-meta"]).toBeUndefined();
-        expect(nuxt?.["monorepo/require-route-meta"]).toBeUndefined();
-        expect(severity(vue?.["monorepo/no-template-call"])).toBe(2);
-        expect(severity(vue?.["monorepo/props-shape"])).toBe(2);
+        expect(node?.["joinery/require-route-meta"]).toBeUndefined();
+        expect(nuxt?.["joinery/require-route-meta"]).toBeUndefined();
+        expect(severity(vue?.["joinery/no-template-call"])).toBe(2);
+        expect(severity(vue?.["joinery/props-shape"])).toBe(2);
         expect(severity(vue?.["vue/no-v-html"])).toBe(2);
     });
 
@@ -102,8 +102,8 @@ describe("eslint factories", () => {
         const script = await resolve(createNodeConfig(), "src/report.ts");
         const component = await resolve(createNuxtConfig(), "app/App.vue");
 
-        expect(severity(script?.["monorepo/disable-needs-reason"])).toBe(2);
-        expect(severity(component?.["monorepo/disable-needs-reason"])).toBe(2);
+        expect(severity(script?.["joinery/disable-needs-reason"])).toBe(2);
+        expect(severity(component?.["joinery/disable-needs-reason"])).toBe(2);
     });
 
     it("runs ESLint's core recommended rules in a Nuxt app without tripping on auto-imports", async () => {
@@ -163,11 +163,11 @@ describe("eslint factories", () => {
         const rules = await resolve(createNuxtConfig(), "app/components/Thing.spec.ts");
         const source = await resolve(createNuxtConfig(), "app/components/Thing.ts");
 
-        expect(severity(rules?.["monorepo/no-implementation-details"])).toBe(2);
+        expect(severity(rules?.["joinery/no-implementation-details"])).toBe(2);
         expect(JSON.stringify(rules?.["vitest/no-restricted-matchers"])).toContain(
             "toHaveBeenNthCalledWith",
         );
-        expect(source?.["monorepo/no-implementation-details"]).toBeUndefined();
+        expect(source?.["joinery/no-implementation-details"]).toBeUndefined();
     });
 
     it("checks i18n keys in app code but never in specs, whose messages are placeholders", async () => {
@@ -187,9 +187,9 @@ describe("eslint factories", () => {
         const layer = await resolve(config, "layers/audits/app/utils/format.ts");
         const shell = await resolve(config, "app/pages/index.vue");
 
-        expect(severity(layer?.["monorepo/layer-boundaries"])).toBe(2);
+        expect(severity(layer?.["joinery/layer-boundaries"])).toBe(2);
         expect(await importBans(config, "layers/audits/app/utils/format.ts")).toContain("tools");
-        expect(shell?.["monorepo/layer-boundaries"]).toBeUndefined();
+        expect(shell?.["joinery/layer-boundaries"]).toBeUndefined();
     });
 
     it("lints the kit paths an app names and still leaves the rest of the shell alone", async () => {
@@ -200,8 +200,8 @@ describe("eslint factories", () => {
         const kit = await resolve(config, "app/composables/useTrack.ts");
         const shell = await resolve(config, "app/layouts/default.vue");
 
-        expect(severity(kit?.["monorepo/layer-boundaries"])).toBe(2);
-        expect(shell?.["monorepo/layer-boundaries"]).toBeUndefined();
+        expect(severity(kit?.["joinery/layer-boundaries"])).toBe(2);
+        expect(shell?.["joinery/layer-boundaries"]).toBeUndefined();
     });
     it("caps the blocks of a page, in a layer too, but not a lab page or a component", async () => {
         const config = createNuxtConfig();

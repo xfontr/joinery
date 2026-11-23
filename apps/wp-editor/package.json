@@ -1,5 +1,5 @@
 {
-  "name": "@monorepo/wp-editor",
+  "name": "@joinery/wp-editor",
   "description": "local-only review-and-apply tool for bulk edits to WordPress posts and pages",
   "private": true,
   "type": "module",
@@ -45,7 +45,7 @@
     "vue": "catalog:"
   },
   "devDependencies": {
-    "@monorepo/configs": "workspace:*",
+    "@joinery/configs": "workspace:*",
     "@nuxt/test-utils": "^4.3.2",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",

@@ -1,4 +1,4 @@
-# 🤖 @monorepo/observability
+# 🤖 @joinery/observability
 
 See [README.md](./README.md) — it documents both entry points, what each instruments for free, and
 where the data lands.
@@ -7,7 +7,7 @@ The invariants worth losing a build over:
 
 - **This is not a ports-and-adapters package, and that is deliberate.** Both entries are wrappers
   over their vendor, not an abstraction over telemetry vendors: no ports, no adapters, no registry,
-  no `configProblems()`. `@monorepo/i18n` and `@monorepo/content` argue the other way because they
+  no `configProblems()`. `@joinery/i18n` and `@joinery/content` argue the other way because they
   expect a second vendor; this one does not. Don't harmonise them.
 - **The two entries must never import each other.** [`src/index.ts`](./src/index.ts) touches
   `window`; [`src/node.ts`](./src/node.ts) pulls in `diagnostics_channel`, `node:async_hooks` and a
@@ -20,5 +20,5 @@ The invariants worth losing a build over:
 - `app.version` is supplied by the caller. Nothing here invents one; telemetry stamped `0.0.0`
   cannot be attributed to a release.
 
-Tagged `type:observability`, so it may depend only on `@monorepo/configs`. Nothing in the workspace
+Tagged `type:observability`, so it may depend only on `@joinery/configs`. Nothing in the workspace
 may depend on it except an app.

@@ -1,4 +1,4 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
+import { serveEndpoint } from "@joinery/configs/vitest/utils/nuxt";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";

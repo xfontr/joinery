@@ -1,4 +1,4 @@
-import { faker, fakeAuthor } from "@monorepo/content/testing";
+import { faker, fakeAuthor } from "@joinery/content/testing";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";

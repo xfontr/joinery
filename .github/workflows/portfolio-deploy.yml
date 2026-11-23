@@ -30,7 +30,7 @@ jobs:
             - uses: ./.github/actions/install
 
             - name: Prerender the site
-              run: pnpm exec nx build-static @monorepo/portfolio
+              run: pnpm exec nx build-static @joinery/portfolio
               env:
                   NUXT_PUBLIC_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
                   NUXT_PUBLIC_DATA_URL: https://xfontr-monorepo.pages.dev/embed/data.json

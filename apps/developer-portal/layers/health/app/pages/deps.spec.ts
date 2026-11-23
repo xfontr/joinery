@@ -74,7 +74,7 @@ const MESSAGES = {
         upToDate: "Everything is on its wanted version.",
     },
     pageHeader: {
-        wordmark: "monorepo",
+        wordmark: "joinery",
     },
 };
 

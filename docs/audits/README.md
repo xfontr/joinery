@@ -31,7 +31,7 @@ A findings table has an `ID` and a `Status` column, typically with `Where`, `Wha
 
 ```
 ---
-scope: "@monorepo/developer-portal"
+scope: "@joinery/developer-portal"
 commit: "61b6f7f"
 ---
 ```

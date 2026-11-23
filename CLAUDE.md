@@ -9,7 +9,7 @@ and a `PreToolUse` guard that keeps agents off live systems.
 ## Style
 
 - 4-space indent, double quotes, semicolons, 100 columns. Prettier enforces it as an ESLint rule
-  through `@monorepo/configs`, so `pnpm exec eslint --fix`, run from the project's directory since
+  through `@joinery/configs`, so `pnpm exec eslint --fix`, run from the project's directory since
   the root has no `eslint` binary, settles any argument. There is no
   `.prettierrc`, so a Prettier editor extension would format with its own defaults; the workspace
   settings turn it off and leave formatting to the ESLint extension.
@@ -100,7 +100,7 @@ far outside that is worth opening. The `comment-cleanup` skill runs the pass.
   escaping, validation, dates — add the package to the project that needs it, without asking. A new
   dependency is not a cost to argue down; reimplementing one is. A short dependency list is not a
   reason to keep it short.
-- Internal: `"@monorepo/x": "workspace:*"`. Every project also has `@monorepo/configs` in
+- Internal: `"@joinery/x": "workspace:*"`. Every project also has `@joinery/configs` in
   `devDependencies`.
 - Shared third-party (nuxt, vue, typescript, vitest, playwright, eslint, node types, hono):
   `"catalog:"`,
@@ -122,8 +122,8 @@ changed since `master`, same as CI and the pre-push hook.
 | Branch off an issue | `pnpm issue:pick <number> [--type=…] [--project=…] [--title=…]` — only when asked |
 | A new worktree that won't lint | `pnpm worktree:prepare <path>`, from an installed checkout |
 | The whole workspace | `pnpm exec nx run-many -t <target>` |
-| One project | `pnpm exec nx <target> @monorepo/<name>` |
-| What targets a project has | `pnpm exec nx show project @monorepo/<name>` |
+| One project | `pnpm exec nx <target> @joinery/<name>` |
+| What targets a project has | `pnpm exec nx show project @joinery/<name>` |
 | Why something rebuilt | `pnpm graph` |
 
 Reach for `pnpm check` over a bare `nx` call. Nx switches to `--outputStyle=summary` when it detects
@@ -140,7 +140,7 @@ the traps in it.
 - Branches must match `^(hotfix|fix|feature|release)/[^/]+/[0-9]+-.+`, and `master` is not
   pushable. `pnpm issue:pick` builds `<type>/<area>/<issue number>-<slug>`, `<area>` being the
   folder the issue's `app:`/`package:`/`infra:` label names, or `repo` without one. There is one gh
-  Project board, `Monorepo`; a finite effort is a milestone, not a new board.
+  Project board, `Joinery`; a finite effort is a milestone, not a new board.
 - [`commitlint.config.mjs`](./commitlint.config.mjs) just extends `@commitlint/config-conventional`
   with no overrides, and two of that preset's rules aren't obvious from a rejection message: the
   **type is lower-case** and the **subject is not** sentence-case, start-case, Pascal-case or
@@ -192,10 +192,10 @@ the symptom is `lint` failing to parse every file rather than anything mentionin
 | `decision-report` | "Do a spike on this" — research an architectural question and write the answer to `docs/decisions/`. Filing the *issue* is `github-issue` |
 | `audit-report` | "Audit X", "static analysis of X" — a numbered findings list for one project, filed to `docs/audits/` and worked down finding by finding |
 | `benchmark` | "Benchmark X", "find references for X" — sourced from juried galleries, analysed site by site, synthesised into what to take and how; written up with `decision-report` |
-| `content-new-vendor` | Adding a CMS vendor to `@monorepo/content` |
-| `i18n-new-vendor` | Adding a TMS vendor to `@monorepo/i18n` |
+| `content-new-vendor` | Adding a CMS vendor to `@joinery/content` |
+| `i18n-new-vendor` | Adding a TMS vendor to `@joinery/i18n` |
 | `scripts-new-script` | Adding a repo-local CLI under `infrastructure/scripts` |
-| `configs-new-rule` | Adding, changing or scoping a lint rule in `@monorepo/configs`, or turning a review finding into one |
-| `wp-bulk-edit` | A site-wide content pass on the blog through `@monorepo/wp-editor`: open a changeset, write proposals in batches, validate |
+| `configs-new-rule` | Adding, changing or scoping a lint rule in `@joinery/configs`, or turning a review finding into one |
+| `wp-bulk-edit` | A site-wide content pass on the blog through `@joinery/wp-editor`: open a changeset, write proposals in batches, validate |
 | `project-workflow` | Starting, ticketing, organising or reporting on an effort tracked in [`docs/workflows/`](./docs/workflows/README.md) — a site rebuild, a launch |
 | `ship-issue` | Taking issues to merged PRs unattended, as `/ship-issue <numbers>`. A saved workflow in [`.claude/workflows/`](./.claude/workflows/ship-issue.js), not a skill; see [agent setup](./docs/concepts/agent-setup.md#the-ship-issue-pipeline) |

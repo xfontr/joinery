@@ -32,7 +32,7 @@ problem that better READMEs fix; it is a genre missing from the repo. Three subj
 | --- | --- |
 | The lifecycle of a change, end to end | `issue:pick` → branch regex → the `[50]` subject injection in [`commit-msg`](../../.husky/commit-msg) → four [`pre-push`](../../.husky/pre-push) gates → [`pr-metadata.yml`](../../.github/workflows/pr-metadata.yml) and its PAT → CI → `nx release`. The root README carries fragments in two sections; the injection appears nowhere |
 | Why the boundary system exists at all | The tag table is in the root README and [`boundaries.ts`](../../packages/configs/src/eslint/lib/boundaries.ts), and each project states its own tag — but nothing says why layering by tag rather than by folder, why `type:feature` and `type:domain` are reserved unused, or how to choose a tag for a new project |
-| Adding a locale | `nuxt.config.ts`'s `i18n` block, the JSON in [`infrastructure/translations`](../../infrastructure/translations/README.md), and `Locale` in `@monorepo/i18n`. Each README covers its own half of it; the task has no home |
+| Adding a locale | `nuxt.config.ts`'s `i18n` block, the JSON in [`infrastructure/translations`](../../infrastructure/translations/README.md), and `Locale` in `@joinery/i18n`. Each README covers its own half of it; the task has no home |
 | The agent setup as a thing a human can inspect | Twelve skills, two `PostToolUse` hooks, the `deny` list and four `CLAUDE.md` files, indexed only from the root `CLAUDE.md` — which is written for agents |
 
 So the collection is worth growing, and it earns its existence from one rule:
@@ -108,7 +108,7 @@ same sources and changes nothing about where they live. When it comes back it ne
 decision before any scaffolding, and that is the reusable finding: it fits nowhere in the tag table
 today, since the [root README](../../README.md#architecture--boundaries) defines `infrastructure/`
 as what is neither released nor user-facing — a docs site exactly — while `type:infra` may depend
-only on `type:config` and so could not import `@monorepo/ui`. Filing it under `apps/` contradicts
+only on `type:config` and so could not import `@joinery/ui`. Filing it under `apps/` contradicts
 that same paragraph. Either `type:infra` widens or a `type:docs` tag lands in both copies of the
 table.
 

@@ -1,8 +1,8 @@
-import { axeViolations } from "@monorepo/configs/playwright/utils/a11y";
-import { expect, NOT_FOUND_DOCUMENT, test } from "@monorepo/configs/playwright/utils/test";
+import { axeViolations } from "@joinery/configs/playwright/utils/a11y";
+import { expect, NOT_FOUND_DOCUMENT, test } from "@joinery/configs/playwright/utils/test";
 import { t } from "./copy.ts";
 import type { Page } from "@playwright/test";
-import { MAX_SEARCH_LENGTH } from "@monorepo/content";
+import { MAX_SEARCH_LENGTH } from "@joinery/content";
 import { SOUGHT } from "./fakes.ts";
 
 const MISSING = "kardashov";

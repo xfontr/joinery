@@ -1,4 +1,4 @@
-# 🪪 @monorepo/portfolio
+# 🪪 @joinery/portfolio
 
 Xifré Font's personal site: the five rules, the method behind them, the project maps and the work
 they produced. It shows what the [developer portal](../developer-portal/README.md) builds, without
@@ -9,8 +9,8 @@ building any of it.
 | Command | What it does |
 | --- | --- |
 | `pnpm dev portfolio` | Start the site, from the workspace root |
-| `pnpm exec nx build-static @monorepo/portfolio` | `nuxt build --prerender`, the build that deploys |
-| `pnpm exec nx test:e2e @monorepo/portfolio` | Playwright over the build: axe in light and dark, keyboard, motion, SEO tags, sitemap |
+| `pnpm exec nx build-static @joinery/portfolio` | `nuxt build --prerender`, the build that deploys |
+| `pnpm exec nx test:e2e @joinery/portfolio` | Playwright over the build: axe in light and dark, keyboard, motion, SEO tags, sitemap |
 
 - `build` delegates to `build-static`, so CI builds what deploys.
 - With `NUXT_PUBLIC_DATA_URL` unset, as it is locally and in CI, every page renders without figures
@@ -62,4 +62,4 @@ Pages project with `wrangler pages deploy`. Cloudflare only hosts.
 
 ## Boundaries
 
-`type:app`, `scope:portfolio`. Depends only on `@monorepo/configs`; nothing depends on it.
+`type:app`, `scope:portfolio`. Depends only on `@joinery/configs`; nothing depends on it.

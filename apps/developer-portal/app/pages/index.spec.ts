@@ -1,4 +1,4 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
+import { serveEndpoint } from "@joinery/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { ref } from "vue";
@@ -58,7 +58,7 @@ mockNuxtImport("docsArtifact", () => () => snapshot.artifacts.docs ?? null);
 mockNuxtImport("usageArtifact", () => () => snapshot.artifacts.usage ?? null);
 
 const app = (name: string): ProjectNode => ({
-    name: `@monorepo/${name}`,
+    name: `@joinery/${name}`,
     root: `apps/${name}`,
     tags: [],
     dependsOn: [],
@@ -141,7 +141,7 @@ const METRICS = {
 } satisfies MetricsArtifact;
 
 const unreleased = (name: string, commits: number): ProjectMetrics => ({
-    name: `@monorepo/${name}`,
+    name: `@joinery/${name}`,
     root: `packages/${name}`,
     specs: 0,
     commits: null,
@@ -324,22 +324,22 @@ describe("home page", () => {
             serve(
                 projects([
                     app("huella-legal"),
-                    { ...app("ui"), name: "@monorepo/ui", root: "packages/ui" },
+                    { ...app("ui"), name: "@joinery/ui", root: "packages/ui" },
                 ]),
             );
             const wrapper = await open();
 
             expect(wrapper.text()).toContain("Huella Legal");
             expect(hrefs(wrapper)).toContain("/wiki/apps/huella-legal/readme");
-            expect(wrapper.text()).not.toContain("@monorepo/ui");
+            expect(wrapper.text()).not.toContain("@joinery/ui");
         });
 
         it("features at most two applications", async () => {
             serve(projects([app("one"), app("two"), app("three")]));
             const wrapper = await open();
 
-            expect(wrapper.text()).toContain("@monorepo/two");
-            expect(wrapper.text()).not.toContain("@monorepo/three");
+            expect(wrapper.text()).toContain("@joinery/two");
+            expect(wrapper.text()).not.toContain("@joinery/three");
         });
 
         it("says the summaries are missing instead of inventing them", async () => {

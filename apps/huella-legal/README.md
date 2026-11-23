@@ -1,7 +1,7 @@
-# 📦 @monorepo/huella-legal
+# 📦 @joinery/huella-legal
 
 A Nuxt 4 redesign of the Huella Legal law blog. Content comes from an external WordPress through
-[`@monorepo/content`](../../packages/content/README.md); the site is Spanish-only.
+[`@joinery/content`](../../packages/content/README.md); the site is Spanish-only.
 
 ## Development
 
@@ -15,7 +15,7 @@ A Nuxt 4 redesign of the Huella Legal law blog. Content comes from an external W
 | `pnpm test:e2e` | Playwright against `.output/`. Build first, or run `nx test:e2e` |
 | `pnpm storybook` | Storybook on port 6007; `pnpm build:storybook` for a static build |
 | `pnpm cache:clear` | Empty the local `articles` and `content` caches so the next request rereads WordPress |
-| `pnpm exec nx nuxt-prepare @monorepo/huella-legal` | Regenerate `.nuxt` by hand; Nx already runs it before lint, typecheck, test and build |
+| `pnpm exec nx nuxt-prepare @joinery/huella-legal` | Regenerate `.nuxt` by hand; Nx already runs it before lint, typecheck, test and build |
 
 ### Dev mocks
 
@@ -44,7 +44,7 @@ builds stay off.
 
 - The `huella-legal` job is a required check, so it always reports and passes when
   [`netlify-ignore.sh`](./netlify-ignore.sh) finds nothing relevant changed. That list is kept by
-  hand: a new runtime `@monorepo/*` import needs a line there.
+  hand: a new runtime `@joinery/*` import needs a line there.
 - Never split the deploy into `netlify build` + `deploy --no-build`: the upload drops the image CDN
   config and every WordPress image breaks.
 - `NETLIFY_SITE_ID` is a repo variable and `NETLIFY_AUTH_TOKEN` a secret. Fork and Dependabot PRs
@@ -84,7 +84,7 @@ route rules. [0033](../../docs/decisions/0033-huella-legal-hybrid-prerender.md) 
 Reproduce a deploy build locally (it reads the live WordPress):
 
 ```sh
-NUXT_SITE_ENV=preview pnpm exec nx build @monorepo/huella-legal --skip-nx-cache
+NUXT_SITE_ENV=preview pnpm exec nx build @joinery/huella-legal --skip-nx-cache
 ```
 
 ### Abuse and hardening
@@ -225,7 +225,7 @@ auto-imports and stubs for `NuxtImg` and `NuxtTurnstile` by hand. Its router rep
 
 ## Observability
 
-Both halves come from [`@monorepo/observability`](../../packages/observability/README.md) and are
+Both halves come from [`@joinery/observability`](../../packages/observability/README.md) and are
 off when their URL is unset.
 
 - Browser: [`observability.client.ts`](./app/plugins/observability.client.ts) loads Faro on the
@@ -244,19 +244,19 @@ off when their URL is unset.
 | `nuxt-isolated` | `app/` specs that mock a module | `pnpm test` |
 | e2e | Playwright, Chromium, at 390, 768 and 1280 px | `pnpm test:e2e` |
 
-Configs wrap the presets in [`@monorepo/configs`](../../packages/configs/README.md); thresholds live
+Configs wrap the presets in [`@joinery/configs`](../../packages/configs/README.md); thresholds live
 in [`vitest.config.ts`](./vitest.config.ts) and pages are left to Playwright.
 
 ### e2e
 
 - The built server runs with [`e2e/server.ts`](./e2e/server.ts) preloaded: MSW fakes WordPress (from
-  `@monorepo/content/testing`), Kit and Turnstile in-process. Nothing reaches the network.
+  `@joinery/content/testing`), Kit and Turnstile in-process. Nothing reaches the network.
 - Data is in [`e2e/fakes.ts`](./e2e/fakes.ts). A route the fakes don't serve is a change to the
   content package's `testing` entry.
 - Every spec runs an axe scan. **No screenshot baselines** while the design still moves —
   [0037](../../docs/decisions/0037-huella-legal-e2e-and-visual-tooling.md) says when they return.
 - Any console output, browser or server, fails the run. Import `test` from
-  `@monorepo/configs/playwright/utils/test`.
+  `@joinery/configs/playwright/utils/test`.
 - Bumping `@playwright/test` means moving the image tag in [`ci.yml`](../../.github/workflows/ci.yml)
   in the same PR. Pre-push doesn't run e2e.
 

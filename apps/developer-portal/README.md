@@ -1,4 +1,4 @@
-# 📦 @monorepo/developer-portal
+# 📦 @joinery/developer-portal
 
 The repo's front door: every markdown file rendered as a wiki, plus what isn't written down —
 coverage, the project graph, open issues, decisions, audits, workflows and tooling usage.
@@ -11,10 +11,10 @@ Under `pnpm dev developer-portal` it reads the working tree live. The deployed s
 | Command | What it does |
 | --- | --- |
 | `pnpm dev developer-portal` | Start the portal, from the workspace root |
-| `pnpm exec nx collect @monorepo/developer-portal` | Rebuild the snapshot in `.report/`: graph, coverage, metrics, docs, usage |
-| `pnpm exec nx build-static @monorepo/developer-portal` | `nuxt build --prerender`, the build that deploys |
-| `pnpm exec nx nuxt-prepare @monorepo/developer-portal` | Regenerate `.nuxt` by hand; Nx already runs it before lint, typecheck, test and build |
-| `pnpm exec nx test:e2e @monorepo/developer-portal` | Playwright over the build: skip link, SEO tags, the published payload, axe on the 404 page |
+| `pnpm exec nx collect @joinery/developer-portal` | Rebuild the snapshot in `.report/`: graph, coverage, metrics, docs, usage |
+| `pnpm exec nx build-static @joinery/developer-portal` | `nuxt build --prerender`, the build that deploys |
+| `pnpm exec nx nuxt-prepare @joinery/developer-portal` | Regenerate `.nuxt` by hand; Nx already runs it before lint, typecheck, test and build |
+| `pnpm exec nx test:e2e @joinery/developer-portal` | Playwright over the build: skip link, SEO tags, the published payload, axe on the 404 page |
 
 - Coverage is only as fresh as the last root `pnpm test:coverage`.
 - `build` delegates to `build-static`, so CI builds what deploys.
@@ -223,4 +223,4 @@ Every text role clears 4.5:1 on every surface. Each cell is light / dark:
 
 ## Boundaries
 
-`type:app`, `scope:internal`. Depends only on `@monorepo/configs`; nothing depends on it.
+`type:app`, `scope:internal`. Depends only on `@joinery/configs`; nothing depends on it.

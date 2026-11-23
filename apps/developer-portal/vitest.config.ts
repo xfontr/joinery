@@ -1,4 +1,4 @@
-import { vitest } from "@monorepo/configs";
+import { vitest } from "@joinery/configs";
 
 export default vitest.createNuxtConfig({
     root: import.meta.dirname,

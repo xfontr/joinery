@@ -1,6 +1,6 @@
 ---
 name: content-new-vendor
-description: Add a CMS vendor to @monorepo/content — a ContentProvider subclass, its options type, configProblems(), one registry line and a spec. Use when adding or changing a content vendor such as Contentful, Sanity, Strapi or another WordPress-like API.
+description: Add a CMS vendor to @joinery/content — a ContentProvider subclass, its options type, configProblems(), one registry line and a spec. Use when adding or changing a content vendor such as Contentful, Sanity, Strapi or another WordPress-like API.
 ---
 
 # Adding a content vendor
@@ -36,7 +36,7 @@ response types.
    only**, because it is left out of the cache key: anything that picks the document (a space, an
    environment, a dataset) goes in `baseURL` as the path or host segment the vendor's API already
    uses (`https://cdn.contentful.com/spaces/<space>/environments/<env>`). An identity field in
-   `options` makes two spaces share cache entries. The shape is `@monorepo/i18n`'s too, so change
+   `options` makes two spaces share cache entries. The shape is `@joinery/i18n`'s too, so change
    both packages or neither.
 
 3. **`configProblems()` covers `options` only, and is optional.** `baseURL` is already checked in
@@ -83,7 +83,7 @@ A `<Name>Provider.spec.ts` beside it, covering the URL contract, the mapping, an
 misconfigured construction. Then:
 
 ```sh
-pnpm exec nx run-many -t lint typecheck test --projects @monorepo/content
+pnpm exec nx run-many -t lint typecheck test --projects @joinery/content
 ```
 
 Nothing else. Config typing, lazy loading and the Nuxt routes follow from the registry line.

@@ -60,7 +60,7 @@ esac
 # The bans themselves live in one gate that pre-commit and CI also run.
 case "$rel" in
     package.json|packages/*/package.json|apps/*/package.json|infrastructure/*/package.json)
-        if ! report=$(cd "$root" && MONOREPO_GIT_HOOK=1 pnpm --silent invariants:check --base=HEAD 2>&1); then
+        if ! report=$(cd "$root" && JOINERY_GIT_HOOK=1 pnpm --silent invariants:check --base=HEAD 2>&1); then
             echo "$report" >&2
             exit 2
         fi

@@ -1,9 +1,9 @@
-import monorepo from "../rules/index.ts";
+import joinery from "../rules/index.ts";
 
-const rules = { "monorepo/lookup-table-shape": "error" };
+const rules = { "joinery/lookup-table-shape": "error" };
 
-const constTables: object = { files: ["**/*.ts"], plugins: { monorepo }, rules };
+const constTables: object = { files: ["**/*.ts"], plugins: { joinery }, rules };
 
-const constTablesVue: object = { files: ["**/*.vue"], plugins: { monorepo }, rules };
+const constTablesVue: object = { files: ["**/*.vue"], plugins: { joinery }, rules };
 
 export { constTables, constTablesVue };

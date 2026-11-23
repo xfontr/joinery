@@ -1,5 +1,5 @@
 {
-  "name": "@monorepo/observability",
+  "name": "@joinery/observability",
   "version": "0.0.14",
   "description": "Grafana Faro in the browser, OpenTelemetry on the server",
   "private": true,
@@ -40,7 +40,7 @@
     "@opentelemetry/semantic-conventions": "^1.43.0"
   },
   "devDependencies": {
-    "@monorepo/configs": "workspace:*",
+    "@joinery/configs": "workspace:*",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "eslint": "catalog:",

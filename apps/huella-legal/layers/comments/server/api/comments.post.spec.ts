@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { httpError, stubNitro } from "@monorepo/configs/vitest/utils/nitro";
+import { httpError, stubNitro } from "@joinery/configs/vitest/utils/nitro";
 import { assertForm } from "../../../forms/server/utils/assertForm";
 
 const nitro = vi.hoisted(() => ({

@@ -9,7 +9,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = resolve(here, "../..");
 export const WORKSPACE_ROOT = resolve(PROJECT_ROOT, "../..");
 
-/** Derived and gitignored. Deleting it costs one `pnpm exec nx collect @monorepo/developer-portal`. */
+/** Derived and gitignored. Deleting it costs one `pnpm exec nx collect @joinery/developer-portal`. */
 export const SNAPSHOT_DIR = resolve(PROJECT_ROOT, ".report");
 
 /** Written by `pnpm test:coverage`: one merged report over every project. */

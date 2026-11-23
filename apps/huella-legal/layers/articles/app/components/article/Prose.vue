@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Asset } from "@monorepo/content";
+import type { Asset } from "@joinery/content";
 
 interface Props {
     lead: string;

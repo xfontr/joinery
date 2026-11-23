@@ -1,4 +1,4 @@
-import { MAX_PER_PAGE } from "@monorepo/content";
+import { MAX_PER_PAGE } from "@joinery/content";
 import type { H3Event } from "h3";
 import type { ArticleSummary } from "../../shared/types/ArticleSummary";
 import { readSaved, save } from "../adapters/netlify";

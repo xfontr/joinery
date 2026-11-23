@@ -1,4 +1,4 @@
-import { eslint } from "@monorepo/configs";
+import { eslint } from "@joinery/configs";
 
 const bracketedValue = {
     pattern: String.raw`^.*-\[.*\]$`,

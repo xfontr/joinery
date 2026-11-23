@@ -34,7 +34,7 @@ const MESSAGES = {
     },
     pageHeader: {
         breadcrumb: "Breadcrumb",
-        wordmark: "monorepo",
+        wordmark: "joinery",
     },
     projects: {
         crumb: "projects",
@@ -115,12 +115,12 @@ const metric = (name: string, values: Partial<ProjectMetrics>): ProjectMetrics =
     ...values,
 });
 
-const UI = node("@monorepo/ui", "packages/UI", {
-    dependsOn: ["@monorepo/configs"],
-    dependedOnBy: ["@monorepo/developer-portal"],
+const UI = node("@joinery/ui", "packages/UI", {
+    dependsOn: ["@joinery/configs"],
+    dependedOnBy: ["@joinery/developer-portal"],
 });
-const SITE = node("@monorepo/huella-legal", "apps/huella-legal");
-const SCRIPTS = node("@monorepo/scripts", "infrastructure/scripts");
+const SITE = node("@joinery/huella-legal", "apps/huella-legal");
+const SCRIPTS = node("@joinery/scripts", "infrastructure/scripts");
 
 const serve = (projects: ProjectNode[], metrics: ProjectMetrics[] = []) => {
     artifacts.projects = { generatedAt: "2026-11-01T00:00:00Z", projects, retired: [] };
@@ -196,7 +196,7 @@ describe("catalog page", () => {
         serve(
             [UI],
             [
-                metric("@monorepo/ui", {
+                metric("@joinery/ui", {
                     currentVersion: "1.2.0",
                     unreleasedCommits: 4,
                     coverageLinesPct: 91,

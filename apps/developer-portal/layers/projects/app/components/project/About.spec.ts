@@ -27,16 +27,16 @@ const MESSAGES = {
 };
 
 const UI = {
-    name: "@monorepo/ui",
+    name: "@joinery/ui",
     root: "packages/ui",
     tags: ["type:package", "scope:shared"],
-    dependsOn: ["@monorepo/configs", "@monorepo/gone"],
+    dependsOn: ["@joinery/configs", "@joinery/gone"],
     dependedOnBy: [],
 } satisfies ProjectNode;
-const CONFIGS = { ...UI, name: "@monorepo/configs", root: "packages/configs", dependsOn: [] };
+const CONFIGS = { ...UI, name: "@joinery/configs", root: "packages/configs", dependsOn: [] };
 
 const METRIC = {
-    name: "@monorepo/ui",
+    name: "@joinery/ui",
     root: "packages/ui",
     specs: 12,
     commits: 40,
@@ -84,8 +84,8 @@ describe("ProjectAbout", () => {
             .map((link) => [link.text(), link.attributes("href")]);
 
         expect(links).toEqual([
-            ["@monorepo/configs", "/projects/configs"],
-            ["@monorepo/gone", "/projects"],
+            ["@joinery/configs", "/projects/configs"],
+            ["@joinery/gone", "/projects"],
         ]);
     });
 

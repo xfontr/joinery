@@ -7,7 +7,7 @@ WORKDIR /repo
 
 COPY . .
 RUN corepack enable pnpm \
- && pnpm --filter=@monorepo/translations deploy --legacy --prod --frozen-lockfile /out
+ && pnpm --filter=@joinery/translations deploy --legacy --prod --frozen-lockfile /out
 
 # ------------------------------------------------------------------------------
 FROM ${NODE_IMAGE}

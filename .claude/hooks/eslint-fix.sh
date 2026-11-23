@@ -1,5 +1,5 @@
 #!/bin/sh
-# Style here is enforced by @stylistic through @monorepo/configs, so an edit that gets the indent or
+# Style here is enforced by @stylistic through @joinery/configs, so an edit that gets the indent or
 # the quotes wrong is a lint failure that only surfaces at push time. Fixing it on the way out keeps
 # that argument from ever reaching a diff.
 #
@@ -37,7 +37,7 @@ if [ -n "$common" ] && mkdir -p "$common/telemetry" 2>/dev/null; then
     caller=${AI_AGENT%%_*}
     printf '%s' "$report" | jq -r \
         --arg at "$(date -u +%Y-%m-%d)" \
-        --arg project "$(jq -r '.name // ""' "$dir/package.json" | sed 's|^@monorepo/||')" \
+        --arg project "$(jq -r '.name // ""' "$dir/package.json" | sed 's|^@joinery/||')" \
         --arg caller "${caller:-claude-code}" \
         '.[].messages[] | select(.ruleId)
          | [$at, .ruleId, $project, (if .severity == 2 then "error" else "warn" end),

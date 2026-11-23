@@ -1,4 +1,4 @@
-# 🤖 @monorepo/developer-portal
+# 🤖 @joinery/developer-portal
 
 See [README.md](./README.md) for what each page reads, the snapshot and the deploy.
 
@@ -31,4 +31,4 @@ See [README.md](./README.md) for what each page reads, the snapshot and the depl
   [invariants gate](../../infrastructure/scripts/src/invariants/README.md), not here.
 - **`build` delegates to `build-static`.** CI builds the prerendered artifact that deploys; don't
   point `build` back at the SSR build, which verifies a mode nothing runs.
-- Tagged `type:app`. It depends on `@monorepo/configs` only today, and nothing may depend on it.
+- Tagged `type:app`. It depends on `@joinery/configs` only today, and nothing may depend on it.

@@ -1,5 +1,5 @@
-import { axeViolations } from "@monorepo/configs/playwright/utils/a11y";
-import { expect } from "@monorepo/configs/playwright/utils/test";
+import { axeViolations } from "@joinery/configs/playwright/utils/a11y";
+import { expect } from "@joinery/configs/playwright/utils/test";
 import type { Page } from "@playwright/test";
 
 /** Answers the form's own route in the browser, so the server half and its vendors never run. */

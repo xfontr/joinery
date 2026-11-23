@@ -1,4 +1,4 @@
-import { expect, test } from "@monorepo/configs/playwright/utils/test";
+import { expect, test } from "@joinery/configs/playwright/utils/test";
 import { NOT_FOUND } from "./copy.ts";
 
 // Read straight off the server, so these answer for the prerendered HTML a crawler gets

@@ -37,7 +37,7 @@ interface Props {
 const { copied } = defineProps<Props>();
 
 const TEST = "pnpm test:coverage";
-const COLLECT = "pnpm exec nx collect @monorepo/developer-portal";
+const COLLECT = "pnpm exec nx collect @joinery/developer-portal";
 
 const src = embedUrl("/embed/coverage/index.html");
 </script>

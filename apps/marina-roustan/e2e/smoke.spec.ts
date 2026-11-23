@@ -1,5 +1,5 @@
-import { axeViolations } from "@monorepo/configs/playwright/utils/a11y";
-import { expect, NOT_FOUND_DOCUMENT, test } from "@monorepo/configs/playwright/utils/test";
+import { axeViolations } from "@joinery/configs/playwright/utils/a11y";
+import { expect, NOT_FOUND_DOCUMENT, test } from "@joinery/configs/playwright/utils/test";
 
 test("serves the home page with its heading and no WCAG 2.1 AA violation", async ({ page }) => {
     await page.goto("/");

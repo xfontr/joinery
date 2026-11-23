@@ -1,5 +1,5 @@
 {
-    "name": "monorepo",
+    "name": "joinery",
     "version": "0.0.1",
     "description": "",
     "author": "Xifré Font",
@@ -9,7 +9,7 @@
         "node": "^22.18.0 || >=24.12.0"
     },
     "scripts": {
-        "quick-start": "husky && pnpm env:sync && pnpm test:coverage && pnpm exec nx collect @monorepo/developer-portal",
+        "quick-start": "husky && pnpm env:sync && pnpm test:coverage && pnpm exec nx collect @joinery/developer-portal",
         "dev": "pnpm --silent --dir infrastructure/scripts cli src/dev/index.ts",
         "lint": "nx affected --base=master -t lint",
         "typecheck": "nx affected --base=master -t typecheck",

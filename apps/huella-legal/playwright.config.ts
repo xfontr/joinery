@@ -1,4 +1,4 @@
-import { playwright } from "@monorepo/configs";
+import { playwright } from "@joinery/configs";
 import { PAGES } from "./e2e/fakes.ts";
 
 export default playwright.createConfig({

@@ -1,4 +1,4 @@
-import { serveEndpoint, withSetup } from "@monorepo/configs/vitest/utils/nuxt";
+import { serveEndpoint, withSetup } from "@joinery/configs/vitest/utils/nuxt";
 import { afterEach, describe, expect, it } from "vitest";
 import type { SiteData } from "~/types/SiteData";
 

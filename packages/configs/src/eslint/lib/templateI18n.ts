@@ -1,10 +1,10 @@
-import monorepo from "../rules/index.ts";
+import joinery from "../rules/index.ts";
 
 const templateI18n: object = {
     files: ["**/*.vue"],
-    plugins: { monorepo },
+    plugins: { joinery },
     rules: {
-        "monorepo/template-global-i18n": "error",
+        "joinery/template-global-i18n": "error",
     },
 };
 

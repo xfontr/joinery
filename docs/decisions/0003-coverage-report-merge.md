@@ -21,7 +21,7 @@ project, so seven `coverage-final.json` files are sitting on disk with nothing c
 ## Result
 
 Per-project runs stay as they are, and a merge step is added to
-[`@monorepo/scripts`](../../infrastructure/scripts/README.md), built on Istanbul's libraries
+[`@joinery/scripts`](../../infrastructure/scripts/README.md), built on Istanbul's libraries
 directly. Five points make up the call:
 
 1. **Nx is the source of truth for what to merge.** `nx show projects --with-target test:coverage`

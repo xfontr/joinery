@@ -9,7 +9,7 @@ supersededBy: 0033-huella-legal-hybrid-prerender.md
 
 ## Context
 
-S2 in [the implementation plan](https://github.com/xfontr/monorepo/blob/3891f29041e31884c6821e99fd5ecc9c5daab2af/docs/plans/huella-legal-implementation.md) weighs three options:
+S2 in [the implementation plan](https://github.com/xfontr/joinery/blob/3891f29041e31884c6821e99fd5ecc9c5daab2af/docs/plans/huella-legal-implementation.md) weighs three options:
 Nitro on Netlify (SSR, or hybrid with `routeRules`), Nitro on Cloudflare Workers, and a full static
 build with third-party services. It asks for the cost at expected traffic, where the content cache
 persists, time-based revalidation (WP is read-only and has no webhooks), the function body limit
@@ -51,7 +51,7 @@ a credit plan the dominant cost is deploys, not readers.**
 | Revalidation | Time only, with the TTLs below. Every deploy invalidates the CDN cache for its deploy context, so the manual purge is a build hook. A plain redeploy of the same commit diffs empty under change 1 and is cancelled, but *"The `ignore` command won't cancel a build triggered by a build hook"* |
 | Upload | 6 MB buffered, which is 4.5 MB of binary after base64. 0029's 4 MB cap stands (*form only*) |
 | Preview deploys | One per PR, for 0 credits, and the `deploy-preview` context gets its own env values. S4's robots rule keeps previews out of the index |
-| Translations | Hosting rules out only `internal`: no workflow deploys [`infrastructure/translations`](../../infrastructure/translations/README.md), so it would be a second always-on service. Tolgee Free (30,000 words, 3 seats) needs only the cache rule, though its cloud rate limits are undocumented. Baking in needs a new `@monorepo/i18n` provider. With the upstream unreachable, a local build still answered `/` with 200 and logged `Failed to load messages`, so a Tolgee outage caches raw keys for a TTL. A2 (#193) made a provisional pick for early development: `internal` under `nuxt dev` only, Tolgee for every build. When that phase ends the app is expected to move to Tolgee only |
+| Translations | Hosting rules out only `internal`: no workflow deploys [`infrastructure/translations`](../../infrastructure/translations/README.md), so it would be a second always-on service. Tolgee Free (30,000 words, 3 seats) needs only the cache rule, though its cloud rate limits are undocumented. Baking in needs a new `@joinery/i18n` provider. With the upstream unreachable, a local build still answered `/` with 200 and logged `Failed to load messages`, so a Tolgee outage caches raw keys for a TTL. A2 (#193) made a provisional pick for early development: `internal` under `nuxt dev` only, Tolgee for every build. When that phase ends the app is expected to move to Tolgee only |
 | Search in static mode | Possible, per 0027's CORS finding, but moot: static loses |
 
 **Cost** in credits a month is `15·deploys + 20·GB + 2·(requests ÷ 10,000) + 10·GB-hours`.
@@ -186,7 +186,7 @@ body limit starts to matter, or if Nitro's Netlify preset starts passing `waitUn
 | Claim | Check |
 | --- | --- |
 | Unaffected commits don't deploy | The Netlify log for a docs-only merge ends at the ignore command with exit 0, and Netlify's deploy list shows no new production deploy |
-| The rules are compiled in | `NITRO_PRESET=netlify pnpm exec nx build @monorepo/huella-legal --skip-nx-cache`, then `grep -o '"isr":[a-z0-9]*' apps/huella-legal/.netlify/functions-internal/server/chunks/nitro/nitro.mjs \| sort \| uniq -c` lists 21600, 3600 and `false` |
+| The rules are compiled in | `NITRO_PRESET=netlify pnpm exec nx build @joinery/huella-legal --skip-nx-cache`, then `grep -o '"isr":[a-z0-9]*' apps/huella-legal/.netlify/functions-internal/server/chunks/nitro/nitro.mjs \| sort \| uniq -c` lists 21600, 3600 and `false` |
 | Pages come from the CDN | On a preview, the second `curl -sI` of a post path shows `hit` in `cache-status` |
 | Stray query strings share a listing's entry | On a preview, `curl -sI "<preview>/publicaciones/?page=2&utm_source=x"` right after `?page=2` shows `hit` |
 | The home page never redirects | On a preview, request `/?s=derecho`, then `/`: the second answers 200 |

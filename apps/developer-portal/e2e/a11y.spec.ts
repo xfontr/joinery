@@ -1,5 +1,5 @@
-import { axeViolations } from "@monorepo/configs/playwright/utils/a11y";
-import { expect, test } from "@monorepo/configs/playwright/utils/test";
+import { axeViolations } from "@joinery/configs/playwright/utils/a11y";
+import { expect, test } from "@joinery/configs/playwright/utils/test";
 import { NOT_FOUND } from "./copy.ts";
 
 for (const colorScheme of ["light", "dark"] as const) {

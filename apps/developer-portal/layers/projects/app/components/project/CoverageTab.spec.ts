@@ -23,7 +23,7 @@ const MESSAGES = {
 };
 
 const COVERAGE = {
-    name: "@monorepo/ui",
+    name: "@joinery/ui",
     root: "packages/ui",
     collected: true,
     files: 14,

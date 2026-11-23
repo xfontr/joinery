@@ -1,4 +1,4 @@
-import type { Asset } from "@monorepo/content";
+import type { Asset } from "@joinery/content";
 import type { Author } from "./Author";
 import type { Category } from "./Category";
 

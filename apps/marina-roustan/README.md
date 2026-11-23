@@ -1,4 +1,4 @@
-# 📦 @monorepo/marina-roustan
+# 📦 @joinery/marina-roustan
 
 A Nuxt 4 rebuild of Marina Roustan's website. So far: one placeholder page, the env check, the test
 harness and the design tokens.
@@ -17,7 +17,7 @@ lives in [`layers/design`](./layers/design), on Nuxt UI and Tailwind v4.
 | `pnpm preview` | Preview the production build |
 | `pnpm test` | Vitest. `pnpm test:coverage` adds coverage |
 | `pnpm test:e2e` | Playwright against `.output/`. Build first, or run `nx test:e2e` |
-| `pnpm exec nx nuxt-prepare @monorepo/marina-roustan` | Regenerate `.nuxt` by hand; Nx already runs it before lint, typecheck, test and build |
+| `pnpm exec nx nuxt-prepare @joinery/marina-roustan` | Regenerate `.nuxt` by hand; Nx already runs it before lint, typecheck, test and build |
 
 ## Environment
 
@@ -39,9 +39,9 @@ needs goes under `requiredEnv` in [`nuxt.config.ts`](./nuxt.config.ts), checked 
 | --- | --- | --- | --- |
 | `node` | Vitest on the [node preset](../../packages/configs/README.md) | `modules/`, `server/`, `shared/`, and `eslint.config.spec.ts` | `pnpm test` |
 | `nuxt` | Vitest in a booted Nuxt app on happy-dom, via `@nuxt/test-utils` | `app/` | `pnpm test` |
-| e2e | Playwright, Chromium only, at 390, 768 and 1280 px | [`e2e/`](./e2e) | `pnpm exec nx test:e2e @monorepo/marina-roustan` |
+| e2e | Playwright, Chromium only, at 390, 768 and 1280 px | [`e2e/`](./e2e) | `pnpm exec nx test:e2e @joinery/marina-roustan` |
 
-Both configs wrap the [`@monorepo/configs`](../../packages/configs/README.md) presets. Pages are
+Both configs wrap the [`@joinery/configs`](../../packages/configs/README.md) presets. Pages are
 left out of coverage; Playwright covers them.
 
 ### e2e

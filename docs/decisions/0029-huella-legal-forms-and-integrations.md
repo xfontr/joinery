@@ -55,7 +55,7 @@ decision: accepted
 
 ## Context
 
-S3 in [the implementation plan](https://github.com/xfontr/monorepo/blob/3891f29041e31884c6821e99fd5ecc9c5daab2af/docs/plans/huella-legal-implementation.md) asks six questions before
+S3 in [the implementation plan](https://github.com/xfontr/joinery/blob/3891f29041e31884c6821e99fd5ecc9c5daab2af/docs/plans/huella-legal-implementation.md) asks six questions before
 E1 (newsletter) and E2 (publish submission) can start: the newsletter provider, where submissions
 go, spam protection, GDPR copy and retention, what Contacto is, and whether validation takes a
 library. The lean was server routes plus third-party providers. The old board assumed a contact
@@ -131,7 +131,7 @@ promotes the markup from; the wiring goes into the promoted components, not into
 ## Consequences
 
 This unlocks E1 and E2, and gives C6 a `/contacto` page to build instead of a WP page to render.
-Nothing here needs a new package or a `@monorepo/*` change.
+Nothing here needs a new package or a `@joinery/*` change.
 
 **Order.**
 1. Change 1 comes first, because both halves consume it and it is a pure Vitest node suite.

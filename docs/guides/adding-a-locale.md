@@ -1,6 +1,6 @@
 # 🌍 Adding a locale
 
-For an app on [`@monorepo/i18n`](../../packages/i18n/README.md) with the `internal` vendor. Two files
+For an app on [`@joinery/i18n`](../../packages/i18n/README.md) with the `internal` vendor. Two files
 in two projects; skipping either fails quietly.
 
 ## 1. Add the messages

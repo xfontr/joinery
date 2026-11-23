@@ -35,7 +35,7 @@
 <script setup lang="ts">
 const { icon, folder, skill, each, collected = true } = defineProps<Props>();
 
-const COLLECT = "pnpm exec nx collect @monorepo/developer-portal";
+const COLLECT = "pnpm exec nx collect @joinery/developer-portal";
 
 interface Props {
     icon: string;

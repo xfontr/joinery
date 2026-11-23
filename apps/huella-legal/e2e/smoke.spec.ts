@@ -1,5 +1,5 @@
-import { expect, NOT_FOUND_DOCUMENT, test } from "@monorepo/configs/playwright/utils/test";
-import { rawKeysIn } from "@monorepo/configs/playwright/utils/i18n";
+import { expect, NOT_FOUND_DOCUMENT, test } from "@joinery/configs/playwright/utils/test";
+import { rawKeysIn } from "@joinery/configs/playwright/utils/i18n";
 import { MESSAGES } from "./copy.ts";
 import { ARTICLE, AUTHOR, ESCAPED, HEADING, SUBJECT, TAG } from "./fakes.ts";
 

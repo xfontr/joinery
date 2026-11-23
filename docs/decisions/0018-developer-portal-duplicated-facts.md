@@ -44,7 +44,7 @@ Each row is one change. Line numbers are as of this report.
 | --- | --- | --- | --- |
 | 1 | `app/pages/projects.vue:35` | Links the portal's Deploys button at `docs-deploy.yml`; the workflow is `developer-portal-deploy.yml`. The rename reached the workflow and the README, not the code | Correct the filename. It is a dead link on a live page |
 | 2 | `nuxt.config.ts:40` | Prerender `ignore` is the literal `/monorepo/storybook/`, hardcoding the repository name the README says is never written down | Derive it from `process.env.NUXT_APP_BASE_URL` (the deploy workflow sets it), defaulting to `/` |
-| 3 | `app/pages/projects.vue:29,33,35,41,45,47` | Four functions switch on `"@monorepo/ui"`, `"@monorepo/huella-legal"` and `"@monorepo/developer-portal"`. The page is built from the Nx graph *except* its links, which are a hand-kept catalog beside it | Replace the four switches with one `Record<string, { storybook?, deploys?, environment? }>` const at the top of the file, keyed by project name |
+| 3 | `app/pages/projects.vue:29,33,35,41,45,47` | Four functions switch on `"@joinery/ui"`, `"@joinery/huella-legal"` and `"@joinery/developer-portal"`. The page is built from the Nx graph *except* its links, which are a hand-kept catalog beside it | Replace the four switches with one `Record<string, { storybook?, deploys?, environment? }>` const at the top of the file, keyed by project name |
 | 4 | `shared/issues.ts:93` and `shared/deployments.ts:24` | `issuesApiUrl` and `deploymentsApiUrl` are the same parse, the same `.git` strip and the same null contract, specced twice | Extract `repoApiUrl(repoUrl, resource)` into a new `shared/github.ts`; both call it. Keep the two named wrappers so the specs and call sites are unchanged |
 | 5 | `shared/types.ts:201,215` | `Issue` documents itself as "what `gh issue list --json` hands over" and `IssuesArtifact` as "null when `gh` answered". The `gh` read was deleted when issues moved into the browser; a comment asserting behaviour that no longer exists is worse than none | Move both into `shared/issues.ts` (they are not snapshot artifacts — nothing collects them), rename `IssuesArtifact` to `IssuesRead`, and rewrite the two comments to describe the browser fetch |
 | 6 | `app/components/StatTile.vue:17-72` | The whole template is written twice, once under `<NuxtLink v-if="to">` and once under `<div v-else>` | One `<component :is="to ? 'NuxtLink' : 'div'">`, as `StatusPill.vue:16` already does |
@@ -94,7 +94,7 @@ on `graph.vue:62` — that is prose, not a binding.
 
 ### The boundary that nothing enforces
 
-Add a `no-restricted-imports` rule to `@monorepo/configs` forbidding `app/**` and `server/**` from
+Add a `no-restricted-imports` rule to `@joinery/configs` forbidding `app/**` and `server/**` from
 importing `tools/**`, modelled on
 [`coreIsolation.ts`](../../packages/configs/src/eslint/lib/coreIsolation.ts), which this repo already
 uses for exactly this kind of intra-project layer split. Nothing violates it today; the rule is what
@@ -127,11 +127,11 @@ fields shrinks what the split still has to carry. The lint rule last, once nothi
   Pages URL to come from the deployments read instead.
 - Rows 2, 3 and 5 change what the README describes. Re-read it against the code afterwards and use
   the `doc-drift-check` skill; README edits follow `house-docs`.
-- `pnpm exec nx check-docs @monorepo/developer-portal` runs in CI and fails on a broken relative link,
+- `pnpm exec nx check-docs @joinery/developer-portal` runs in CI and fails on a broken relative link,
   so a moved file breaks the build, not just a page.
-- `@monorepo/configs:lint` fails locally with a `MODULE_NOT_FOUND` on `nx@23.2.0`. Pre-existing,
+- `@joinery/configs:lint` fails locally with a `MODULE_NOT_FOUND` on `nx@23.2.0`. Pre-existing,
   unrelated, not yours to fix — run `pnpm exec eslint .` inside the app instead.
-- **Do not** add `shared/**` to the coverage `include` in `@monorepo/configs` while doing this. It is
+- **Do not** add `shared/**` to the coverage `include` in `@joinery/configs` while doing this. It is
   why the app reports 24% while its best-tested layer counts for nothing, but it is a workspace-wide
   input that moves every project's number and belongs in its own change.
 
@@ -143,10 +143,10 @@ consumer; today it has exactly one.
 | Claim | Check |
 | --- | --- |
 | No workflow filename or repo name in the code | `grep -rn "docs-deploy\|/monorepo/" apps/developer-portal/app apps/developer-portal/nuxt.config.ts` returns nothing |
-| No project name switched on outside the link table | `grep -n '@monorepo/' apps/developer-portal/app/pages/projects.vue` returns only the const |
+| No project name switched on outside the link table | `grep -n '@joinery/' apps/developer-portal/app/pages/projects.vue` returns only the const |
 | The endpoint derivation exists once | `grep -rn 'api\.\${' apps/developer-portal/shared` returns one hit |
-| A page that reads no artifact carries none | `pnpm exec nx build-static @monorepo/developer-portal`, then `wc -c apps/developer-portal/.output/public/issues/_payload.json` is far below the 77,950 bytes measured here |
+| A page that reads no artifact carries none | `pnpm exec nx build-static @joinery/developer-portal`, then `wc -c apps/developer-portal/.output/public/issues/_payload.json` is far below the 77,950 bytes measured here |
 | Nothing collects a field nothing reads | Every field name in `shared/types.ts` greps in `app/` or `server/` |
 | The layer split is enforced | Adding `import { git } from "../../tools/lib/run.ts"` to any file under `app/` fails `pnpm exec eslint .` |
 | The app is formatted like the rest of the repo | `pnpm exec eslint .` in `apps/developer-portal` reports 0 warnings, against 38 today |
-| Nothing regressed | `pnpm exec nx run-many -t test typecheck --projects=@monorepo/developer-portal` passes, and `pnpm exec nx collect @monorepo/developer-portal` still writes a full snapshot |
+| Nothing regressed | `pnpm exec nx run-many -t test typecheck --projects=@joinery/developer-portal` passes, and `pnpm exec nx collect @joinery/developer-portal` still writes a full snapshot |

@@ -1,4 +1,4 @@
-import type { Page } from "@monorepo/content";
+import type { Page } from "@joinery/content";
 import type { ArticleSummary } from "./ArticleSummary";
 import type { Category } from "./Category";
 

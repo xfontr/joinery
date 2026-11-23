@@ -1,4 +1,4 @@
-import { playwright } from "@monorepo/configs";
+import { playwright } from "@joinery/configs";
 
 export default playwright.createConfig({
     port: 4330,

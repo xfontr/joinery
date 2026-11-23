@@ -1,4 +1,4 @@
-import { fakeAsset } from "@monorepo/content/testing";
+import { fakeAsset } from "@joinery/content/testing";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
 import ArticleProse from "./Prose.vue";

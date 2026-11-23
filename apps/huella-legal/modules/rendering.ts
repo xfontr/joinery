@@ -3,7 +3,7 @@ import {
     MAX_PER_PAGE,
     OfetchHttpClient,
     type VendorConfig,
-} from "@monorepo/content";
+} from "@joinery/content";
 import type { Nuxt } from "nuxt/schema";
 import { defineNuxtModule, extendRouteRules } from "nuxt/kit";
 import { ofetch } from "ofetch";

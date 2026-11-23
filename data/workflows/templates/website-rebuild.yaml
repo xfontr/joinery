@@ -336,7 +336,7 @@ capabilities:
     title: Content source
     complexity: 13
     dependsOn: [app-scaffold, content-audit, content-migration]
-    summary: Read the content — a CMS through @monorepo/content, or Markdown through Nuxt Content.
+    summary: Read the content — a CMS through @joinery/content, or Markdown through Nuxt Content.
     reuse: { plan: package, from: packages/content }
     doneWhen:
       - Articles, pages, taxonomies and authors render from the real source, with errors handled.

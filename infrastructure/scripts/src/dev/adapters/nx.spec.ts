@@ -14,13 +14,13 @@ beforeEach(() => vi.clearAllMocks());
 describe("projectsWithDev", () => {
     it("queries Nx once per supported project root and preserves the root that matched", () => {
         exec.run
-            .mockReturnValueOnce(JSON.stringify(["@monorepo/a"]))
-            .mockReturnValueOnce(JSON.stringify(["@monorepo/b"]))
+            .mockReturnValueOnce(JSON.stringify(["@joinery/a"]))
+            .mockReturnValueOnce(JSON.stringify(["@joinery/b"]))
             .mockReturnValueOnce("[]");
 
         expect(projectsWithDev()).toEqual([
-            { root: "packages", name: "@monorepo/a" },
-            { root: "apps", name: "@monorepo/b" },
+            { root: "packages", name: "@joinery/a" },
+            { root: "apps", name: "@joinery/b" },
         ]);
         expect(exec.run).toHaveBeenCalledWith("/repo/node_modules/.bin/nx", [
             "show",

@@ -1,4 +1,4 @@
-import { expect, test } from "@monorepo/configs/playwright/utils/test";
+import { expect, test } from "@joinery/configs/playwright/utils/test";
 import { AUTHOR, SOUGHT, SUBJECT, TAG } from "./fakes.ts";
 
 const THESES = "/publicar-mi-articulo/publicar-tfm-tfg-derecho/";

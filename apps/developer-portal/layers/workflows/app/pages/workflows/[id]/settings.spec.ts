@@ -1,4 +1,4 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
+import { serveEndpoint } from "@joinery/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { NuxtPage } from "#components";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
@@ -34,7 +34,7 @@ const MESSAGES = {
     },
     pageHeader: {
         breadcrumb: "Breadcrumb",
-        wordmark: "monorepo",
+        wordmark: "joinery",
     },
     settingsFeatures: {
         hint: "Leaving one out takes its blocks out of the map; whatever needed them waits on what they needed.",

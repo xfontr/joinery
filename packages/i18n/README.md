@@ -1,4 +1,4 @@
-# 📦 @monorepo/i18n
+# 📦 @joinery/i18n
 
 A vendor-neutral client for locale messages: a framework-agnostic core plus an optional Nuxt module
 that wires a TMS into `@nuxtjs/i18n` behind a cached server route. Vendors: `internal` (our own
@@ -6,12 +6,12 @@ that wires a TMS into `@nuxtjs/i18n` behind a cached server route. Vendors: `int
 
 | Import | Contains | Depends on |
 | --- | --- | --- |
-| `@monorepo/i18n` | Domain, ports, adapters, vendor registry, cache key | `ofetch`, `ohash` |
-| `@monorepo/i18n/nuxt` | The Nuxt module — see [`src/nuxt/README.md`](./src/nuxt/README.md) | `@nuxt/kit`, `@nuxtjs/i18n`, `h3`, `nitropack` |
-| `@monorepo/i18n/testing` | `tolgeeHandlers(baseURL, translations)`, MSW handlers faking Tolgee | `msw` |
+| `@joinery/i18n` | Domain, ports, adapters, vendor registry, cache key | `ofetch`, `ohash` |
+| `@joinery/i18n/nuxt` | The Nuxt module — see [`src/nuxt/README.md`](./src/nuxt/README.md) | `@nuxt/kit`, `@nuxtjs/i18n`, `h3`, `nitropack` |
+| `@joinery/i18n/testing` | `tolgeeHandlers(baseURL, translations)`, MSW handlers faking Tolgee | `msw` |
 
 The second and third entries' dependencies are optional peers. The structure and the vendor
-contract mirror [`@monorepo/content`](../content/README.md); keep the two matching.
+contract mirror [`@joinery/content`](../content/README.md); keep the two matching.
 
 ## Structure
 
@@ -105,4 +105,4 @@ All extend `TranslationsError` and carry their own `statusCode`.
 | Gap | Note |
 | --- | --- |
 | No locale fallback or local overrides | Add a service over the port when there's behaviour to put in it |
-| Vendor plumbing duplicated with `@monorepo/content` | Deliberate until a third consumer ([D2](../../docs/audits/2026-10-21-monorepo.md)) |
+| Vendor plumbing duplicated with `@joinery/content` | Deliberate until a third consumer ([D2](../../docs/audits/2026-10-21-monorepo.md)) |

@@ -8,7 +8,7 @@ decision: accepted
 
 ## Context
 
-S4 in [the implementation plan](https://github.com/xfontr/monorepo/blob/3891f29041e31884c6821e99fd5ecc9c5daab2af/docs/plans/huella-legal-implementation.md) asks for the new route
+S4 in [the implementation plan](https://github.com/xfontr/joinery/blob/3891f29041e31884c6821e99fd5ecc9c5daab2af/docs/plans/huella-legal-implementation.md) asks for the new route
 scheme, a 301 for every indexed WordPress permalink, the move of WordPress to another hostname and
 who makes it, the source of canonical tags, sitemap, robots, JSON-LD and RSS, what replaces the
 analytics and cookie banner, and where the interest calculator goes. The lean was Spanish slugs and
@@ -144,7 +144,7 @@ one piece of WordPress's spam wiring the cutover keeps.
 | Claim | Check |
 | --- | --- |
 | Every old permalink gets its declared outcome | A walk over the inventory, built from REST on the WP host plus the fixed families: `curl -so /dev/null -w '%{http_code} %{redirect_url}'` against the preview matches each family's row in the first table — 200, one 301 to a 200, or 404 for the dropped ones |
-| Every redirect is permanent | `NITRO_PRESET=netlify pnpm exec nx build @monorepo/huella-legal --skip-nx-cache`, then `test -s apps/huella-legal/dist/_redirects`, `grep -c '' apps/huella-legal/dist/_redirects` equals the rule count in `routeRules`, and `grep -vE '\s301$' apps/huella-legal/dist/_redirects` prints nothing |
+| Every redirect is permanent | `NITRO_PRESET=netlify pnpm exec nx build @joinery/huella-legal --skip-nx-cache`, then `test -s apps/huella-legal/dist/_redirects`, `grep -c '' apps/huella-legal/dist/_redirects` equals the rule count in `routeRules`, and `grep -vE '\s301$' apps/huella-legal/dist/_redirects` prints nothing |
 | Canonicals come from the entry | E2E: `/<post>/`, `/<post>` and an upper-cased `/<Page>/` all return the same `link[rel=canonical]`: `NUXT_PUBLIC_SITE_URL` + the entry's slug + `/` |
 | `noindex` posts say so | E2E: a fake-WP post with `seo.noindex` renders `<meta name="robots" content="noindex">` |
 | `noindex` stays out of the sitemap | A spec on `sitemap.xml.get.ts` with a fake-WP entry whose `seo.noindex` is set |

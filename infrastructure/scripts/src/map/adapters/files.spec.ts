@@ -39,7 +39,7 @@ describe("map filesystem adapter", () => {
         writeFileSync(
             join(directory, "packages", "ui", "package.json"),
             JSON.stringify({
-                name: "@monorepo/ui",
+                name: "@joinery/ui",
                 scripts: { test: "test", storybook: "storybook" },
             }),
         );
@@ -48,7 +48,7 @@ describe("map filesystem adapter", () => {
 
         expect(rootScripts()).toEqual(["lint", "graph"]);
         expect(projectScripts()).toEqual([
-            { root: "packages/ui", name: "@monorepo/ui", scripts: ["test", "storybook"] },
+            { root: "packages/ui", name: "@joinery/ui", scripts: ["test", "storybook"] },
         ]);
     });
 
@@ -56,23 +56,23 @@ describe("map filesystem adapter", () => {
         mkdirSync(join(directory, "packages", "ui"), { recursive: true });
         writeFileSync(
             join(directory, "packages", "ui", "package.json"),
-            JSON.stringify({ name: "@monorepo/ui" }),
+            JSON.stringify({ name: "@joinery/ui" }),
         );
         mkdirSync(join(directory, "apps", "web"), { recursive: true });
         writeFileSync(
             join(directory, "apps", "web", "package.json"),
             JSON.stringify({
-                name: "@monorepo/web",
+                name: "@joinery/web",
                 description: "the site",
                 nx: { tags: ["type:app"] },
             }),
         );
 
         expect(projectManifests()).toEqual([
-            { root: "packages/ui", name: "@monorepo/ui", description: "", tags: [], scripts: [] },
+            { root: "packages/ui", name: "@joinery/ui", description: "", tags: [], scripts: [] },
             {
                 root: "apps/web",
-                name: "@monorepo/web",
+                name: "@joinery/web",
                 description: "the site",
                 tags: ["type:app"],
                 scripts: [],

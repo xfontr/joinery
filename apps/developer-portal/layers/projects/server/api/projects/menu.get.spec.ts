@@ -11,7 +11,7 @@ vi.mock("h3", () => h3);
 import handler from "./menu.get.ts";
 
 const node = (root: string): ProjectNode => ({
-    name: `@monorepo/${root.split("/")[1]}`,
+    name: `@joinery/${root.split("/")[1]}`,
     root,
     tags: [],
     dependsOn: [],
@@ -19,7 +19,7 @@ const node = (root: string): ProjectNode => ({
 });
 
 const metric = (root: string, coverageLinesPct: number | null): ProjectMetrics => ({
-    name: `@monorepo/${root.split("/")[1]}`,
+    name: `@joinery/${root.split("/")[1]}`,
     root,
     specs: 0,
     commits: null,

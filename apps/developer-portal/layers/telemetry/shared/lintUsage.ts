@@ -94,7 +94,7 @@ export const neverFired = (lint: LintUsage): string[] =>
         .map(([rule]) => rule)
         .sort((a, b) => a.localeCompare(b));
 
-const IN_HOUSE = "monorepo/";
+const IN_HOUSE = "joinery/";
 
 /** How many rules are on, and how many of those this repo wrote; `null` with none collected. */
 export const ruleCounts = (

@@ -1,20 +1,20 @@
-# Monorepo
+# Joinery
 
-[![CI](https://github.com/xfontr/monorepo/actions/workflows/ci.yml/badge.svg)](https://github.com/xfontr/monorepo/actions/workflows/ci.yml)
-[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=xfontr_monorepo&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=xfontr_monorepo)
+[![CI](https://github.com/xfontr/joinery/actions/workflows/ci.yml/badge.svg)](https://github.com/xfontr/joinery/actions/workflows/ci.yml)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=xfontr_joinery&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=xfontr_joinery)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/cae76234-bf69-4487-9dee-505f9a006250/deploy-status)](https://app.netlify.com/projects/monorepo-idp/deploys)
-[![Developer Portal deploy](https://github.com/xfontr/monorepo/actions/workflows/developer-portal-deploy.yml/badge.svg)](https://github.com/xfontr/monorepo/actions/workflows/developer-portal-deploy.yml)
-[![Release](https://github.com/xfontr/monorepo/actions/workflows/release.yml/badge.svg)](https://github.com/xfontr/monorepo/actions/workflows/release.yml)
-[![Netlify deployment](https://github.com/xfontr/monorepo/actions/workflows/netlify-deployment.yml/badge.svg)](https://github.com/xfontr/monorepo/actions/workflows/netlify-deployment.yml)
+[![Developer Portal deploy](https://github.com/xfontr/joinery/actions/workflows/developer-portal-deploy.yml/badge.svg)](https://github.com/xfontr/joinery/actions/workflows/developer-portal-deploy.yml)
+[![Release](https://github.com/xfontr/joinery/actions/workflows/release.yml/badge.svg)](https://github.com/xfontr/joinery/actions/workflows/release.yml)
+[![Netlify deployment](https://github.com/xfontr/joinery/actions/workflows/netlify-deployment.yml/badge.svg)](https://github.com/xfontr/joinery/actions/workflows/netlify-deployment.yml)
 
 A pnpm + Nx monorepo maintained by Xifré Font: Nuxt websites for small publications and
 practices, the shared packages they build on, and the tooling that keeps them consistent. The
-[developer portal](https://xfontr.github.io/monorepo/) is the readable way in.
+[developer portal](https://xfontr-monorepo.pages.dev) is the readable way in.
 
 | Worth reading first | Why |
 | --- | --- |
 | [`apps/huella-legal`](./apps/huella-legal/README.md) | The main product: a Nuxt 4 rebuild of a WordPress law magazine |
-| [`@monorepo/configs`](./packages/configs/README.md) | Shared presets and the in-house ESLint rules every project runs |
+| [`@joinery/configs`](./packages/configs/README.md) | Shared presets and the in-house ESLint rules every project runs |
 | [Architecture & boundaries](#architecture--boundaries) | How projects may depend on each other, enforced at lint time |
 | [0028](./docs/decisions/0028-huella-legal-urls-and-cutover.md), [0030](./docs/decisions/0030-huella-legal-rendering-hosting-and-cost.md) | Two decisions: keeping old URLs working, and hosting cost |
 
@@ -23,19 +23,19 @@ practices, the shared packages they build on, and the tooling that keeps them co
 <!-- docs:map:layout -->
 ```
 packages/
-    configs/          @monorepo/configs — shared ESLint, Vitest, Playwright and tsconfig presets
-    content/          @monorepo/content — CMS entries and taxonomies + a Nuxt module
-    i18n/             @monorepo/i18n — translations core + a Nuxt module
-    observability/    @monorepo/observability — Grafana Faro in the browser, OpenTelemetry on the server
+    configs/          @joinery/configs — shared ESLint, Vitest, Playwright and tsconfig presets
+    content/          @joinery/content — CMS entries and taxonomies + a Nuxt module
+    i18n/             @joinery/i18n — translations core + a Nuxt module
+    observability/    @joinery/observability — Grafana Faro in the browser, OpenTelemetry on the server
 apps/
-    developer-portal/ @monorepo/developer-portal — the repository's public portal/front door over its docs, projects, architecture and engineering health
-    huella-legal/     @monorepo/huella-legal — Huella Legal, a WIP law blog redesign (Nuxt 4)
-    marina-roustan/   @monorepo/marina-roustan — Marina Roustan, a website rebuild (Nuxt 4)
-    portfolio/        @monorepo/portfolio — Xifré Font's personal site: the method, the work and the project maps
-    wp-editor/        @monorepo/wp-editor — local-only review-and-apply tool for bulk edits to WordPress posts and pages
+    developer-portal/ @joinery/developer-portal — the repository's public portal/front door over its docs, projects, architecture and engineering health
+    huella-legal/     @joinery/huella-legal — Huella Legal, a WIP law blog redesign (Nuxt 4)
+    marina-roustan/   @joinery/marina-roustan — Marina Roustan, a website rebuild (Nuxt 4)
+    portfolio/        @joinery/portfolio — Xifré Font's personal site: the method, the work and the project maps
+    wp-editor/        @joinery/wp-editor — local-only review-and-apply tool for bulk edits to WordPress posts and pages
 infrastructure/
-    scripts/          @monorepo/scripts — repo-local dev tooling, one folder per script
-    translations/     @monorepo/translations — TMS serving the locale files over HTTP
+    scripts/          @joinery/scripts — repo-local dev tooling, one folder per script
+    translations/     @joinery/translations — TMS serving the locale files over HTTP
 ```
 <!-- /docs:map:layout -->
 
@@ -93,7 +93,7 @@ The constraints live in [`boundaries.ts`](./packages/configs/src/eslint/lib/boun
   `package.json`'s `nx` block.
 - **Raw source packages**: `packages/*` export TypeScript/Vue source with no build step.
 - **Shared configs**: every ESLint, Vitest, Playwright and tsconfig file wraps a preset from
-  [`@monorepo/configs`](./packages/configs/README.md).
+  [`@joinery/configs`](./packages/configs/README.md).
 
 ## Getting started
 

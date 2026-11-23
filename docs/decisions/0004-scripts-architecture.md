@@ -93,7 +93,7 @@ that folder is the only one using `interface` and semicolon delimiters. The fold
 | `types/` folder | `**/types` is in `baseIgnores` too, so it would be silently unlinted repo-wide — the exact failure `src/coverage/` demonstrates, re-created deliberately. It's why the pure layer is `domain/`. `**/types` was dropped from `baseIgnores` in #234, so a `types/` folder is linted now |
 | `types.ts` per script | All 14 exported types sit with the function that produces them. `BranchType` is `typeof BRANCH_TYPES[number]` from two lines above it; `import type { Doc } from "./capabilities.ts"` says `Doc` is what the capabilities layer speaks, where `from "./types.ts"` says nothing |
 | `constants.ts` | Exactly one constant had two homes, and it moves to `shared/domain/layout.ts`. `CANCELLED` exists in `add.ts` and `pick.ts` with *different* values, so centralising invites merging them and making one message a lie; `drift/README.md` cites three thresholds by file; `SECTIONS` is 30 lines of hard-wrapped prose |
-| `configs/environment.ts` | Two env vars, read on adjacent lines of one file. Also confusing next to `@monorepo/configs`. The real defect was `cache.ts`'s module-load `argv` read |
+| `configs/environment.ts` | Two env vars, read on adjacent lines of one file. Also confusing next to `@joinery/configs`. The real defect was `cache.ts`'s module-load `argv` read |
 | `helpers/` | Every candidate is private to its file with one to three call sites. "Helper" isn't a role — it names the author's uncertainty, and the four layers classify every file without it |
 | Merging both `git.ts` into `shared/` | Produces an eight-export module where each caller uses half — the junk drawer this package's CLAUDE.md warns about |
 | Unifying `add`/`pick`'s project prompt | Different return types and different jobs: `add` offers a *none* option, `pick` has the offline fallback. They share one string, which is what gets extracted |
@@ -109,7 +109,7 @@ testable at all.
 The direction is still **convention, not lint** — but the folders change what enforcing it costs.
 The rule was originally deferred because, on a flat tree, it needed a hand-maintained list of which
 filenames are adapters, which meant a 40-line block in this package's own `eslint.config.ts` and no
-path into `@monorepo/configs` without `configs` learning the names `add.ts` and `pick.ts`. Against
+path into `@joinery/configs` without `configs` learning the names `add.ts` and `pick.ts`. Against
 directories it is a generic glob — `**/domain/**` may not import `node:fs`, `node:child_process` or
 `@clack/prompts` — which is the same shape as the existing
 [`coreIsolation.ts`](../../packages/configs/src/eslint/lib/coreIsolation.ts) rule and can live

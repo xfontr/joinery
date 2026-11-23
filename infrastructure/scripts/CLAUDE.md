@@ -1,4 +1,4 @@
-# 🤖 @monorepo/scripts
+# 🤖 @joinery/scripts
 
 See [README.md](./README.md) for the layout rule and the per-script docs it links to. Use the
 `scripts-new-script` skill when adding a script.
@@ -23,7 +23,7 @@ See [README.md](./README.md) for the layout rule and the per-script docs it link
   Extract and test any real logic a script grows (a parser, a diff, a mapping or a formatting
   decision), keeping the spec beside its subject; don't write specs that assert a mock of `gh` against
   itself.
-- Tagged `type:tooling`, so it may depend only on `@monorepo/configs`. Nothing else may depend on
+- Tagged `type:tooling`, so it may depend only on `@joinery/configs`. Nothing else may depend on
   `type:tooling` — it's a leaf nothing imports, enforced the same way `type:infra` is.
 - The TODO/FIXME push gate is **not** here any more. It's a few lines of `awk` in
   [`.husky/pre-push`](../../.husky/pre-push), which only points at `pnpm issue:add` in its error

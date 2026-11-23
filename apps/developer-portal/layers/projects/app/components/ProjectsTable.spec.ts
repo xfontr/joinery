@@ -4,7 +4,7 @@ import type { ProjectRow } from "#layers/projects/app/types/ProjectRow.ts";
 import ProjectsTable from "./ProjectsTable.vue";
 
 const ROW = {
-    name: "@monorepo/ui",
+    name: "@joinery/ui",
     root: "packages/ui",
     to: "/projects/ui",
     kind: "packages",

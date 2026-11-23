@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { createT } from "@monorepo/configs/playwright/utils/i18n";
+import { createT } from "@joinery/configs/playwright/utils/i18n";
 
 /** Every message the app renders, read from the same file the build bundles. */
 export const MESSAGES = JSON.parse(

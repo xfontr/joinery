@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-15T12:30:41.975Z",
+    "syncedAt": "2026-11-23T17:54:17.371Z",
     "milestone": "Huella Legal",
     "issues": [
         {
@@ -18,7 +18,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 27,
@@ -36,7 +36,7 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": 8
+            "complexity": null
         },
         {
             "number": 185,
@@ -56,7 +56,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 186,
@@ -77,7 +77,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 187,
@@ -97,7 +97,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 188,
@@ -117,7 +117,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 189,
@@ -135,7 +135,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 192,
@@ -168,7 +168,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 193,
@@ -186,7 +186,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 194,
@@ -215,7 +215,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 195,
@@ -247,7 +247,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 196,
@@ -279,7 +279,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 197,
@@ -323,7 +323,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 198,
@@ -355,7 +355,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 199,
@@ -390,7 +390,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 200,
@@ -433,7 +433,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 201,
@@ -475,7 +475,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 208,
@@ -496,7 +496,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 212,
@@ -517,7 +517,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 8
+            "complexity": null
         },
         {
             "number": 219,
@@ -543,7 +543,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 223,
@@ -567,7 +567,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 231,
@@ -594,7 +594,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 8
+            "complexity": null
         },
         {
             "number": 232,
@@ -622,7 +622,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 234,
@@ -652,7 +652,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 236,
@@ -670,7 +670,7 @@
             "branch": true,
             "pr": false,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 240,
@@ -703,7 +703,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 8
+            "complexity": null
         },
         {
             "number": 241,
@@ -730,7 +730,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 242,
@@ -759,7 +759,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 243,
@@ -779,7 +779,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 244,
@@ -797,7 +797,7 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 245,
@@ -818,7 +818,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 246,
@@ -840,7 +840,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 247,
@@ -863,7 +863,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 248,
@@ -888,7 +888,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 249,
@@ -911,7 +911,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 250,
@@ -936,7 +936,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 251,
@@ -956,7 +956,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 252,
@@ -978,7 +978,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 253,
@@ -1000,7 +1000,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 274,
@@ -1020,7 +1020,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 280,
@@ -1038,7 +1038,7 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 283,
@@ -1062,7 +1062,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 8
+            "complexity": null
         },
         {
             "number": 284,
@@ -1080,7 +1080,7 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": 8
+            "complexity": null
         },
         {
             "number": 286,
@@ -1100,7 +1100,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 1
+            "complexity": null
         },
         {
             "number": 299,
@@ -1121,7 +1121,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 301,
@@ -1146,7 +1146,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 302,
@@ -1168,7 +1168,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 8
+            "complexity": null
         },
         {
             "number": 304,
@@ -1190,7 +1190,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 308,
@@ -1215,7 +1215,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 311,
@@ -1239,7 +1239,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 312,
@@ -1263,7 +1263,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 313,
@@ -1285,7 +1285,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 316,
@@ -1311,7 +1311,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 324,
@@ -1341,7 +1341,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 8
+            "complexity": null
         },
         {
             "number": 328,
@@ -1363,7 +1363,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 330,
@@ -1385,7 +1385,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 331,
@@ -1407,7 +1407,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 336,
@@ -1425,7 +1425,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 337,
@@ -1449,7 +1449,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 340,
@@ -1479,7 +1479,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 13
+            "complexity": null
         },
         {
             "number": 341,
@@ -1506,7 +1506,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 343,
@@ -1541,7 +1541,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 344,
@@ -1562,7 +1562,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 346,
@@ -1580,7 +1580,7 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 348,
@@ -1602,7 +1602,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 1
+            "complexity": null
         },
         {
             "number": 349,
@@ -1620,7 +1620,7 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 350,
@@ -1640,7 +1640,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 360,
@@ -1662,7 +1662,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 361,
@@ -1684,7 +1684,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 362,
@@ -1709,7 +1709,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 8
+            "complexity": null
         },
         {
             "number": 371,
@@ -1733,7 +1733,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 373,
@@ -1753,7 +1753,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 1
+            "complexity": null
         },
         {
             "number": 375,
@@ -1773,7 +1773,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 377,
@@ -1798,7 +1798,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 380,
@@ -1821,7 +1821,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 383,
@@ -1846,7 +1846,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 385,
@@ -1867,7 +1867,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 390,
@@ -1887,7 +1887,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 392,
@@ -1910,7 +1910,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 400,
@@ -1930,7 +1930,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 1
+            "complexity": null
         },
         {
             "number": 402,
@@ -1950,7 +1950,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 412,
@@ -1968,7 +1968,7 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": 8
+            "complexity": null
         }
     ],
     "noMilestone": []

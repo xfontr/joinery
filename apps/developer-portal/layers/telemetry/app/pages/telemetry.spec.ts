@@ -37,7 +37,7 @@ const MESSAGES = {
         never: "never",
     },
     pageHeader: {
-        wordmark: "monorepo",
+        wordmark: "joinery",
     },
     telemetry: {
         empty: {
