@@ -37,7 +37,7 @@ export default [
             "app/pages/index.vue",
             "app/pages/method.vue",
             "app/pages/agentic-workflows.vue",
-            "app/pages/work/\\[app\\].vue",
+            String.raw`app/pages/work/\[app\].vue`,
         ],
         rules: { "vue/max-lines-per-block": "warn" },
     },

@@ -1,11 +1,12 @@
 name: Portfolio deploy
 
-# After the portal's deploy rather than on push, because the build fetches the portal's
+# Called by the portal's deploy once it has published, because the build fetches the portal's
 # `/embed/data.json` and a parallel run would read the previous one.
 on:
-    workflow_run:
-        workflows: [Developer Portal deploy]
-        types: [completed]
+    workflow_call:
+        secrets:
+            CLOUDFLARE_API_TOKEN:
+                required: true
     workflow_dispatch:
 
 permissions:
@@ -17,7 +18,6 @@ concurrency:
 
 jobs:
     deploy:
-        if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
         runs-on: ubuntu-latest
         environment:
             name: portfolio
@@ -26,7 +26,6 @@ jobs:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:
                   persist-credentials: false
-                  ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
             - uses: ./.github/actions/install
 

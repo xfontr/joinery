@@ -3,3 +3,4 @@ at,script,command,target,flags,area,caller,tty,exit,ms
 2026-11-22,issue,pick,,project=developer-portal;title;type=fix,developer-portal,claude-code,0,0,10486
 2026-11-23,workflow,sync,,close,developer-portal,claude-code,0,0,2739
 2026-11-23,workflow,sync,,close,developer-portal,claude-code,0,0,3157
+2026-11-23,map,,,check,developer-portal,human,1,0,166
