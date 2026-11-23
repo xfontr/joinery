@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
-import { createT } from "@monorepo/configs/playwright/utils/i18n";
-import { NOT_FOUND_DOCUMENT } from "@monorepo/configs/playwright/utils/test";
+import { createT } from "@joinery/configs/playwright/utils/i18n";
+import { NOT_FOUND_DOCUMENT } from "@joinery/configs/playwright/utils/test";
 
 const MESSAGES = JSON.parse(
     readFileSync(new URL("../i18n/locales/en.json", import.meta.url), "utf8"),

@@ -1,4 +1,4 @@
-# 🤖 @monorepo/wp-editor
+# 🤖 @joinery/wp-editor
 
 See [README.md](./README.md) for the store layout, the rules and the CLI.
 

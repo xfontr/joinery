@@ -99,7 +99,7 @@ describe("isRecorded", () => {
     it("skips CI, test runs and the checks a git hook runs, none of which anyone chose", () => {
         expect(isRecorded({ CI: "true" }, "issue")).toBe(false);
         expect(isRecorded({ VITEST: "true" }, "issue")).toBe(false);
-        expect(isRecorded({ MONOREPO_GIT_HOOK: "1" }, "map")).toBe(false);
+        expect(isRecorded({ JOINERY_GIT_HOOK: "1" }, "map")).toBe(false);
         expect(isRecorded({}, "issue")).toBe(true);
     });
 

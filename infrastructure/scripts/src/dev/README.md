@@ -22,7 +22,7 @@ domain/projects.ts   rows, their order, and matching a typed name
 ## How it works
 
 - The list is `nx show projects --with-target dev`, so a project appears by adding a `dev` script —
-  nothing else to register. `@monorepo/scripts` itself is left out.
+  nothing else to register. `@joinery/scripts` itself is left out.
 - Rows are apps first, then `infrastructure`, then `packages`, alphabetical within each, with the
   layer in the row (`Huella Legal · apps`). Labels come from the package name; `ACRONYMS` in
   [`projects.ts`](./domain/projects.ts) fixes words like `UI`.

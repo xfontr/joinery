@@ -1,16 +1,16 @@
-import monorepo from "../rules/index.ts";
+import joinery from "../rules/index.ts";
 
-const rules = { "monorepo/named-default-export": "error" };
+const rules = { "joinery/named-default-export": "error" };
 
 const defaultExports: object = {
     files: ["**/*.ts", "**/*.mts", "**/*.cts", "**/*.js", "**/*.mjs", "**/*.cjs"],
-    plugins: { monorepo },
+    plugins: { joinery },
     rules,
 };
 
 const defaultExportsVue: object = {
     files: ["**/*.vue"],
-    plugins: { monorepo },
+    plugins: { joinery },
     rules,
 };
 

@@ -45,33 +45,33 @@ and are documented once in the [root README](../README.md#getting-started).
 | `pnpm brand:contrast` | [`package.json`](../package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
 | `pnpm release` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm release:dry` | [`package.json`](../package.json) | [`README.md`](../README.md) |
-| `pnpm exec nx test:e2e @monorepo/configs` | [`packages/configs/package.json`](../packages/configs/package.json) | [`packages/configs/README.md`](../packages/configs/README.md) |
-| `pnpm exec nx nuxt-prepare @monorepo/developer-portal` | [`apps/developer-portal/package.json`](../apps/developer-portal/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
-| `pnpm exec nx test:e2e @monorepo/developer-portal` | [`apps/developer-portal/package.json`](../apps/developer-portal/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
-| `pnpm exec nx collect @monorepo/developer-portal` | [`apps/developer-portal/package.json`](../apps/developer-portal/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
-| `pnpm exec nx build:storybook @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
-| `pnpm exec nx storybook @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
-| `pnpm exec nx dev:api @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
-| `pnpm exec nx cache:clear @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
-| `pnpm exec nx preview @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
-| `pnpm exec nx nuxt-prepare @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
-| `pnpm exec nx test:e2e @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
-| `pnpm exec nx preview @monorepo/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
-| `pnpm exec nx nuxt-prepare @monorepo/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
-| `pnpm exec nx test:e2e @monorepo/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
-| `pnpm exec nx nuxt-prepare @monorepo/portfolio` | [`apps/portfolio/package.json`](../apps/portfolio/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
-| `pnpm exec nx test:e2e @monorepo/portfolio` | [`apps/portfolio/package.json`](../apps/portfolio/package.json) | [`apps/portfolio/README.md`](../apps/portfolio/README.md) |
-| `pnpm exec nx dev:api @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
-| `pnpm exec nx mocks:reset @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
-| `pnpm exec nx nuxt-prepare @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
-| `pnpm exec nx editor @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
-| `pnpm exec nx editor:dev @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
-| `pnpm exec nx coverage @monorepo/scripts` | [`infrastructure/scripts/package.json`](../infrastructure/scripts/package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
-| `pnpm exec nx cli @monorepo/scripts` | [`infrastructure/scripts/package.json`](../infrastructure/scripts/package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
-| `pnpm exec nx serve @monorepo/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
-| `pnpm exec nx docker:up @monorepo/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
-| `pnpm exec nx docker:down @monorepo/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
-| `pnpm exec nx docker:logs @monorepo/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
+| `pnpm exec nx test:e2e @joinery/configs` | [`packages/configs/package.json`](../packages/configs/package.json) | [`packages/configs/README.md`](../packages/configs/README.md) |
+| `pnpm exec nx nuxt-prepare @joinery/developer-portal` | [`apps/developer-portal/package.json`](../apps/developer-portal/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
+| `pnpm exec nx test:e2e @joinery/developer-portal` | [`apps/developer-portal/package.json`](../apps/developer-portal/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
+| `pnpm exec nx collect @joinery/developer-portal` | [`apps/developer-portal/package.json`](../apps/developer-portal/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
+| `pnpm exec nx build:storybook @joinery/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
+| `pnpm exec nx storybook @joinery/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
+| `pnpm exec nx dev:api @joinery/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
+| `pnpm exec nx cache:clear @joinery/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
+| `pnpm exec nx preview @joinery/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
+| `pnpm exec nx nuxt-prepare @joinery/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
+| `pnpm exec nx test:e2e @joinery/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
+| `pnpm exec nx preview @joinery/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
+| `pnpm exec nx nuxt-prepare @joinery/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
+| `pnpm exec nx test:e2e @joinery/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
+| `pnpm exec nx nuxt-prepare @joinery/portfolio` | [`apps/portfolio/package.json`](../apps/portfolio/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
+| `pnpm exec nx test:e2e @joinery/portfolio` | [`apps/portfolio/package.json`](../apps/portfolio/package.json) | [`apps/portfolio/README.md`](../apps/portfolio/README.md) |
+| `pnpm exec nx dev:api @joinery/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
+| `pnpm exec nx mocks:reset @joinery/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
+| `pnpm exec nx nuxt-prepare @joinery/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
+| `pnpm exec nx editor @joinery/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
+| `pnpm exec nx editor:dev @joinery/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
+| `pnpm exec nx coverage @joinery/scripts` | [`infrastructure/scripts/package.json`](../infrastructure/scripts/package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
+| `pnpm exec nx cli @joinery/scripts` | [`infrastructure/scripts/package.json`](../infrastructure/scripts/package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
+| `pnpm exec nx serve @joinery/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
+| `pnpm exec nx docker:up @joinery/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
+| `pnpm exec nx docker:down @joinery/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
+| `pnpm exec nx docker:logs @joinery/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
 
 ## Git hooks
 

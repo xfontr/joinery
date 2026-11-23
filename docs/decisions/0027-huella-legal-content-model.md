@@ -10,7 +10,7 @@ decision: accepted
 
 The `/lab` design shows fields that `Entry` doesn't carry: authors with bios and avatars, reading
 time, TOC, footnotes, bibliography, citation, issue number, series and a "Más leídas" sort. S1 in
-[the implementation plan](https://github.com/xfontr/monorepo/blob/3891f29041e31884c6821e99fd5ecc9c5daab2af/docs/plans/huella-legal-implementation.md) asks where each one comes from,
+[the implementation plan](https://github.com/xfontr/joinery/blob/3891f29041e31884c6821e99fd5ecc9c5daab2af/docs/plans/huella-legal-implementation.md) asks where each one comes from,
 where each gap gets filled, and how body HTML is sanitised. The lean was app-local mappers. The plan
 assumed WordPress exposes nothing beyond core. It turns out to expose several plugins, Yoast among
 them, so there's a second question: which plugin output to take.
@@ -143,8 +143,8 @@ Revisit this if a co-authors plugin appears, or once comments are designed: 134 
 
 | Claim | Check |
 | --- | --- |
-| `Entry` carries authors and seo from WP | `pnpm exec nx test @monorepo/content`, with `toEntry` specs over an embedded author and a `yoast_head_json` sample |
+| `Entry` carries authors and seo from WP | `pnpm exec nx test @joinery/content`, with `toEntry` specs over an embedded author and a `yoast_head_json` sample |
 | No Yoast URL field is read | `grep -nE "canonical\|og_url\|schema\|yoast_head\"" packages/content/src/core/adapters/providers/wordpress/*.ts` finds nothing outside specs |
 | The pipeline strips unsafe markup | A spec beside the pipeline in `apps/huella-legal/server/utils/`, with inline `onclick`, `javascript:`, `<script>` and `<meta>` samples |
-| The sanitiser never reaches the browser | After `pnpm exec nx build @monorepo/huella-legal`, `grep -rl "user-content-" apps/huella-legal/.output` finds a chunk under `server/` and none under `public/` |
+| The sanitiser never reaches the browser | After `pnpm exec nx build @joinery/huella-legal`, `grep -rl "user-content-" apps/huella-legal/.output` finds a chunk under `server/` and none under `public/` |
 | No endpoint is committed | `git grep -ni` for the live hostname finds nothing, and every spec host is `wp.test` |

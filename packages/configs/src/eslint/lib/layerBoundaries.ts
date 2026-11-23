@@ -1,4 +1,4 @@
-import monorepo from "../rules/index.ts";
+import joinery from "../rules/index.ts";
 import type { LayerBoundariesOptions } from "../rules/layerBoundaries.ts";
 
 const layerBoundaries = (options: LayerBoundariesOptions): object => ({
@@ -7,9 +7,9 @@ const layerBoundaries = (options: LayerBoundariesOptions): object => ({
         "**/layers/**/*.vue",
         ...options.kit.flatMap((path) => [`${path}**/*.ts`, `${path}**/*.vue`]),
     ],
-    plugins: { monorepo },
+    plugins: { joinery },
     rules: {
-        "monorepo/layer-boundaries": ["error", options],
+        "joinery/layer-boundaries": ["error", options],
     },
 });
 

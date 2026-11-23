@@ -1,4 +1,4 @@
-# 🤖 @monorepo/wp-editor
+# 🤖 @joinery/wp-editor
 
 A local tool for bulk edits to WordPress posts and pages. Claude proposes edits through the
 `pnpm editor` CLI; you review each as a diff in the app, apply it, and can restore it later. It keeps
@@ -34,7 +34,7 @@ The CLI imports from `server/`, never the reverse (lint forbids `app/` and `serv
 | `pnpm editor status` | Counts per state, per changeset |
 | `pnpm editor probe` | Step 0 below; creates and force-deletes one draft |
 | `pnpm editor:dev <command>` | Any of the above against the mocks, never the live site |
-| `pnpm exec nx nuxt-prepare @monorepo/wp-editor` | Generates `.nuxt/`, which `tsconfig.json` points into; `lint`, `typecheck`, `test` and `build` depend on it |
+| `pnpm exec nx nuxt-prepare @joinery/wp-editor` | Generates `.nuxt/`, which `tsconfig.json` points into; `lint`, `typecheck`, `test` and `build` depend on it |
 
 ### Dev mocks
 
@@ -121,5 +121,5 @@ whether a draft keeps custom classes and `<style>`, and that `modified_gmt` move
 
 ## Boundaries
 
-`type:app`, `scope:internal`; depends on `@monorepo/configs` only. It has its own WordPress client
-because `@monorepo/content` is read-only and anonymous.
+`type:app`, `scope:internal`; depends on `@joinery/configs` only. It has its own WordPress client
+because `@joinery/content` is read-only and anonymous.

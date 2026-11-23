@@ -1,7 +1,7 @@
-import type { Entry } from "@monorepo/content";
-import { fakeEntry, fakeTerm } from "@monorepo/content/testing";
+import type { Entry } from "@joinery/content";
+import { fakeEntry, fakeTerm } from "@joinery/content/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 import type { ArticleSummary } from "../../../../shared/types/ArticleSummary";
 
 const CATEGORY = fakeTerm();

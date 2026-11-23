@@ -83,7 +83,7 @@ With no number, it reads the one in the branch name.
 
 ## Caching
 
-Projects and labels are cached for 24 h under `node_modules/.cache/@monorepo/scripts/`; `--refresh`
+Projects and labels are cached for 24 h under `node_modules/.cache/@joinery/scripts/`; `--refresh`
 bypasses it. The issue list is always fetched live and cached only as the offline fallback.
 
 ## Requirements

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { auditProblems } from "./audits.ts";
 
 const TABLE = "## Bugs\n\n| ID | Where | Status |\n| --- | --- | --- |\n| B1 | a.ts | open |\n";
-const VALID = `---\nscope: "@monorepo/ui"\ncommit: 61b6f7f\n---\n\n# 🔎 UI\n\n${TABLE}`;
+const VALID = `---\nscope: "@joinery/ui"\ncommit: 61b6f7f\n---\n\n# 🔎 UI\n\n${TABLE}`;
 
 const messagesOf = (file: string, source: string): string[] =>
     auditProblems([{ file, source }]).map((problem) => problem.message);

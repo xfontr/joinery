@@ -24,7 +24,7 @@ export interface WordpressComment {
     content: { rendered: string };
 }
 
-/** MSW handlers for the comment routes `@monorepo/content` doesn't serve, holding every new one. */
+/** MSW handlers for the comment routes `@joinery/content` doesn't serve, holding every new one. */
 export const wordpressCommentHandlers = (
     baseURL: string,
     comments: WordpressComment[],

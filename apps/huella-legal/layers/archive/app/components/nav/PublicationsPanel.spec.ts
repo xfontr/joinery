@@ -1,5 +1,5 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
-import { fakeAuthor } from "@monorepo/content/testing";
+import { serveEndpoint } from "@joinery/configs/vitest/utils/nuxt";
+import { fakeAuthor } from "@joinery/content/testing";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";

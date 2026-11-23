@@ -1,4 +1,4 @@
-import { eslint } from "@monorepo/configs";
+import { eslint } from "@joinery/configs";
 
 const bracketedValue = {
     pattern: String.raw`^.*-\[.*\]$`,
@@ -68,7 +68,7 @@ export default [
         rules: { "vue/max-lines-per-block": "warn" },
     },
 
-    // `pnpm exec nx collect @monorepo/developer-portal` vendors Nx's graph client and Istanbul's HTML
+    // `pnpm exec nx collect @joinery/developer-portal` vendors Nx's graph client and Istanbul's HTML
     // report in here, minified; the shared `**/coverage` ignore only catches half of it.
     { ignores: ["public/embed/**"] },
 ];

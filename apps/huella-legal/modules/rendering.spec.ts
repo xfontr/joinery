@@ -1,5 +1,5 @@
 import type { Nuxt } from "@nuxt/schema";
-import { fakeEntry, wordpressHandlers } from "@monorepo/content/testing";
+import { fakeEntry, wordpressHandlers } from "@joinery/content/testing";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";

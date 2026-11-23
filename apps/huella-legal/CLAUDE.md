@@ -1,4 +1,4 @@
-# 🤖 @monorepo/huella-legal
+# 🤖 @joinery/huella-legal
 
 See [README.md](./README.md) for the env vars, the i18n wiring and the telemetry setup.
 
@@ -14,7 +14,7 @@ See [README.md](./README.md) for the env vars, the i18n wiring and the telemetry
 - **No UI copy is hard-coded.** It goes in
   [`i18n/locales/es-ES.json`](./i18n/locales/es-ES.json) under a key that follows the
   [naming convention](./README.md#copy-keys), and the component calls `t()`. Every mode reads that
-  file; there is no TMS, so never wire `@monorepo/i18n` or the translations server back in.
+  file; there is no TMS, so never wire `@joinery/i18n` or the translations server back in.
 - **Domain logic lives in a Nuxt layer under `layers/`**, one directory per domain, beside `app/`
   rather than inside it: Nuxt auto-registers only `<rootDir>/layers/*`, so never add an `extends`
   array. A concern several domains share, such as `forms` (the honeypot and Turnstile), gets a layer
@@ -54,12 +54,12 @@ See [README.md](./README.md) for the env vars, the i18n wiring and the telemetry
   `nuxt-prepare` script and the root [`nx.json`](../../nx.json)'s `dependsOn` on it are what
   regenerate `.nuxt` first — see [the root CLAUDE.md](../../CLAUDE.md#the-two-places-that-must-agree).
 - The ESLint config is the nuxt flavour, which is **not** type-checked. Don't switch it.
-- Shared packages are composed here, never reached into: import from `@monorepo/x`, not from a path
+- Shared packages are composed here, never reached into: import from `@joinery/x`, not from a path
   inside it.
 - Both telemetry halves are off when their URL is unset, which is why local dev ships nothing. Keep
   that property when adding instrumentation.
 - The server observability plugin wraps `nitroApp.h3App.handler` by hand, for reasons
-  [`@monorepo/observability`](../../packages/observability/README.md#gotchas) explains. Don't
+  [`@joinery/observability`](../../packages/observability/README.md#gotchas) explains. Don't
   replace it with the standard instrumentation.
 - **The span is named for the matched route, never the raw path.** It opens under the concrete URL
   because nothing has matched yet, and `end()` renames it. Keep the query string out of both the name
@@ -71,9 +71,9 @@ See [README.md](./README.md) for the env vars, the i18n wiring and the telemetry
   one environment across files, so a spec there restores whatever global it changes; the
   [configs README](../../packages/configs/README.md) says which specs go where. Nitro's auto-imports
   don't exist under the node project, so a spec for anything in `server/` stubs them as globals,
-  `defineNitroPlugin` before the import. Content domain values in any spec come from `@monorepo/content/testing`'s
+  `defineNitroPlugin` before the import. Content domain values in any spec come from `@joinery/content/testing`'s
   `fake*` factories.
-- **`vitest.config.ts` and `playwright.config.ts` are wrappers over `@monorepo/configs`.** A setting
+- **`vitest.config.ts` and `playwright.config.ts` are wrappers over `@joinery/configs`.** A setting
   every Nuxt app would want goes in the preset; only this app's specifics are passed as options.
   Don't lower a threshold to get green; write the spec.
 - `e2e/` holds the Playwright specs, `server.ts` (the MSW preload), `fakes.ts` (its data),

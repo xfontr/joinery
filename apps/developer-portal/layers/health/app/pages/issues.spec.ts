@@ -57,7 +57,7 @@ const MESSAGES = {
         shown: "{shown} of {total}",
     },
     pageHeader: {
-        wordmark: "monorepo",
+        wordmark: "joinery",
     },
 };
 

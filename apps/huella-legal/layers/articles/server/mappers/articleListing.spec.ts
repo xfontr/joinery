@@ -1,4 +1,4 @@
-import { fakeAuthor, fakeEntry, fakeTerm } from "@monorepo/content/testing";
+import { fakeAuthor, fakeEntry, fakeTerm } from "@joinery/content/testing";
 import { describe, expect, it } from "vitest";
 import type { ArticleSummary } from "../../shared/types/ArticleSummary";
 import type { ListingQuery } from "../../shared/types/ListingQuery";

@@ -42,7 +42,7 @@ machinery, test harnesses and compatibility code for three generations of Fluent
 | `executors` | Interactive target picker, workspace reset, release-sync checks, local CodePen and one-off release tools | The target picker already has a smaller counterpart in `pnpm dev`; the dry-run-first workspace reset is a useful standalone toy |
 | `generators` | Package scaffolding, manifests, version files, notice copying and the external design-token pipeline | Token generation from a separate design source is the standout idea; there is no token source here yet |
 | `github` | Typed GitHub pull-request lookup shared by release tooling | Existing scripts shell out to authenticated `gh`, which is a better fit for this repository |
-| `jest` | Shared v8 presets, reporters and style mocks | Vitest presets in `@monorepo/configs` already fill this role |
+| `jest` | Shared v8 presets, reporters and style mocks | Vitest presets in `@joinery/configs` already fill this role |
 | `lint-staged` | Groups staged files by project, then runs each project's ESLint setup in parallel | Clever at Fluent UI scale; the existing affected lint plus pre-push isolation is enough here |
 | `monorepo` | Git root, package metadata, internal dependency traversal, affected projects and workspace aliases | Widely consumed in Fluent UI, but direct Nx calls remain clearer for this repository's independent CLIs |
 | `package-manager` | Enforces Yarn, prints onboarding help and warns after checkout/merge when lock or Nx files changed | Port the Git-hook warning only; lifecycle entry points conflict with the local lifecycle-script ban |
@@ -52,7 +52,7 @@ machinery, test harnesses and compatibility code for three generations of Fluent
 | `puppeteer` | Shared browser launch and navigation helpers for integration and SSR tests | An implementation detail of the browser harness, not a feature to copy alone |
 | `storybook` | Story globs, loader rules, TypeScript aliases and build-less registration of workspace Storybook addons | Build-less addons are genuinely neat, but this repository has no custom addon; story-driven smoke tests are the transferable half |
 | `tasks` | A large `just-scripts` facade over compilation, lint, tests, Sass, Webpack, API extraction and performance tasks | An older orchestration layer now overlapping Nx; not a model for new code here |
-| `test-ssr` | Builds stories to CommonJS and ESM, renders them server-side, opens the result in a real browser and fails on console errors | Strong second-stage experiment for a Nuxt app, once `@monorepo/ui` has enough stories to justify the harness |
+| `test-ssr` | Builds stories to CommonJS and ESM, renders them server-side, opens the result in a real browser and fails on console errors | Strong second-stage experiment for a Nuxt app, once `@joinery/ui` has enough stories to justify the harness |
 | `triage-bot` | Labels and assigns new issues from a JSON keyword map in `actions/github-script` | The current single-owner issue flow has nothing useful to route |
 | `ts-node` | Registers TypeScript and path aliases for older scripts | Node's native type stripping already removed this need locally |
 | `update-release-notes` | Turns changelog JSON and tags into GitHub Releases, dry-run by default | Worth revisiting only if the Release workflow starts creating GitHub Releases rather than tags and changelogs alone |
@@ -96,7 +96,7 @@ metadata:
 | Add tarball or Verdaccio checks | Packages export raw source directly inside the workspace; neither packed artifacts nor registry semantics are part of the current setup |
 | Add bundle-size tooling | The mechanism is interesting, but no bundle-size experiment will be implemented as part of this decision |
 | Put both experiments in CI immediately | A playground that blocks every change before its baseline is understood turns exploration into policy by accident |
-| Build the SSR-story harness first | The design is excellent, but `@monorepo/ui` has one component and one story, so the browser matrix does not yet test a meaningful surface |
+| Build the SSR-story harness first | The design is excellent, but `@joinery/ui` has one component and one story, so the browser matrix does not yet test a meaningful surface |
 
 ## Consequences
 
@@ -126,6 +126,6 @@ corresponding bundle, publication or component-test lifecycle.
 | Both hooks are valid and advisory | `sh -n .husky/post-checkout .husky/post-merge`; a lockfile-changing revision pair prints `pnpm install`, while `sh .husky/post-checkout HEAD HEAD 1` exits 0 silently |
 | Package metadata and export targets are valid | `pnpm package:check` exits 0, prints one checked/skipped line per project under `packages/`, and names any missing export target before exiting 1 |
 | Peer metadata cannot orphan | Removing one matching `peerDependencies` entry in a temporary copy makes `pnpm package:check` name that package and key, then exit 1 |
-| No package build surface was added | `git diff --name-only master...HEAD` contains no `dist/`, and `pnpm exec nx show project @monorepo/ui` has no `build` target |
+| No package build surface was added | `git diff --name-only master...HEAD` contains no `dist/`, and `pnpm exec nx show project @joinery/ui` has no `build` target |
 | The validation stays optional | `.github/workflows/ci.yml` does not contain `package:check` until its output has been evaluated separately |
 | Every new capability has an owner | `pnpm docs:map` followed by `pnpm docs:map --check` passes, with the command and both hooks pointing at a README |

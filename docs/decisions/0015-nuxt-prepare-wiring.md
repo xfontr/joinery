@@ -45,7 +45,7 @@ at graph-computation time, and each one fails cold. `targetDefaults` cannot reac
 `"test-ci"` and `"test-ci--*"` applied the first and left every atomized target at
 `dependsOn: null`. Glob keys are not target defaults.
 
-**3. Those eight are latent, not live.** `nx run @monorepo/developer-portal:test-ci` refuses outright —
+**3. Those eight are latent, not live.** `nx run @joinery/developer-portal:test-ci` refuses outright —
 *"should only be run with Nx Cloud"* — and Nx Cloud was rejected in
 [`0005`](./0005-nx-generators-and-ai-agent-setup.md). An edge on the aggregate would not help
 anyway: Cloud dispatches the atomized tasks directly, so a `dependsOn` on their parent never
@@ -56,7 +56,7 @@ default, and it fails on 8 of 8 spec files cold. The same class as #117, unfixed
 it.
 
 **5. A `dependsOn` naming a target the project lacks is silently dropped.**
-`@monorepo/content` has no `nuxt-prepare` script and still shows `dependsOn: ["nuxt-prepare"]` on
+`@joinery/content` has no `nuxt-prepare` script and still shows `dependsOn: ["nuxt-prepare"]` on
 `test` and `test:coverage`; nothing errors, which is why the workspace-wide defaults are safe. The
 cost is that `CLAUDE.md`'s manual step — a new Nuxt app "needs the script added by hand" — fails
 silently rather than loudly: the wiring reads as present and does nothing.
@@ -70,8 +70,8 @@ runner does, and no `dependsOn` in any shape reaches it.
 including Nx's own overhead. Written as `.ts` it fails **before it runs**: the setup file is itself
 transformed by the oxc pipeline it exists to repair, and the error just moves onto it. Referenced
 as a package specifier
-(`@monorepo/configs/vitest/prepareNuxt`) it resolves and works, so it lives once in
-[`@monorepo/configs`](../../packages/configs/README.md) rather than once per app — where it becomes
+(`@joinery/configs/vitest/prepareNuxt`) it resolves and works, so it lives once in
+[`@joinery/configs`](../../packages/configs/README.md) rather than once per app — where it becomes
 that package's first non-TypeScript export, against a `CLAUDE.md` that describes it as shipped as
 raw TypeScript. No build step is involved either way; it is still source.
 
@@ -82,7 +82,7 @@ those names is: it takes either re-implementing `@nx/vitest`'s atomization or wr
 `createNodesV2` it exports, both of them a hard dependency on another package's internals.
 
 **One change is adopted, and it is neither of the two proposed.**
-[`@monorepo/configs`](../../packages/configs/README.md) ships the `nuxi prepare` `globalSetup` as
+[`@joinery/configs`](../../packages/configs/README.md) ships the `nuxi prepare` `globalSetup` as
 `.mjs`, carried by the preset every project's `vitest.config.ts` already calls. That closes findings
 1, 2, 4 and 6 at once — every Vitest target, inferred or hand-written, inside the graph or outside
 it — and it makes the four `dependsOn: ["nuxt-prepare"]` entries on `test` and `test:coverage`

@@ -120,7 +120,7 @@ describe("drift main", () => {
         expect(gh.createIssue).toHaveBeenCalledWith({
             title: "Address documentation drift for Demo",
             body: "",
-            project: "Monorepo",
+            project: "Joinery",
         });
     });
 

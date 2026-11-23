@@ -11,7 +11,7 @@ const MESSAGES = {
 };
 
 const UI = {
-    name: "@monorepo/ui",
+    name: "@joinery/ui",
     root: "packages/ui",
     specs: 0,
     commits: null,

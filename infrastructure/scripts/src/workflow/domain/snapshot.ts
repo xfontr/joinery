@@ -4,7 +4,7 @@ export const CAPABILITY_LABEL_PREFIX = "cap:";
 /** Mirrors `OWNER_LABEL` in apps/developer-portal/layers/workflows/shared/constants.ts. */
 export const OWNER_LABEL = "owner";
 
-export const BOARD = "Monorepo";
+export const BOARD = "Joinery";
 
 /** The board's Number field holding a ticket's Fibonacci complexity estimate. */
 export const COMPLEXITY_FIELD = "Complexity";

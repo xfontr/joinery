@@ -54,7 +54,7 @@ const MESSAGES = {
         },
     },
     pageHeader: {
-        wordmark: "monorepo",
+        wordmark: "joinery",
     },
 };
 

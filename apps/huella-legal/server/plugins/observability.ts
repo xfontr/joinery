@@ -1,4 +1,4 @@
-import { startNodeTelemetry } from "@monorepo/observability/node";
+import { startNodeTelemetry } from "@joinery/observability/node";
 import { getContext } from "@netlify/functions";
 import {
     context,

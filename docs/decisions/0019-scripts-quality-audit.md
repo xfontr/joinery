@@ -41,7 +41,7 @@ The layer rule from 0004 is respected with no exceptions. Four greps over `src/`
 
 Boundaries hold too. The package is tagged `type:tooling`, which
 [`boundaries.ts`](../../packages/configs/src/eslint/lib/boundaries.ts) restricts to `type:config`
-only; its sole workspace dependency is `@monorepo/configs`, and nothing in the workspace imports it.
+only; its sole workspace dependency is `@joinery/configs`, and nothing in the workspace imports it.
 `lint` and `typecheck` are clean, and 121 tests across 14 spec files pass. Every `domain/` module
 that carries real logic has a spec beside it.
 
@@ -258,7 +258,7 @@ are the check this report adds, and they are cheap enough to re-run by hand on a
 package.
 
 The test work is confirmed by the layer split rather than by the headline percentage, which stays low
-by design while `adapters/` goes untested. `pnpm exec nx test:coverage @monorepo/scripts` reports
+by design while `adapters/` goes untested. `pnpm exec nx test:coverage @joinery/scripts` reports
 **`domain/` at 272/279 statements (97.5%) and the command layer at 320 statements**, below the 335
 statement baseline.
 

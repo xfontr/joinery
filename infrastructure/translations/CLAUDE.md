@@ -1,10 +1,10 @@
-# 🤖 @monorepo/translations
+# 🤖 @joinery/translations
 
 See [README.md](./README.md) for the endpoints, the Docker scripts and the two ways to run it.
 
 - **This is a service, not a library.** Nothing in the workspace imports it — apps reach it over
   HTTP, which is what makes it `infrastructure/` rather than `packages/`. It backs the `internal`
-  vendor in [`@monorepo/i18n`](../../packages/i18n); that package's provider is the only thing that
+  vendor in [`@joinery/i18n`](../../packages/i18n); that package's provider is the only thing that
   knows this API's shape, and it should stay that way.
 - `private: true` and outside `nx release`'s `packages/*`, so it has **no `CHANGELOG.md` and no
   version to bump**. It is deployed, not published.

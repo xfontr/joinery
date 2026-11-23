@@ -1,5 +1,5 @@
 ---
-scope: "<@monorepo/project-name, or a repo path>"
+scope: "<@joinery/project-name, or a repo path>"
 commit: "<the short sha the audit read>"
 ---
 

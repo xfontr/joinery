@@ -9,7 +9,7 @@ const boundaries: object = {
             {
                 allow: [],
                 // Browsers lazy-load it while servers import `/node`, which crashes this check
-                checkDynamicDependenciesExceptions: ["@monorepo/observability"],
+                checkDynamicDependenciesExceptions: ["@joinery/observability"],
                 depConstraints: [
                     {
                         sourceTag: "type:app",

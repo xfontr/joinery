@@ -12,7 +12,7 @@ const validManifest = (
         ".": { import: "./src/index.ts" },
     },
 ): Record<string, unknown> => ({
-    name: "@monorepo/demo",
+    name: "@joinery/demo",
     version: "0.0.1",
     type: "module",
     exports,
@@ -37,7 +37,7 @@ describe("validatePackage", () => {
         );
 
         expect(report.errors).toContain(
-            '@monorepo/demo: exports["."] target file is missing: "./src/missing.ts"',
+            '@joinery/demo: exports["."] target file is missing: "./src/missing.ts"',
         );
     });
 
@@ -58,7 +58,7 @@ describe("validatePackage", () => {
         );
 
         expect(report.errors).toContain(
-            '@monorepo/demo: exports["./tsconfig/*"] wildcard target has no matching file: "./src/tsconfig/*"',
+            '@joinery/demo: exports["./tsconfig/*"] wildcard target has no matching file: "./src/tsconfig/*"',
         );
     });
 
@@ -68,7 +68,7 @@ describe("validatePackage", () => {
         );
 
         expect(report.errors).toContain(
-            '@monorepo/demo: exports["./v1.0/*"] wildcard target has no matching file: "./src/v1.0/*"',
+            '@joinery/demo: exports["./v1.0/*"] wildcard target has no matching file: "./src/v1.0/*"',
         );
     });
 
@@ -78,7 +78,7 @@ describe("validatePackage", () => {
         );
 
         expect(report.errors).toContain(
-            '@monorepo/demo: exports["."] target escapes the package directory; received "./../../outside.ts"',
+            '@joinery/demo: exports["."] target escapes the package directory; received "./../../outside.ts"',
         );
     });
 
@@ -86,7 +86,7 @@ describe("validatePackage", () => {
         const report = validatePackage(source(validManifest({ ".": { import: 42 } })));
 
         expect(report.errors).toContain(
-            '@monorepo/demo: exports["."]["import"] must be a string or conditional object; received 42',
+            '@joinery/demo: exports["."]["import"] must be a string or conditional object; received 42',
         );
     });
 
@@ -99,7 +99,7 @@ describe("validatePackage", () => {
         );
 
         expect(report.errors).toContain(
-            '@monorepo/demo: peerDependenciesMeta["vue"] has no matching peerDependencies entry; received {"optional":true}',
+            '@joinery/demo: peerDependenciesMeta["vue"] has no matching peerDependencies entry; received {"optional":true}',
         );
     });
 
@@ -113,7 +113,7 @@ describe("validatePackage", () => {
         );
 
         expect(report.errors).toContain(
-            '@monorepo/demo: peerDependenciesMeta["vue"].optional must be boolean; received "yes"',
+            '@joinery/demo: peerDependenciesMeta["vue"].optional must be boolean; received "yes"',
         );
     });
 
@@ -127,7 +127,7 @@ describe("validatePackage", () => {
         const report = validatePackage(source({ ...validManifest(), name: Symbol("demo") }));
 
         expect(report.errors).toContain(
-            '@monorepo/demo: name must be "@monorepo/demo"; received Symbol(demo)',
+            '@joinery/demo: name must be "@joinery/demo"; received Symbol(demo)',
         );
     });
 

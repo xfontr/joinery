@@ -118,8 +118,8 @@ describe("ruleCounts", () => {
         const counts = ruleCounts(
             lint({
                 "no-console": rule(),
-                "monorepo/no-build-step": rule(),
-                "monorepo/retired": rule({ enabled: false }),
+                "joinery/no-build-step": rule(),
+                "joinery/retired": rule({ enabled: false }),
             }),
         );
 

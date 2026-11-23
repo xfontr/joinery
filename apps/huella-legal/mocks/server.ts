@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { wordpressHandlers, type WordpressContent } from "@monorepo/content/testing";
+import { wordpressHandlers, type WordpressContent } from "@joinery/content/testing";
 import { setupServer } from "msw/node";
 import { wordpressCommentHandlers } from "../e2e/vendors.ts";
 

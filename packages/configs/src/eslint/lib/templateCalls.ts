@@ -1,10 +1,10 @@
-import monorepo from "../rules/index.ts";
+import joinery from "../rules/index.ts";
 
 const templateCalls: object = {
     files: ["**/*.vue"],
-    plugins: { monorepo },
+    plugins: { joinery },
     rules: {
-        "monorepo/no-template-call": "error",
+        "joinery/no-template-call": "error",
     },
 };
 

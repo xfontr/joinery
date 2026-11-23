@@ -1,4 +1,4 @@
-import type { Asset } from "@monorepo/content";
+import type { Asset } from "@joinery/content";
 
 export interface Author {
     id: string;

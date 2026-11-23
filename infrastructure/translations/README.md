@@ -1,7 +1,7 @@
-# 🌐 @monorepo/translations
+# 🌐 @joinery/translations
 
 A small Hono server that serves the JSON locale files in this folder over HTTP: the `internal`
-vendor of [`@monorepo/i18n`](../../packages/i18n/README.md). No app uses it today.
+vendor of [`@joinery/i18n`](../../packages/i18n/README.md). No app uses it today.
 
 ```
 infrastructure/translations/
@@ -54,4 +54,4 @@ Not alongside the container: both want port 4000.
 ## Checks
 
 Specs call `app.request()` and never bind a port. Tagged `type:infra`: depends only on
-`@monorepo/configs`, and isn't versioned by `nx release`.
+`@joinery/configs`, and isn't versioned by `nx release`.

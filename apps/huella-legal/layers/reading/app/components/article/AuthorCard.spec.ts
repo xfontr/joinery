@@ -1,4 +1,4 @@
-import { fakeAuthor, faker } from "@monorepo/content/testing";
+import { fakeAuthor, faker } from "@joinery/content/testing";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
 import ArticleAuthorCard from "./AuthorCard.vue";

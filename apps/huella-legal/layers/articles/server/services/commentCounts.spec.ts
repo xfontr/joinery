@@ -1,4 +1,4 @@
-import { fakeEntry } from "@monorepo/content/testing";
+import { fakeEntry } from "@joinery/content/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { toArticleSummary } from "../mappers/articleSummary";
 

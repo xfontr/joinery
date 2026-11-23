@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 export const saveLog = (job: string, text: string): string => {
-    const path = join(tmpdir(), `monorepo-ci-job-${job}.log`);
+    const path = join(tmpdir(), `joinery-ci-job-${job}.log`);
     writeFileSync(path, text);
     return path;
 };

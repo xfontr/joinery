@@ -29,4 +29,4 @@ Both are proxies ([0002](../../../../docs/decisions/0002-docs-drift-detection.md
 warning is remembered by a hash of the project's diff, so the same diff never asks twice on this
 clone.
 
-Filing creates `Address documentation drift for <Name>` on the `Monorepo` board, with an empty body.
+Filing creates `Address documentation drift for <Name>` on the `Joinery` board, with an empty body.

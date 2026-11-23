@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 
 const nitro = vi.hoisted(() => ({
     wordpress: "https://cms.revista.test",

@@ -1,4 +1,4 @@
-import { serveEndpoint, withSetup } from "@monorepo/configs/vitest/utils/nuxt";
+import { serveEndpoint, withSetup } from "@joinery/configs/vitest/utils/nuxt";
 import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { useIssues } from "./useIssues.ts";

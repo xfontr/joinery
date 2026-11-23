@@ -52,7 +52,7 @@ Netlify deploy sets `NUXT_SITE_ENV` and those builds don't, so the module reads 
 | --- | --- |
 | The rule table above | `apps/huella-legal/modules/rendering.ts`, through `extendRouteRules` |
 | `experimental.payloadExtraction: "client"` | `apps/huella-legal/nuxt.config.ts` |
-| Under `NUXT_SITE_ENV`: `failOnError`, plus the routes from a `prerender:routes` hook, with post slugs listed through `@monorepo/content`'s `createProvider` and page slugs from `NUXT_PUBLIC_PAGE_SLUGS` when set | `apps/huella-legal/modules/rendering.ts` |
+| Under `NUXT_SITE_ENV`: `failOnError`, plus the routes from a `prerender:routes` hook, with post slugs listed through `@joinery/content`'s `createProvider` and page slugs from `NUXT_PUBLIC_PAGE_SLUGS` when set | `apps/huella-legal/modules/rendering.ts` |
 | A prerendered page whose messages didn't load fails with a `502` | `apps/huella-legal/app/plugins/prerenderTranslations.server.ts` |
 | A 5xx answers `netlify-cdn-cache-control: no-store` from Nitro's `error` hook | `apps/huella-legal/server/plugins/cdn.ts` |
 | Author counts render on the server, so a prerendered article carries them | `layers/articles/app/composables/useArticle.ts`, `server: false` dropped |
@@ -118,13 +118,13 @@ stale-while-revalidate`, the hook becomes a Cloud Build trigger, and the 5xx gua
 - Locally the build is `node-server`, where `isr` is inert. Reproduce Netlify with
   `NITRO_PRESET=netlify`, then delete `apps/huella-legal/.netlify` and `dist` before any `nx` command.
   `.netlify` isn't gitignored, and its function's `package.json` registers as an Nx project,
-  `@monorepo/huella-legal-prod`, whose bundle `eslint` never finishes.
+  `@joinery/huella-legal-prod`, whose bundle `eslint` never finishes.
 
 ## Confirmation
 
 | Claim | Check |
 | --- | --- |
-| A Netlify build prerenders every slug and the query-free routes | `NUXT_SITE_ENV=preview pnpm exec nx build @monorepo/huella-legal --skip-nx-cache` with a Tolgee token, then `.output/public/<slug>/index.html` exists for every post, with no `publicaciones`, `etiquetas` or `buscar` directory |
+| A Netlify build prerenders every slug and the query-free routes | `NUXT_SITE_ENV=preview pnpm exec nx build @joinery/huella-legal --skip-nx-cache` with a Tolgee token, then `.output/public/<slug>/index.html` exists for every post, with no `publicaciones`, `etiquetas` or `buscar` directory |
 | Other builds prerender nothing | The same build without `NUXT_SITE_ENV` writes no `index.html` under `.output/public` |
 | An unreachable WordPress or Tolgee fails the build | The `NUXT_SITE_ENV` build with `NUXT_CONTENT_VENDOR_BASE_URL`, or `NUXT_TRANSLATIONS_VENDOR_BASE_URL`, at an unreachable host exits non-zero |
 | The rules reach the function | After a `NITRO_PRESET=netlify` build, `grep -o '"isr":[a-z0-9]*' apps/huella-legal/.netlify/functions-internal/server/chunks/nitro/nitro.mjs \| sort \| uniq -c` lists `86400` and `false` |

@@ -20,7 +20,7 @@ pnpm workflow:drop harbour-notes --yes          # close untouched tickets of an 
 | `setup` | Creates the project's milestone and the labels filing needs. Run again after switching a feature on |
 | `sync` | Reads the milestone's issues, blocked-by links, branches, PRs and board `Complexity`, plus `git log`, into `<project>.snapshot.json`. Writes only on change. `--close` records the branch's ticket as closed, for the PR that closes it; a close already recorded keeps its date and activity, so the sync after the merge changes nothing |
 | `next` | Lists the blocks that can be filed now, then groups open tickets by what can happen next. A linked branch, open PR or commit means in flight |
-| `file` | One issue per ticket (or per bundle), with milestone, labels, blocked-by links and a body an agent can work from, on the `Monorepo` board. With no block, every block that can be filed, round after round until none opens. Then re-syncs |
+| `file` | One issue per ticket (or per bundle), with milestone, labels, blocked-by links and a body an agent can work from, on the `Joinery` board. With no block, every block that can be filed, round after round until none opens. Then re-syncs |
 | `drop` | Closes as not planned every ticket that's ready, blocked or waiting; keeps anything in flight or done. Run before deleting the project on the portal |
 
 `file` refuses a block that's off, settled, already filed, or waiting on an open `spike`/`owner`

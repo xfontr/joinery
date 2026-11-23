@@ -299,7 +299,7 @@ importers:
         specifier: ^2.9.1
         version: 2.9.1
     devDependencies:
-      '@monorepo/configs':
+      '@joinery/configs':
         specifier: workspace:*
         version: link:../../packages/configs
       '@nuxt/test-utils':
@@ -350,10 +350,10 @@ importers:
       '@iconify-json/lucide':
         specifier: ^1.2.147
         version: 1.2.154
-      '@monorepo/content':
+      '@joinery/content':
         specifier: workspace:*
         version: link:../../packages/content
-      '@monorepo/observability':
+      '@joinery/observability':
         specifier: workspace:*
         version: link:../../packages/observability
       '@netlify/blobs':
@@ -441,7 +441,7 @@ importers:
       '@faker-js/faker':
         specifier: ^10.6.0
         version: 10.6.0
-      '@monorepo/configs':
+      '@joinery/configs':
         specifier: workspace:*
         version: link:../../packages/configs
       '@nuxt/test-utils':
@@ -517,7 +517,7 @@ importers:
         specifier: ^4.3.3
         version: 4.3.5
     devDependencies:
-      '@monorepo/configs':
+      '@joinery/configs':
         specifier: workspace:*
         version: link:../../packages/configs
       '@nuxt/test-utils':
@@ -599,7 +599,7 @@ importers:
         specifier: ^2.9.1
         version: 2.9.1
     devDependencies:
-      '@monorepo/configs':
+      '@joinery/configs':
         specifier: workspace:*
         version: link:../../packages/configs
       '@nuxt/test-utils':
@@ -681,7 +681,7 @@ importers:
         specifier: 'catalog:'
         version: 3.5.44(typescript@6.0.3)
     devDependencies:
-      '@monorepo/configs':
+      '@joinery/configs':
         specifier: workspace:*
         version: link:../../packages/configs
       '@nuxt/test-utils':
@@ -742,7 +742,7 @@ importers:
         specifier: ^2.9.1
         version: 2.9.1
     devDependencies:
-      '@monorepo/configs':
+      '@joinery/configs':
         specifier: workspace:*
         version: link:../../packages/configs
       '@types/culori':
@@ -782,7 +782,7 @@ importers:
         specifier: 'catalog:'
         version: 4.13.19
     devDependencies:
-      '@monorepo/configs':
+      '@joinery/configs':
         specifier: workspace:*
         version: link:../../packages/configs
       '@types/node':
@@ -897,7 +897,7 @@ importers:
       '@faker-js/faker':
         specifier: ^10.6.0
         version: 10.6.0
-      '@monorepo/configs':
+      '@joinery/configs':
         specifier: workspace:*
         version: link:../configs
       '@nuxt/kit':
@@ -940,7 +940,7 @@ importers:
         specifier: ^2.0.11
         version: 2.0.12
     devDependencies:
-      '@monorepo/configs':
+      '@joinery/configs':
         specifier: workspace:*
         version: link:../configs
       '@nuxt/kit':
@@ -1010,7 +1010,7 @@ importers:
         specifier: ^1.43.0
         version: 1.45.0
     devDependencies:
-      '@monorepo/configs':
+      '@joinery/configs':
         specifier: workspace:*
         version: link:../configs
       '@types/node':

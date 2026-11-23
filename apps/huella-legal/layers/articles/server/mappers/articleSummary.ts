@@ -1,4 +1,4 @@
-import type { Author as ContentAuthor, Entry, RichText, Term } from "@monorepo/content";
+import type { Author as ContentAuthor, Entry, RichText, Term } from "@joinery/content";
 import type { ArticleSummary } from "../../shared/types/ArticleSummary";
 import type { Author } from "../../shared/types/Author";
 import type { Category } from "../../shared/types/Category";

@@ -1,13 +1,13 @@
-# 📦 @monorepo/content
+# 📦 @joinery/content
 
 A vendor-neutral client for CMS entries and taxonomies: a framework-agnostic core plus an optional
 Nuxt module that gives server code a cached reader. WordPress is the only vendor today.
 
 | Import | Contains | Depends on |
 | --- | --- | --- |
-| `@monorepo/content` | Domain, ports, adapters, vendor registry, cache key | `ofetch`, `ohash`, `entities` |
-| `@monorepo/content/nuxt` | The Nuxt module — see [`src/nuxt/README.md`](./src/nuxt/README.md) | `@nuxt/kit`, `h3`, `nitropack` |
-| `@monorepo/content/testing` | Seeded fakes and MSW WordPress handlers — see [🧪 Fake vendors](#fake-vendors) | `msw`, `@faker-js/faker` |
+| `@joinery/content` | Domain, ports, adapters, vendor registry, cache key | `ofetch`, `ohash`, `entities` |
+| `@joinery/content/nuxt` | The Nuxt module — see [`src/nuxt/README.md`](./src/nuxt/README.md) | `@nuxt/kit`, `h3`, `nitropack` |
+| `@joinery/content/testing` | Seeded fakes and MSW WordPress handlers — see [🧪 Fake vendors](#fake-vendors) | `msw`, `@faker-js/faker` |
 
 The second and third entries' dependencies are optional peers, so a plain consumer of the core
 installs none of them.
@@ -117,7 +117,7 @@ query, hashed to word characters only because Nitro's storage splits keys on `/`
 ## Fake vendors
 
 ```ts
-import { fakeEntry, fakeTerm, wordpressHandlers } from "@monorepo/content/testing";
+import { fakeEntry, fakeTerm, wordpressHandlers } from "@joinery/content/testing";
 
 const entry = fakeEntry({ terms: [fakeTerm({ slug: "derecho-penal" })] });
 setupServer(...wordpressHandlers(baseURL, { posts: [entry] })).listen();
@@ -157,4 +157,4 @@ vendor's URL; the real failure is on `cause`, and logging it is the app's job.
 | Lists fetch every body | ~53 KB per post when a listing needs only `wordCount` |
 | No sanitising of `body` | Fine while the CMS is first-party |
 | No locale axis | Adding one later must touch the query, the cache key and the Nuxt reader together |
-| Vendor plumbing duplicated with `@monorepo/i18n` | Deliberate until a third consumer ([D2](../../docs/audits/2026-10-21-monorepo.md)) |
+| Vendor plumbing duplicated with `@joinery/i18n` | Deliberate until a third consumer ([D2](../../docs/audits/2026-10-21-monorepo.md)) |

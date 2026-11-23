@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { recordServerConsole } from "@monorepo/configs/playwright/setup/server";
+import { recordServerConsole } from "@joinery/configs/playwright/setup/server";
 import handler from "serve-handler";
 
 recordServerConsole();

@@ -1,8 +1,8 @@
 import { titleCase } from "../../shared/domain/layout.ts";
 
-export const SCOPE = "@monorepo/";
+export const SCOPE = "@joinery/";
 
-const SELF = "@monorepo/scripts";
+const SELF = "@joinery/scripts";
 
 const ROOT_ORDER = ["apps", "infrastructure", "packages"];
 

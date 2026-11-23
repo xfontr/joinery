@@ -1,4 +1,4 @@
-import { expect, test } from "@monorepo/configs/playwright/utils/test";
+import { expect, test } from "@joinery/configs/playwright/utils/test";
 import { t } from "./copy.ts";
 
 test("the skip link is the first stop and moves focus into the main landmark", async ({ page }) => {

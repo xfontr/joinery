@@ -1,6 +1,6 @@
 ---
 name: scripts-new-script
-description: Add a script to @monorepo/scripts — the index.ts/main.ts/adapters/domain folder, the package.json line, the README row and the docs:map re-render. Use when adding a new repo-local CLI under infrastructure/scripts, or when splitting an existing one.
+description: Add a script to @joinery/scripts — the index.ts/main.ts/adapters/domain folder, the package.json line, the README row and the docs:map re-render. Use when adding a new repo-local CLI under infrastructure/scripts, or when splitting an existing one.
 ---
 
 # Adding a script

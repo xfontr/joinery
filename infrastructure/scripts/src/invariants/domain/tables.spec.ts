@@ -24,9 +24,9 @@ const README = `
 <!-- docs:map:layout -->
 \`\`\`
 apps/
-    huella-legal/     @monorepo/huella-legal
+    huella-legal/     @joinery/huella-legal
 packages/
-    ui/               @monorepo/ui
+    ui/               @joinery/ui
 \`\`\`
 <!-- /docs:map:layout -->
 

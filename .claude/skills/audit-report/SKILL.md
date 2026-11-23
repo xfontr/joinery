@@ -33,7 +33,7 @@ behind it, and the value of an audit over a quick look is that nothing was skipp
 Copy [`docs/audits/TEMPLATE.md`](../../../docs/audits/TEMPLATE.md) to
 `docs/audits/<YYYY-MM-DD>-<scope-slug>.md`, today's date and the project's directory name.
 
-- Frontmatter: `scope:` is the project name (`"@monorepo/developer-portal"`) or a repo path;
+- Frontmatter: `scope:` is the project name (`"@joinery/developer-portal"`) or a repo path;
   `commit:` is `git rev-parse --short HEAD`, **quoted**.
 - IDs are the category letter plus a number — `B` bugs, `D` duplication, `Q` quality, `S` security —
   consecutive within the category. Drop a category with no findings rather than leaving an empty
@@ -58,6 +58,6 @@ over the same project months later is a new audit with a new date, not an edit t
 
 ## 4. Check it
 
-`pnpm exec nx collect @monorepo/developer-portal` parses the file into the portal's Audits section.
+`pnpm exec nx collect @joinery/developer-portal` parses the file into the portal's Audits section.
 An audit with a bad filename, a missing `scope`/`commit`, a reused ID or a status outside
 `open | fixed | wont-fix` shows up as an `audit-shape-mismatch` finding on the Overview page.

@@ -11,7 +11,7 @@ export default defineNuxtConfig({
 
     modules: [
         "@nuxtjs/i18n",
-        "@monorepo/content/nuxt",
+        "@joinery/content/nuxt",
         "@nuxt/ui",
         "@nuxt/fonts",
         "@nuxt/image",
@@ -237,7 +237,7 @@ export default defineNuxtConfig({
             observability: {
                 url: "",
                 app: {
-                    name: "@monorepo/huella-legal",
+                    name: "@joinery/huella-legal",
                     version: COMMIT ?? "0.0.0",
                     environment: "development",
                 },
@@ -279,8 +279,8 @@ export default defineNuxtConfig({
     vite: {
         optimizeDeps: {
             include: [
-                "@monorepo/observability > @grafana/faro-web-sdk",
-                "@monorepo/observability > @grafana/faro-web-tracing",
+                "@joinery/observability > @grafana/faro-web-sdk",
+                "@joinery/observability > @grafana/faro-web-tracing",
             ],
         },
     },

@@ -9,8 +9,8 @@ import propsShape from "./propsShape.ts";
 import requireRouteMeta from "./requireRouteMeta.ts";
 import templateGlobalI18n from "./templateGlobalI18n.ts";
 
-const monorepo: ESLint.Plugin = {
-    meta: { name: "monorepo" },
+const joinery: ESLint.Plugin = {
+    meta: { name: "joinery" },
     rules: {
         "disable-needs-reason": disableNeedsReason,
         "layer-boundaries": layerBoundaries,
@@ -24,4 +24,4 @@ const monorepo: ESLint.Plugin = {
     },
 };
 
-export default monorepo;
+export default joinery;

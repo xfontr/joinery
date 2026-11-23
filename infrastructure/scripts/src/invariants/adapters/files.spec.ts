@@ -25,7 +25,7 @@ describe("package manifest filesystem adapter", () => {
         mkdirSync(join(directory, "packages", "demo", "src"), { recursive: true });
         writeFileSync(
             join(directory, "packages", "demo", "package.json"),
-            '{"name":"@monorepo/demo"}',
+            '{"name":"@joinery/demo"}',
         );
         writeFileSync(join(directory, "packages", "demo", "src", "index.ts"), "export {};");
 
@@ -33,7 +33,7 @@ describe("package manifest filesystem adapter", () => {
 
         expect(pkg?.directory).toBe("demo");
         expect(pkg?.files).toEqual(expect.arrayContaining(["package.json", "src/index.ts"]));
-        expect(pkg?.manifest).toEqual({ name: "@monorepo/demo" });
+        expect(pkg?.manifest).toEqual({ name: "@joinery/demo" });
         expect(pkg?.readError).toBeUndefined();
     });
 
@@ -50,7 +50,7 @@ describe("package manifest filesystem adapter", () => {
     });
 
     it("reads the root manifest and every project's, skipping folders that are not projects", () => {
-        writeFileSync(join(directory, "package.json"), '{"name":"monorepo"}');
+        writeFileSync(join(directory, "package.json"), '{"name":"joinery"}');
         mkdirSync(join(directory, "apps", "web"), { recursive: true });
         mkdirSync(join(directory, "apps", "scratch"), { recursive: true });
         mkdirSync(join(directory, "infrastructure"), { recursive: true });

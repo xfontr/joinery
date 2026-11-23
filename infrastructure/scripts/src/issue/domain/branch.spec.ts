@@ -5,7 +5,7 @@ describe("slugify", () => {
     it.each([
         ["Add dashboards for spaces", "add-dashboards-for-spaces"],
         ["  Trailing and leading  ", "trailing-and-leading"],
-        ["Integrate @monorepo/ui (v2)", "integrate-monorepo-ui-v2"],
+        ["Integrate @joinery/ui (v2)", "integrate-joinery-ui-v2"],
         ["Configuració de l'app", "configuracio-de-l-app"],
     ])("turns %j into %j", (title, expected) => {
         expect(slugify(title)).toBe(expected);

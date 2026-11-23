@@ -91,7 +91,7 @@ jobs:
                       target=(--prod)
                   fi
                   npx --yes "$NETLIFY_CLI" deploy "${target[@]}" --context "$CONTEXT" \
-                      --filter @monorepo/huella-legal --message "$GITHUB_EVENT_NAME ${GITHUB_SHA::7}"
+                      --filter @joinery/huella-legal --message "$GITHUB_EVENT_NAME ${GITHUB_SHA::7}"
 
             - if: steps.changes.outputs.build == 'true'
               uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0

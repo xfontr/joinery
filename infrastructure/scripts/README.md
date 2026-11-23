@@ -1,4 +1,4 @@
-# 🤖 @monorepo/scripts
+# 🤖 @joinery/scripts
 
 The repo's CLI toolbox: dev startup, issue workflows, doc checks and repo gates. Nothing imports
 it; every script is run by hand, a hook or CI.

@@ -1,34 +1,34 @@
-# 📦 @monorepo/observability
+# 📦 @joinery/observability
 
 Thin wrappers over Grafana Faro (browser) and the OpenTelemetry SDK (Node), so every app starts
 telemetry the same way. Both land in Grafana Cloud's Tempo, so a browser span and the server span it
 caused share a trace.
 
 ```ts
-import { startWebTelemetry } from "@monorepo/observability";
+import { startWebTelemetry } from "@joinery/observability";
 
 const faro = startWebTelemetry({
     url: "<faro-collector-url>",
-    app: { name: "@monorepo/huella-legal", version: "1.0.0", environment: "production" },
+    app: { name: "@joinery/huella-legal", version: "1.0.0", environment: "production" },
 });
 
 faro.api.pushError(new Error("boom"));
 ```
 
 ```ts
-import { startNodeTelemetry } from "@monorepo/observability/node";
+import { startNodeTelemetry } from "@joinery/observability/node";
 
 const provider = startNodeTelemetry({
     url: "<otlp-gateway-url>",
     instanceId: "123456",
     token: "glc_…",
-    app: { name: "@monorepo/huella-legal", version: "1.0.0", environment: "production" },
+    app: { name: "@joinery/huella-legal", version: "1.0.0", environment: "production" },
 });
 ```
 
 That's the whole package: [`src/index.ts`](./src/index.ts) and [`src/node.ts`](./src/node.ts). The
 two entries must never import each other — one needs `window`, the other Node built-ins.
-[`@monorepo/huella-legal`](../../apps/huella-legal/README.md#observability) is the worked example.
+[`@joinery/huella-legal`](../../apps/huella-legal/README.md#observability) is the worked example.
 
 ## What you get for free
 

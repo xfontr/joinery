@@ -1,4 +1,4 @@
-import { fakeAuthor, fakeEntry } from "@monorepo/content/testing";
+import { fakeAuthor, fakeEntry } from "@joinery/content/testing";
 import { describe, expect, it } from "vitest";
 import { toArticleSummary } from "./articleSummary";
 import { toAuthorDirectory } from "./authorDirectory";

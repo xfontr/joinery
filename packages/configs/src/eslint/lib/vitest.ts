@@ -1,12 +1,12 @@
 import vitest from "@vitest/eslint-plugin";
-import monorepo from "../rules/index.ts";
+import joinery from "../rules/index.ts";
 
 const CALL_ORDER =
     "Assert the outcome (the call that matters, with `toHaveBeenCalledWith`, or the state it left) instead of which call came when; a reorder that changes nothing must not fail the spec.";
 
 const vitestConfig = {
     files: ["**/*.spec.ts"],
-    plugins: { vitest, monorepo },
+    plugins: { vitest, joinery },
     rules: {
         ...vitest.configs.recommended.rules,
         "vitest/no-restricted-matchers": [
@@ -20,7 +20,7 @@ const vitestConfig = {
                     "Assert the values that matter; a snapshot passes whatever it was first given and fails on every unrelated change.",
             },
         ],
-        "monorepo/no-implementation-details": "error",
+        "joinery/no-implementation-details": "error",
     },
     languageOptions: {
         globals: { ...vitest.environments.env.globals },

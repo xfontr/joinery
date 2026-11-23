@@ -1,4 +1,4 @@
-import { expect, test } from "@monorepo/configs/playwright/utils/test";
+import { expect, test } from "@joinery/configs/playwright/utils/test";
 import { ARTICLE, HIDDEN, LEGAL, TAG } from "./fakes.ts";
 
 const PATH = `/${ARTICLE.slug}/`;

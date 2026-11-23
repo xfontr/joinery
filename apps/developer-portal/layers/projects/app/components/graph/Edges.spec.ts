@@ -13,10 +13,10 @@ const MESSAGES = {
 };
 
 const UI = {
-    name: "@monorepo/ui",
+    name: "@joinery/ui",
     root: "packages/ui",
     tags: ["type:package", "scope:shared"],
-    dependsOn: ["@monorepo/configs"],
+    dependsOn: ["@joinery/configs"],
     dependedOnBy: [],
 } satisfies ProjectNode;
 
@@ -29,7 +29,7 @@ describe("GraphEdges", () => {
         const wrapper = await mountSuspended(Edges, { props: { projects: [UI] } });
 
         expect(wrapper.text()).toContain("type:package");
-        expect(wrapper.text()).toContain("@monorepo/configs");
+        expect(wrapper.text()).toContain("@joinery/configs");
     });
 
     it("calls a project with no edges a leaf", async () => {

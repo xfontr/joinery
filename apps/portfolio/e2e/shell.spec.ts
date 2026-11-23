@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "@monorepo/configs/playwright/utils/test";
+import { expect, test } from "@joinery/configs/playwright/utils/test";
 import { t } from "./copy.ts";
 
 /** Whether the page set `data-page-transition` on `<html>` while `navigate` ran. */

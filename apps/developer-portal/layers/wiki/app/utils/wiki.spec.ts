@@ -5,7 +5,7 @@ const t = (key: string): string => key;
 const buildWiki = (pages: { path: string; title: string }[]) => build(pages, t);
 
 const PAGES = [
-    { path: "/readme", title: "Monorepo" },
+    { path: "/readme", title: "Joinery" },
     { path: "/docs/readme", title: "🗂 Docs" },
     { path: "/docs/features", title: "🗺 Features" },
     { path: "/docs/guides/first-hour", title: "🌱 First hour in this repo" },
@@ -17,10 +17,10 @@ const PAGES = [
         path: "/docs/decisions/0001-feature-discoverability",
         title: "🧭 Making the repo's feature surface discoverable",
     },
-    { path: "/packages/ui/readme", title: "📦 @monorepo/ui" },
+    { path: "/packages/ui/readme", title: "📦 @joinery/ui" },
     { path: "/packages/ui/changelog", title: "CHANGELOG" },
     { path: "/.claude/skills/ui-new-component/skill", title: "Adding a UI component" },
-    { path: "/packages/content/src/nuxt/readme", title: "🟢 @monorepo/content/nuxt" },
+    { path: "/packages/content/src/nuxt/readme", title: "🟢 @joinery/content/nuxt" },
     { path: "/.claude/skills/house-docs/skill", title: "Writing docs here" },
 ];
 
@@ -100,7 +100,7 @@ describe("buildWiki", () => {
 
     it("drops a section nothing landed in instead of rendering an empty heading", () => {
         expect(
-            buildWiki([{ path: "/readme", title: "Monorepo" }]).map((section) => section.id),
+            buildWiki([{ path: "/readme", title: "Joinery" }]).map((section) => section.id),
         ).toEqual(["workspace"]);
     });
 

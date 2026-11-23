@@ -29,7 +29,7 @@ export const LOGS: readonly { name: string; columns: readonly string[] }[] = [
 const VALUE_FLAGS: ReadonlySet<string> = new Set(["type", "project"]);
 
 /** Set by `.husky/*`, so the checks a hook runs on every commit don't read as anyone's choice. */
-const HOOK_ENV = "MONOREPO_GIT_HOOK";
+const HOOK_ENV = "JOINERY_GIT_HOOK";
 
 const UNSCOPED_AREA = "repo";
 

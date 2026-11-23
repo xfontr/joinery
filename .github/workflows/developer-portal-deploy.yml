@@ -36,19 +36,19 @@ jobs:
                   COVERAGE_THRESHOLDS: "off"
                   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
-            - run: pnpm exec nx collect @monorepo/developer-portal
+            - run: pnpm exec nx collect @joinery/developer-portal
 
             # Built beneath developer-portal so one deploy carries both. The script, not a bare
             # `storybook build`, because it runs `nuxi prepare` first.
             - name: Build Huella Legal Storybook
-              run: pnpm --filter @monorepo/huella-legal run build:storybook --output-dir ../developer-portal/public/huella-legal-storybook
+              run: pnpm --filter @joinery/huella-legal run build:storybook --output-dir ../developer-portal/public/huella-legal-storybook
               env:
                   STORYBOOK_BASE_URL: /huella-legal-storybook/
 
             # An Nx cache restore would never hit: the step above re-stamps the snapshot, which this
             # project's `production` input hashes, so every run is a new task hash by construction.
             - name: Prerender the site
-              run: pnpm exec nx build-static @monorepo/developer-portal
+              run: pnpm exec nx build-static @joinery/developer-portal
               env:
                   NUXT_PUBLIC_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
 

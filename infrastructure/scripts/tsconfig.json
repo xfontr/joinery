@@ -1,4 +1,4 @@
 {
-    "extends": "@monorepo/configs/tsconfig/node.json",
+    "extends": "@joinery/configs/tsconfig/node.json",
     "include": ["src", "eslint.config.ts"]
 }

@@ -1,4 +1,4 @@
-# 📦 @monorepo/configs
+# 📦 @joinery/configs
 
 Shared ESLint, Vitest, Playwright and TypeScript presets. Every project's config file is a thin
 wrapper over one of these, so a change here lands everywhere at once.
@@ -15,22 +15,22 @@ One folder per tool under `src/`, each sorted the same way:
 | --- | --- | --- |
 | Tool folder root | A preset | A project's config file |
 | `setup/` | Wiring the preset hooks in itself | Nobody directly |
-| `utils/` | A test helper | Specs, as `@monorepo/configs/<tool>/utils/<name>` |
+| `utils/` | A test helper | Specs, as `@joinery/configs/<tool>/utils/<name>` |
 
 ESLint has `lib/` (one file per concern, mapped in [`lib/README.md`](./src/eslint/lib/README.md))
-and `rules/` (in-house `monorepo/*` rules, each with a `RuleTester` spec).
+and `rules/` (in-house `joinery/*` rules, each with a `RuleTester` spec).
 
 ## Usage
 
 ```ts
-import { eslint, vitest } from "@monorepo/configs";
+import { eslint, vitest } from "@joinery/configs";
 
 export default eslint.createNodeConfig(); // or createVueConfig() / createNuxtConfig()
 export default vitest.createNodeConfig(); // or createVueConfig(viteConfig) / createNuxtConfig({ root })
 ```
 
 ```json
-{ "extends": "@monorepo/configs/tsconfig/node.json" }
+{ "extends": "@joinery/configs/tsconfig/node.json" }
 ```
 
 `tsconfig/base.json` is strict plus `noUncheckedIndexedAccess`; every consumer extends `node.json`.
@@ -77,10 +77,10 @@ export default playwright.createConfig({ port, command, env });
 - Chromium at 390, 768 and 1280 px. Tag a test `@desktop` (≥ 1024 px), `@mobile` (below) or
   `@any-width` (first width only, for `request`/`<head>`-only tests). Tests run fully parallel, on
   two workers locally and Playwright's default in CI.
-- Specs import `test` from `@monorepo/configs/playwright/utils/test`, never `@playwright/test`
+- Specs import `test` from `@joinery/configs/playwright/utils/test`, never `@playwright/test`
   (lint enforces it). Any browser console output fails the test unless `allowedConsole` matches it;
   `page.goto` waits for hydration.
-- The server preload calls `recordServerConsole()` from `@monorepo/configs/playwright/setup/server`,
+- The server preload calls `recordServerConsole()` from `@joinery/configs/playwright/setup/server`,
   and teardown fails the run on anything the server logged.
 - Helpers: [`utils/a11y`](./src/playwright/utils/a11y.ts) (`axeViolations`, asserted with `toEqual([])`) and
   [`utils/i18n`](./src/playwright/utils/i18n.ts) (`createT`, `rawKeysIn`).
@@ -93,7 +93,7 @@ Every factory includes Prettier as a lint rule (100 columns, 4 spaces, double qu
 safety, and the house style rules: arrow functions, destructuring, `interface` over `type`,
 helpers declared above use, no nested ternaries, no `await` in loops, sorted-with-comparator arrays,
 no `console`, no raw-HTML sinks, and `eslint-disable` must give a reason. Vue configs add
-`eslint-plugin-vue` and the `monorepo/*` template rules. Specs get `@vitest/eslint-plugin` and must
+`eslint-plugin-vue` and the `joinery/*` template rules. Specs get `@vitest/eslint-plugin` and must
 assert behaviour, not call order or `wrapper.vm`.
 
 [`lib/README.md`](./src/eslint/lib/README.md) has the file for each. Opt-in pieces a project appends

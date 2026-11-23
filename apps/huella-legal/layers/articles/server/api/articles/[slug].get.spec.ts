@@ -1,6 +1,6 @@
-import { fakeEntry, fakeTerm } from "@monorepo/content/testing";
+import { fakeEntry, fakeTerm } from "@joinery/content/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 import type { Article } from "../../../shared/types/Article";
 
 const ENTRY = fakeEntry({ slug: "la-culpa", body: { format: "html", value: "<h2>Uno</h2>" } });

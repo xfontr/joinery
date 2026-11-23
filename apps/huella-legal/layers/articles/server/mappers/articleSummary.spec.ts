@@ -1,5 +1,5 @@
-import type { Entry, Term } from "@monorepo/content";
-import { faker, fakeAsset, fakeAuthor, fakeEntry, fakeTerm } from "@monorepo/content/testing";
+import type { Entry, Term } from "@joinery/content";
+import { faker, fakeAsset, fakeAuthor, fakeEntry, fakeTerm } from "@joinery/content/testing";
 import { describe, expect, it } from "vitest";
 import { toArticleSummary } from "./articleSummary";
 

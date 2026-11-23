@@ -1,5 +1,5 @@
 {
-  "name": "@monorepo/scripts",
+  "name": "@joinery/scripts",
   "version": "0.0.0",
   "description": "repo-local dev tooling, one folder per script",
   "private": true,
@@ -51,7 +51,7 @@
     "yaml": "^2.9.1"
   },
   "devDependencies": {
-    "@monorepo/configs": "workspace:*",
+    "@joinery/configs": "workspace:*",
     "@types/culori": "^4.0.1",
     "@types/istanbul-lib-coverage": "^2.0.6",
     "@types/istanbul-lib-report": "^3.0.3",

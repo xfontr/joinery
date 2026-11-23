@@ -36,14 +36,14 @@ describe("parseDeletions", () => {
             "2026-11-08",
             "chore: delete ui",
             deletion("packages/ui/package.json", {
-                name: "@monorepo/ui",
+                name: "@joinery/ui",
                 nx: { tags: ["type:ui", "scope:shared", "npm:private"] },
             }),
         );
 
         expect(parseDeletions(log, [])).toEqual([
             {
-                name: "@monorepo/ui",
+                name: "@joinery/ui",
                 root: "packages/ui",
                 tags: ["type:ui", "scope:shared"],
                 deletedAt: "2026-11-08",
@@ -73,10 +73,10 @@ describe("parseDeletions", () => {
             "abc",
             "2026-11-08",
             "refactor: move ui",
-            deletion("packages/ui/package.json", { name: "@monorepo/ui" }),
+            deletion("packages/ui/package.json", { name: "@joinery/ui" }),
         );
 
-        expect(parseDeletions(log, [live("@monorepo/ui")])).toEqual([]);
+        expect(parseDeletions(log, [live("@joinery/ui")])).toEqual([]);
     });
 
     it("keeps only the newest deletion of a name that was deleted twice", () => {

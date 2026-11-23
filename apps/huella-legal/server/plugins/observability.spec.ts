@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 import type { H3Event } from "h3";
 import { SpanKind, SpanStatusCode } from "@opentelemetry/api";
 import {
@@ -47,13 +47,13 @@ vi.mock("@opentelemetry/api", async (importOriginal) => ({
     propagation: { extract: otel.extract },
 }));
 
-vi.mock("@monorepo/observability/node", () => ({
+vi.mock("@joinery/observability/node", () => ({
     startNodeTelemetry: telemetry.startNodeTelemetry,
 }));
 
 vi.mock("@netlify/functions", () => ({ getContext: netlify.getContext }));
 
-const APP = { name: "@monorepo/huella-legal", version: "1.4.0", environment: "production" };
+const APP = { name: "@joinery/huella-legal", version: "1.4.0", environment: "production" };
 
 const COLLECTOR = "https://otlp-gateway-prod-eu-west-0.grafana.net/otlp";
 

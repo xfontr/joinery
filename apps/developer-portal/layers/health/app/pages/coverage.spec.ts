@@ -60,7 +60,7 @@ const MESSAGES = {
         workspace: "Workspace",
     },
     pageHeader: {
-        wordmark: "monorepo",
+        wordmark: "joinery",
     },
 };
 

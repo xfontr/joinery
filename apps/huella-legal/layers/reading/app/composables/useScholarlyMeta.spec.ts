@@ -1,5 +1,5 @@
-import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
-import { fakeAuthor } from "@monorepo/content/testing";
+import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
+import { fakeAuthor } from "@joinery/content/testing";
 import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ref, type Ref } from "vue";

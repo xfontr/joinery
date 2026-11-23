@@ -129,6 +129,6 @@ the decision block's two axes become the model, not the exception.
 | Claim | Check |
 | --- | --- |
 | No review states its method in prose | `grep -rl "Rubric v\|Method v" docs/reviews/` returns `METHOD.md` and nothing else — `TEMPLATE.md` carries the line too, and loses it in the same pass |
-| The version is machine-readable | `nx collect @monorepo/developer-portal` writes a `method` on every `ReviewScorecard`, and the History card renders it |
-| The two copies can't disagree | Editing one history row's Method column fails `pnpm exec nx check-docs @monorepo/developer-portal` |
+| The version is machine-readable | `nx collect @joinery/developer-portal` writes a `method` on every `ReviewScorecard`, and the History card renders it |
+| The two copies can't disagree | Editing one history row's Method column fails `pnpm exec nx check-docs @joinery/developer-portal` |
 | No bump goes un-re-scored | The same command fails while `METHOD.md`'s version exceeds the highest `method:` filed — by design, from the bump until the re-score row lands |

@@ -13,7 +13,7 @@
             "search": "Search pages, projects and docs…",
             "source": "Source",
             "sourceLabel": "View source on GitHub",
-            "wordmark": "monorepo",
+            "wordmark": "joinery",
             "personalSite": "Xifré Font's site"
         },
         "menu": {
@@ -497,7 +497,7 @@
     },
     "pageHeader": {
         "breadcrumb": "Breadcrumb",
-        "wordmark": "monorepo"
+        "wordmark": "joinery"
     },
     "project": {
         "missing": {
@@ -630,7 +630,7 @@
                 "title": "Understand how it works"
             }
         },
-        "title": "Monorepo"
+        "title": "Joinery"
     },
     "settingsFeatures": {
         "hint": "Leaving one out takes its blocks out of the map; whatever needed them waits on what they needed.",

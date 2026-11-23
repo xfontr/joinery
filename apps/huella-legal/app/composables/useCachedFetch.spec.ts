@@ -1,4 +1,4 @@
-import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
+import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
 import { registerEndpoint } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useCachedFetch } from "./useCachedFetch";

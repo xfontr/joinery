@@ -22,9 +22,9 @@ hooks, CI and `pnpm check` never need to know which tool a project uses.
 
 | Rule | Why |
 | --- | --- |
-| Every project is `"private": true` | Nothing is published: the **Release** workflow runs `nx release --skip-publish`. `nx release` still versions and tags a private package from its commits, as `@monorepo/configs` shows, so the flag only stops an `npm publish` from working by accident |
-| The directory name is the package name, `@monorepo/<dirname>` | The [`new-package`](../../.claude/skills/new-package/SKILL.md) skill has the rest of the manifest |
-| Release tags are `@monorepo/<name>@<version>` | `nx release` derives the next version from the last one, per [versioning](./versioning.md) |
+| Every project is `"private": true` | Nothing is published: the **Release** workflow runs `nx release --skip-publish`. `nx release` still versions and tags a private package from its commits, as `@joinery/configs` shows, so the flag only stops an `npm publish` from working by accident |
+| The directory name is the package name, `@joinery/<dirname>` | The [`new-package`](../../.claude/skills/new-package/SKILL.md) skill has the rest of the manifest |
+| Release tags are `@joinery/<name>@<version>` | `nx release` derives the next version from the last one, per [versioning](./versioning.md) |
 
 ## Nuxt apps
 

@@ -8,11 +8,11 @@ const telemetry = vi.hoisted(() => ({
     ready: undefined as (() => void) | undefined,
     config: {
         url: "",
-        app: { name: "@monorepo/huella-legal", version: "1.4.0", environment: "production" },
+        app: { name: "@joinery/huella-legal", version: "1.4.0", environment: "production" },
     },
 }));
 
-vi.mock("@monorepo/observability", () => ({ startWebTelemetry: telemetry.startWebTelemetry }));
+vi.mock("@joinery/observability", () => ({ startWebTelemetry: telemetry.startWebTelemetry }));
 
 // Wraps the real config rather than replacing it, because Nuxt's own plugins read it while booting
 mockNuxtImport("useRuntimeConfig", (original) => () => {

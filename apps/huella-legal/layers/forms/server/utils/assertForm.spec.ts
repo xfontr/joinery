@@ -1,6 +1,6 @@
 import * as v from "valibot";
 import { describe, expect, it } from "vitest";
-import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 
 stubNitro();
 

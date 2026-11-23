@@ -37,21 +37,21 @@ describe("dev main", () => {
     });
 
     it("runs a named project and forwards a nonzero child status", async () => {
-        nx.projectsWithDev.mockReturnValue([{ root: "apps", name: "@monorepo/demo" }]);
+        nx.projectsWithDev.mockReturnValue([{ root: "apps", name: "@joinery/demo" }]);
         pnpm.dev.mockReturnValue(4);
 
         await main({ flags: new Set(), positionals: ["demo"] });
 
-        expect(pnpm.dev).toHaveBeenCalledWith("@monorepo/demo");
+        expect(pnpm.dev).toHaveBeenCalledWith("@joinery/demo");
         expect(process.exitCode).toBe(4);
     });
 
     it("warns for an unknown name and asks interactively", async () => {
-        nx.projectsWithDev.mockReturnValue([{ root: "apps", name: "@monorepo/demo" }]);
+        nx.projectsWithDev.mockReturnValue([{ root: "apps", name: "@joinery/demo" }]);
         io.isInteractive.mockReturnValue(true);
         prompts.autocomplete.mockResolvedValue({
             root: "apps",
-            name: "@monorepo/demo",
+            name: "@joinery/demo",
             label: "Demo",
         });
 
@@ -63,11 +63,11 @@ describe("dev main", () => {
         expect(prompts.autocomplete).toHaveBeenCalledWith(
             expect.objectContaining({ initialUserInput: "missing", maxItems: 12 }),
         );
-        expect(pnpm.dev).toHaveBeenCalledWith("@monorepo/demo");
+        expect(pnpm.dev).toHaveBeenCalledWith("@joinery/demo");
     });
 
     it("rejects an unnamed non-interactive invocation with usable names", async () => {
-        nx.projectsWithDev.mockReturnValue([{ root: "apps", name: "@monorepo/demo" }]);
+        nx.projectsWithDev.mockReturnValue([{ root: "apps", name: "@joinery/demo" }]);
 
         await expect(main({ flags: new Set(), positionals: [] })).rejects.toThrow(
             "No terminal to pick with — name a project: pnpm dev <demo>",
@@ -75,7 +75,7 @@ describe("dev main", () => {
     });
 
     it("treats a null child status as Ctrl+C without setting an exit code", async () => {
-        nx.projectsWithDev.mockReturnValue([{ root: "apps", name: "@monorepo/demo" }]);
+        nx.projectsWithDev.mockReturnValue([{ root: "apps", name: "@joinery/demo" }]);
         pnpm.dev.mockReturnValue(null);
 
         await main({ flags: new Set(), positionals: ["demo"] });

@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-23T17:30:52.978Z",
+    "syncedAt": "2026-11-23T17:54:14.265Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -24,7 +24,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 474,
@@ -45,7 +45,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 477,
@@ -67,7 +67,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 13
+            "complexity": null
         },
         {
             "number": 479,
@@ -86,7 +86,7 @@
             "branch": true,
             "pr": false,
             "owner": false,
-            "complexity": 13
+            "complexity": null
         },
         {
             "number": 481,
@@ -109,7 +109,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 8
+            "complexity": null
         },
         {
             "number": 484,
@@ -132,7 +132,7 @@
             "branch": true,
             "pr": false,
             "owner": false,
-            "complexity": 13
+            "complexity": null
         },
         {
             "number": 485,
@@ -159,7 +159,7 @@
             "branch": true,
             "pr": false,
             "owner": false,
-            "complexity": 8
+            "complexity": null
         },
         {
             "number": 486,
@@ -177,7 +177,7 @@
             "branch": true,
             "pr": false,
             "owner": false,
-            "complexity": 8
+            "complexity": null
         },
         {
             "number": 487,
@@ -198,7 +198,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 488,
@@ -216,7 +216,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 489,
@@ -255,7 +255,7 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 490,
@@ -293,7 +293,7 @@
             "branch": false,
             "pr": false,
             "owner": true,
-            "complexity": 1
+            "complexity": null
         },
         {
             "number": 493,
@@ -360,7 +360,7 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": 3
+            "complexity": null
         },
         {
             "number": 504,
@@ -388,7 +388,7 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": 13
+            "complexity": null
         },
         {
             "number": 505,
@@ -408,7 +408,7 @@
             "branch": true,
             "pr": false,
             "owner": false,
-            "complexity": 2
+            "complexity": null
         },
         {
             "number": 512,

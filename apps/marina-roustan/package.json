@@ -1,5 +1,5 @@
 {
-  "name": "@monorepo/marina-roustan",
+  "name": "@joinery/marina-roustan",
   "description": "Marina Roustan, a website rebuild (Nuxt 4)",
   "private": true,
   "type": "module",
@@ -62,7 +62,7 @@
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
-    "@monorepo/configs": "workspace:*",
+    "@joinery/configs": "workspace:*",
     "@nuxt/test-utils": "^4.3.2",
     "@playwright/test": "catalog:",
     "@types/node": "catalog:",

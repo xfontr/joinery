@@ -29,8 +29,8 @@ vi.mock("../lib/run.ts", () => ({
 vi.mock("../lib/invariants.ts", () => invariants);
 
 const projects: ProjectNode[] = [
-    { name: "@monorepo/ui", root: "packages/ui", tags: [], dependsOn: [], dependedOnBy: [] },
-    { name: "@monorepo/i18n", root: "packages/i18n", tags: [], dependsOn: [], dependedOnBy: [] },
+    { name: "@joinery/ui", root: "packages/ui", tags: [], dependsOn: [], dependedOnBy: [] },
+    { name: "@joinery/i18n", root: "packages/i18n", tags: [], dependsOn: [], dependedOnBy: [] },
 ];
 
 const coverage: CoverageArtifact = {
@@ -39,13 +39,13 @@ const coverage: CoverageArtifact = {
     report: false,
     projects: [
         {
-            name: "@monorepo/ui",
+            name: "@joinery/ui",
             root: "packages/ui",
             collected: true,
             files: 2,
             lines: { total: 8, covered: 7, pct: 87.5 },
         },
-        { name: "@monorepo/i18n", root: "packages/i18n", collected: false, files: 0 },
+        { name: "@joinery/i18n", root: "packages/i18n", collected: false, files: 0 },
     ],
 };
 
@@ -78,11 +78,11 @@ beforeEach(() => {
 
         if (args[0] === "rev-list" && args[1] === "--count" && args[2] === "HEAD") return "10\n";
         if (args[0] === "log" && args[1] === "--since=2 weeks ago") return "one\ntwo\n";
-        if (args[0] === "tag") return args[2] === "@monorepo/ui@*" ? "@monorepo/ui@3.0.0\n" : "";
+        if (args[0] === "tag") return args[2] === "@joinery/ui@*" ? "@joinery/ui@3.0.0\n" : "";
         if (
             args[0] === "rev-list" &&
             typeof args[2] === "string" &&
-            args[2].includes("@monorepo/ui@")
+            args[2].includes("@joinery/ui@")
         )
             return "3\n";
         if (args[0] === "log" && args.includes("--no-merges"))
@@ -108,7 +108,7 @@ describe("collectMetrics", () => {
         const i18n = result.projects[1];
 
         expect(ui).toEqual({
-            name: "@monorepo/ui",
+            name: "@joinery/ui",
             root: "packages/ui",
             specs: 1,
             commits: 10,
@@ -144,7 +144,7 @@ describe("collectMetrics", () => {
         const ui = result.projects[0];
 
         expect(ui).toMatchObject({
-            name: "@monorepo/ui",
+            name: "@joinery/ui",
             specs: 1,
             commits: null,
             commitsLastTwoWeeks: null,
@@ -159,7 +159,7 @@ describe("collectMetrics", () => {
         const withApp = [
             ...projects,
             {
-                name: "@monorepo/portal",
+                name: "@joinery/portal",
                 root: "apps/portal",
                 tags: [],
                 dependsOn: [],

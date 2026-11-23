@@ -128,7 +128,7 @@ Points measure how much a person has to understand, decide and check — not how
 | Where | Figure |
 | --- | --- |
 | A block not filed yet | The template's `complexity`, from what Huella's tickets for it added up to |
-| A filed ticket | The `Complexity` field on the `Monorepo` board; filing sets it from the template, a bundle to the sum of its blocks, and a block with several suggested tickets leaves it blank |
+| A filed ticket | The `Complexity` field on the `Joinery` board; filing sets it from the template, a bundle to the sum of its blocks, and a block with several suggested tickets leaves it blank |
 | A ticket under several blocks | Split evenly between them, so a project total counts it once |
 | A settled or switched-off block | Nothing |
 

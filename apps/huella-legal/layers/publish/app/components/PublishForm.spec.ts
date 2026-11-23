@@ -1,4 +1,4 @@
-import { slotStub } from "@monorepo/configs/vitest/utils/nuxt";
+import { slotStub } from "@joinery/configs/vitest/utils/nuxt";
 import type { FormError } from "@nuxt/ui";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";

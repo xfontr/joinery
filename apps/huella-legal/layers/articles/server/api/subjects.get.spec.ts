@@ -1,6 +1,6 @@
-import { fakeEntry, fakeTerm } from "@monorepo/content/testing";
+import { fakeEntry, fakeTerm } from "@joinery/content/testing";
 import { describe, expect, it, vi } from "vitest";
-import { stubNitro } from "@monorepo/configs/vitest/utils/nitro";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 import type { ArticleSummary } from "../../shared/types/ArticleSummary";
 import type { Category } from "../../shared/types/Category";
 import type { SubjectIndex } from "../../shared/types/SubjectIndex";

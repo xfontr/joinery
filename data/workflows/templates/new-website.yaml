@@ -293,7 +293,7 @@ capabilities:
     title: Content model and source
     complexity: 13
     dependsOn: [app-scaffold, scope-signoff]
-    summary: The content model designed from the site brief, read as Markdown through Nuxt Content or a CMS through @monorepo/content.
+    summary: The content model designed from the site brief, read as Markdown through Nuxt Content or a CMS through @joinery/content.
     reuse: { plan: package, from: packages/content }
     doneWhen:
       - Every content type, field and taxonomy the brief needs is written down, with no type kept for later.

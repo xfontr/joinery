@@ -191,5 +191,5 @@ What the `website-rebuild` design capabilities expect, learned on Huella:
 ```sh
 pnpm workflow:sync <id>
 pnpm workflow:next <id>
-pnpm exec nx collect @monorepo/developer-portal   # invariants include every workflow file's rules
+pnpm exec nx collect @joinery/developer-portal   # invariants include every workflow file's rules
 ```

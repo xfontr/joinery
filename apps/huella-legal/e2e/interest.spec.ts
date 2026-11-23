@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
-import { axeViolations } from "@monorepo/configs/playwright/utils/a11y";
-import { expect, test } from "@monorepo/configs/playwright/utils/test";
+import { axeViolations } from "@joinery/configs/playwright/utils/a11y";
+import { expect, test } from "@joinery/configs/playwright/utils/test";
 import { t } from "./copy.ts";
 import { FORMULA, GUIDE_HEADING } from "./fakes.ts";
 

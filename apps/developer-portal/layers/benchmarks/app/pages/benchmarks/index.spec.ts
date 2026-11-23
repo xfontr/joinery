@@ -58,7 +58,7 @@ const MESSAGES = {
         writes: "The {skill} skill writes {each}{collect}.",
     },
     pageHeader: {
-        wordmark: "monorepo",
+        wordmark: "joinery",
     },
 };
 

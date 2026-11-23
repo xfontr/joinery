@@ -1,4 +1,4 @@
-import type { Entry, Term, TermResource } from "@monorepo/content";
+import type { Entry, Term, TermResource } from "@joinery/content";
 import {
     faker,
     fakeAsset,
@@ -6,7 +6,7 @@ import {
     fakeEntry,
     fakeTerm,
     type WordpressContent,
-} from "@monorepo/content/testing";
+} from "@joinery/content/testing";
 import type { WordpressComment } from "./vendors.ts";
 
 export const SUBJECT = fakeTerm({ description: faker.lorem.sentence() });

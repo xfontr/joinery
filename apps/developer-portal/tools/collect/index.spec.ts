@@ -40,7 +40,7 @@ vi.mock("./usage.ts", () => ({ collectUsage: state.collectUsage }));
 
 const projects = {
     generatedAt: "generated",
-    projects: [{ name: "@monorepo/ui", root: "packages/ui" }],
+    projects: [{ name: "@joinery/ui", root: "packages/ui" }],
 };
 const coverage = { generatedAt: "generated", totals: null, report: false, projects: [] };
 

@@ -60,7 +60,7 @@ not to act. `decision` is `accepted` unless this report is reversing an earlier 
 the report being superseded.
 
 **`NNNN` is the next free number, not the issue's** — `ls docs/decisions/` and add one to the highest,
-zero-padded to four digits. Two reports may never share it; `nx collect @monorepo/developer-portal`
+zero-padded to four digits. Two reports may never share it; `nx collect @joinery/developer-portal`
 reports a collision as a `decision-shape-mismatch` on the portal's Overview, but nothing blocks it.
 
 `issue` is the issue that **raised the question**, as a plain integer. It is not always labelled

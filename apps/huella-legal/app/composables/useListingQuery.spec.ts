@@ -1,4 +1,4 @@
-import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
+import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
 import { describe, expect, it, vi } from "vitest";
 import { useRouter } from "vue-router";
 import { useListingQuery } from "./useListingQuery";

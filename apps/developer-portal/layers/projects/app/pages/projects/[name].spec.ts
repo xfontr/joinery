@@ -1,4 +1,4 @@
-import { serveEndpoint } from "@monorepo/configs/vitest/utils/nuxt";
+import { serveEndpoint } from "@joinery/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -54,7 +54,7 @@ const MESSAGES = {
     },
     pageHeader: {
         breadcrumb: "Breadcrumb",
-        wordmark: "monorepo",
+        wordmark: "joinery",
     },
     project: {
         missing: {
@@ -194,11 +194,11 @@ const outdatedPackage = (name: string, dependents: string[]): OutdatedPackage =>
     dependents,
 });
 
-const UI = node("@monorepo/ui", "packages/UI", {
-    dependsOn: ["@monorepo/configs"],
-    dependedOnBy: ["@monorepo/developer-portal"],
+const UI = node("@joinery/ui", "packages/UI", {
+    dependsOn: ["@joinery/configs"],
+    dependedOnBy: ["@joinery/developer-portal"],
 });
-const CONFIGS = node("@monorepo/configs", "packages/configs");
+const CONFIGS = node("@joinery/configs", "packages/configs");
 
 const serve = ({
     projects = [UI, CONFIGS],
@@ -272,19 +272,19 @@ describe("project page", () => {
         serve();
         const wrapper = await mountSuspended(Page, { route: "/projects/UI" });
 
-        expect(facts(wrapper)["Depends on"]).toEqual(["@monorepo/configs"]);
-        expect(facts(wrapper)["Used by"]).toEqual(["@monorepo/developer-portal"]);
+        expect(facts(wrapper)["Depends on"]).toEqual(["@joinery/configs"]);
+        expect(facts(wrapper)["Used by"]).toEqual(["@joinery/developer-portal"]);
         expect(wrapper.find("a[href='/projects/configs']").exists()).toBe(true);
     });
 
     it("prints each fact with its unit and a dash where nothing was measured", async () => {
         serve({
             metrics: [
-                metric("@monorepo/ui", { unreleasedCommits: 3, specs: 2, hasChangelog: true }),
+                metric("@joinery/ui", { unreleasedCommits: 3, specs: 2, hasChangelog: true }),
             ],
             coverage: [
                 {
-                    name: "@monorepo/ui",
+                    name: "@joinery/ui",
                     root: "packages/UI",
                     collected: true,
                     files: 4,
@@ -322,7 +322,7 @@ describe("project page", () => {
         serve({
             coverage: [
                 {
-                    name: "@monorepo/ui",
+                    name: "@joinery/ui",
                     root: "packages/UI",
                     collected: true,
                     files: 4,

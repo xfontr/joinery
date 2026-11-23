@@ -17,6 +17,6 @@ describe("filterItems", () => {
     });
 
     it("shows a value as it is when no wording is given, as for scopes and labels", () => {
-        expect(filterItems("Every scope", ["@monorepo/ui"])[1]?.label).toBe("@monorepo/ui");
+        expect(filterItems("Every scope", ["@joinery/ui"])[1]?.label).toBe("@joinery/ui");
     });
 });

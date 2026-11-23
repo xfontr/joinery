@@ -28,7 +28,7 @@ mockNuxtImport("queryCollection", () => () => {
 });
 
 const node = (root: string): ProjectNode => ({
-    name: `@monorepo/${root.split("/").at(-1) ?? root}`,
+    name: `@joinery/${root.split("/").at(-1) ?? root}`,
     root,
     tags: [],
     dependsOn: [],
@@ -53,8 +53,8 @@ describe("ProjectsFeatured", () => {
         ]);
 
         expect(wrapper.findAll("h3").map((title) => title.text())).toEqual([
-            "@monorepo/blog",
-            "@monorepo/shop",
+            "@joinery/blog",
+            "@joinery/shop",
         ]);
     });
 

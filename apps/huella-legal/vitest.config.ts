@@ -1,4 +1,4 @@
-import { vitest } from "@monorepo/configs";
+import { vitest } from "@joinery/configs";
 
 // A tracker ID in a local .env boots the cookie banner in every spec, and dotenv never overrides
 // a var that is already set

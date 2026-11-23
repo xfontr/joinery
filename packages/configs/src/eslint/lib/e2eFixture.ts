@@ -16,7 +16,7 @@ const e2eFixture: object = {
                         name: "@playwright/test",
                         importNames: ["test"],
                         message:
-                            "Import `test` from @monorepo/configs/playwright/utils/test, whose `page` fails the test on browser console output.",
+                            "Import `test` from @joinery/configs/playwright/utils/test, whose `page` fails the test on browser console output.",
                     },
                 ],
             },

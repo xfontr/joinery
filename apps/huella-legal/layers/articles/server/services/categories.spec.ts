@@ -1,4 +1,4 @@
-import { fakeTerm } from "@monorepo/content/testing";
+import { fakeTerm } from "@joinery/content/testing";
 import { describe, expect, it, vi } from "vitest";
 import type { Category } from "../../shared/types/Category";
 

@@ -13,7 +13,7 @@ What more than one script needs. Nothing here knows a script exists.
 | [`adapters/git.ts`](./adapters/git.ts) | `git`, `repoRoot()` and `at()` |
 | [`adapters/gh.ts`](./adapters/gh.ts) | `gh` and `createIssue` |
 | [`adapters/usage.ts`](./adapters/usage.ts) | `appendUsage`, the row `run()` records after every command |
-| [`adapters/cache.ts`](./adapters/cache.ts) | The file cache under `node_modules/.cache/@monorepo/scripts` |
+| [`adapters/cache.ts`](./adapters/cache.ts) | The file cache under `node_modules/.cache/@joinery/scripts` |
 | [`adapters/prompts.ts`](./adapters/prompts.ts) | `orExit`, so a cancelled prompt unwinds to `run` |
 | [`domain/cli.ts`](./domain/cli.ts) | The argv parser, `optionValue`, `detailOf` |
 | [`domain/usage.ts`](./domain/usage.ts) | What a recorded run holds — see [`usage/`](../usage/README.md) |

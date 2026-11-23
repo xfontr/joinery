@@ -12,19 +12,19 @@ const MESSAGES = {
 };
 
 const SITE = {
-    name: "@monorepo/site",
+    name: "@joinery/site",
     root: "apps/site",
     tags: ["type:app", "scope:site"],
-    dependsOn: ["@monorepo/ui"],
+    dependsOn: ["@joinery/ui"],
     dependedOnBy: [],
 } satisfies ProjectNode;
 
 const UI = {
-    name: "@monorepo/ui",
+    name: "@joinery/ui",
     root: "packages/ui",
     tags: ["type:package", "scope:shared"],
     dependsOn: [],
-    dependedOnBy: ["@monorepo/site"],
+    dependedOnBy: ["@joinery/site"],
 } satisfies ProjectNode;
 
 beforeEach(() => {
@@ -37,7 +37,7 @@ describe("GraphMap", () => {
         const link = wrapper.find("a[href='/projects/site']");
 
         expect(link.text()).toContain("site");
-        expect(link.text()).not.toContain("@monorepo");
+        expect(link.text()).not.toContain("@joinery");
         expect(link.text()).toContain("type:app");
     });
 

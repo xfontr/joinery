@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { MAX_SEARCH_LENGTH } from "@monorepo/content";
+import { MAX_SEARCH_LENGTH } from "@joinery/content";
 import { syncRef } from "@vueuse/core";
 
 interface Props {

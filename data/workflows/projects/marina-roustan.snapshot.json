@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-17T09:37:59.693Z",
+    "syncedAt": "2026-11-23T17:54:19.882Z",
     "milestone": "Marina Roustan",
     "issues": [
         {
@@ -27,7 +27,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 19
+            "complexity": null
         },
         {
             "number": 447,
@@ -54,7 +54,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 10
+            "complexity": null
         },
         {
             "number": 448,
@@ -78,7 +78,7 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": 18
+            "complexity": null
         },
         {
             "number": 459,
@@ -96,7 +96,7 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 460,
@@ -120,7 +120,7 @@
             "branch": true,
             "pr": false,
             "owner": false,
-            "complexity": 13
+            "complexity": null
         },
         {
             "number": 461,
@@ -145,7 +145,7 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": 21
+            "complexity": null
         },
         {
             "number": 462,
@@ -169,7 +169,7 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": 13
+            "complexity": null
         },
         {
             "number": 463,
@@ -194,7 +194,7 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": 16
+            "complexity": null
         },
         {
             "number": 464,
@@ -218,7 +218,7 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": 5
+            "complexity": null
         },
         {
             "number": 465,
@@ -242,7 +242,7 @@
             "branch": false,
             "pr": false,
             "owner": true,
-            "complexity": 1
+            "complexity": null
         }
     ],
     "noMilestone": []

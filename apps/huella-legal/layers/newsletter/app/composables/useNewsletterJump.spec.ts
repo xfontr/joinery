@@ -1,4 +1,4 @@
-import { withSetup } from "@monorepo/configs/vitest/utils/nuxt";
+import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NEWSLETTER_ID, useNewsletterJump } from "./useNewsletterJump";
 

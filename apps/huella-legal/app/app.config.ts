@@ -1,3 +1,3 @@
 export default defineAppConfig({
-    repository: "https://github.com/xfontr/monorepo/tree/master/apps/huella-legal",
+    repository: "https://github.com/xfontr/joinery/tree/master/apps/huella-legal",
 });
