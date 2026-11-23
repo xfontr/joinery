@@ -42,9 +42,12 @@ Every count, map and benchmark comes from the portal's `/embed/data.json`, fetch
 ## Deploy
 
 [`deploy-portfolio.yml`](../../.github/workflows/deploy-portfolio.yml) runs after each successful portal
-deploy, or by hand. It prerenders with the payload URL set and publishes to the `xifre-dev` Cloudflare
-Pages project with `wrangler pages deploy`. Cloudflare only hosts.
+deploy, or by hand. It downloads that run's `developer-portal-site` artifact, serves it on
+`localhost` so the prerender can fetch `/embed/data.json`, copies it into `.output/public/portal/`,
+and publishes both to the `xifre-dev` Cloudflare Pages project with `wrangler pages deploy`.
+Cloudflare only hosts.
 
+- A run by hand takes the artifact from the portal's last successful `master` deploy.
 - The site is served from the root of `SITE_URL` in [`nuxt.config.ts`](./nuxt.config.ts), which
   canonical, sitemap and share-image URLs are built on.
 - `NUXT_PUBLIC_REPO_URL` is baked in at build time, derived by the workflow.

@@ -9,7 +9,7 @@
 
 A pnpm + Nx monorepo maintained by Xifré Font: Nuxt websites for small publications and
 practices, the shared packages they build on, and the tooling that keeps them consistent. The
-[developer portal](https://xfontr-monorepo.pages.dev) is the readable way in.
+[developer portal](https://xifre-dev.pages.dev/portal/) is the readable way in.
 
 | Worth reading first | Why |
 | --- | --- |

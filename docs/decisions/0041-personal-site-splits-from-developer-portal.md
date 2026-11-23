@@ -91,7 +91,7 @@ the new one serves them.
 **Tripwires.**
 
 - **No domain is bought yet.** `SITE_URL` (`nuxt.config.ts:9`) and the deploy `url:` stay
-  `xfontr-monorepo.pages.dev` until it is; DNS and the purchase are the owner's step.
+  `xifre-dev.pages.dev` until it is; DNS and the purchase are the owner's step.
 - **The payload URL is per environment.** It is an env var with no default, unset locally; with it
   unset every page renders without figures or maps, the way the portal renders without `.report/`.
 - **A visitor page's links into the portal become absolute** — `PROOFS` in `index.vue`, `to=` in
