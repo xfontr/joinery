@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-23T18:16:36.166Z",
+    "syncedAt": "2026-11-23T18:42:00.959Z",
     "milestone": "Huella Legal",
     "issues": [
         {
@@ -1971,5 +1971,22 @@
             "complexity": 8
         }
     ],
-    "noMilestone": []
+    "noMilestone": [
+        {
+            "number": 520,
+            "title": "Remove the Huella Legal pull request preview",
+            "url": "https://github.com/xfontr/joinery/issues/520",
+            "state": "open",
+            "reason": null,
+            "caps": [],
+            "createdAt": "2026-11-23T18:32:36Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": null
+        }
+    ]
 }
