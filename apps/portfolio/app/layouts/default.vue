@@ -28,12 +28,7 @@
                         {{ $t(`app.visitor.nav.${item.key}`) }}
                     </ULink>
                 </nav>
-                <ULink
-                    :to="portal"
-                    class="font-mono text-xs text-muted underline underline-offset-4"
-                >
-                    {{ $t("app.visitor.portal") }}
-                </ULink>
+                <ViewSwitch />
             </div>
         </UContainer>
 

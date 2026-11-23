@@ -1,11 +1,11 @@
 {
-    "syncedAt": "2026-11-23T17:54:14.265Z",
+    "syncedAt": "2026-11-23T18:16:32.956Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
             "number": 472,
             "title": "Benchmark reference sites",
-            "url": "https://github.com/xfontr/monorepo/issues/472",
+            "url": "https://github.com/xfontr/joinery/issues/472",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -24,12 +24,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 474,
             "title": "Visitor view structure",
-            "url": "https://github.com/xfontr/monorepo/issues/474",
+            "url": "https://github.com/xfontr/joinery/issues/474",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -45,12 +45,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 477,
             "title": "Design lab",
-            "url": "https://github.com/xfontr/monorepo/issues/477",
+            "url": "https://github.com/xfontr/joinery/issues/477",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -67,12 +67,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 13
         },
         {
             "number": 479,
             "title": "Design system, Visitor and developer views",
-            "url": "https://github.com/xfontr/monorepo/issues/479",
+            "url": "https://github.com/xfontr/joinery/issues/479",
             "state": "closed",
             "reason": "not_planned",
             "caps": [
@@ -86,12 +86,12 @@
             "branch": true,
             "pr": false,
             "owner": false,
-            "complexity": null
+            "complexity": 13
         },
         {
             "number": 481,
             "title": "Design system",
-            "url": "https://github.com/xfontr/monorepo/issues/481",
+            "url": "https://github.com/xfontr/joinery/issues/481",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -109,12 +109,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 8
         },
         {
             "number": 484,
             "title": "Developer view on E",
-            "url": "https://github.com/xfontr/monorepo/issues/484",
+            "url": "https://github.com/xfontr/joinery/issues/484",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -132,12 +132,12 @@
             "branch": true,
             "pr": false,
             "owner": false,
-            "complexity": null
+            "complexity": 13
         },
         {
             "number": 485,
             "title": "Visitor front page",
-            "url": "https://github.com/xfontr/monorepo/issues/485",
+            "url": "https://github.com/xfontr/joinery/issues/485",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -159,12 +159,12 @@
             "branch": true,
             "pr": false,
             "owner": false,
-            "complexity": null
+            "complexity": 8
         },
         {
             "number": 486,
             "title": "How it's made and The craft",
-            "url": "https://github.com/xfontr/monorepo/issues/486",
+            "url": "https://github.com/xfontr/joinery/issues/486",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -177,12 +177,12 @@
             "branch": true,
             "pr": false,
             "owner": false,
-            "complexity": null
+            "complexity": 8
         },
         {
             "number": 487,
             "title": "Workflows for visitors",
-            "url": "https://github.com/xfontr/monorepo/issues/487",
+            "url": "https://github.com/xfontr/joinery/issues/487",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -198,12 +198,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 488,
             "title": "Work pages",
-            "url": "https://github.com/xfontr/monorepo/issues/488",
+            "url": "https://github.com/xfontr/joinery/issues/488",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -216,12 +216,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 489,
             "title": "Docs brought up to date",
-            "url": "https://github.com/xfontr/monorepo/issues/489",
+            "url": "https://github.com/xfontr/joinery/issues/489",
             "state": "open",
             "reason": null,
             "caps": [
@@ -255,12 +255,12 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 490,
             "title": "Go live",
-            "url": "https://github.com/xfontr/monorepo/issues/490",
+            "url": "https://github.com/xfontr/joinery/issues/490",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -293,12 +293,12 @@
             "branch": false,
             "pr": false,
             "owner": true,
-            "complexity": null
+            "complexity": 1
         },
         {
             "number": 493,
             "title": "Build review",
-            "url": "https://github.com/xfontr/monorepo/issues/493",
+            "url": "https://github.com/xfontr/joinery/issues/493",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -360,12 +360,12 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 504,
             "title": "Visitor area ready for production",
-            "url": "https://github.com/xfontr/monorepo/issues/504",
+            "url": "https://github.com/xfontr/joinery/issues/504",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -388,12 +388,12 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": null
+            "complexity": 13
         },
         {
             "number": 505,
             "title": "404 and error pages",
-            "url": "https://github.com/xfontr/monorepo/issues/505",
+            "url": "https://github.com/xfontr/joinery/issues/505",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -408,12 +408,12 @@
             "branch": true,
             "pr": false,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 512,
             "title": "Split the visitor pages into their own app",
-            "url": "https://github.com/xfontr/monorepo/issues/512",
+            "url": "https://github.com/xfontr/joinery/issues/512",
             "state": "closed",
             "reason": "completed",
             "caps": [],

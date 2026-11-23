@@ -18,6 +18,15 @@ names over them, and everything that runs a project calls only the stable names.
 [`nx.json`](../../nx.json) names every inferred target and hangs caching on the stable names, so
 hooks, CI and `pnpm check` never need to know which tool a project uses.
 
+## GitHub workflows
+
+| Rule | Why |
+| --- | --- |
+| `name:` is `<Category> / <Subject>`, or one word for a repo-wide workflow (`CI`, `Release`, `Security`) | `.github/workflows/` can't hold folders and the Actions sidebar sorts by name, so the category is the only grouping; GitHub appends ` / <job>` to a check, so the slash reads as one path |
+| Categories: `Deploy` for a site going live, `PR` for what runs on a pull request | Read off the sidebar, they say when the workflow runs |
+| The subject names the project, never the host: `Deploy / Huella Legal`, not `Netlify deployment` | A move to another host shouldn't rename the workflow |
+| The file is the name slugged: `Deploy / Huella Legal` → `deploy-huella-legal.yml` | `pnpm invariants:check` fails a mismatch |
+
 ## Package manifests
 
 | Rule | Why |

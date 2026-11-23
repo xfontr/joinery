@@ -3,13 +3,13 @@
 [![CI](https://github.com/xfontr/joinery/actions/workflows/ci.yml/badge.svg)](https://github.com/xfontr/joinery/actions/workflows/ci.yml)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=xfontr_joinery&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=xfontr_joinery)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/cae76234-bf69-4487-9dee-505f9a006250/deploy-status)](https://app.netlify.com/projects/monorepo-idp/deploys)
-[![Developer Portal deploy](https://github.com/xfontr/joinery/actions/workflows/developer-portal-deploy.yml/badge.svg)](https://github.com/xfontr/joinery/actions/workflows/developer-portal-deploy.yml)
+[![Deploy / Developer portal](https://github.com/xfontr/joinery/actions/workflows/deploy-developer-portal.yml/badge.svg)](https://github.com/xfontr/joinery/actions/workflows/deploy-developer-portal.yml)
 [![Release](https://github.com/xfontr/joinery/actions/workflows/release.yml/badge.svg)](https://github.com/xfontr/joinery/actions/workflows/release.yml)
-[![Netlify deployment](https://github.com/xfontr/joinery/actions/workflows/netlify-deployment.yml/badge.svg)](https://github.com/xfontr/joinery/actions/workflows/netlify-deployment.yml)
+[![Deploy / Huella Legal](https://github.com/xfontr/joinery/actions/workflows/deploy-huella-legal.yml/badge.svg)](https://github.com/xfontr/joinery/actions/workflows/deploy-huella-legal.yml)
 
 A pnpm + Nx monorepo maintained by Xifré Font: Nuxt websites for small publications and
 practices, the shared packages they build on, and the tooling that keeps them consistent. The
-[developer portal](https://xfontr-monorepo.pages.dev) is the readable way in.
+[developer portal](https://xifre-dev.pages.dev/portal/) is the readable way in.
 
 | Worth reading first | Why |
 | --- | --- |
@@ -149,7 +149,7 @@ Each rule is enforced by a hook or workflow;
 - PRs get their title, assignees and project from the issue
   ([`pr-metadata.yml`](./.github/workflows/pr-metadata.yml)), path labels
   ([`pr-labeler.yml`](./.github/workflows/pr-labeler.yml)) and an advisory docs review
-  ([`docs-review.yml`](./.github/workflows/docs-review.yml)).
+  ([`pr-docs-review.yml`](./.github/workflows/pr-docs-review.yml)).
 - [`post-checkout`](./.husky/post-checkout) and [`post-merge`](./.husky/post-merge) warn when
   `pnpm-lock.yaml` changed, run [`pnpm env:sync`](./infrastructure/scripts/src/env-sync/README.md)
   when a `.env.example` did, and refresh

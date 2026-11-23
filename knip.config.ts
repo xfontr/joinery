@@ -19,13 +19,15 @@ export default {
             entry: ["mocks/server.ts", ".storybook/appConfig.ts"],
         },
         "apps/developer-portal": {
-            // The second is an Nx `runtime` input, run by path from package.json
-            entry: ["content.config.ts", "tools/lib/snapshotStamp.ts"],
+            // The second is an Nx `runtime` input, run by path from package.json; the third is read
+            // as text and inlined into <head> by nuxt.config.ts
+            entry: ["content.config.ts", "tools/lib/snapshotStamp.ts", "app/assets/siteReveal.js"],
             // Run by cloudflare/wrangler-action in the deploy workflow, never imported
             ignoreDependencies: ["wrangler"],
         },
         "apps/portfolio": {
-            entry: ["content.config.ts"],
+            // The second is read as text and inlined into <head> by nuxt.config.ts
+            entry: ["content.config.ts", "app/assets/siteReveal.js"],
             // Run by cloudflare/wrangler-action in the deploy workflow, never imported
             ignoreDependencies: ["wrangler"],
         },

@@ -8,6 +8,13 @@ await import("vue-router/unplugin");
 
 const SITE_URL = "https://xifre-dev.pages.dev";
 
+const SITE_REVEAL = readFileSync(resolve(import.meta.dirname, "app/assets/siteReveal.js"), "utf8");
+
+// The developer portal is deployed beneath this origin at `/portal/`
+const PRERENDER_PORTAL = {
+    prerender: [{ where: { href_matches: "/portal/*" }, eagerness: "moderate" }],
+};
+
 const WORK = resolve(import.meta.dirname, "content/work");
 
 const isCaseStudy = (file: string): boolean => {
@@ -144,6 +151,10 @@ export default defineNuxtConfig({
     app: {
         head: {
             link: [{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" }],
+            script: [
+                { innerHTML: SITE_REVEAL },
+                { type: "speculationrules", innerHTML: JSON.stringify(PRERENDER_PORTAL) },
+            ],
         },
     },
 });

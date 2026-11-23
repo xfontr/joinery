@@ -92,6 +92,8 @@ const createNuxtConfig = async ({
                     buildDir: join(root, "node_modules/.cache/nuxt-vitest"),
                     // nuxt-seo-utils warns on that boot about test-utils' `ssr: false` otherwise
                     site: { indexable: false },
+                    // Specs pin routes, not the path a deploy mounts the app under
+                    app: { baseURL: "/" },
                 },
             },
         },

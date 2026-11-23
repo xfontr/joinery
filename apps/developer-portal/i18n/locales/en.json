@@ -13,8 +13,9 @@
             "search": "Search pages, projects and docs…",
             "source": "Source",
             "sourceLabel": "View source on GitHub",
-            "wordmark": "joinery",
-            "personalSite": "Xifré Font's site"
+            "visitorSwitch": "Switch to the visitor view",
+            "visitorSwitchTitle": "Visitor view",
+            "wordmark": "joinery"
         },
         "menu": {
             "allProjects": "All projects",
@@ -864,6 +865,11 @@
             "title": "Supervised",
             "warning": "Meant for AI-run projects: a ticket bundles several blocks, so no one reviews each block's code by hand."
         }
+    },
+    "viewSwitch": {
+        "dev": "Dev",
+        "label": "Switch view",
+        "visitor": "Visitor"
     },
     "wiki": {
         "count": "{count} pages, read in place",

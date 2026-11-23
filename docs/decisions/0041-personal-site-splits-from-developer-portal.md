@@ -19,8 +19,8 @@ a toggle. Built out, the two views share a domain and nothing else a reader sees
 - **Two subjects.** The visitor pages are about a person: an About page, case studies, a
   `Person` identity in `schemaOrg` (`nuxt.config.ts:72`). The developer view is about a repo. Each
   front page has to explain the other one before it can say what it is.
-- **Two addresses wanted.** The visitor pages belong at the owner's name (xifre.dev), and the
-  developer view at a subdomain of it (idp.xifre.dev).
+- **One address wanted.** The visitor pages belong at the owner's name (xifre.dev), and the
+  developer view beneath it at `/portal/`, because a view transition can't cross origins (#518).
 
 ## Result
 
@@ -31,9 +31,9 @@ developer page and drops its visitor view. 0040 is superseded; 0039 mostly still
 | --- | --- |
 | A visitor view written for people who don't code, and a developer view with every feature | Yes, as two apps |
 | The visitor identity (W1–W3, W6, W8) and the developer identity (W4, W5) | Yes, one per app |
-| A plain text view one click from the rich one (W7) | No: the two link to each other across domains |
+| A plain text view one click from the rich one (W7) | No: the two link to each other across apps |
 | `/` is the visitor front page and the Overview moves to `/overview` (0040) | No: the personal site's `/` is the front page, and the portal's `/` is its Overview again |
-| The view switch on every page (0040) | No: a plain link to the other site |
+| The view switch on every page (0040) | Yes: both apps carry it, and it crosses between them (#518) |
 
 **The portal is the personal site's data source, the way WordPress is Huella Legal's.** No code
 crosses: `type:app` may depend only on `type:integration`, `type:observability` and `type:config`
@@ -91,14 +91,14 @@ the new one serves them.
 **Tripwires.**
 
 - **No domain is bought yet.** `SITE_URL` (`nuxt.config.ts:9`) and the deploy `url:` stay
-  `xfontr-monorepo.pages.dev` until it is; DNS and the purchase are the owner's step.
+  `xifre-dev.pages.dev` until it is; DNS and the purchase are the owner's step.
 - **The payload URL is per environment.** It is an env var with no default, unset locally; with it
   unset every page renders without figures or maps, the way the portal renders without `.report/`.
 - **A visitor page's links into the portal become absolute** — `PROOFS` in `index.vue`, `to=` in
   `method.vue`, `live.href: /overview` in a work entry. A relative one 404s on the new domain.
-- **The page transition between views goes.** The circle opened by switching views
-  ([README](../../apps/developer-portal/README.md) "The identity") can't cross domains; `carried()`
-  survives within each site.
+- **The circle opened by switching views needs one origin.** It is a cross-document view
+  transition, so the portal is built under `/portal/` and deployed inside the personal site's
+  output (#518); `carried()` stays within each site.
 - **The portal's e2e covers visitor pages only.** `e2e/copy.ts` `VISITOR_PAGES` moves with them;
   the portal needs its own list or its axe and SEO checks run on nothing.
 - **The portal's `/` becomes indexable again.** `routeRules["/overview/**"]` (`nuxt.config.ts:82`)

@@ -33,7 +33,7 @@ reads it from source and silently drops an imported constant.
 ## Deployment
 
 GitHub Actions builds, Netlify hosts
-([`netlify-deployment.yml`](../../.github/workflows/netlify-deployment.yml)). Netlify's own git
+([`deploy-huella-legal.yml`](../../.github/workflows/deploy-huella-legal.yml)). Netlify's own git
 builds stay off.
 
 | Trigger | Deploys |

@@ -1,11 +1,11 @@
 {
-    "syncedAt": "2026-11-23T17:54:17.371Z",
+    "syncedAt": "2026-11-23T18:16:36.166Z",
     "milestone": "Huella Legal",
     "issues": [
         {
             "number": 26,
             "title": "[SPIKE] Should @monorepo/ui be headless?",
-            "url": "https://github.com/xfontr/monorepo/issues/26",
+            "url": "https://github.com/xfontr/joinery/issues/26",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -18,12 +18,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 27,
             "title": "Prepare new Huella Legal design (Figma)",
-            "url": "https://github.com/xfontr/monorepo/issues/27",
+            "url": "https://github.com/xfontr/joinery/issues/27",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -36,12 +36,12 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": null
+            "complexity": 8
         },
         {
             "number": 185,
             "title": "[SPIKE] WP content probe and content model",
-            "url": "https://github.com/xfontr/monorepo/issues/185",
+            "url": "https://github.com/xfontr/joinery/issues/185",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -56,12 +56,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 186,
             "title": "[SPIKE] Rendering, hosting and cost",
-            "url": "https://github.com/xfontr/monorepo/issues/186",
+            "url": "https://github.com/xfontr/joinery/issues/186",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -77,12 +77,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 187,
             "title": "[SPIKE] Forms and integrations",
-            "url": "https://github.com/xfontr/monorepo/issues/187",
+            "url": "https://github.com/xfontr/joinery/issues/187",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -97,12 +97,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 188,
             "title": "[SPIKE] URLs, SEO and cutover",
-            "url": "https://github.com/xfontr/monorepo/issues/188",
+            "url": "https://github.com/xfontr/joinery/issues/188",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -117,12 +117,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 189,
             "title": "[SPIKE] E2E and visual tooling",
-            "url": "https://github.com/xfontr/monorepo/issues/189",
+            "url": "https://github.com/xfontr/joinery/issues/189",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -135,12 +135,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 192,
             "title": "Set up the test harness",
-            "url": "https://github.com/xfontr/monorepo/issues/192",
+            "url": "https://github.com/xfontr/joinery/issues/192",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -168,12 +168,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 193,
             "title": "Switch to a Spanish-only locale and wire copy keys",
-            "url": "https://github.com/xfontr/monorepo/issues/193",
+            "url": "https://github.com/xfontr/joinery/issues/193",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -186,12 +186,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 194,
             "title": "Add the content model and view-model mappers",
-            "url": "https://github.com/xfontr/monorepo/issues/194",
+            "url": "https://github.com/xfontr/joinery/issues/194",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -215,12 +215,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 195,
             "title": "Build the WP HTML pipeline",
-            "url": "https://github.com/xfontr/monorepo/issues/195",
+            "url": "https://github.com/xfontr/joinery/issues/195",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -247,12 +247,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 196,
             "title": "Promote the editorial primitives",
-            "url": "https://github.com/xfontr/monorepo/issues/196",
+            "url": "https://github.com/xfontr/joinery/issues/196",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -279,12 +279,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 197,
             "title": "Promote the ArticleCard family",
-            "url": "https://github.com/xfontr/monorepo/issues/197",
+            "url": "https://github.com/xfontr/joinery/issues/197",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -323,12 +323,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 198,
             "title": "Promote the shell and error surface",
-            "url": "https://github.com/xfontr/monorepo/issues/198",
+            "url": "https://github.com/xfontr/joinery/issues/198",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -355,12 +355,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 199,
             "title": "Promote the form kit",
-            "url": "https://github.com/xfontr/monorepo/issues/199",
+            "url": "https://github.com/xfontr/joinery/issues/199",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -390,12 +390,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 200,
             "title": "Promote the listing kit",
-            "url": "https://github.com/xfontr/monorepo/issues/200",
+            "url": "https://github.com/xfontr/joinery/issues/200",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -433,12 +433,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 201,
             "title": "Promote the article reading kit",
-            "url": "https://github.com/xfontr/monorepo/issues/201",
+            "url": "https://github.com/xfontr/joinery/issues/201",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -475,12 +475,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 208,
             "title": "Choose final design",
-            "url": "https://github.com/xfontr/monorepo/issues/208",
+            "url": "https://github.com/xfontr/joinery/issues/208",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -496,12 +496,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 212,
             "title": "Complete Grafana observability for Huella Legal and Developer Portal",
-            "url": "https://github.com/xfontr/monorepo/issues/212",
+            "url": "https://github.com/xfontr/joinery/issues/212",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -517,12 +517,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 8
         },
         {
             "number": 219,
             "title": "Add Storybook to Huella Legal",
-            "url": "https://github.com/xfontr/monorepo/issues/219",
+            "url": "https://github.com/xfontr/joinery/issues/219",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -543,12 +543,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 223,
             "title": "Review first base components",
-            "url": "https://github.com/xfontr/monorepo/issues/223",
+            "url": "https://github.com/xfontr/joinery/issues/223",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -567,12 +567,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 231,
             "title": "Audit and fix linting rules",
-            "url": "https://github.com/xfontr/monorepo/issues/231",
+            "url": "https://github.com/xfontr/joinery/issues/231",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -594,12 +594,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 8
         },
         {
             "number": 232,
             "title": "SonarQube findings",
-            "url": "https://github.com/xfontr/monorepo/issues/232",
+            "url": "https://github.com/xfontr/joinery/issues/232",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -622,12 +622,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 234,
             "title": "Review new components",
-            "url": "https://github.com/xfontr/monorepo/issues/234",
+            "url": "https://github.com/xfontr/joinery/issues/234",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -652,12 +652,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 236,
             "title": "Refresh cached content when a post changes in WordPress",
-            "url": "https://github.com/xfontr/monorepo/issues/236",
+            "url": "https://github.com/xfontr/joinery/issues/236",
             "state": "closed",
             "reason": "not_planned",
             "caps": [
@@ -670,12 +670,12 @@
             "branch": true,
             "pr": false,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 240,
             "title": "Build the article page",
-            "url": "https://github.com/xfontr/monorepo/issues/240",
+            "url": "https://github.com/xfontr/joinery/issues/240",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -703,12 +703,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 8
         },
         {
             "number": 241,
             "title": "Build the listing template",
-            "url": "https://github.com/xfontr/monorepo/issues/241",
+            "url": "https://github.com/xfontr/joinery/issues/241",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -730,12 +730,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 242,
             "title": "Wire the newsletter signup",
-            "url": "https://github.com/xfontr/monorepo/issues/242",
+            "url": "https://github.com/xfontr/joinery/issues/242",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -759,12 +759,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 243,
             "title": "Build the Publicar page",
-            "url": "https://github.com/xfontr/monorepo/issues/243",
+            "url": "https://github.com/xfontr/joinery/issues/243",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -779,12 +779,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 244,
             "title": "Set up the deploy configuration",
-            "url": "https://github.com/xfontr/monorepo/issues/244",
+            "url": "https://github.com/xfontr/joinery/issues/244",
             "state": "closed",
             "reason": "not_planned",
             "caps": [
@@ -797,12 +797,12 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 245,
             "title": "Build the interest calculator page",
-            "url": "https://github.com/xfontr/monorepo/issues/245",
+            "url": "https://github.com/xfontr/joinery/issues/245",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -818,12 +818,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 246,
             "title": "Build the home page",
-            "url": "https://github.com/xfontr/monorepo/issues/246",
+            "url": "https://github.com/xfontr/joinery/issues/246",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -840,12 +840,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 247,
             "title": "Build the Materias index and Colaboradores pages",
-            "url": "https://github.com/xfontr/monorepo/issues/247",
+            "url": "https://github.com/xfontr/joinery/issues/247",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -863,12 +863,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 248,
             "title": "Build the search page",
-            "url": "https://github.com/xfontr/monorepo/issues/248",
+            "url": "https://github.com/xfontr/joinery/issues/248",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -888,12 +888,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 249,
             "title": "Build the standard page template",
-            "url": "https://github.com/xfontr/monorepo/issues/249",
+            "url": "https://github.com/xfontr/joinery/issues/249",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -911,12 +911,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 250,
             "title": "Add SEO and metadata",
-            "url": "https://github.com/xfontr/monorepo/issues/250",
+            "url": "https://github.com/xfontr/joinery/issues/250",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -936,12 +936,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 251,
             "title": "Cut over the domain to Nuxt",
-            "url": "https://github.com/xfontr/monorepo/issues/251",
+            "url": "https://github.com/xfontr/joinery/issues/251",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -956,12 +956,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 252,
             "title": "Remove the lab scaffolding",
-            "url": "https://github.com/xfontr/monorepo/issues/252",
+            "url": "https://github.com/xfontr/joinery/issues/252",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -978,12 +978,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 253,
             "title": "Add archive search to the publications listing",
-            "url": "https://github.com/xfontr/monorepo/issues/253",
+            "url": "https://github.com/xfontr/joinery/issues/253",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1000,12 +1000,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 274,
             "title": "Huella Legal Storybook build fails to resolve #layers imports",
-            "url": "https://github.com/xfontr/monorepo/issues/274",
+            "url": "https://github.com/xfontr/joinery/issues/274",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1020,12 +1020,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 280,
             "title": "Decide whether @monorepo/observability ships a Nuxt module",
-            "url": "https://github.com/xfontr/monorepo/issues/280",
+            "url": "https://github.com/xfontr/joinery/issues/280",
             "state": "open",
             "reason": null,
             "caps": [
@@ -1038,12 +1038,12 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 283,
             "title": "Converge @monorepo/content and @monorepo/i18n on one vendor contract",
-            "url": "https://github.com/xfontr/monorepo/issues/283",
+            "url": "https://github.com/xfontr/joinery/issues/283",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1062,12 +1062,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 8
         },
         {
             "number": 284,
             "title": "Check required env at startup and let packages declare their own vendor keys",
-            "url": "https://github.com/xfontr/monorepo/issues/284",
+            "url": "https://github.com/xfontr/joinery/issues/284",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1080,12 +1080,12 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": null
+            "complexity": 8
         },
         {
             "number": 286,
             "title": "Split the Huella Legal Nuxt UI theme out of app.config.ts",
-            "url": "https://github.com/xfontr/monorepo/issues/286",
+            "url": "https://github.com/xfontr/joinery/issues/286",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1100,12 +1100,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 1
         },
         {
             "number": 299,
             "title": "Migrate the newsletter subscription from Mailchimp to Kit",
-            "url": "https://github.com/xfontr/monorepo/issues/299",
+            "url": "https://github.com/xfontr/joinery/issues/299",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1121,12 +1121,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 301,
             "title": "Decide and wire the Publicar submission form",
-            "url": "https://github.com/xfontr/monorepo/issues/301",
+            "url": "https://github.com/xfontr/joinery/issues/301",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1146,12 +1146,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 302,
             "title": "Prerender Huella Legal's stable pages and CDN-cache the rest",
-            "url": "https://github.com/xfontr/monorepo/issues/302",
+            "url": "https://github.com/xfontr/joinery/issues/302",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1168,12 +1168,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 8
         },
         {
             "number": 304,
             "title": "Improve article caching and page loading",
-            "url": "https://github.com/xfontr/monorepo/issues/304",
+            "url": "https://github.com/xfontr/joinery/issues/304",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1190,12 +1190,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 308,
             "title": "Keep huella-legal route rules in sync with its routes",
-            "url": "https://github.com/xfontr/monorepo/issues/308",
+            "url": "https://github.com/xfontr/joinery/issues/308",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1215,12 +1215,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 311,
             "title": "Send contact messages through Resend",
-            "url": "https://github.com/xfontr/monorepo/issues/311",
+            "url": "https://github.com/xfontr/joinery/issues/311",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1239,12 +1239,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 312,
             "title": "Serve featured images through Nuxt Image",
-            "url": "https://github.com/xfontr/monorepo/issues/312",
+            "url": "https://github.com/xfontr/joinery/issues/312",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1263,12 +1263,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 313,
             "title": "Build the contact page",
-            "url": "https://github.com/xfontr/monorepo/issues/313",
+            "url": "https://github.com/xfontr/joinery/issues/313",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1285,12 +1285,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 316,
             "title": "Open header search in place instead of on a separate page",
-            "url": "https://github.com/xfontr/monorepo/issues/316",
+            "url": "https://github.com/xfontr/joinery/issues/316",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1311,12 +1311,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 324,
             "title": "Implement comments",
-            "url": "https://github.com/xfontr/monorepo/issues/324",
+            "url": "https://github.com/xfontr/joinery/issues/324",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1341,12 +1341,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 8
         },
         {
             "number": 328,
             "title": "Build the about page",
-            "url": "https://github.com/xfontr/monorepo/issues/328",
+            "url": "https://github.com/xfontr/joinery/issues/328",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1363,12 +1363,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 330,
             "title": "Developer Portal deploy fails building the Huella Legal Storybook",
-            "url": "https://github.com/xfontr/monorepo/issues/330",
+            "url": "https://github.com/xfontr/joinery/issues/330",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1385,12 +1385,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 331,
             "title": "Run huella-legal Nuxt specs in a shared environment",
-            "url": "https://github.com/xfontr/monorepo/issues/331",
+            "url": "https://github.com/xfontr/joinery/issues/331",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1407,12 +1407,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 336,
             "title": "Add a cookie consent banner",
-            "url": "https://github.com/xfontr/monorepo/issues/336",
+            "url": "https://github.com/xfontr/joinery/issues/336",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1425,12 +1425,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 337,
             "title": "Add cookie consent and mock WordPress in local dev",
-            "url": "https://github.com/xfontr/monorepo/issues/337",
+            "url": "https://github.com/xfontr/joinery/issues/337",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1449,12 +1449,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 340,
             "title": "Build the bulk WordPress editor for Huella Legal",
-            "url": "https://github.com/xfontr/monorepo/issues/340",
+            "url": "https://github.com/xfontr/joinery/issues/340",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1479,12 +1479,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 13
         },
         {
             "number": 341,
             "title": "Improve mobile performance",
-            "url": "https://github.com/xfontr/monorepo/issues/341",
+            "url": "https://github.com/xfontr/joinery/issues/341",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1506,12 +1506,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 343,
             "title": "Lazily hydrated header navigation with dropdowns",
-            "url": "https://github.com/xfontr/monorepo/issues/343",
+            "url": "https://github.com/xfontr/joinery/issues/343",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1541,12 +1541,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 344,
             "title": "Save bulk run reports as the run progresses",
-            "url": "https://github.com/xfontr/monorepo/issues/344",
+            "url": "https://github.com/xfontr/joinery/issues/344",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1562,12 +1562,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 346,
             "title": "Cover the wp-editor app end to end with tests",
-            "url": "https://github.com/xfontr/monorepo/issues/346",
+            "url": "https://github.com/xfontr/joinery/issues/346",
             "state": "open",
             "reason": null,
             "caps": [
@@ -1580,12 +1580,12 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 348,
             "title": "Link to the GitHub repository from the site",
-            "url": "https://github.com/xfontr/monorepo/issues/348",
+            "url": "https://github.com/xfontr/joinery/issues/348",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1602,12 +1602,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 1
         },
         {
             "number": 349,
             "title": "Nuxt UI ships its own Spanish and English dictionaries outside our i18n",
-            "url": "https://github.com/xfontr/monorepo/issues/349",
+            "url": "https://github.com/xfontr/joinery/issues/349",
             "state": "closed",
             "reason": "not_planned",
             "caps": [
@@ -1620,12 +1620,12 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 350,
             "title": "Investigate Nuxt performance modules and a shared performance module",
-            "url": "https://github.com/xfontr/monorepo/issues/350",
+            "url": "https://github.com/xfontr/joinery/issues/350",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1640,12 +1640,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 360,
             "title": "Send typed analytics events to GA4 from huella-legal",
-            "url": "https://github.com/xfontr/monorepo/issues/360",
+            "url": "https://github.com/xfontr/joinery/issues/360",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1662,12 +1662,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 361,
             "title": "Publish an article approval and editing guide",
-            "url": "https://github.com/xfontr/monorepo/issues/361",
+            "url": "https://github.com/xfontr/joinery/issues/361",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1684,12 +1684,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 362,
             "title": "Harden huella-legal and the pipeline against abuse",
-            "url": "https://github.com/xfontr/monorepo/issues/362",
+            "url": "https://github.com/xfontr/joinery/issues/362",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1709,12 +1709,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 8
         },
         {
             "number": 371,
             "title": "Verify the design system across the app",
-            "url": "https://github.com/xfontr/monorepo/issues/371",
+            "url": "https://github.com/xfontr/joinery/issues/371",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1733,12 +1733,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 373,
             "title": "chore(huella-legal): switch image provider and add cloudflare mcp",
-            "url": "https://github.com/xfontr/monorepo/issues/373",
+            "url": "https://github.com/xfontr/joinery/issues/373",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1753,12 +1753,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 1
         },
         {
             "number": 375,
             "title": "Content reads crash with an unreadable error when the vendor answers with HTML",
-            "url": "https://github.com/xfontr/monorepo/issues/375",
+            "url": "https://github.com/xfontr/joinery/issues/375",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1773,12 +1773,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 377,
             "title": "Move Huella Legal back to Netlify",
-            "url": "https://github.com/xfontr/monorepo/issues/377",
+            "url": "https://github.com/xfontr/joinery/issues/377",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1798,12 +1798,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 380,
             "title": "Read the WordPress host from env vars",
-            "url": "https://github.com/xfontr/monorepo/issues/380",
+            "url": "https://github.com/xfontr/joinery/issues/380",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1821,12 +1821,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 383,
             "title": "Build Huella Legal in GitHub Actions instead of Netlify",
-            "url": "https://github.com/xfontr/monorepo/issues/383",
+            "url": "https://github.com/xfontr/joinery/issues/383",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1846,12 +1846,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 385,
             "title": "Password-protect Huella Legal previews",
-            "url": "https://github.com/xfontr/monorepo/issues/385",
+            "url": "https://github.com/xfontr/joinery/issues/385",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1867,12 +1867,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 390,
             "title": "Warn readers when form replies are slower than usual",
-            "url": "https://github.com/xfontr/monorepo/issues/390",
+            "url": "https://github.com/xfontr/joinery/issues/390",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1887,12 +1887,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 2
         },
         {
             "number": 392,
             "title": "Polish post-deploy details",
-            "url": "https://github.com/xfontr/monorepo/issues/392",
+            "url": "https://github.com/xfontr/joinery/issues/392",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1910,12 +1910,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 3
         },
         {
             "number": 400,
             "title": "Add a page for readers who confirmed their newsletter subscription",
-            "url": "https://github.com/xfontr/monorepo/issues/400",
+            "url": "https://github.com/xfontr/joinery/issues/400",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1930,12 +1930,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 1
         },
         {
             "number": 402,
             "title": "Cut production TTFB on articles and remove runtime detours",
-            "url": "https://github.com/xfontr/monorepo/issues/402",
+            "url": "https://github.com/xfontr/joinery/issues/402",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -1950,12 +1950,12 @@
             "branch": false,
             "pr": true,
             "owner": false,
-            "complexity": null
+            "complexity": 5
         },
         {
             "number": 412,
             "title": "Give Netlify and WordPress one seam each and unify the two searches",
-            "url": "https://github.com/xfontr/monorepo/issues/412",
+            "url": "https://github.com/xfontr/joinery/issues/412",
             "state": "open",
             "reason": null,
             "caps": [
@@ -1968,7 +1968,7 @@
             "branch": false,
             "pr": false,
             "owner": false,
-            "complexity": null
+            "complexity": 8
         }
     ],
     "noMilestone": []

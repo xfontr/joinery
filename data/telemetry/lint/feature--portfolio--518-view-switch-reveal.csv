@@ -1,0 +1,15 @@
+at,rule,project,severity,fixable,caller
+2026-11-23,format/prettier,scripts,error,1,claude-code
+2026-11-23,format/prettier,scripts,error,1,claude-code
+2026-11-23,@intlify/vue-i18n/no-missing-keys,developer-portal,error,0,claude-code
+2026-11-23,@intlify/vue-i18n/no-missing-keys,developer-portal,error,0,claude-code
+2026-11-23,format/prettier,developer-portal,error,1,claude-code
+2026-11-23,@intlify/vue-i18n/no-missing-keys,developer-portal,error,0,claude-code
+2026-11-23,@intlify/vue-i18n/no-missing-keys,developer-portal,error,0,claude-code
+2026-11-23,@intlify/vue-i18n/no-missing-keys,developer-portal,error,0,claude-code
+2026-11-23,@intlify/vue-i18n/no-missing-keys,portfolio,error,0,claude-code
+2026-11-23,format/prettier,portfolio,error,1,claude-code
+2026-11-23,@intlify/vue-i18n/no-missing-keys,portfolio,error,0,claude-code
+2026-11-23,format/prettier,portfolio,error,1,claude-code
+2026-11-23,monorepo/no-template-call,portfolio,error,0,claude-code
+2026-11-23,@intlify/vue-i18n/no-missing-keys,portfolio,error,0,claude-code

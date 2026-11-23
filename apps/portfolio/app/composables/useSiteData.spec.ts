@@ -44,7 +44,7 @@ describe("useSiteData", () => {
 
         const [benchmark] = await read(useBenchmarks);
 
-        expect(benchmark?.screenshot).toBe("https://portal.test/shots/rauno-me.webp");
+        expect(benchmark?.screenshot).toBe(portalUrl("/shots/rauno-me.webp"));
     });
 
     // A deploy that silently drops every figure is worse than one that fails

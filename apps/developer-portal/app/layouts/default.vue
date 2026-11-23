@@ -39,15 +39,16 @@
 
             <template #default="{ collapsed }">
                 <UButton
+                    v-if="collapsed"
                     :to="appConfig.personalSite"
-                    icon="i-lucide-arrow-up-right"
+                    icon="i-lucide-arrow-left-right"
                     color="neutral"
                     variant="ghost"
-                    size="sm"
-                    :class="collapsed ? 'mx-auto text-muted' : 'self-start text-muted'"
-                    :label="collapsed ? undefined : $t('app.dev.personalSite')"
-                    :aria-label="collapsed ? $t('app.dev.personalSite') : undefined"
+                    class="mx-auto text-muted"
+                    :aria-label="$t('app.dev.visitorSwitch')"
+                    :title="$t('app.dev.visitorSwitchTitle')"
                 />
+                <ViewSwitch v-else class="self-start" />
 
                 <UDashboardSearchButton
                     :collapsed

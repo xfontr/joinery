@@ -71,7 +71,15 @@ button:not(:disabled) {
     }
 }
 
-/* Page changes; `pageTransition.client.ts` sets `data-page-transition` for the length of each one */
+/* Page changes; `pageTransition.client.ts` and `siteReveal.js` set `data-page-transition` for each */
+@view-transition {
+    navigation: auto;
+}
+
+[data-view-switch] [aria-current="true"] {
+    view-transition-name: view-switch-current;
+}
+
 [data-identity] > header {
     view-transition-name: visitor-header;
 }
@@ -81,12 +89,20 @@ button:not(:disabled) {
     animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
-:root[data-page-transition]::view-transition-old(root) {
+:root[data-page-transition="rise"]::view-transition-old(root) {
     animation: page-out 0.2s ease-in both;
 }
 
-:root[data-page-transition]::view-transition-new(root) {
+:root[data-page-transition="rise"]::view-transition-new(root) {
     animation: page-in 0.4s cubic-bezier(0.2, 0, 0, 1) 0.08s both;
+}
+
+:root[data-page-transition="mode"]::view-transition-old(root) {
+    animation: none;
+}
+
+:root[data-page-transition="mode"]::view-transition-new(root) {
+    animation: page-reveal 0.7s cubic-bezier(0.7, 0, 0.2, 1) both;
 }
 
 @keyframes page-out {
@@ -100,6 +116,16 @@ button:not(:disabled) {
     from {
         opacity: 0;
         translate: 0 1.5rem;
+    }
+}
+
+@keyframes page-reveal {
+    from {
+        clip-path: circle(0 at var(--reveal-x) var(--reveal-y));
+    }
+
+    to {
+        clip-path: circle(var(--reveal-r) at var(--reveal-x) var(--reveal-y));
     }
 }
 

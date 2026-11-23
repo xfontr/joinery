@@ -122,7 +122,7 @@ describe("front page", () => {
         await wrapper.find("article").trigger("pointerenter", { pointerType: "mouse" });
 
         expect(wrapper.get("[data-cursor-preview] img").attributes("src")).toBe(
-            "https://portal.test/shots/rauno-me.webp",
+            portalUrl("/shots/rauno-me.webp"),
         );
     });
 

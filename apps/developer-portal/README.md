@@ -122,17 +122,22 @@ needs a token, so it isn't shown.
 
 ## The deployed site is a snapshot
 
-[`developer-portal-deploy.yml`](../../.github/workflows/developer-portal-deploy.yml) publishes to
-the `xfontr-monorepo` Cloudflare Pages project, [xfontr-monorepo.pages.dev](https://xfontr-monorepo.pages.dev),
-on every push to `master` or by hand: `pnpm test:coverage`, then `collect`, then `build-static`,
-then `wrangler pages deploy` with the `CLOUDFLARE_API_TOKEN` repo secret. Cloudflare only hosts:
-the build runs in Actions, and the site has no Functions. huella-legal's Storybook is built into
-the same output under `/huella-legal-storybook/`.
+[`deploy-developer-portal.yml`](../../.github/workflows/deploy-developer-portal.yml) runs on every
+push to `master` or by hand: `pnpm test:coverage`, then `collect`, then `build-static`, then it
+uploads the build as the `developer-portal-site` artifact. The
+[portfolio's deploy](../portfolio/README.md#deploy) publishes that artifact at
+[xifre-dev.pages.dev/portal/](https://xifre-dev.pages.dev/portal/), so the portal goes live only when
+that run succeeds. Cloudflare only hosts: the build runs in Actions, and the site has no Functions.
+huella-legal's Storybook is built into the same output under `/huella-legal-storybook/`.
+
+- The old `xfontr-monorepo` Pages project gets only a `_redirects` file, sending every path to the
+  same path under `/portal/`.
 
 - Every page is as old as the last deploy, except issues (live) and workflows (as
   old as the last committed `pnpm workflow:sync`).
-- The site is served from the root of `SITE_URL` in [`nuxt.config.ts`](./nuxt.config.ts), which
-  canonical URLs are built on.
+- The site is served from `/portal/` under `SITE_URL` in [`nuxt.config.ts`](./nuxt.config.ts),
+  the personal site's origin, so the view switch can animate between the two. Canonical URLs are
+  built on both.
 - `NUXT_PUBLIC_REPO_URL` is baked in at build time, derived by the workflow.
 - Cloudflare Pages rejects any file over 25 MiB, which is why the Architecture map is drawn from
   `projects.json` rather than Nx's exported graph viewer.

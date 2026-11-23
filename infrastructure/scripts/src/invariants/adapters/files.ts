@@ -4,6 +4,7 @@ import { at } from "../../shared/adapters/git.ts";
 import { PROJECT_ROOTS } from "../../shared/domain/layout.ts";
 import type { PackageSource } from "../domain/contracts.ts";
 import type { NuxtSources } from "../domain/sides.ts";
+import type { WorkflowSource } from "../domain/workflows.ts";
 
 const GENERATED = new Set([".nuxt", ".output", "node_modules", "coverage", "dist", "public"]);
 
@@ -87,3 +88,8 @@ export const readNuxtSources = (): NuxtSources[] =>
                 .map((path) => ({ path, text: readFileSync(join(root, path), "utf8") }));
             return { app, files };
         });
+
+export const readWorkflows = (): WorkflowSource[] =>
+    readdirSync(at(".github/workflows"))
+        .filter((file) => /\.ya?ml$/.test(file))
+        .map((file) => ({ file, text: readFileSync(at(".github/workflows", file), "utf8") }));

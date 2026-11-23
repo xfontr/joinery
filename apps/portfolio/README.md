@@ -41,10 +41,13 @@ Every count, map and benchmark comes from the portal's `/embed/data.json`, fetch
 
 ## Deploy
 
-[`portfolio-deploy.yml`](../../.github/workflows/portfolio-deploy.yml) runs after each successful portal
-deploy, or by hand. It prerenders with the payload URL set and publishes to the `xifre-dev` Cloudflare
-Pages project with `wrangler pages deploy`. Cloudflare only hosts.
+[`deploy-portfolio.yml`](../../.github/workflows/deploy-portfolio.yml) runs after each successful portal
+deploy, or by hand. It downloads that run's `developer-portal-site` artifact, serves it on
+`localhost` so the prerender can fetch `/embed/data.json`, copies it into `.output/public/portal/`,
+and publishes both to the `xifre-dev` Cloudflare Pages project with `wrangler pages deploy`.
+Cloudflare only hosts.
 
+- A run by hand takes the artifact from the portal's last successful `master` deploy.
 - The site is served from the root of `SITE_URL` in [`nuxt.config.ts`](./nuxt.config.ts), which
   canonical, sitemap and share-image URLs are built on.
 - `NUXT_PUBLIC_REPO_URL` is baked in at build time, derived by the workflow.
@@ -59,6 +62,7 @@ Pages project with `wrangler pages deploy`. Cloudflare only hosts.
 | First paint | Styles inlined; no script preload or chunk prefetch; links prefetch on interaction |
 | Hydration | Deferred to `load` or the first input by [`deferHydration.ts`](./server/plugins/deferHydration.ts), copied from huella-legal; a click made before then is replayed |
 | Page changes | Pages rise in; a title or screenshot named with `carried()` flies to its namesake on the next page |
+| Visitor ↔ Dev | The view switch reveals the other app in a circle from the click, a cross-document view transition run by [`siteReveal.js`](./app/assets/siteReveal.js); it needs the portal on this origin at `/portal/`, and hovering the switch prerenders it |
 
 ## Boundaries
 
