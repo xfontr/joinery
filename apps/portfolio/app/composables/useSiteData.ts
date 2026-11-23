@@ -27,13 +27,10 @@ const useSiteData = async <T>(key: string, pick: (data: SiteData) => T) => {
     return result;
 };
 
-export const useBenchmarks = () => {
-    const { dataUrl } = useRuntimeConfig().public;
-
-    return useSiteData("benchmarks", ({ benchmarks }) =>
-        benchmarks.map((item) => ({ ...item, screenshot: new URL(item.screenshot, dataUrl).href })),
+export const useBenchmarks = () =>
+    useSiteData("benchmarks", ({ benchmarks }) =>
+        benchmarks.map((item) => ({ ...item, screenshot: portalUrl(item.screenshot) })),
     );
-};
 
 export const useDecisionReports = () => useSiteData("decisions", ({ decisions }) => decisions);
 

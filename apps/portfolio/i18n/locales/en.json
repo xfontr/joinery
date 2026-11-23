@@ -16,8 +16,7 @@
                 "workflows": "Project maps"
             },
             "navLabel": "Main",
-            "wordmark": "joinery",
-            "portal": "Developer portal"
+            "wordmark": "joinery"
         }
     },
     "index": {
@@ -378,5 +377,10 @@
             "retry": "Try again",
             "home": "Front page"
         }
+    },
+    "viewSwitch": {
+        "dev": "Dev",
+        "label": "Switch view",
+        "visitor": "Visitor"
     }
 }

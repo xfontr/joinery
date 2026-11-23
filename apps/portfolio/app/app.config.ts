@@ -1,5 +1,5 @@
 export default defineAppConfig({
-    portalUrl: "https://xfontr-monorepo.pages.dev",
+    portalUrl: "https://xifre-dev.pages.dev/portal",
 
     ui: {
         container: {
