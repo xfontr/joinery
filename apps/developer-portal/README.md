@@ -122,7 +122,7 @@ needs a token, so it isn't shown.
 
 ## The deployed site is a snapshot
 
-[`developer-portal-deploy.yml`](../../.github/workflows/developer-portal-deploy.yml) publishes to
+[`deploy-developer-portal.yml`](../../.github/workflows/deploy-developer-portal.yml) publishes to
 the `xfontr-monorepo` Cloudflare Pages project, [xfontr-monorepo.pages.dev](https://xfontr-monorepo.pages.dev),
 on every push to `master` or by hand: `pnpm test:coverage`, then `collect`, then `build-static`,
 then `wrangler pages deploy` with the `CLOUDFLARE_API_TOKEN` repo secret. Cloudflare only hosts:
@@ -131,8 +131,9 @@ the same output under `/huella-legal-storybook/`.
 
 - Every page is as old as the last deploy, except issues (live) and workflows (as
   old as the last committed `pnpm workflow:sync`).
-- The site is served from the root of `SITE_URL` in [`nuxt.config.ts`](./nuxt.config.ts), which
-  canonical URLs are built on.
+- The site is served from `/portal/` under `SITE_URL` in [`nuxt.config.ts`](./nuxt.config.ts),
+  the personal site's origin, so the view switch can animate between the two. Canonical URLs are
+  built on both.
 - `NUXT_PUBLIC_REPO_URL` is baked in at build time, derived by the workflow.
 - Cloudflare Pages rejects any file over 25 MiB, which is why the Architecture map is drawn from
   `projects.json` rather than Nx's exported graph viewer.

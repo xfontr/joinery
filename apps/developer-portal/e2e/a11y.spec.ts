@@ -8,7 +8,7 @@ for (const colorScheme of ["light", "dark"] as const) {
 
         test(`the 404 page in ${colorScheme} has no WCAG AA violations`, async ({ page }) => {
             await page.emulateMedia({ colorScheme });
-            await page.goto("/no-such-page/");
+            await page.goto("/portal/no-such-page/");
 
             expect(await axeViolations(page)).toEqual([]);
         });

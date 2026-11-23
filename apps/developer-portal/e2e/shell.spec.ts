@@ -2,7 +2,7 @@ import { expect, test } from "@joinery/configs/playwright/utils/test";
 import { t } from "./copy.ts";
 
 test("the skip link is the first stop and moves focus into the main landmark", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/portal/");
 
     await page.keyboard.press("Tab");
 
@@ -24,7 +24,7 @@ test("the skip link is the first stop and moves focus into the main landmark", a
 });
 
 test("the page states its language, so a screen reader reads it in English", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/portal/");
 
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
 });

@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 // `@nuxtjs/i18n` imports this too, and loading both at once trips a Node ESM-loader assert
@@ -5,7 +6,21 @@ await import("vue-router/unplugin");
 
 const WORKSPACE_ROOT = resolve(import.meta.dirname, "../..");
 
-const SITE_URL = "https://xfontr-monorepo.pages.dev";
+const SITE_URL = "https://xifre-dev.pages.dev";
+
+// Served beneath the personal site's origin, since a view transition can't cross origins
+const BASE_URL = "/portal/";
+
+const SITE_REVEAL = readFileSync(resolve(import.meta.dirname, "app/assets/siteReveal.js"), "utf8");
+
+const PRERENDER_PERSONAL_SITE = {
+    prerender: [
+        {
+            where: { and: [{ href_matches: "/*" }, { not: { href_matches: `${BASE_URL}*` } }] },
+            eagerness: "moderate",
+        },
+    ],
+};
 
 export default defineNuxtConfig({
     compatibilityDate: "2025-01-15",
@@ -97,8 +112,13 @@ export default defineNuxtConfig({
     },
 
     app: {
+        baseURL: BASE_URL,
         head: {
-            link: [{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" }],
+            link: [{ rel: "icon", type: "image/svg+xml", href: `${BASE_URL}favicon.svg` }],
+            script: [
+                { innerHTML: SITE_REVEAL },
+                { type: "speculationrules", innerHTML: JSON.stringify(PRERENDER_PERSONAL_SITE) },
+            ],
         },
     },
 });
