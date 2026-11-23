@@ -80,7 +80,8 @@ button:not(:disabled) {
     view-transition-name: view-switch-current;
 }
 
-[data-identity] > header {
+/* Unnamed during the reveal, which clips only the root, so it can't fade in ahead of the circle */
+:root:not([data-page-transition="mode"]) [data-identity] > header {
     view-transition-name: visitor-header;
 }
 
