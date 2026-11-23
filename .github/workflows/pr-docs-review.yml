@@ -1,4 +1,4 @@
-name: Focused documentation review
+name: PR · Docs review
 
 on:
     pull_request:
@@ -9,7 +9,7 @@ permissions:
     pull-requests: write
 
 concurrency:
-    group: docs-review-${{ github.repository }}-${{ github.event.pull_request.number }}
+    group: pr-docs-review-${{ github.repository }}-${{ github.event.pull_request.number }}
     cancel-in-progress: true
 
 jobs:

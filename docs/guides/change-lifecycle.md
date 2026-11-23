@@ -44,7 +44,7 @@ the PR, arms auto-merge and waits for checks.
 - [`pr-metadata.yml`](../../.github/workflows/pr-metadata.yml) copies the issue's title, assignees and
   project onto the PR. Needs `PROJECTS_TOKEN`; no-ops on forks.
 - [`pr-labeler.yml`](../../.github/workflows/pr-labeler.yml) adds path labels, and
-  [`docs-review.yml`](../../.github/workflows/docs-review.yml) posts an advisory docs review.
+  [`pr-docs-review.yml`](../../.github/workflows/pr-docs-review.yml) posts an advisory docs review.
 
 ## 6. CI
 

@@ -1,4 +1,4 @@
-name: Developer Portal deploy
+name: Deploy · Developer portal
 
 on:
     push:
@@ -10,7 +10,7 @@ permissions:
 
 # Queued rather than cancelled, so a run that is already publishing is allowed to finish.
 concurrency:
-    group: developer-portal-deploy
+    group: deploy-developer-portal
     cancel-in-progress: false
 
 jobs:
@@ -59,9 +59,3 @@ jobs:
                   # The action `pnpm add`s a missing wrangler at the workspace root, which pnpm refuses.
                   workingDirectory: apps/developer-portal
                   command: pages deploy .output/public --project-name=xfontr-monorepo --branch=master
-
-    portfolio:
-        needs: deploy
-        uses: ./.github/workflows/portfolio-deploy.yml
-        secrets:
-            CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

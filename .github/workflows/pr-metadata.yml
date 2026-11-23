@@ -1,4 +1,4 @@
-name: PR metadata
+name: PR · Metadata
 
 # Fills in what GitHub's own PR defaults leave crappy: title, assignees and
 # project are copied from the issue the branch is linked to (see
