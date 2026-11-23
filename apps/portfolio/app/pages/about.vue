@@ -2,6 +2,10 @@
     <PageHero :title="$t('about.title')" :mark="$t('about.titleMark')" :lead="$t('about.lead')">
         <p class="max-w-xl text-base text-muted">
             {{ $t("about.intro.start") }}
+            <ULink :to="portal" class="underline underline-offset-4">
+                {{ $t("about.developerView") }}
+            </ULink>
+            {{ $t("about.intro.middle") }}
             <ULink :to="SPOTIFY_POST" target="_blank" class="underline underline-offset-4">
                 {{ $t("about.post") }}
             </ULink>
@@ -39,8 +43,10 @@ const STORY_LINKS = {
         "reports its own usage": portalUrl("/telemetry"),
     },
     workflows: { "workflow templates": "/agentic-workflows" },
-    apps: {},
+    apps: { "Huella Legal": "/work/huella-legal" },
 } as const satisfies Record<(typeof STORY)[number], Record<string, string>>;
+
+const portal = portalUrl("/");
 
 const { t } = useI18n();
 useSeoMeta({ title: t("about.head"), description: t("about.lead") });

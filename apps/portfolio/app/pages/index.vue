@@ -4,10 +4,9 @@
             {{ $t("index.title") }} <mark>{{ $t("index.titleMark") }}</mark>
         </h1>
         <p class="max-w-2xl text-2xl text-highlighted">{{ $t("index.lead") }}</p>
-        <p class="max-w-xl text-base text-muted">{{ $t("index.intro") }}</p>
     </UContainer>
 
-    <UContainer as="section" class="pb-20">
+    <UContainer as="section" @pointerenter.once="warm">
         <p class="pb-6 font-mono text-xs text-muted uppercase">{{ $t("index.rules.label") }}</p>
         <article
             v-for="(item, index) in principles"
@@ -19,7 +18,7 @@
             <p class="font-display text-title text-primary md:col-span-2">{{ index + 1 }}</p>
             <div class="flex flex-col gap-4 md:col-span-7">
                 <h2 class="font-display text-section text-highlighted" :style="item.carry">
-                    {{ $t(`index.rules.${item.id}.title`) }}
+                    {{ $t(`rules.${item.id}.title`) }}
                 </h2>
                 <p class="max-w-xl text-lg">{{ $t(`index.rules.${item.id}.line`) }}</p>
             </div>
@@ -103,6 +102,15 @@ const example = computed(() => decisions.value.find((report) => report.id === DE
 const hovered = ref<RuleId | null>(null);
 const hover = (id: RuleId, event: PointerEvent) => {
     if (event.pointerType === "mouse") hovered.value = id;
+};
+
+/** Fetches and decodes the screenshots rule 1 previews before its card first opens. */
+const warm = () => {
+    for (const item of benchmarks.value.slice(0, 3)) {
+        const image = new Image();
+        image.src = item.screenshot;
+        void image.decode().catch(() => undefined);
+    }
 };
 
 const counted = computed((): Partial<Record<RuleId, string>> => {

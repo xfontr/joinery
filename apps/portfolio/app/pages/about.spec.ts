@@ -23,11 +23,11 @@ describe("about page", () => {
     it("links LinkedIn, GitHub and the repository when one is configured", async () => {
         useRuntimeConfig().public.repoUrl = REPO;
 
-        expect(await hrefs()).toEqual([POST, LINKEDIN, GITHUB, REPO]);
+        expect(await hrefs()).toEqual([portalUrl("/"), POST, LINKEDIN, GITHUB, REPO]);
     });
 
     it("leaves the repository out rather than linking nowhere when none is configured", async () => {
-        expect(await hrefs()).toEqual([POST, LINKEDIN, GITHUB]);
+        expect(await hrefs()).toEqual([portalUrl("/"), POST, LINKEDIN, GITHUB]);
     });
 
     it("keeps every linked phrase in the copy, so editing one can't drop its link unnoticed", async () => {
@@ -37,6 +37,7 @@ describe("about page", () => {
             expect.arrayContaining([
                 ...["/graph", "/decisions", "/telemetry"].map(portalUrl),
                 "/agentic-workflows",
+                "/work/huella-legal",
             ]),
         );
     });
