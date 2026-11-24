@@ -28,7 +28,7 @@ packages/
     i18n/             @joinery/i18n — translations core + a Nuxt module
     observability/    @joinery/observability — Grafana Faro in the browser, OpenTelemetry on the server
 apps/
-    developer-portal/ @joinery/developer-portal — the repository's public portal/front door over its docs, projects, architecture and engineering health
+    developer-portal/ @joinery/developer-portal — the repository's developer portal over its docs, projects, architecture, workflows and engineering health
     huella-legal/     @joinery/huella-legal — Huella Legal, a WIP law blog redesign (Nuxt 4)
     marina-roustan/   @joinery/marina-roustan — Marina Roustan, a website rebuild (Nuxt 4)
     portfolio/        @joinery/portfolio — Xifré Font's personal site: the method, the work and the project maps

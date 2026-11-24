@@ -29,6 +29,9 @@ See [README.md](./README.md) for what each page reads, the snapshot and the depl
 - **`tools/lib/invariants.ts` reads `pnpm invariants:check --json`** and adds the audit, decision
   and workflow shape checks. A repo rule belongs in the
   [invariants gate](../../infrastructure/scripts/src/invariants/README.md), not here.
+- **Visitor pages and their copy live in [`apps/portfolio`](../portfolio/README.md).** This app
+  is the developer view only; a figure the visitor side needs goes in the
+  [`/embed/data.json`](./README.md#the-payload) payload, never in a page here or an import there.
 - **`build` delegates to `build-static`.** CI builds the prerendered artifact that deploys; don't
   point `build` back at the SSR build, which verifies a mode nothing runs.
 - Tagged `type:app`. It depends on `@joinery/configs` only today, and nothing may depend on it.

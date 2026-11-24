@@ -1,6 +1,6 @@
 {
   "name": "@joinery/developer-portal",
-  "description": "the repository's public portal/front door over its docs, projects, architecture and engineering health",
+  "description": "the repository's developer portal over its docs, projects, architecture, workflows and engineering health",
   "private": true,
   "type": "module",
   "imports": {
