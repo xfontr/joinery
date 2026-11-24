@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-23T18:16:32.956Z",
+    "syncedAt": "2026-11-24T11:33:06.482Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -222,13 +222,13 @@
             "number": 489,
             "title": "Docs brought up to date",
             "url": "https://github.com/xfontr/joinery/issues/489",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "docs-update"
             ],
             "createdAt": "2026-11-18T18:58:25Z",
-            "closedAt": null,
+            "closedAt": "2026-11-24T11:33:06.482Z",
             "activity": [],
             "blockedBy": [
                 {
@@ -252,7 +252,7 @@
                     "closedAt": "2026-11-19T09:12:24Z"
                 }
             ],
-            "branch": false,
+            "branch": true,
             "pr": false,
             "owner": false,
             "complexity": 2
@@ -281,8 +281,8 @@
             "blockedBy": [
                 {
                     "number": 489,
-                    "open": true,
-                    "closedAt": null
+                    "open": false,
+                    "closedAt": "2026-11-24T11:33:06.482Z"
                 },
                 {
                     "number": 504,
