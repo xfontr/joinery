@@ -120,6 +120,12 @@ button:not(:disabled) {
     }
 }
 
+@media (prefers-reduced-motion: no-preference) {
+    [data-menu-link] {
+        animation: page-in 0.4s cubic-bezier(0.2, 0, 0, 1) calc(var(--order) * 0.05s + 0.1s) both;
+    }
+}
+
 @keyframes page-reveal {
     from {
         clip-path: circle(0 at var(--reveal-x) var(--reveal-y));

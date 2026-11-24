@@ -9,6 +9,11 @@
                 "title": "Want everything?",
                 "titleMark": "Open the developer view."
             },
+            "menu": {
+                "close": "Close",
+                "open": "Menu",
+                "title": "Site menu"
+            },
             "nav": {
                 "about": "About",
                 "method": "Method",
