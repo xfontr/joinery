@@ -26,3 +26,6 @@ settled:
     status: done
     on: 2026-11-15
     note: Easy choices, not much to explain. Check ADR
+  lab-review:
+    status: skipped
+    note: Added to the template after the design was approved in #465.

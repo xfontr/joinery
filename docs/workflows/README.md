@@ -36,9 +36,9 @@ data/workflows/
 
 | Template | For | Blocks with defaults on |
 | --- | --- | --- |
-| [`website-rebuild`](../../data/workflows/templates/website-rebuild.yaml) | An existing site, usually WordPress, rebuilt on the same brand: discovery spikes, migration, redirects and a domain cutover | 41 |
-| [`new-website`](../../data/workflows/templates/new-website.yaml) | A site started from nothing: no audit, migration, redirects or cutover, but a brand, a content model and the launch copy to create | 33 |
-| [`custom`](../../data/workflows/templates/custom.yaml) | Anything no template fits, such as a developer tool, a package or an internal feature: three stages, five recommended blocks (scope sign-off, 404 and error pages, build review, docs, go live) the project switches off where they don't fit, and the rest of the map in its `extras`, drafted with the `project-workflow` skill | 5 |
+| [`website-rebuild`](../../data/workflows/templates/website-rebuild.yaml) | An existing site, usually WordPress, rebuilt on the same brand: discovery spikes, migration, redirects and a domain cutover | 43 |
+| [`new-website`](../../data/workflows/templates/new-website.yaml) | A site started from nothing: no audit, migration, redirects or cutover, but a brand, a content model and the launch copy to create | 35 |
+| [`custom`](../../data/workflows/templates/custom.yaml) | Anything no template fits, such as a developer tool, a package or an internal feature: three stages, six recommended blocks (scope sign-off, 404 and error pages, build review, AI design and copy review, docs, go live) the project switches off where they don't fit, and the rest of the map in its `extras`, drafted with the `project-workflow` skill | 6 |
 
 ## Three kinds of block
 
@@ -97,9 +97,9 @@ finishes all of them. The size locks once the milestone holds one live `cap:` ti
 
 | `ticketSize` | Who checks the code | A ticket holds | `new-website` | `website-rebuild` |
 | --- | --- | --- | --- | --- |
-| `block` (the default) | A person reviews every PR | One block, or each of its suggested tickets | 35 | 43 |
-| `supervised` | AI builds it; each ticket runs plan, checks and adversarial review | A stage's build blocks, up to 13 SP | 31 | 36 |
-| `fast` | Nobody closely; internal tools and experiments | Up to 21 SP, with the spikes together | 26 | 26 |
+| `block` (the default) | A person reviews every PR | One block, or each of its suggested tickets | 37 | 45 |
+| `supervised` | AI builds it; each ticket runs plan, checks and adversarial review | A stage's build blocks, up to 13 SP | 33 | 38 |
+| `fast` | Nobody closely; internal tools and experiments | Up to 21 SP, with the spikes together | 28 | 27 |
 
 Counts are tickets with each template's defaults on. Widths are `TICKET_WIDTH` in both copies of
 `bundlesOf`. Merging never breaks these:

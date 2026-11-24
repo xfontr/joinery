@@ -248,12 +248,23 @@ capabilities:
       - text: Figma, then Penpot, then code — three tools in a week. Design in code from the start.
         issues: [27]
 
+  - id: lab-review
+    stage: design
+    title: Lab design review
+    complexity: 3
+    dependsOn: [design-lab]
+    summary: Every lab direction run through Impeccable before you pick one, so the choice is made with each direction's AI tells already named.
+    reuse: { plan: method, from: docs/decisions/0043-impeccable-for-ai-made-designs.md }
+    doneWhen:
+      - The Impeccable detector has scanned every lab page at 390 and 1280 px, and an Impeccable critique of each direction is done.
+      - The findings are listed on the design approval ticket for you to accept or drop; the agent changes nothing in the lab on its own.
+
   - id: design-approval
     stage: design
     title: Design approval
     complexity: 1
     kind: owner
-    dependsOn: [design-lab]
+    dependsOn: [design-lab, lab-review]
     summary: You pick one direction per page, from lab screenshots at 390, 768 and 1280 px.
     reuse: { plan: new }
     doneWhen:
@@ -694,6 +705,18 @@ capabilities:
       - text: All of it came as one ticket on cutover day.
         issues: [362]
 
+  - id: ai-review
+    stage: hardening
+    title: AI design and copy review
+    complexity: 5
+    dependsOn: [build-review]
+    summary: Every page through Impeccable for design and no-ai-slop for copy, once the build review's changes are in.
+    reuse: { plan: method, from: docs/decisions/0043-impeccable-for-ai-made-designs.md }
+    doneWhen:
+      - The Impeccable detector has scanned every page at 390 and 1280 px, and an Impeccable critique of each page template is done.
+      - The design findings are listed for you; only the ones you accept are fixed or filed, and type, colour and layout never change without your pick.
+      - Every string the build wrote, the locale files and any page written in code, has been through no-ai-slop's detect mode, and each pattern it names is listed with its line for you to accept or keep. Migrated content is the owner's and stays out.
+
   - id: seo
     stage: hardening
     title: SEO and feeds
@@ -752,7 +775,7 @@ capabilities:
     title: Go-live approval
     complexity: 1
     kind: owner
-    dependsOn: [build-review, seo, performance, security, accessibility, legacy-redirects, quality-sweep, env-discipline, images, observability, content-migration, search, newsletter, contact-form, comments, consent-analytics, i18n]
+    dependsOn: [build-review, ai-review, seo, performance, security, accessibility, legacy-redirects, quality-sweep, env-discipline, images, observability, content-migration, search, newsletter, contact-form, comments, consent-analytics, i18n]
     summary: You approve the cutover once every switched-on feature is done and a preview deploy passes the field performance, axe, security-header and SEO checks.
     reuse: { plan: new }
     doneWhen:
