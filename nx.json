@@ -89,7 +89,6 @@
             "cache": true
         },
         "test:coverage": {
-            "parallelism": false,
             "inputs": [
                 "default",
                 "^production",
