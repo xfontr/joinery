@@ -31,10 +31,16 @@ jobs:
 
             # The collector reads coverage that only a whole-workspace run writes. Thresholds gate PRs,
             # so one project's dip never stops the portal from deploying.
+            # Restore only: CI saves master's cache for the same commit
+            - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+              with:
+                  path: .nx/cache
+                  key: nx-${{ github.sha }}
+                  restore-keys: nx-
+
             - run: pnpm test:coverage
               env:
                   COVERAGE_THRESHOLDS: "off"
-                  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
             - run: pnpm exec nx collect @joinery/developer-portal
 
