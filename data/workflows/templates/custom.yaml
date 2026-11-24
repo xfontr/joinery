@@ -77,6 +77,19 @@ capabilities:
         criteria:
           - The overview is linked in a comment, and every change asked for is filed or settled.
 
+  - id: ai-review
+    stage: ship
+    title: AI design and copy review
+    complexity: 3
+    optional: true
+    default: true
+    dependsOn: [build-review]
+    summary: Every screen through Impeccable for design and every user-facing string through no-ai-slop for copy; off for a project with neither.
+    reuse: { plan: method, from: docs/decisions/0043-impeccable-for-ai-made-designs.md }
+    doneWhen:
+      - The Impeccable detector has scanned every screen the build touched at 390 and 1280 px, and its findings are listed for you; only the ones you accept are fixed or filed.
+      - Every user-facing string the build wrote has been through no-ai-slop's detect mode, and each pattern it names is listed with its line for you to accept or keep.
+
   - id: docs-update
     stage: ship
     title: Docs brought up to date

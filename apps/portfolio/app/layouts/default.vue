@@ -13,7 +13,63 @@
             <ULink to="/" class="font-display text-2xl text-highlighted italic">
                 {{ $t("app.visitor.wordmark") }}
             </ULink>
-            <div class="flex flex-wrap items-center gap-6">
+            <UModal fullscreen :title="$t('app.visitor.menu.title')">
+                <UButton
+                    :label="$t('app.visitor.menu.open')"
+                    color="neutral"
+                    variant="link"
+                    class="p-0 text-sm text-highlighted md:hidden"
+                />
+
+                <template #content="{ close }">
+                    <UContainer class="flex min-h-full flex-col py-6">
+                        <div class="flex items-baseline justify-between gap-6">
+                            <ULink
+                                to="/"
+                                class="font-display text-2xl text-highlighted italic"
+                                @click="close"
+                            >
+                                {{ $t("app.visitor.wordmark") }}
+                            </ULink>
+                            <UButton
+                                :label="$t('app.visitor.menu.close')"
+                                color="neutral"
+                                variant="link"
+                                class="p-0 text-sm text-highlighted"
+                                @click="close"
+                            />
+                        </div>
+
+                        <nav
+                            class="my-auto flex flex-col items-end gap-6 py-16 text-right"
+                            :aria-label="$t('app.visitor.navLabel')"
+                        >
+                            <ULink
+                                v-for="(item, order) in NAV"
+                                :key="item.to"
+                                :to="item.to"
+                                data-menu-link
+                                :style="{ '--order': order }"
+                                class="font-display text-section text-highlighted"
+                                active-class="text-primary"
+                                :aria-current="current(item.to)"
+                                @click="close"
+                            >
+                                {{ $t(`app.visitor.nav.${item.key}`) }}
+                            </ULink>
+                        </nav>
+
+                        <div class="flex items-center justify-between gap-4 pt-10">
+                            <PortalLink />
+                            <small class="text-sm text-muted">
+                                {{ $t("app.visitor.footer.noTracking") }}
+                            </small>
+                        </div>
+                    </UContainer>
+                </template>
+            </UModal>
+
+            <div class="hidden flex-wrap items-center gap-6 md:flex">
                 <nav
                     class="flex flex-wrap items-baseline gap-x-6 gap-y-2 text-sm"
                     :aria-label="$t('app.visitor.navLabel')"
@@ -28,7 +84,7 @@
                         {{ $t(`app.visitor.nav.${item.key}`) }}
                     </ULink>
                 </nav>
-                <ViewSwitch />
+                <PortalLink />
             </div>
         </UContainer>
 
@@ -65,7 +121,6 @@ const NAV = [
 
 const route = useRoute();
 const portal = portalUrl("/");
-
 // `ULink` sets `aria-current` only on an exact match, which would leave Work unmarked on a case study
 const current = (to: string) =>
     route.path === to || route.path.startsWith(`${to}/`) ? "page" : undefined;

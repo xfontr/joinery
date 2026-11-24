@@ -9,6 +9,11 @@
                 "title": "Want everything?",
                 "titleMark": "Open the developer view."
             },
+            "menu": {
+                "close": "Close",
+                "open": "Menu",
+                "title": "Site menu"
+            },
             "nav": {
                 "about": "About",
                 "method": "Method",
@@ -375,9 +380,5 @@
             "home": "Front page"
         }
     },
-    "viewSwitch": {
-        "dev": "Dev",
-        "label": "Switch view",
-        "visitor": "Visitor"
-    }
+    "portalLink": "Developer portal"
 }

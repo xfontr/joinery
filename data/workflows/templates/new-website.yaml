@@ -211,12 +211,23 @@ capabilities:
       - text: Figma, then Penpot, then code — three tools in a week. Design in code from the start.
         issues: [27]
 
+  - id: lab-review
+    stage: design
+    title: Lab design review
+    complexity: 3
+    dependsOn: [design-lab]
+    summary: Every lab direction run through Impeccable before you pick one, so the choice is made with each direction's AI tells already named.
+    reuse: { plan: method, from: docs/decisions/0043-impeccable-for-ai-made-designs.md }
+    doneWhen:
+      - The Impeccable detector has scanned every lab page at 390 and 1280 px, and an Impeccable critique of each direction is done.
+      - The findings are listed on the design approval ticket for you to accept or drop; the agent changes nothing in the lab on its own.
+
   - id: design-approval
     stage: design
     title: Design approval
     complexity: 1
     kind: owner
-    dependsOn: [design-lab]
+    dependsOn: [design-lab, lab-review]
     summary: You pick one direction per page, from lab screenshots at 390, 768 and 1280 px.
     reuse: { plan: new }
     doneWhen:
@@ -589,6 +600,18 @@ capabilities:
         criteria:
           - The overview is linked in a comment, and every change asked for is filed or settled.
 
+  - id: ai-review
+    stage: hardening
+    title: AI design and copy review
+    complexity: 5
+    dependsOn: [build-review]
+    summary: Every page through Impeccable for design and no-ai-slop for copy, once the build review's changes are in.
+    reuse: { plan: method, from: docs/decisions/0043-impeccable-for-ai-made-designs.md }
+    doneWhen:
+      - The Impeccable detector has scanned every page at 390 and 1280 px, and an Impeccable critique of each page template is done.
+      - The design findings are listed for you; only the ones you accept are fixed or filed, and type, colour and layout never change without your pick.
+      - Every user-facing string, the locale files and the launch copy, has been through no-ai-slop's detect mode, and each pattern it names is listed with its line for you to accept or keep.
+
   - id: seo
     stage: hardening
     title: SEO and feeds
@@ -678,6 +701,7 @@ capabilities:
     kind: owner
     dependsOn:
       - build-review
+      - ai-review
       - seo
       - performance
       - accessibility

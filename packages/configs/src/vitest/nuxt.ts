@@ -80,6 +80,8 @@ const createNuxtConfig = async ({
 
     const nuxtBase = await defineNuxtProject(root, {
         fileParallelism: false,
+        // Four Nuxt suites booting side by side on a 4-core CI runner have run past the 10 s default
+        hookTimeout: 20_000,
         sequence: { groupOrder: 1 },
         setupFiles: [nodeTest.setupFiles ?? [], autoUnmount, setupFiles].flat(),
         environmentOptions: {

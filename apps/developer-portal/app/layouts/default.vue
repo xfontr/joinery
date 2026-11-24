@@ -14,12 +14,13 @@
             :min-size="12"
             :max-size="20"
             :collapsed-size="3.5"
+            toggle-side="right"
             :ui="{
                 root: 'surface-ink min-h-0 border-e border-default',
                 content: 'surface-ink lg:hidden',
                 header: 'h-14 pr-2 pl-5',
                 body: 'gap-4 px-3 py-0 pb-4',
-                footer: 'border-t border-default px-3',
+                footer: 'flex-col items-stretch gap-0 border-t border-default p-0 sm:px-0',
             }"
         >
             <template #header="{ collapsed }">
@@ -30,26 +31,15 @@
                 >
                     {{ $t("app.dev.wordmark") }}
                 </NuxtLink>
+                <!-- The mobile menu renders this header too, where collapsing the hidden rail does nothing -->
                 <UDashboardSidebarCollapse
                     color="neutral"
-                    class="text-muted"
+                    class="text-muted max-lg:hidden"
                     :class="collapsed && 'mx-auto'"
                 />
             </template>
 
             <template #default="{ collapsed }">
-                <UButton
-                    v-if="collapsed"
-                    :to="appConfig.personalSite"
-                    icon="i-lucide-arrow-left-right"
-                    color="neutral"
-                    variant="ghost"
-                    class="mx-auto text-muted"
-                    :aria-label="$t('app.dev.visitorSwitch')"
-                    :title="$t('app.dev.visitorSwitchTitle')"
-                />
-                <ViewSwitch v-else class="self-start" />
-
                 <UDashboardSearchButton
                     :collapsed
                     color="neutral"
@@ -85,7 +75,12 @@
             </template>
 
             <template #footer="{ collapsed }">
-                <div class="flex w-full items-center gap-1" :class="collapsed && 'flex-col'">
+                <PersonalSiteLink :collapsed />
+
+                <div
+                    class="flex w-full items-center gap-1 px-3 py-2"
+                    :class="collapsed && 'flex-col'"
+                >
                     <UColorModeButton
                         :label="collapsed ? undefined : $t('app.dev.colorMode')"
                         color="neutral"
@@ -133,7 +128,6 @@
 import "#layers/design/app/assets/main.css";
 
 const route = useRoute();
-const appConfig = useAppConfig();
 const {
     public: { repoUrl },
 } = useRuntimeConfig();

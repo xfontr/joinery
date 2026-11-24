@@ -1,7 +1,8 @@
 # 📦 @joinery/developer-portal
 
-The repo's front door: every markdown file rendered as a wiki, plus what isn't written down —
-coverage, the project graph, open issues, decisions, audits, workflows and tooling usage.
+The repo's developer view: every markdown file rendered as a wiki, plus what isn't written down —
+coverage, the project graph, open issues, decisions, audits, workflows and tooling usage. Visitors
+arrive through [`apps/portfolio`](../portfolio/README.md), which links in here.
 
 Under `pnpm dev developer-portal` it reads the working tree live. The deployed site is a prerendered
 [snapshot of `master`](#the-deployed-site-is-a-snapshot) on GitHub Pages.
@@ -111,8 +112,8 @@ link is counted on Home, never a build failure. Fix a link that breaks here in
 
 Derived from paths alone, so a new doc appears on its own. Changelogs, dated audits, numbered
 decisions and benchmark entries are left out of the tree since each has its own page; CLAUDE.md
-files are left out of the collection and link to GitHub. ⌘K search loads on first open, not in the
-layout, which kept it out of every page's payload.
+files are left out of the collection and link to GitHub. ⌘K search fetches the docs' sections on first
+open rather than with the layout, which kept them out of every page's payload.
 
 ### GitHub reads
 

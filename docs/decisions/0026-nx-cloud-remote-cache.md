@@ -1,7 +1,8 @@
 ---
 issue: 170
 status: implemented
-decision: accepted
+decision: superseded
+supersededBy: 0044-nx-cache-in-github-actions.md
 ---
 
 # 🧭 Nx Cloud is adopted, for CI remote caching only

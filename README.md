@@ -28,7 +28,7 @@ packages/
     i18n/             @joinery/i18n — translations core + a Nuxt module
     observability/    @joinery/observability — Grafana Faro in the browser, OpenTelemetry on the server
 apps/
-    developer-portal/ @joinery/developer-portal — the repository's public portal/front door over its docs, projects, architecture and engineering health
+    developer-portal/ @joinery/developer-portal — the repository's developer portal over its docs, projects, architecture, workflows and engineering health
     huella-legal/     @joinery/huella-legal — Huella Legal, a WIP law blog redesign (Nuxt 4)
     marina-roustan/   @joinery/marina-roustan — Marina Roustan, a website rebuild (Nuxt 4)
     portfolio/        @joinery/portfolio — Xifré Font's personal site: the method, the work and the project maps
@@ -149,13 +149,14 @@ Each rule is enforced by a hook or workflow;
 - PRs get their title, assignees and project from the issue
   ([`pr-metadata.yml`](./.github/workflows/pr-metadata.yml)), path labels
   ([`pr-labeler.yml`](./.github/workflows/pr-labeler.yml)) and an advisory docs review
-  ([`pr-docs-review.yml`](./.github/workflows/pr-docs-review.yml)).
+  ([`pr-docs-review.yml`](./.github/workflows/pr-docs-review.yml)). Closing one deletes its Actions
+  caches ([`pr-cache-cleanup.yml`](./.github/workflows/pr-cache-cleanup.yml)).
 - [`post-checkout`](./.husky/post-checkout) and [`post-merge`](./.husky/post-merge) warn when
   `pnpm-lock.yaml` changed, run [`pnpm env:sync`](./infrastructure/scripts/src/env-sync/README.md)
   when a `.env.example` did, and refresh
   [`pnpm workflow:sync`](./infrastructure/scripts/src/workflow/README.md) in the background.
 - Manual only: [`pnpm docs:drift`](./infrastructure/scripts/src/drift/README.md).
-- Five secrets nothing provisions; see
+- Four secrets nothing provisions; see
   [`docs/guides/repo-secrets.md`](./docs/guides/repo-secrets.md).
 
 ## Versioning

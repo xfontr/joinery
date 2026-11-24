@@ -76,10 +76,6 @@ button:not(:disabled) {
     navigation: auto;
 }
 
-[data-view-switch] [aria-current="true"] {
-    view-transition-name: view-switch-current;
-}
-
 /* Unnamed during the reveal, which clips only the root, so it can't fade in ahead of the circle */
 :root:not([data-page-transition="mode"]) [data-identity] > header {
     view-transition-name: visitor-header;
@@ -117,6 +113,12 @@ button:not(:disabled) {
     from {
         opacity: 0;
         translate: 0 1.5rem;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    [data-menu-link] {
+        animation: page-in 0.4s cubic-bezier(0.2, 0, 0, 1) calc(var(--order) * 0.05s + 0.1s) both;
     }
 }
 

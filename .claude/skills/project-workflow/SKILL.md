@@ -56,8 +56,8 @@ its own block and ticket cost. A page that fits no type is an ordinary extra wit
 
 ## 1.5 Drafting a map for a custom project
 
-A `custom` project starts with five recommended blocks from the template — `scope-signoff`,
-`error-pages`, `build-review`, `docs-update` and `go-live` — and the rest of its map is the project
+A `custom` project starts with six recommended blocks from the template — `scope-signoff`,
+`error-pages`, `build-review`, `ai-review`, `docs-update` and `go-live` — and the rest of its map is the project
 file's `extras`, which you draft and the user checks. Switch a recommended block off only where it
 can't apply, such as `error-pages` on a dev-only tool or a package, with a one-line comment above
 the switch saying why; never redraw one as an extra, since an extra can't reuse a template id.
@@ -94,6 +94,14 @@ When the build closes, the agent prepares the overview its `doneWhen` asks for a
 the calls. The user may instead settle it as skipped in its panel, but that is their call; never
 settle it yourself (`developer-portal-front-door` drew six build blocks over two designs and no
 review).
+
+Two AI reviews sit around it, both run by the agent with the tools
+[`0043`](../../../docs/decisions/0043-impeccable-for-ai-made-designs.md) sets up. `lab-review` runs
+Impeccable over every lab direction before `design-approval`, so the owner picks with the AI tells
+already named. `ai-review` follows `build-review` and runs Impeccable on every page and no-ai-slop
+on every string the build wrote, before `go-live`. Both list findings for the owner; neither
+changes a typeface, colour or layout on its own. `custom` carries only `ai-review`, as a
+recommended block.
 
 ## 2. Filing a block
 

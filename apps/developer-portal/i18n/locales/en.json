@@ -866,11 +866,7 @@
             "warning": "Meant for AI-run projects: a ticket bundles several blocks, so no one reviews each block's code by hand."
         }
     },
-    "viewSwitch": {
-        "dev": "Dev",
-        "label": "Switch view",
-        "visitor": "Visitor"
-    },
+    "personalSiteLink": "Visitor site",
     "wiki": {
         "count": "{count} pages, read in place",
         "groups": {
