@@ -20,7 +20,7 @@
                 content: 'surface-ink lg:hidden',
                 header: 'h-14 pr-2 pl-5',
                 body: 'gap-4 px-3 py-0 pb-4',
-                footer: 'border-t border-default px-3',
+                footer: 'flex-col items-stretch gap-0 border-t border-default p-0 sm:px-0',
             }"
         >
             <template #header="{ collapsed }">
@@ -40,18 +40,6 @@
             </template>
 
             <template #default="{ collapsed }">
-                <UButton
-                    v-if="collapsed"
-                    :to="appConfig.personalSite"
-                    icon="i-lucide-arrow-left-right"
-                    color="neutral"
-                    variant="ghost"
-                    class="mx-auto text-muted"
-                    :aria-label="$t('app.dev.visitorSwitch')"
-                    :title="$t('app.dev.visitorSwitchTitle')"
-                />
-                <ViewSwitch v-else class="self-start max-lg:hidden" />
-
                 <UDashboardSearchButton
                     :collapsed
                     color="neutral"
@@ -84,12 +72,15 @@
                     }"
                     :aria-label="$t('app.dev.navLabel')"
                 />
-
-                <ViewSwitch class="mt-auto self-start lg:hidden" />
             </template>
 
             <template #footer="{ collapsed }">
-                <div class="flex w-full items-center gap-1" :class="collapsed && 'flex-col'">
+                <PersonalSiteLink :collapsed />
+
+                <div
+                    class="flex w-full items-center gap-1 px-3 py-2"
+                    :class="collapsed && 'flex-col'"
+                >
                     <UColorModeButton
                         :label="collapsed ? undefined : $t('app.dev.colorMode')"
                         color="neutral"
@@ -137,7 +128,6 @@
 import "#layers/design/app/assets/main.css";
 
 const route = useRoute();
-const appConfig = useAppConfig();
 const {
     public: { repoUrl },
 } = useRuntimeConfig();

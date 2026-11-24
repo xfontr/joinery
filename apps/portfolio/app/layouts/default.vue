@@ -60,7 +60,7 @@
                         </nav>
 
                         <div class="flex items-center justify-between gap-4 pt-10">
-                            <ViewSwitch />
+                            <PortalLink />
                             <small class="text-sm text-muted">
                                 {{ $t("app.visitor.footer.noTracking") }}
                             </small>
@@ -84,7 +84,7 @@
                         {{ $t(`app.visitor.nav.${item.key}`) }}
                     </ULink>
                 </nav>
-                <ViewSwitch />
+                <PortalLink />
             </div>
         </UContainer>
 

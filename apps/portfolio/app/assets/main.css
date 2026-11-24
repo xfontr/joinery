@@ -76,10 +76,6 @@ button:not(:disabled) {
     navigation: auto;
 }
 
-[data-view-switch] [aria-current="true"] {
-    view-transition-name: view-switch-current;
-}
-
 /* Unnamed during the reveal, which clips only the root, so it can't fade in ahead of the circle */
 :root:not([data-page-transition="mode"]) [data-identity] > header {
     view-transition-name: visitor-header;

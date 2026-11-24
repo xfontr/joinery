@@ -16,7 +16,7 @@ const PRERENDER_PORTAL = {
     prerender: [
         {
             where: {
-                and: [{ href_matches: "/portal/*" }, { selector_matches: "[data-view-switch] a" }],
+                and: [{ href_matches: "/portal/*" }, { selector_matches: "[data-view-switch]" }],
             },
             eagerness: "moderate",
         },

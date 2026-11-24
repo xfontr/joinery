@@ -380,9 +380,5 @@
             "home": "Front page"
         }
     },
-    "viewSwitch": {
-        "dev": "Dev",
-        "label": "Switch view",
-        "visitor": "Visitor"
-    }
+    "portalLink": "Developer portal"
 }
