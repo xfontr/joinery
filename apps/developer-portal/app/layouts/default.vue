@@ -14,6 +14,7 @@
             :min-size="12"
             :max-size="20"
             :collapsed-size="3.5"
+            toggle-side="right"
             :ui="{
                 root: 'surface-ink min-h-0 border-e border-default',
                 content: 'surface-ink lg:hidden',
@@ -30,9 +31,10 @@
                 >
                     {{ $t("app.dev.wordmark") }}
                 </NuxtLink>
+                <!-- The mobile menu renders this header too, where collapsing the hidden rail does nothing -->
                 <UDashboardSidebarCollapse
                     color="neutral"
-                    class="text-muted"
+                    class="text-muted max-lg:hidden"
                     :class="collapsed && 'mx-auto'"
                 />
             </template>
@@ -48,7 +50,7 @@
                     :aria-label="$t('app.dev.visitorSwitch')"
                     :title="$t('app.dev.visitorSwitchTitle')"
                 />
-                <ViewSwitch v-else class="self-start" />
+                <ViewSwitch v-else class="self-start max-lg:hidden" />
 
                 <UDashboardSearchButton
                     :collapsed
@@ -82,6 +84,8 @@
                     }"
                     :aria-label="$t('app.dev.navLabel')"
                 />
+
+                <ViewSwitch class="mt-auto self-start lg:hidden" />
             </template>
 
             <template #footer="{ collapsed }">
