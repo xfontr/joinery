@@ -4,7 +4,7 @@ name: Huella Legal
 title: Huella
 mark: Legal
 kind: Law magazine
-stage: Redesign on staging
+stage: Live
 line: A free law magazine, written by students, teachers and lawyers since 2020.
 caseStudy: true
 why: The magazine publishes legal analysis for anyone curious, students first. The redesign makes a long case comment as easy to read on a phone as on paper.
@@ -23,9 +23,9 @@ design:
 screenshot:
   file: huella-legal.jpg
   alt: Huella Legal's new home page
-  caption: The new home page, on staging.
+  caption: The new home page.
 live:
-  href: https://staging.huellalegal.com
+  href: https://www.huellalegal.com
   label: See the new site ↗
 decisions:
   - id: 0028-huella-legal-urls-and-cutover
