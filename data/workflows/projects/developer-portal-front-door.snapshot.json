@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-25T16:01:19.250Z",
+    "syncedAt": "2026-11-25T18:06:04.410Z",
     "milestone": "Developer portal front door",
     "issues": [
         {
@@ -433,14 +433,27 @@
             "number": 527,
             "title": "AI design and copy review",
             "url": "https://github.com/xfontr/joinery/issues/527",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "ai-review"
             ],
             "createdAt": "2026-11-25T16:00:54Z",
-            "closedAt": null,
-            "activity": [],
+            "closedAt": "2026-11-25T18:06:04.410Z",
+            "activity": [
+                "2026-11-25",
+                "2026-11-25",
+                "2026-11-25",
+                "2026-11-25",
+                "2026-11-25",
+                "2026-11-25",
+                "2026-11-25",
+                "2026-11-25",
+                "2026-11-25",
+                "2026-11-25",
+                "2026-11-25",
+                "2026-11-25"
+            ],
             "blockedBy": [],
             "branch": false,
             "pr": false,
