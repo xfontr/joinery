@@ -1,0 +1,8 @@
+at,script,command,target,flags,area,caller,tty,exit,ms
+2026-11-23,dev,,portfolio,,portfolio,human,1,0,464020
+2026-11-23,map,,,check,repo,claude-code,0,0,153
+2026-11-23,workflow,sync,,close,developer-portal,claude-code,0,0,2706
+2026-11-25,dev,,,,repo,human,1,1,19687
+2026-11-25,issue,pick,,title,repo,claude-code,0,1,7084
+2026-11-25,map,,,check,portfolio,claude-code,0,0,211
+2026-11-25,map,,,check,portfolio,claude-code,0,0,140
