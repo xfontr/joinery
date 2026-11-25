@@ -1,5 +1,5 @@
 <template>
-    <section id="workflows" class="dark mt-32 bg-muted text-default">
+    <section id="workflows" class="dark bg-muted text-default">
         <UContainer class="page-grid items-center gap-y-12 py-24">
             <div class="col-span-4 flex flex-col gap-6">
                 <h2 class="text-section text-highlighted">
