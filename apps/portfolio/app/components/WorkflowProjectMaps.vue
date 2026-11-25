@@ -1,45 +1,58 @@
 <template>
-    <section class="bg-muted">
-        <UContainer class="flex flex-col gap-16 py-20">
-            <h2 class="font-display text-section text-highlighted">
+    <section class="dark mt-32 bg-muted text-default">
+        <UContainer class="flex flex-col gap-20 py-24">
+            <h2 class="text-section text-highlighted">
                 {{ $t("agenticWorkflows.projects.title") }}
                 <mark>{{ $t("agenticWorkflows.projects.titleMark") }}</mark>
             </h2>
-            <article v-for="item in maps" :key="item.id" class="flex flex-col gap-5">
+            <article
+                v-for="item in maps"
+                :key="item.id"
+                class="page-grid gap-y-8 border-t border-accented pt-5"
+            >
                 <div
-                    class="flex flex-col gap-2 border-t border-accented pt-6 md:flex-row md:items-baseline md:justify-between"
+                    class="col-span-4 flex flex-col gap-2"
+                    :class="item.wide && 'md:col-span-12 md:flex-row md:items-baseline md:gap-8'"
                 >
-                    <h3 class="font-display text-heading text-highlighted">{{ item.title }}</h3>
-                    <p class="font-mono text-sm text-muted">{{ item.counts }}</p>
+                    <h3 class="text-heading text-highlighted">{{ item.title }}</h3>
+                    <p class="text-base text-highlighted">{{ item.done }}</p>
+                    <ULink
+                        raw
+                        :to="portalUrl(`/workflows/${item.id}`)"
+                        class="self-start link"
+                        :class="item.wide ? 'md:ml-auto' : 'mt-2'"
+                    >
+                        {{ $t("agenticWorkflows.projects.open") }} ↗
+                    </ULink>
                 </div>
-                <WorkflowProjectMap :map="item.map" :label="item.label" />
-                <ULink
-                    :to="portalUrl(`/workflows/${item.id}`)"
-                    class="self-start text-primary underline underline-offset-4"
-                >
-                    {{ $t("agenticWorkflows.projects.open") }} →
-                </ULink>
+                <WorkflowProjectMap
+                    :map="item.map"
+                    :label="item.label"
+                    class="col-span-4"
+                    :class="item.wide ? 'md:col-span-12' : 'md:col-span-8'"
+                />
             </article>
         </UContainer>
     </section>
 </template>
 
 <script setup lang="ts">
+/** Wider than this, in the map's own units, a map gets the full width under its heading. */
+const WIDE = 800;
+
 const { t } = useI18n();
 const { data: projects } = await useWorkflowMaps();
 
 const maps = computed(() =>
-    projects.value.map(({ id, title, map }) => {
-        const blocks = t("agenticWorkflows.projects.blocks", map.blocks);
-        return {
-            id,
-            title,
-            label: t("agenticWorkflows.projects.mapLabel", { title }),
-            map,
-            counts: map.tickets
-                ? t("agenticWorkflows.projects.tickets", { blocks, ...map.tickets })
-                : blocks,
-        };
-    }),
+    projects.value.map(({ id, title, map }) => ({
+        id,
+        title,
+        map,
+        wide: map.width > WIDE,
+        label: t("agenticWorkflows.projects.mapLabel", { title }),
+        done: t("agenticWorkflows.projects.done", {
+            percent: map.blocks.total ? Math.round((map.blocks.done / map.blocks.total) * 100) : 0,
+        }),
+    })),
 );
 </script>

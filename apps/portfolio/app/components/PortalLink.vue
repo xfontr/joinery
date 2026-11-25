@@ -2,7 +2,7 @@
     <NuxtLink
         data-view-switch
         :to="portal"
-        class="shrink-0 text-sm text-highlighted underline underline-offset-4"
+        class="shrink-0 font-mono text-meta text-muted hover:text-primary"
     >
         {{ $t("portalLink") }}
     </NuxtLink>

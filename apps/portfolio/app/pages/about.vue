@@ -1,32 +1,36 @@
 <template>
-    <PageHero :title="$t('about.title')" :mark="$t('about.titleMark')" :lead="$t('about.lead')">
-        <p class="max-w-xl text-base text-muted">
+    <PageHero :title="$t('about.title')" :mark="$t('about.titleMark')" :lead="$t('about.lead')" />
+
+    <UContainer as="section" class="page-grid gap-y-8 border-t border-accented pt-6">
+        <p class="col-span-4 text-lead text-highlighted md:col-span-7">
             {{ $t("about.intro.start") }}
-            <ULink :to="portal" class="underline underline-offset-4">
-                {{ $t("about.developerView") }}
-            </ULink>
+            <ULink :to="portal" raw class="link">{{ $t("about.developerView") }}</ULink>
             {{ $t("about.intro.middle") }}
-            <ULink :to="SPOTIFY_POST" target="_blank" class="underline underline-offset-4">
-                {{ $t("about.post") }}
-            </ULink>
+            <ULink :to="SPOTIFY_POST" target="_blank" raw class="link">{{
+                $t("about.post")
+            }}</ULink>
             {{ $t("about.intro.end") }}
         </p>
-        <div class="flex flex-wrap gap-6">
-            <ULink
+        <ul class="col-span-4 md:col-span-3 md:col-start-10">
+            <li
                 v-for="link in links"
                 :key="link.to"
-                :to="link.to"
-                target="_blank"
-                class="text-base text-highlighted underline decoration-primary underline-offset-4"
+                class="border-t border-default first:max-md:border-t-0"
             >
-                {{ link.label }} ↗
-            </ULink>
-        </div>
-    </PageHero>
+                <ULink
+                    :to="link.to"
+                    target="_blank"
+                    class="flex justify-between py-2.5 text-base text-highlighted hover:text-primary"
+                >
+                    {{ link.label }} <span aria-hidden="true">↗</span>
+                </ULink>
+            </li>
+        </ul>
+    </UContainer>
 
-    <UContainer as="section" class="pb-16">
-        <h2 class="pb-6 font-mono text-xs text-muted uppercase">{{ $t("about.story.label") }}</h2>
-        <TermList :items="story" ordered wide />
+    <UContainer as="section" class="pt-32">
+        <h2 class="pb-10 text-section text-highlighted">{{ $t("about.story.label") }}</h2>
+        <TermList :items="story" ordered class="border-b border-default" />
     </UContainer>
 </template>
 

@@ -177,19 +177,16 @@
         },
         "decide": {
             "body": "When a call could go either way, I write a short report: the question, the options, what was picked and why. The next person, or agent, reads it instead of asking again.",
-            "count": "{count} written so far.",
             "more": "All decisions",
             "title": "Write decisions down."
         },
         "look": {
             "body": "I start each design from a study of other sites, some an awards jury picked and some that just caught my eye, and measure each one the same way: type, colour, layout.",
-            "count": "{count} sites studied so far.",
             "more": "All studies",
             "title": "Look before drawing."
         },
         "plan": {
             "body": "Each project starts from a template with every task the job needs, what each one waits on, and what went wrong last time.",
-            "count": "{count} lessons from past projects so far.",
             "more": "Project maps",
             "title": "Plan the whole job."
         },
@@ -247,9 +244,6 @@
             "title": "Key",
             "titleMark": "decisions"
         },
-        "facts": "{facts}, as of {date}",
-        "inProgress": "In progress · {stage}",
-        "kicker": "Case study · {kind}",
         "missing": {
             "back": "Back to the front page",
             "title": "No such work"
@@ -292,10 +286,9 @@
             "titleMark": "past projects"
         },
         "projects": {
-            "blocks": "{done} of {total} blocks done · {moving} moving",
+            "done": "{percent}% done",
             "mapLabel": "{title} as a map of blocks",
             "open": "Open the live map",
-            "tickets": "{blocks} · {closed} of {total} tickets closed",
             "title": "Current",
             "titleMark": "projects"
         },
@@ -353,9 +346,6 @@
     },
     "decisionsPreview": {
         "number": "Decision {number}"
-    },
-    "ruleSection": {
-        "skill": "Skill:"
     },
     "decisions": {
         "status": {

@@ -15,7 +15,7 @@
                     {{ $t(`decisions.status.${report.status}`) }}
                 </span>
             </div>
-            <span class="font-display text-2xl/tight text-highlighted">{{ report.title }}</span>
+            <span class="text-heading text-highlighted">{{ report.title }}</span>
             <div class="flex flex-col gap-1.5">
                 <span v-for="line in LINES" :key="line" class="h-1.5 bg-accented" :class="line" />
             </div>

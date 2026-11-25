@@ -6,11 +6,15 @@
         :lead="$t('agenticWorkflows.lead')"
     />
 
-    <UContainer as="section" class="pb-20">
-        <ol class="grid gap-10 border-t border-accented pt-10 md:grid-cols-5">
-            <li v-for="(step, index) in STEPS" :key="step" class="flex flex-col gap-3">
-                <span class="font-display text-section text-primary">{{ index + 1 }}</span>
-                <span class="font-display text-2xl text-highlighted">
+    <UContainer>
+        <ol class="sheet border-t border-accented">
+            <li
+                v-for="(step, index) in STEPS"
+                :key="step"
+                class="flex flex-col gap-4 border-t border-default pt-5 pb-8 md:border-t-0 md:px-5 md:first:pl-0"
+            >
+                <span class="font-mono text-meta text-muted">0{{ index + 1 }}</span>
+                <span class="text-heading text-highlighted">
                     {{ $t(`agenticWorkflows.steps.${step}.title`) }}
                 </span>
                 <span class="text-base">{{ $t(`agenticWorkflows.steps.${step}.body`) }}</span>
@@ -20,32 +24,32 @@
 
     <WorkflowProjectMaps />
 
-    <UContainer as="section" class="pt-20">
-        <div class="grid gap-6 md:grid-cols-12">
-            <h2 class="font-display text-section text-highlighted md:col-span-5">
+    <UContainer as="section" class="pt-32">
+        <div class="page-grid items-end gap-y-6 pb-10">
+            <h2 class="col-span-4 text-section text-highlighted md:col-span-6">
                 {{ $t("agenticWorkflows.lessons.title") }}
                 <mark>{{ $t("agenticWorkflows.lessons.titleMark") }}</mark>
             </h2>
-            <p class="self-end text-base md:col-span-6 md:col-start-7">
+            <p class="col-span-4 text-base md:col-span-4 md:col-start-9">
                 {{ $t("agenticWorkflows.lessons.line") }}
             </p>
         </div>
-        <ul class="mt-10 flex flex-col">
+        <ul class="border-t border-accented">
             <li
                 v-for="lesson in LESSONS"
                 :key="lesson"
-                class="grid gap-2 border-t border-default py-6 md:grid-cols-12"
+                class="page-grid gap-y-2 border-t border-default py-6 first:border-t-0"
             >
-                <span class="font-display text-2xl text-highlighted md:col-span-5">
+                <span class="col-span-4 text-heading text-highlighted md:col-span-5">
                     {{ $t(`agenticWorkflows.lessons.items.${lesson}.rule`) }}
                 </span>
-                <span class="text-base text-muted md:col-span-7">
+                <span class="col-span-4 text-base md:col-span-6 md:col-start-7">
                     {{ $t(`agenticWorkflows.lessons.items.${lesson}.paid`) }}
                 </span>
             </li>
         </ul>
-        <ULink :to="WORKFLOWS" class="mt-6 inline-block text-primary underline underline-offset-4">
-            {{ $t("agenticWorkflows.lessons.all") }} →
+        <ULink raw :to="WORKFLOWS" class="mt-8 inline-block link">
+            {{ $t("agenticWorkflows.lessons.all") }} ↗
         </ULink>
     </UContainer>
 </template>

@@ -3,16 +3,16 @@
         <li
             v-for="item in checks"
             :key="item.id"
-            class="grid gap-2 border-t border-default py-5 sm:grid-cols-4"
+            class="grid gap-2 border-t border-default py-5 md:grid-cols-9 md:gap-6"
         >
-            <span class="font-mono text-xs text-muted uppercase">
+            <span class="font-mono text-meta text-muted md:col-span-2 md:pt-1.5">
                 {{ $t(`method.prove.checks.${item.id}.area`) }}
             </span>
-            <div class="flex flex-col gap-2 sm:col-span-3">
-                <span class="font-display text-2xl text-highlighted">{{ item.claim }}</span>
+            <div class="flex flex-col gap-2 md:col-span-7">
+                <span class="text-heading text-highlighted">{{ item.claim }}</span>
                 <span class="text-base">{{ $t(`method.prove.checks.${item.id}.how`) }}</span>
-                <ULink :to="item.to" class="self-start text-primary underline underline-offset-4">
-                    {{ $t(`method.prove.checks.${item.id}.cta`) }} →
+                <ULink raw :to="item.to" class="self-start font-mono text-meta link">
+                    {{ $t(`method.prove.checks.${item.id}.cta`) }} ↗
                 </ULink>
             </div>
         </li>

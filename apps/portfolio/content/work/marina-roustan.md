@@ -7,7 +7,6 @@ kind: Psychology practice
 stage: In design
 line: A clinical psychologist's practice in Barcelona.
 caseStudy: true
-inProgress: true
 why: People looking for a therapist are often having a hard week. The new site is calm and clear, and getting in touch takes one form.
 facts:
   - 10 posts

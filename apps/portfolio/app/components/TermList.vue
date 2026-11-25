@@ -1,20 +1,25 @@
 <template>
-    <component :is="ordered ? 'ol' : 'ul'" class="flex flex-col">
+    <component
+        :is="ordered ? 'ol' : 'ul'"
+        :class="grid ? 'grid gap-x-6 md:grid-cols-3' : 'flex flex-col'"
+    >
         <li
             v-for="item in rows"
             :key="item.id"
-            class="grid gap-1 border-t border-default py-4"
-            :class="wide ? 'sm:grid-cols-4' : 'sm:grid-cols-3'"
+            class="border-t border-default"
+            :class="
+                grid ? 'flex flex-col gap-2 pt-4 pb-6' : 'grid gap-2 py-5 md:grid-cols-3 md:gap-6'
+            "
         >
-            <span class="font-display text-2xl text-highlighted">{{ item.term }}</span>
-            <span class="text-base" :class="wide ? 'sm:col-span-3' : 'sm:col-span-2'">
+            <span class="text-heading text-highlighted">{{ item.term }}</span>
+            <span class="text-base" :class="!grid && 'md:col-span-2'">
                 <template v-for="(part, index) in item.parts" :key="index">
-                    <strong v-if="part.strong" class="font-semibold text-highlighted">
+                    <strong v-if="part.strong" class="font-medium text-highlighted">
                         <ULink
                             v-if="item.links?.[part.text]"
                             :to="item.links[part.text]"
                             raw
-                            class="text-highlighted underline decoration-primary underline-offset-4"
+                            class="link"
                         >
                             {{ part.text }}
                         </ULink>
@@ -33,11 +38,11 @@ import type { Term } from "~/types/Term";
 interface Props {
     items: readonly Term[];
     ordered?: boolean;
-    /** Gives the detail three columns of four instead of two of three. */
-    wide?: boolean;
+    /** Three terms a row from `md`, each over its detail, instead of one term a row beside it. */
+    grid?: boolean;
 }
 
-const { items, ordered = false, wide = false } = defineProps<Props>();
+const { items, ordered = false, grid = false } = defineProps<Props>();
 
 const rows = computed(() => items.map((item) => ({ ...item, parts: emphasis(item.detail) })));
 </script>

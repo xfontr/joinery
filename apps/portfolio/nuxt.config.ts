@@ -94,9 +94,8 @@ export default defineNuxtConfig({
     fonts: {
         defaults: { subsets: ["latin"] },
         families: [
-            { name: "Fraunces", weights: [300, 600], styles: ["normal", "italic"] },
-            { name: "IBM Plex Sans", weights: [400, 500, 600] },
-            { name: "IBM Plex Mono", weights: [400, 500] },
+            { name: "Schibsted Grotesk", weights: [400, 500, 600] },
+            { name: "Geist Mono", weights: [400, 500] },
         ],
     },
 

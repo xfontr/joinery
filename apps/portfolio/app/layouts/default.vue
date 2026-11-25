@@ -8,9 +8,9 @@
 
         <UContainer
             as="header"
-            class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 py-6"
+            class="flex flex-wrap items-baseline justify-between gap-x-10 gap-y-2 py-6"
         >
-            <ULink to="/" class="font-display text-2xl text-highlighted italic">
+            <ULink to="/" class="text-base font-semibold tracking-tight text-highlighted">
                 {{ $t("app.visitor.wordmark") }}
             </ULink>
             <UModal fullscreen :title="$t('app.visitor.menu.title')">
@@ -18,7 +18,7 @@
                     :label="$t('app.visitor.menu.open')"
                     color="neutral"
                     variant="link"
-                    class="p-0 text-sm text-highlighted md:hidden"
+                    class="p-0 text-base text-highlighted md:hidden"
                 />
 
                 <template #content="{ close }">
@@ -26,7 +26,7 @@
                         <div class="flex items-baseline justify-between gap-6">
                             <ULink
                                 to="/"
-                                class="font-display text-2xl text-highlighted italic"
+                                class="text-base font-semibold tracking-tight text-highlighted"
                                 @click="close"
                             >
                                 {{ $t("app.visitor.wordmark") }}
@@ -35,7 +35,7 @@
                                 :label="$t('app.visitor.menu.close')"
                                 color="neutral"
                                 variant="link"
-                                class="p-0 text-sm text-highlighted"
+                                class="p-0 text-base text-highlighted"
                                 @click="close"
                             />
                         </div>
@@ -50,7 +50,7 @@
                                 :to="item.to"
                                 data-menu-link
                                 :style="{ '--order': order }"
-                                class="font-display text-section text-highlighted"
+                                class="text-title text-highlighted"
                                 active-class="text-primary"
                                 :aria-current="current(item.to)"
                                 @click="close"
@@ -69,15 +69,16 @@
                 </template>
             </UModal>
 
-            <div class="hidden flex-wrap items-center gap-6 md:flex">
+            <div class="hidden flex-wrap items-baseline gap-x-7 md:flex">
                 <nav
-                    class="flex flex-wrap items-baseline gap-x-6 gap-y-2 text-sm"
+                    class="flex flex-wrap items-baseline gap-x-7 gap-y-1 text-base"
                     :aria-label="$t('app.visitor.navLabel')"
                 >
                     <ULink
                         v-for="item in NAV"
                         :key="item.to"
                         :to="item.to"
+                        class="text-highlighted hover:text-primary"
                         active-class="text-primary"
                         :aria-current="current(item.to)"
                     >
@@ -92,18 +93,20 @@
             <slot />
         </main>
 
-        <UContainer as="footer" class="py-16">
+        <UContainer as="footer" class="pt-36 pb-10">
             <ULink
                 :to="portal"
-                class="flex flex-col gap-2 border-t border-accented pt-8 md:flex-row md:items-baseline md:justify-between"
+                class="group flex flex-col gap-6 border-t border-accented pt-8 md:flex-row md:items-end md:justify-between"
             >
-                <span class="font-display text-heading text-highlighted">
+                <span class="max-w-3xl text-section text-highlighted group-hover:text-primary">
                     {{ $t("app.visitor.footer.title") }}
                     <mark>{{ $t("app.visitor.footer.titleMark") }}</mark>
                 </span>
-                <span class="text-sm text-muted">{{ $t("app.visitor.footer.line") }}</span>
+                <span class="font-mono text-meta text-muted">
+                    {{ $t("app.visitor.footer.line") }} ↗
+                </span>
             </ULink>
-            <p class="mt-6 flex justify-between gap-4 text-sm text-muted">
+            <p class="mt-16 flex justify-between gap-4 font-mono text-meta text-muted">
                 <small>{{ $t("app.visitor.footer.copyright") }}</small>
                 <small>{{ $t("app.visitor.footer.noTracking") }}</small>
             </p>

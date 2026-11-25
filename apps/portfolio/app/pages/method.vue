@@ -6,56 +6,41 @@
         :lead="$t('method.lead')"
     />
 
-    <RuleSection
-        id="look"
-        :number="1"
-        skill="benchmark"
-        :count="benchmarks.length"
-        :to="LINKS.benchmarks"
-    >
-        <p v-if="sites" class="font-mono text-sm/loose text-muted">{{ sites }}</p>
-    </RuleSection>
+    <UContainer class="page-grid">
+        <RuleIndex />
 
-    <RuleSection
-        id="decide"
-        :number="2"
-        skill="decision-report"
-        :count="decisions.length"
-        :to="LINKS.decisions"
-    >
-        <DecisionQuestions :items="decisionItems" />
-    </RuleSection>
+        <div class="col-span-4 flex flex-col md:col-span-9">
+            <RuleSection id="look" :to="LINKS.benchmarks">
+                <p v-if="sites" class="max-w-xl font-mono text-meta text-muted">{{ sites }}</p>
+            </RuleSection>
 
-    <RuleSection id="plan" :number="3" :count="lessons" to="/agentic-workflows">
-        <TermList :items="templates" />
-    </RuleSection>
+            <RuleSection id="decide" :to="LINKS.decisions">
+                <DecisionQuestions :items="decisionItems" class="mt-4" />
+            </RuleSection>
 
-    <RuleSection
-        id="agents"
-        :number="4"
-        :body-params="{ steps: PIPELINE.length }"
-        :to="LINKS.agents"
-    >
-        <TermList :items="pipeline" ordered wide />
-    </RuleSection>
+            <RuleSection id="plan" to="/agentic-workflows">
+                <TermList :items="templates" class="mt-4" />
+            </RuleSection>
 
-    <RuleSection id="prove" :number="5">
-        <MethodChecks :specs :rules />
-    </RuleSection>
+            <RuleSection id="agents" :body-params="{ steps: PIPELINE.length }" :to="LINKS.agents">
+                <TermList :items="pipeline" ordered grid class="mt-4" />
+            </RuleSection>
 
-    <UContainer v-if="example" as="section" class="pt-6">
-        <ULink
-            :to="`/work/${example.slug}`"
-            class="group flex flex-col gap-2 border-t border-accented pt-10"
-        >
-            <span class="font-mono text-xs text-muted uppercase">
-                {{ $t("method.example.kicker") }}
-            </span>
-            <span class="font-display text-title text-highlighted group-hover:text-primary">
-                {{ example.title }} <mark>{{ example.mark }}</mark> →
-            </span>
-            <span class="text-lg">{{ $t("method.example.line") }}</span>
-        </ULink>
+            <RuleSection id="prove">
+                <MethodChecks :specs :rules class="mt-4" />
+            </RuleSection>
+
+            <ULink
+                v-if="example"
+                :to="`/work/${example.slug}`"
+                class="group flex flex-col gap-4 border-t border-accented pt-8"
+            >
+                <span class="text-title text-highlighted group-hover:text-primary">
+                    {{ example.title }} <mark>{{ example.mark }}</mark>
+                </span>
+                <span class="text-lead">{{ $t("method.example.line") }}</span>
+            </ULink>
+        </div>
     </UContainer>
 </template>
 
@@ -95,14 +80,12 @@ const [
     { data: work },
     { data: rules },
     { data: specs },
-    { data: decisions },
 ] = await Promise.all([
     useBenchmarks(),
     useWorkflowTemplates(),
     useWorkList(),
     useRuleCounts(),
     useSpecTotal(),
-    useDecisionReports(),
 ]);
 const example = computed(() =>
     work.value.filter(isStudy).find((entry) => entry.slug === "huella-legal"),
@@ -116,6 +99,4 @@ const templates = computed(() =>
         detail: summary,
     })),
 );
-
-const lessons = computed(() => workflows.value.lessons);
 </script>
