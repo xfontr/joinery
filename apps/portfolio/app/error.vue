@@ -6,13 +6,13 @@
                 data-error="not-found"
                 class="mx-auto flex max-w-6xl flex-col gap-6 px-4 pt-10 pb-20 md:px-10 md:pt-20"
             >
-                <p class="font-mono text-xs text-muted uppercase">
+                <p class="font-mono text-meta text-muted">
                     {{ $t("error.kicker", { status: error.status }) }}
                 </p>
-                <h1 class="font-display text-title text-highlighted md:text-statement">
+                <h1 class="text-title text-highlighted">
                     {{ $t("error.notFound.title") }}
                 </h1>
-                <p class="max-w-xl text-lg text-muted">{{ $t("error.notFound.lead") }}</p>
+                <p class="max-w-xl text-lead text-muted">{{ $t("error.notFound.lead") }}</p>
                 <div class="flex flex-col gap-3 sm:flex-row">
                     <UButton to="/" :label="$t('error.notFound.home')" class="justify-center" />
                     <UButton
@@ -31,13 +31,13 @@
                 data-error="server"
                 class="mx-auto flex max-w-6xl flex-col gap-6 px-4 pt-10 pb-20 md:px-10 md:pt-20"
             >
-                <p class="font-mono text-xs text-muted uppercase">
+                <p class="font-mono text-meta text-muted">
                     {{ $t("error.kicker", { status: error.status }) }}
                 </p>
-                <h1 class="font-display text-title text-highlighted">
+                <h1 class="text-title text-highlighted">
                     {{ $t("error.server.title") }}
                 </h1>
-                <p class="max-w-xl text-lg text-muted">{{ $t("error.server.lead") }}</p>
+                <p class="max-w-xl text-lead text-muted">{{ $t("error.server.lead") }}</p>
                 <div class="flex flex-col gap-3 sm:flex-row">
                     <UButton
                         icon="i-lucide-rotate-cw"

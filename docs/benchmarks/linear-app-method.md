@@ -4,7 +4,7 @@ kind: product
 page-types: [landing, docs]
 traits: [dark, serif-display, mono-labels, one-accent]
 verdict: strong
-used-for: [developer-portal]
+used-for: [developer-portal, portfolio]
 analysed: 2026-11-17
 ---
 

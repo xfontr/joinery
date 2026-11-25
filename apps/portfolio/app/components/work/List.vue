@@ -1,72 +1,94 @@
 <template>
-    <section id="work" class="bg-muted">
-        <UContainer class="py-20">
-            <h2 class="font-display text-section text-highlighted md:text-title">
-                {{ $t("workList.title") }} <mark>{{ $t("workList.titleMark") }}</mark>
-            </h2>
-            <div class="mt-12 grid gap-x-10 gap-y-12 md:grid-cols-3">
-                <article
-                    v-for="item in items"
-                    :key="item.slug"
-                    class="flex flex-col gap-3"
-                    :class="item.shot && 'md:col-span-3 md:grid md:grid-cols-3 md:gap-x-10'"
+    <UContainer as="section" id="work" class="pt-32">
+        <h2 class="pb-10 text-section text-highlighted">
+            {{ $t("workList.title") }} <mark>{{ $t("workList.titleMark") }}</mark>
+        </h2>
+        <ul data-dim-rows class="border-t border-accented">
+            <li
+                v-for="item in items"
+                :key="item.slug"
+                ref="rows"
+                :data-slug="item.slug"
+                :data-lit="(scrolled && lit === item.slug) || undefined"
+                class="page-grid items-start gap-y-4 border-t border-default py-7 first:border-t-0"
+            >
+                <ULink :to="item.story ?? item.href" class="group col-span-4 md:col-span-3">
+                    <h3
+                        class="text-heading text-highlighted group-hover:text-primary"
+                        :style="carried(`work-title-${item.slug}`)"
+                    >
+                        {{ item.name }}
+                    </h3>
+                    <p v-if="item.inProgress" class="mt-1 text-base text-primary">
+                        {{ $t("work.inProgress") }}
+                    </p>
+                </ULink>
+                <div class="col-span-4 flex flex-col gap-2 md:col-span-5">
+                    <p class="text-base">{{ item.what }}</p>
+                    <p class="flex flex-wrap gap-x-6 gap-y-1 pt-2 text-base">
+                        <ULink v-if="item.story" :to="item.story" raw class="link">
+                            {{ $t("workList.caseStudy") }}
+                        </ULink>
+                        <ULink :to="item.href" raw class="link">{{ item.cta }}</ULink>
+                    </p>
+                </div>
+                <ULink
+                    v-if="item.shot"
+                    :to="item.story ?? item.href"
+                    class="col-span-4 md:col-span-3 md:col-start-10"
                 >
                     <img
-                        v-if="item.shot"
                         v-bind="item.shot"
-                        sizes="(min-width: 48rem) 66vw, 100vw"
+                        sizes="(min-width: 48rem) 25vw, 100vw"
                         loading="lazy"
                         :alt="item.shotAlt"
                         :style="carried(`work-shot-${item.slug}`)"
                         width="1440"
                         height="900"
-                        class="w-full border border-default md:col-span-2 md:row-span-6"
+                        class="shot"
                     />
-                    <p class="font-mono text-xs text-muted uppercase">
-                        {{ item.kind }} · {{ item.stage }}
-                    </p>
-                    <h3
-                        class="font-display text-heading text-highlighted"
-                        :style="carried(`work-title-${item.slug}`)"
-                    >
-                        {{ item.name }}
-                    </h3>
-                    <p class="text-base">{{ item.what }}</p>
-                    <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm">
-                        <ULink
-                            v-if="item.story"
-                            :to="item.story"
-                            class="text-primary underline underline-offset-4"
-                        >
-                            {{ $t("workList.caseStudy") }}
-                        </ULink>
-                        <ULink :to="item.href" class="underline underline-offset-4">
-                            {{ item.cta }}
-                        </ULink>
-                    </div>
-                </article>
-            </div>
-        </UContainer>
-    </section>
+                </ULink>
+            </li>
+        </ul>
+    </UContainer>
 </template>
 
 <script setup lang="ts">
-import { isStudy } from "~/utils/work";
+import { useEventListener, useIntersectionObserver } from "@vueuse/core";
 
 const { data: work } = await useWorkList();
 
 const items = computed(() =>
-    work.value.map((entry, index) => ({
+    work.value.map((entry) => ({
         slug: entry.slug,
         name: entry.name,
-        kind: entry.kind,
+        inProgress: entry.inProgress,
         what: entry.line,
-        stage: entry.stage,
         story: entry.caseStudy ? `/work/${entry.slug}` : null,
         cta: entry.live.label,
         href: portalUrl(entry.live.href),
-        shot: index === 0 && isStudy(entry) ? workScreenshot(entry) : undefined,
-        shotAlt: isStudy(entry) ? entry.screenshot.alt : "",
+        shot: workScreenshot(entry),
+        shotAlt: entry.screenshot?.alt ?? "",
     })),
+);
+
+const rows = useTemplateRef<HTMLElement[]>("rows");
+/** The row crossing the middle of the screen, which stays lit while the rest dim. */
+const lit = ref<string | null>(null);
+/** Scrolling is what lights a row, so a page that loads with the list mid-screen stays undimmed. */
+const scrolled = ref(false);
+
+useEventListener("scroll", () => (scrolled.value = true), { passive: true, once: true });
+
+useIntersectionObserver(
+    computed(() => rows.value ?? []),
+    (entries) => {
+        for (const entry of entries) {
+            const slug = (entry.target as HTMLElement).dataset.slug ?? null;
+            if (entry.isIntersecting) lit.value = slug;
+            else if (lit.value === slug) lit.value = null;
+        }
+    },
+    { rootMargin: "-48% 0px -48% 0px" },
 );
 </script>

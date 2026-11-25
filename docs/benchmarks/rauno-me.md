@@ -4,7 +4,7 @@ kind: portfolio
 page-types: [landing, collection]
 traits: [light, one-accent]
 verdict: strong
-used-for: [developer-portal]
+used-for: [developer-portal, portfolio]
 analysed: 2026-11-17
 ---
 

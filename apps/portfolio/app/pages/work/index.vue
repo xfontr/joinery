@@ -6,38 +6,37 @@
         :lead="$t('work.lead')"
     />
 
-    <UContainer as="section" class="flex flex-col">
+    <UContainer class="flex flex-col gap-24">
         <ULink
             v-for="(item, index) in cases"
             :key="item.slug"
             :to="`/work/${item.slug}`"
-            class="group grid gap-6 border-t border-accented py-10 md:grid-cols-12 md:gap-10"
+            class="group page-grid items-start gap-y-6 border-t border-accented pt-5"
         >
+            <div class="col-span-4 flex flex-col gap-3 md:col-span-5">
+                <h2
+                    class="text-section text-highlighted group-hover:text-primary"
+                    :style="carried(`work-title-${item.slug}`)"
+                >
+                    {{ item.name }}
+                </h2>
+                <p v-if="item.inProgress" class="text-base text-primary">
+                    {{ $t("work.inProgress") }}
+                </p>
+                <p class="text-lead">{{ item.line }}</p>
+                <span class="self-start pt-2 link">{{ $t("work.cta") }}</span>
+            </div>
             <img
                 v-bind="workScreenshot(item)"
-                sizes="(min-width: 48rem) 58vw, 100vw"
+                sizes="(min-width: 48rem) 50vw, 100vw"
                 :loading="index ? 'lazy' : 'eager'"
                 :fetchpriority="index ? 'auto' : 'high'"
                 :alt="item.screenshot.alt"
                 :style="carried(`work-shot-${item.slug}`)"
                 width="1440"
                 height="900"
-                class="w-full border border-default md:col-span-7"
+                class="col-span-4 shot md:col-span-6 md:col-start-7"
             />
-            <div class="flex flex-col gap-3 md:col-span-5">
-                <p class="font-mono text-xs text-muted uppercase">{{ item.kind }}</p>
-                <h2
-                    class="font-display text-section text-highlighted group-hover:text-primary"
-                    :style="carried(`work-title-${item.slug}`)"
-                >
-                    {{ item.name }}
-                </h2>
-                <p class="text-lg">{{ item.line }}</p>
-                <p class="font-mono text-sm text-muted">{{ item.facts.join(" · ") }}</p>
-                <span class="mt-2 text-primary underline underline-offset-4">
-                    {{ $t("work.cta") }} →
-                </span>
-            </div>
         </ULink>
     </UContainer>
 </template>

@@ -25,7 +25,7 @@ const DATA = {
     decisions: [],
     workflows: {
         projects: ["blog", "shop"].map((id) => ({ id, title: id, map: MAP, glyph: MAP })),
-        templates: [],
+        templates: [{ id: "kiosk", title: "Kiosk app", summary: "A screen in a shop window." }],
         lessons: 0,
     },
     rules: null,
@@ -47,5 +47,15 @@ describe("agentic workflows page", () => {
         expect(links).toEqual(
             expect.arrayContaining(["/workflows/blog", "/workflows/shop"].map(portalUrl)),
         );
+    });
+
+    it("lists each template the portal serves, falling back to its own summary", async () => {
+        useRuntimeConfig().public.dataUrl = DATA_URL;
+        serveEndpoint(DATA_URL, () => DATA);
+        const wrapper = await mountSuspended(Page);
+        await flushPromises();
+
+        expect(wrapper.text()).toContain("Kiosk app");
+        expect(wrapper.text()).toContain("A screen in a shop window.");
     });
 });

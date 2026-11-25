@@ -2,8 +2,8 @@
 @import "@nuxt/ui";
 
 @theme static {
-    --font-sans: "IBM Plex Sans", system-ui, sans-serif;
-    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+    --font-sans: "Schibsted Grotesk", system-ui, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, monospace;
 
     /* Warm neutrals; every surface, text and border role of the identity is a step of this ramp */
     --color-paper-50: #f8f5ef;
@@ -31,25 +31,30 @@
     --color-terracotta-900: #3f1b0f;
     --color-terracotta-950: #261009;
 
-    --font-display: Fraunces, Georgia, serif;
-
-    /* Display steps; with `text-2xl`, `base`, `sm` and `xs` they make the scale's eight */
-    --text-statement: 8rem;
-    --text-statement--line-height: 1;
-    --text-statement--letter-spacing: -0.02em;
-    --text-statement--font-weight: 300;
-    --text-title: 4.5rem;
-    --text-title--line-height: 1;
-    --text-title--letter-spacing: -0.02em;
-    --text-title--font-weight: 300;
-    --text-section: 3rem;
+    /* One face at five steps; with `base` and `meta` they are the whole scale (decision 0045) */
+    --text-hero: clamp(3.4rem, 10.8vw, 10rem);
+    --text-hero--line-height: 0.86;
+    --text-hero--letter-spacing: -0.055em;
+    --text-hero--font-weight: 500;
+    --text-title: clamp(3rem, 8vw, 7rem);
+    --text-title--line-height: 0.9;
+    --text-title--letter-spacing: -0.05em;
+    --text-title--font-weight: 500;
+    --text-section: clamp(2.1rem, 3.9vw, 3.5rem);
     --text-section--line-height: 1;
-    --text-section--letter-spacing: -0.02em;
-    --text-section--font-weight: 300;
-    --text-heading: 2.25rem;
-    --text-heading--line-height: 1.1;
-    --text-heading--letter-spacing: -0.02em;
-    --text-heading--font-weight: 300;
+    --text-section--letter-spacing: -0.04em;
+    --text-section--font-weight: 500;
+    --text-heading: 1.625rem;
+    --text-heading--line-height: 1.15;
+    --text-heading--letter-spacing: -0.025em;
+    --text-heading--font-weight: 500;
+    --text-lead: 1.3125rem;
+    --text-lead--line-height: 1.45;
+    --text-lead--letter-spacing: -0.012em;
+    --text-meta: 0.8125rem;
+    --text-meta--line-height: 1.5;
+
+    --ease-settle: cubic-bezier(0.2, 0, 0, 1);
 }
 
 /* Tailwind v4 preflight leaves native <button> at the browser default (`cursor: default`) rather
@@ -154,7 +159,7 @@ button:not(:disabled) {
 
     --ui-primary: var(--color-terracotta-600);
     --ui-radius: 0.125rem;
-    --ui-container: 72rem;
+    --ui-container: 90rem;
     --radius-xs: 0.125rem;
     --radius-sm: 0.125rem;
     --radius-md: 0.125rem;
@@ -210,7 +215,73 @@ body {
 mark {
     background: none;
     color: var(--ui-primary);
-    font-style: italic;
+}
+
+::selection {
+    background: var(--ui-primary);
+    color: var(--ui-text-inverted);
+}
+
+h1,
+h2,
+h3 {
+    text-wrap: balance;
+}
+
+p {
+    text-wrap: pretty;
+}
+
+/* An inline link: a quiet underline that takes the accent on hover */
+@utility link {
+    color: var(--ui-text-highlighted);
+    text-decoration: underline;
+    text-decoration-color: var(--ui-border-accented);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.24em;
+    transition:
+        color 0.15s,
+        text-decoration-color 0.15s;
+
+    &:hover,
+    a:hover > & {
+        color: var(--ui-primary);
+        text-decoration-color: var(--ui-primary);
+    }
+}
+
+/* Four columns on a phone, twelve from `md` */
+@utility page-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 1.25rem;
+
+    @media (width >= 48rem) {
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        column-gap: 1.5rem;
+    }
+}
+
+/* Five equal columns from `md`, a hairline between each, stacked rows below */
+@utility sheet {
+    display: grid;
+
+    @media (width >= 48rem) {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+
+        & > * + * {
+            border-left: 1px solid var(--ui-border);
+        }
+    }
+}
+
+/* A screenshot's edge, drawn inside it so a light page doesn't bleed into the paper */
+@utility shot {
+    display: block;
+    width: 100%;
+    height: auto;
+    outline: 1px solid var(--ui-border);
+    outline-offset: -1px;
 }
 
 /* A card standing in for the pointer, such as the front page's rule previews, hides the real one */
@@ -223,6 +294,23 @@ mark {
 [data-workflow-map] [data-column] {
     fill: var(--ui-text-muted);
     text-transform: uppercase;
+}
+
+[data-map-plate] text {
+    font-size: 10px;
+    fill: var(--ui-text-highlighted);
+}
+
+[data-map-plate] [data-note-tone] {
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    fill: var(--ui-text-muted);
+}
+
+[data-map-plate] [data-leader] {
+    fill: none;
+    stroke: var(--ui-text-muted);
+    stroke-width: 0.75;
 }
 
 [data-workflow-map] [data-edge] {
@@ -280,4 +368,20 @@ mark {
 [data-workflow-glyph] rect[data-tone="waiting"] {
     fill: var(--ui-bg);
     stroke: var(--ui-primary);
+}
+
+/* The front page's first screen, less the header above it */
+@utility min-h-hero {
+    min-height: calc(100svh - 5.5rem);
+}
+
+/* Scrolling a list lights the row crossing mid-screen and dims the rest */
+@media (prefers-reduced-motion: no-preference) {
+    [data-dim-rows] > li {
+        transition: opacity 0.35s var(--ease-settle);
+    }
+
+    [data-dim-rows]:has(> [data-lit]) > li:not([data-lit]) {
+        opacity: 0.35;
+    }
 }

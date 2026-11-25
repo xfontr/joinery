@@ -75,7 +75,7 @@ beforeEach(() => {
         method: {
             prove: {
                 checks: {
-                    lint: { claimCount: "{enabled} rules, {inHouse} ours" },
+                    lint: { claimCount: "{count} rules" },
                     tests: { claimCount: "{count} specs" },
                 },
             },
@@ -88,7 +88,7 @@ afterEach(() => {
 });
 
 describe("method page", () => {
-    it("counts and names the benchmarked sites the portal lists", async () => {
+    it("names every benchmarked site the portal lists", async () => {
         const wrapper = await open({
             benchmarks: [
                 { id: "primer-style", title: "primer.style", screenshot: "/a.webp" },
@@ -96,7 +96,6 @@ describe("method page", () => {
             ],
         });
 
-        expect(wrapper.get("#look").text()).toContain("2 studied");
         expect(wrapper.get("#look").text()).toContain("primer.style · rauno.me");
     });
 
@@ -104,12 +103,6 @@ describe("method page", () => {
         const wrapper = await open();
 
         expect(wrapper.get("#plan").text()).toContain("Website rebuild");
-    });
-
-    it("words the lessons the portal counted", async () => {
-        const wrapper = await open();
-
-        expect(wrapper.get("#plan").text()).toContain("3 lessons");
     });
 
     it("words the portal's spec count", async () => {
@@ -121,7 +114,7 @@ describe("method page", () => {
     it("words the portal's lint rule counts", async () => {
         const wrapper = await open({ rules: { enabled: 2, inHouse: 1 } });
 
-        expect(wrapper.get("#prove").text()).toContain("2 rules, 1 ours");
+        expect(wrapper.get("#prove").text()).toContain("2 rules");
     });
 
     it("states every rule without a number when nothing was ever collected", async () => {

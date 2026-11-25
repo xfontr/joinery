@@ -29,8 +29,8 @@ const HUELLA = {
 const MARINA = {
     ...HUELLA,
     path: "/work/marina-roustan",
-    name: "Marina Roustan",
     inProgress: true,
+    name: "Marina Roustan",
 };
 
 const TOOL = {
@@ -70,16 +70,16 @@ describe("/work/<app>", () => {
         expect(setStatus).not.toHaveBeenCalled();
     });
 
-    it("flags a study still under way", async () => {
+    it("says a study still under way is in progress, so its screenshot isn't read as the new site", async () => {
         const wrapper = await mountSuspended(Page, { route: "/work/marina-roustan" });
 
-        expect(wrapper.find("aside").exists()).toBe(true);
+        expect(wrapper.text()).toContain("work.inProgress");
     });
 
-    it("shows no in-progress flag on a study that doesn't claim one", async () => {
+    it("says nothing about progress on a study that doesn't claim it", async () => {
         const wrapper = await mountSuspended(Page, { route: "/work/huella-legal" });
 
-        expect(wrapper.find("aside").exists()).toBe(false);
+        expect(wrapper.text()).not.toContain("work.inProgress");
     });
 
     it("answers an unknown app with a 404 instead of an empty case page", async () => {

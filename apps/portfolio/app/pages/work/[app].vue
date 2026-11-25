@@ -2,56 +2,53 @@
     <template v-if="work && entry">
         <PageHero
             :carry="`work-title-${work.slug}`"
-            :kicker="$t('workApp.kicker', { kind: work.kind })"
             :title="work.title"
             :mark="work.mark"
             :lead="work.line"
         >
-            <p class="font-mono text-sm text-muted">{{ facts }}</p>
-            <aside
-                v-if="work.inProgress"
-                class="flex max-w-2xl items-center gap-2 border-l-2 border-primary bg-muted px-4 py-3 font-mono text-xs text-primary uppercase"
-            >
-                <span class="size-2 animate-pulse rounded-full bg-primary" aria-hidden="true" />
-                {{ $t("workApp.inProgress", { stage: work.stage }) }}
-            </aside>
+            <p v-if="work.inProgress" class="text-base text-primary">
+                {{ $t("work.inProgress") }} · {{ work.stage }}
+            </p>
+            <ULink raw :to="live" class="self-start link">{{ work.live.label }}</ULink>
         </PageHero>
 
-        <WorkFigure :work />
-
-        <UContainer as="section" class="grid gap-10 pb-16 md:grid-cols-12">
-            <p class="font-display text-heading text-highlighted md:col-span-7">{{ work.why }}</p>
-            <ContentRenderer
-                :value="entry"
-                class="flex flex-col gap-4 text-base text-muted md:col-span-4 md:col-start-9"
-            />
+        <UContainer as="section" class="page-grid gap-y-10 border-t border-accented pt-10 pb-24">
+            <div class="col-span-4 flex flex-col gap-6 md:col-span-5">
+                <p class="text-heading text-highlighted">{{ work.why }}</p>
+                <ContentRenderer :value="entry" class="flex flex-col gap-4 text-base" />
+            </div>
+            <WorkFigure :work class="col-span-4 md:col-span-6 md:col-start-7" />
         </UContainer>
 
-        <section class="bg-muted">
-            <UContainer as="dl" class="grid gap-8 py-14 md:grid-cols-3">
-                <div v-for="row in work.design" :key="row.label" class="flex flex-col gap-2">
-                    <dt class="font-mono text-xs text-muted uppercase">{{ row.label }}</dt>
-                    <dd class="font-display text-2xl text-highlighted">{{ row.value }}</dd>
-                </div>
-            </UContainer>
-        </section>
+        <UContainer as="dl">
+            <div
+                v-for="row in work.design"
+                :key="row.label"
+                class="page-grid items-baseline gap-y-1 border-t border-default py-5 first:border-accented"
+            >
+                <dt class="col-span-4 font-mono text-meta text-muted md:col-span-3">
+                    {{ row.label }}
+                </dt>
+                <dd class="col-span-4 text-heading text-highlighted md:col-span-9">
+                    {{ row.value }}
+                </dd>
+            </div>
+        </UContainer>
 
-        <UContainer as="section" class="pt-16">
-            <h2 class="pb-8 font-display text-section text-highlighted">
+        <UContainer as="section" class="pt-32">
+            <h2 class="pb-10 text-section text-highlighted">
                 {{ $t("workApp.decisions.title") }}
                 <mark>{{ $t("workApp.decisions.titleMark") }}</mark>
             </h2>
-            <DecisionQuestions :items="work.decisions" split />
+            <DecisionQuestions :items="work.decisions" class="border-t border-accented" />
         </UContainer>
+
+        <WorkflowProjectMaps :project="work.slug" class="mt-32" />
     </template>
 
     <UContainer v-else as="section" class="flex flex-col gap-6 pt-10 pb-16">
-        <h1 class="font-display text-section text-highlighted">
-            {{ $t("workApp.missing.title") }}
-        </h1>
-        <ULink to="/" class="text-primary underline underline-offset-4">
-            {{ $t("workApp.missing.back") }}
-        </ULink>
+        <h1 class="text-section text-highlighted">{{ $t("workApp.missing.title") }}</h1>
+        <ULink raw to="/" class="self-start link">{{ $t("workApp.missing.back") }}</ULink>
     </UContainer>
 </template>
 
@@ -64,11 +61,7 @@ const route = useRoute();
 const { data: entry } = await useWorkEntry(() => String(route.params.app ?? ""));
 
 const work = computed(() => toWorkCase(entry.value));
-const facts = computed(() =>
-    work.value
-        ? t("workApp.facts", { facts: work.value.facts.join(" · "), date: work.value.countedOn })
-        : "",
-);
+const live = computed(() => (work.value ? portalUrl(work.value.live.href) : ""));
 
 if (!work.value) setResponseStatus(404);
 

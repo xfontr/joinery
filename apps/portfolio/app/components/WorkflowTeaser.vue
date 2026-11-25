@@ -1,29 +1,30 @@
 <template>
-    <UContainer as="section" id="workflows" class="pb-20">
-        <ULink
-            to="/agentic-workflows"
-            class="group grid items-center gap-10 border-t border-accented pt-10 md:grid-cols-12"
-        >
-            <div class="flex flex-col gap-5 md:col-span-6">
-                <p class="font-mono text-xs text-muted uppercase">
-                    {{ $t("workflowTeaser.kicker") }}
-                </p>
-                <h2 class="font-display text-section text-highlighted md:text-title">
+    <section id="workflows" class="dark bg-muted text-default">
+        <UContainer class="page-grid items-center gap-y-12 py-24">
+            <div class="col-span-4 flex flex-col gap-6">
+                <h2 class="text-section text-highlighted">
                     {{ $t("workflowTeaser.title") }}
                     <mark>{{ $t("workflowTeaser.titleMark") }}</mark>
                 </h2>
-                <p class="max-w-md text-lg text-default">{{ $t("workflowTeaser.line") }}</p>
-                <span
-                    class="font-display text-2xl text-highlighted underline decoration-primary underline-offset-8 group-hover:text-primary"
-                >
-                    {{ $t("workflowTeaser.cta") }} →
-                </span>
+                <p class="text-lead text-highlighted">{{ $t("workflowTeaser.line") }}</p>
+                <ULink raw to="/agentic-workflows" class="self-start link">
+                    {{ $t("workflowTeaser.cta") }}
+                </ULink>
             </div>
-            <div v-if="glyph" class="flex justify-center md:col-span-6">
-                <WorkflowGlyph :map="glyph" :label="$t('workflowTeaser.glyphLabel')" />
+            <div v-if="glyph" class="col-span-4 md:col-span-8 md:col-start-5">
+                <MapPlate
+                    :map="glyph"
+                    :label="$t('workflowTeaser.glyphLabel')"
+                    class="max-md:hidden"
+                />
+                <WorkflowGlyph
+                    :map="glyph"
+                    :label="$t('workflowTeaser.glyphLabel')"
+                    class="w-full md:hidden"
+                />
             </div>
-        </ULink>
-    </UContainer>
+        </UContainer>
+    </section>
 </template>
 
 <script setup lang="ts">

@@ -25,20 +25,6 @@
         }
     },
     "index": {
-        "deeper": {
-            "method": {
-                "kicker": "Method",
-                "title": "Five rules, all automated"
-            },
-            "work": {
-                "kicker": "Work",
-                "title": "Case studies"
-            },
-            "workflows": {
-                "kicker": "Planning",
-                "title": "Live project maps"
-            }
-        },
         "head": "This is where I build things",
         "lead": "Websites, mostly. And the tools I made to build them, the plans, and every decision I wasn't sure about, written down. Most companies keep that stuff behind closed doors, but I'm not a company, so it's all here.",
         "rules": {
@@ -119,7 +105,6 @@
             }
         },
         "example": {
-            "kicker": "Case study",
             "line": "A law magazine rebuilt with these five rules."
         },
         "head": "Method",
@@ -129,40 +114,34 @@
                 "accessibility": {
                     "area": "Accessibility",
                     "claim": "Pages are tested against WCAG AA in a real browser.",
-                    "cta": "The shared test kit",
-                    "how": "One violation fails the build."
+                    "cta": "The shared test kit"
                 },
                 "design": {
                     "area": "System design",
-                    "claim": "Each app is split into layers, and a layer can only use the ones below it.",
-                    "cta": "Dependency graph",
-                    "how": "Crossing a boundary is a lint error."
+                    "claim": "Strict boundaries between every app and package.",
+                    "cta": "Dependency graph"
                 },
                 "lint": {
                     "area": "Lint rules",
-                    "claim": "Lint rules, some written for this repo.",
-                    "claimCount": "{enabled} lint rules on, {inHouse} of them written for this repo.",
-                    "cta": "Which rules fire most",
-                    "how": "Turning one off needs a written reason."
+                    "claim": "Lint rules, some of them tailored to this repo.",
+                    "claimCount": "+{count} lint rules on, some of them tailored to this repo.",
+                    "cta": "Which rules fire most"
                 },
                 "observability": {
                     "area": "Observability",
                     "claim": "The apps report their errors and slow requests.",
-                    "cta": "Observability setup",
-                    "how": "A slow click can be traced to the query behind it."
+                    "cta": "Observability setup"
                 },
                 "repository": {
                     "area": "Repository",
                     "claim": "Repo-wide rules are checked on every commit, push and CI run.",
-                    "cta": "The checks",
-                    "how": "No hand-edited version numbers, no leftover TODOs."
+                    "cta": "The checks"
                 },
                 "tests": {
                     "area": "Tests",
                     "claim": "Tests, from single functions to full pages in a real browser.",
-                    "claimCount": "{count} test files, from single functions to full pages in a real browser.",
-                    "cta": "Coverage by project",
-                    "how": "If coverage drops below the minimum, the build fails."
+                    "claimCount": "+{count} test files, from single functions to full pages in a real browser.",
+                    "cta": "Coverage by project"
                 }
             }
         },
@@ -177,19 +156,16 @@
         },
         "decide": {
             "body": "When a call could go either way, I write a short report: the question, the options, what was picked and why. The next person, or agent, reads it instead of asking again.",
-            "count": "{count} written so far.",
             "more": "All decisions",
             "title": "Write decisions down."
         },
         "look": {
             "body": "I start each design from a study of other sites, some an awards jury picked and some that just caught my eye, and measure each one the same way: type, colour, layout.",
-            "count": "{count} sites studied so far.",
             "more": "All studies",
             "title": "Look before drawing."
         },
         "plan": {
             "body": "Each project starts from a template with every task the job needs, what each one waits on, and what went wrong last time.",
-            "count": "{count} lessons from past projects so far.",
             "more": "Project maps",
             "title": "Plan the whole job."
         },
@@ -238,6 +214,7 @@
     "work": {
         "cta": "Read the case study",
         "head": "Work",
+        "inProgress": "In progress",
         "lead": "Who each site is for, what changed, and the decisions behind it.",
         "title": "Case",
         "titleMark": "studies"
@@ -247,12 +224,13 @@
             "title": "Key",
             "titleMark": "decisions"
         },
-        "facts": "{facts}, as of {date}",
-        "inProgress": "In progress · {stage}",
-        "kicker": "Case study · {kind}",
         "missing": {
             "back": "Back to the front page",
             "title": "No such work"
+        },
+        "roadmap": {
+            "title": "The",
+            "titleMark": "roadmap"
         }
     },
     "workList": {
@@ -263,39 +241,10 @@
     "agenticWorkflows": {
         "head": "Project maps",
         "lead": "I plan each project as a map of tasks and build it ticket by ticket. The maps below are the real ones.",
-        "lessons": {
-            "all": "Every workflow, in the developer view",
-            "items": {
-                "answerFirst": {
-                    "paid": "Build tickets were filed the night before the final design (#208). A newsletter provider was swapped after it was already wired in (#242 → #299).",
-                    "rule": "Answer questions before filing work."
-                },
-                "blockedTicket": {
-                    "paid": "Otherwise an agent could start from a plan that changed an hour ago. The pick command checks GitHub first and refuses.",
-                    "rule": "A blocked ticket can't be picked."
-                },
-                "hostDecision": {
-                    "paid": "A hosting switch slipped in under a lint ticket and was reverted two days later (#377, #378).",
-                    "rule": "Changing host is its own decision."
-                },
-                "realDeploy": {
-                    "paid": "Four bugs only showed up once the site was deployed (#382, #387, #388, #395).",
-                    "rule": "Test deploy work on a real deploy."
-                },
-                "unknownsFirst": {
-                    "paid": "Hosting was picked on paper, then changed five times (#186, #244, #302, #377).",
-                    "rule": "Unknowns go first."
-                }
-            },
-            "line": "Each one cost a real project time. The numbers are the tickets where it happened.",
-            "title": "Lessons from",
-            "titleMark": "past projects"
-        },
         "projects": {
-            "blocks": "{done} of {total} blocks done · {moving} moving",
+            "done": "{percent}% done",
             "mapLabel": "{title} as a map of blocks",
             "open": "Open the live map",
-            "tickets": "{blocks} · {closed} of {total} tickets closed",
             "title": "Current",
             "titleMark": "projects"
         },
@@ -320,6 +269,17 @@
                 "body": "A task starts once everything it depends on is done.",
                 "title": "Start what's unblocked"
             }
+        },
+        "templates": {
+            "all": "Every template, in the developer view",
+            "items": {
+                "custom": "Anything the other two don't fit, like a developer tool or a package. It starts from the few blocks every project needs, and the rest is drafted for that project.",
+                "new-website": "A new site with nothing to migrate. The owner signs off four times: scope, brand, design and go-live.",
+                "website-rebuild": "An existing site, usually WordPress, rebuilt on the same brand. It comes from the Huella Legal rebuild, and the owner signs off three times: scope, design and go-live."
+            },
+            "line": "Every map above started as one of these. Each project keeps the blocks it needs and switches the rest off.",
+            "title": "Where a map",
+            "titleMark": "starts"
         },
         "title": "Project",
         "titleMark": "maps"
@@ -353,9 +313,6 @@
     },
     "decisionsPreview": {
         "number": "Decision {number}"
-    },
-    "ruleSection": {
-        "skill": "Skill:"
     },
     "decisions": {
         "status": {

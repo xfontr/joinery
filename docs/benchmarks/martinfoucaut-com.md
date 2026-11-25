@@ -4,7 +4,7 @@ kind: portfolio
 page-types: [landing, table]
 traits: [dark, one-accent]
 verdict: partial
-used-for: [developer-portal]
+used-for: [developer-portal, portfolio]
 analysed: 2026-11-17
 ---
 

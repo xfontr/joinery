@@ -4,7 +4,7 @@ kind: portfolio
 page-types: [landing, case-study]
 traits: [light, photo-led]
 verdict: partial
-used-for: [developer-portal]
+used-for: [developer-portal, portfolio]
 analysed: 2026-11-17
 ---
 

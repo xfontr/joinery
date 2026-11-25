@@ -22,7 +22,8 @@ export default [
         rules: {
             "better-tailwindcss/no-unknown-classes": [
                 "error",
-                { ignore: ["^tone-(good|warn|bad)$"] },
+                // `dark` scopes Nuxt UI's dark roles to one section, such as the map bands
+                { ignore: ["^tone-(good|warn|bad)$", "^dark$"] },
             ],
             "better-tailwindcss/no-restricted-classes": [
                 "error",

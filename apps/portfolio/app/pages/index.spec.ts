@@ -77,7 +77,7 @@ describe("front page", () => {
     it("states every proof without a number when nothing was ever collected", async () => {
         const wrapper = await open();
 
-        expect(wrapper.findAll("article")).toHaveLength(5 + WORK.length);
+        expect(wrapper.findAll("[data-rule]")).toHaveLength(5);
         expect(wrapper.text()).toContain("index.rules.look.proof");
         expect(wrapper.text()).toContain("index.rules.prove.proof");
         expect(wrapper.find("[data-workflow-glyph]").exists()).toBe(false);
@@ -119,7 +119,7 @@ describe("front page", () => {
             benchmarks: [{ id: "rauno-me", title: "rauno.me", screenshot: "/shots/rauno-me.webp" }],
         });
 
-        await wrapper.find("article").trigger("pointerenter", { pointerType: "mouse" });
+        await wrapper.find("[data-rule]").trigger("pointerenter", { pointerType: "mouse" });
 
         expect(wrapper.get("[data-cursor-preview] img").attributes("src")).toBe(
             portalUrl("/shots/rauno-me.webp"),
@@ -138,7 +138,7 @@ describe("front page", () => {
         }));
         const wrapper = await open();
 
-        await wrapper.find("article").trigger("pointerenter", { pointerType });
+        await wrapper.find("[data-rule]").trigger("pointerenter", { pointerType });
 
         expect(wrapper.find("[data-cursor-preview]").exists()).toBe(previewed);
     });
