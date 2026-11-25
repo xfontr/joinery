@@ -8,4 +8,9 @@ export default defineNuxtPlugin((nuxtApp) => {
             delete root.dataset.pageTransition;
         });
     });
+
+    // Safari restores a page from the back-forward cache with its view transitions frozen mid-run
+    window.addEventListener("pageshow", (event) => {
+        if (event.persisted) window.location.reload();
+    });
 });
