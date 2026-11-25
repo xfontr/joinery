@@ -2,7 +2,7 @@
 order: 3
 name: Developer portal
 kind: Developer portal
-stage: Mid-redesign
+stage: Live
 line: The dashboards I run this repo from, with every decision, plan, audit and check in one place.
 caseStudy: false
 screenshot:
