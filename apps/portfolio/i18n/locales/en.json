@@ -25,20 +25,6 @@
         }
     },
     "index": {
-        "deeper": {
-            "method": {
-                "kicker": "Method",
-                "title": "Five rules, all automated"
-            },
-            "work": {
-                "kicker": "Work",
-                "title": "Case studies"
-            },
-            "workflows": {
-                "kicker": "Planning",
-                "title": "Live project maps"
-            }
-        },
         "head": "This is where I build things",
         "lead": "Websites, mostly. And the tools I made to build them, the plans, and every decision I wasn't sure about, written down. Most companies keep that stuff behind closed doors, but I'm not a company, so it's all here.",
         "rules": {
@@ -119,7 +105,6 @@
             }
         },
         "example": {
-            "kicker": "Case study",
             "line": "A law magazine rebuilt with these five rules."
         },
         "head": "Method",
@@ -129,40 +114,34 @@
                 "accessibility": {
                     "area": "Accessibility",
                     "claim": "Pages are tested against WCAG AA in a real browser.",
-                    "cta": "The shared test kit",
-                    "how": "One violation fails the build."
+                    "cta": "The shared test kit"
                 },
                 "design": {
                     "area": "System design",
-                    "claim": "Each app is split into layers, and a layer can only use the ones below it.",
-                    "cta": "Dependency graph",
-                    "how": "Crossing a boundary is a lint error."
+                    "claim": "Strict boundaries between every app and package.",
+                    "cta": "Dependency graph"
                 },
                 "lint": {
                     "area": "Lint rules",
-                    "claim": "Lint rules, some written for this repo.",
-                    "claimCount": "{enabled} lint rules on, {inHouse} of them written for this repo.",
-                    "cta": "Which rules fire most",
-                    "how": "Turning one off needs a written reason."
+                    "claim": "Lint rules, some of them tailored to this repo.",
+                    "claimCount": "+{count} lint rules on, some of them tailored to this repo.",
+                    "cta": "Which rules fire most"
                 },
                 "observability": {
                     "area": "Observability",
                     "claim": "The apps report their errors and slow requests.",
-                    "cta": "Observability setup",
-                    "how": "A slow click can be traced to the query behind it."
+                    "cta": "Observability setup"
                 },
                 "repository": {
                     "area": "Repository",
                     "claim": "Repo-wide rules are checked on every commit, push and CI run.",
-                    "cta": "The checks",
-                    "how": "No hand-edited version numbers, no leftover TODOs."
+                    "cta": "The checks"
                 },
                 "tests": {
                     "area": "Tests",
                     "claim": "Tests, from single functions to full pages in a real browser.",
-                    "claimCount": "{count} test files, from single functions to full pages in a real browser.",
-                    "cta": "Coverage by project",
-                    "how": "If coverage drops below the minimum, the build fails."
+                    "claimCount": "+{count} test files, from single functions to full pages in a real browser.",
+                    "cta": "Coverage by project"
                 }
             }
         },
@@ -235,6 +214,7 @@
     "work": {
         "cta": "Read the case study",
         "head": "Work",
+        "inProgress": "In progress",
         "lead": "Who each site is for, what changed, and the decisions behind it.",
         "title": "Case",
         "titleMark": "studies"

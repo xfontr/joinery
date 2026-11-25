@@ -16,6 +16,9 @@
                     >
                         {{ item.name }}
                     </h3>
+                    <p v-if="item.inProgress" class="mt-1 text-base text-primary">
+                        {{ $t("work.inProgress") }}
+                    </p>
                 </ULink>
                 <div class="col-span-4 flex flex-col gap-2 md:col-span-5">
                     <p class="text-base">{{ item.what }}</p>
@@ -27,8 +30,8 @@
                     </p>
                 </div>
                 <ULink
-                    v-if="item.shot && item.story"
-                    :to="item.story"
+                    v-if="item.shot"
+                    :to="item.story ?? item.href"
                     class="col-span-4 md:col-span-3 md:col-start-10"
                 >
                     <img
@@ -48,20 +51,19 @@
 </template>
 
 <script setup lang="ts">
-import { isStudy } from "~/utils/work";
-
 const { data: work } = await useWorkList();
 
 const items = computed(() =>
     work.value.map((entry) => ({
         slug: entry.slug,
         name: entry.name,
+        inProgress: entry.inProgress,
         what: entry.line,
         story: entry.caseStudy ? `/work/${entry.slug}` : null,
         cta: entry.live.label,
         href: portalUrl(entry.live.href),
-        shot: isStudy(entry) ? workScreenshot(entry) : undefined,
-        shotAlt: isStudy(entry) ? entry.screenshot.alt : "",
+        shot: workScreenshot(entry),
+        shotAlt: entry.screenshot?.alt ?? "",
     })),
 );
 </script>

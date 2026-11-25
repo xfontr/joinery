@@ -31,33 +31,9 @@
     <WorkflowTeaser />
 
     <WorkList />
-
-    <UContainer class="pt-32">
-        <ul class="page-grid gap-y-6 border-t border-accented pt-6">
-            <li v-for="item in DEEPER" :key="item.id" class="col-span-4">
-                <ULink :to="item.to" class="group flex flex-col gap-2">
-                    <span class="font-mono text-meta text-muted">
-                        {{ $t(`index.deeper.${item.id}.kicker`) }}
-                    </span>
-                    <span
-                        class="text-heading text-highlighted group-hover:text-primary"
-                        :style="item.carry"
-                    >
-                        {{ $t(`index.deeper.${item.id}.title`) }}
-                    </span>
-                </ULink>
-            </li>
-        </ul>
-    </UContainer>
 </template>
 
 <script setup lang="ts">
-const DEEPER = [
-    { id: "method", to: "/method", carry: carried("hero-method") },
-    { id: "workflows", to: "/agentic-workflows", carry: carried("hero-workflows") },
-    { id: "work", to: "/work", carry: carried("hero-work") },
-] as const;
-
 const { t } = useI18n();
 useSeoMeta({ title: t("index.head"), description: t("index.lead") });
 

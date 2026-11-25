@@ -6,6 +6,9 @@
             :mark="work.mark"
             :lead="work.line"
         >
+            <p v-if="work.inProgress" class="text-base text-primary">
+                {{ $t("work.inProgress") }} · {{ work.stage }}
+            </p>
             <ULink raw :to="live" class="self-start link">{{ work.live.label }}</ULink>
         </PageHero>
 
@@ -16,6 +19,8 @@
             </div>
             <WorkFigure :work class="col-span-4 md:col-span-6 md:col-start-7" />
         </UContainer>
+
+        <WorkflowProjectMaps :project="work.slug" class="mb-24" />
 
         <UContainer as="dl">
             <div

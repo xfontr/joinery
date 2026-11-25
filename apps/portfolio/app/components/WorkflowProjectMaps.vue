@@ -1,7 +1,7 @@
 <template>
-    <section class="dark mt-32 bg-muted text-default">
+    <section v-if="maps.length" class="dark bg-muted text-default">
         <UContainer class="flex flex-col gap-20 py-24">
-            <h2 class="text-section text-highlighted">
+            <h2 v-if="!project" class="text-section text-highlighted">
                 {{ $t("agenticWorkflows.projects.title") }}
                 <mark>{{ $t("agenticWorkflows.projects.titleMark") }}</mark>
             </h2>
@@ -14,7 +14,9 @@
                     class="col-span-4 flex flex-col gap-2"
                     :class="item.wide && 'md:col-span-12 md:flex-row md:items-baseline md:gap-8'"
                 >
-                    <h3 class="text-heading text-highlighted">{{ item.title }}</h3>
+                    <component :is="project ? 'h2' : 'h3'" class="text-heading text-highlighted">
+                        {{ item.title }}
+                    </component>
                     <p class="text-base text-highlighted">{{ item.done }}</p>
                     <ULink
                         raw
@@ -37,22 +39,33 @@
 </template>
 
 <script setup lang="ts">
+const { project } = defineProps<Props>();
+
 /** Wider than this, in the map's own units, a map gets the full width under its heading. */
 const WIDE = 800;
+
+interface Props {
+    /** Show only this project's map, as a case study does; unset shows every map. */
+    project?: string;
+}
 
 const { t } = useI18n();
 const { data: projects } = await useWorkflowMaps();
 
 const maps = computed(() =>
-    projects.value.map(({ id, title, map }) => ({
-        id,
-        title,
-        map,
-        wide: map.width > WIDE,
-        label: t("agenticWorkflows.projects.mapLabel", { title }),
-        done: t("agenticWorkflows.projects.done", {
-            percent: map.blocks.total ? Math.round((map.blocks.done / map.blocks.total) * 100) : 0,
-        }),
-    })),
+    projects.value
+        .filter(({ id }) => !project || id === project)
+        .map(({ id, title, map }) => ({
+            id,
+            title,
+            map,
+            wide: map.width > WIDE,
+            label: t("agenticWorkflows.projects.mapLabel", { title }),
+            done: t("agenticWorkflows.projects.done", {
+                percent: map.blocks.total
+                    ? Math.round((map.blocks.done / map.blocks.total) * 100)
+                    : 0,
+            }),
+        })),
 );
 </script>

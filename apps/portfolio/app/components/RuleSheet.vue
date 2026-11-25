@@ -9,7 +9,7 @@
                 to="/method"
                 class="col-span-4 font-mono text-meta link md:col-span-3 md:col-start-10 md:justify-self-end"
             >
-                {{ $t("index.deeper.method.title") }}
+                {{ $t("app.visitor.nav.method") }}
             </ULink>
         </div>
         <ol class="sheet border-t border-accented">

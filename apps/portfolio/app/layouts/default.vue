@@ -50,8 +50,8 @@
                                 :to="item.to"
                                 data-menu-link
                                 :style="{ '--order': order }"
-                                class="text-title text-highlighted"
-                                active-class="text-primary"
+                                :class="current(item.to) ? 'text-primary' : 'text-highlighted'"
+                                class="text-title"
                                 :aria-current="current(item.to)"
                                 @click="close"
                             >
@@ -78,8 +78,11 @@
                         v-for="item in NAV"
                         :key="item.to"
                         :to="item.to"
-                        class="text-highlighted hover:text-primary"
-                        active-class="text-primary"
+                        :class="
+                            current(item.to)
+                                ? 'text-primary underline decoration-primary underline-offset-8'
+                                : 'text-highlighted hover:text-primary'
+                        "
                         :aria-current="current(item.to)"
                     >
                         {{ $t(`app.visitor.nav.${item.key}`) }}

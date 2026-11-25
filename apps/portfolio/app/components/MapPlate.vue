@@ -1,5 +1,5 @@
 <template>
-    <figure data-map-plate class="flex flex-col gap-4">
+    <figure data-map-plate>
         <svg
             data-workflow-glyph
             :viewBox="`${-PAD} -16 ${map.width + PAD * 2} ${map.height + 32}`"
@@ -33,7 +33,6 @@
                 </text>
             </g>
         </svg>
-        <figcaption class="font-mono text-meta text-muted">{{ label }}</figcaption>
     </figure>
 </template>
 

@@ -1,26 +1,28 @@
 <template>
-    <PageHero
-        carry="hero-workflows"
-        :title="$t('agenticWorkflows.title')"
-        :mark="$t('agenticWorkflows.titleMark')"
-        :lead="$t('agenticWorkflows.lead')"
-    />
+    <div class="flex flex-col justify-between md:min-h-hero">
+        <PageHero
+            carry="hero-workflows"
+            :title="$t('agenticWorkflows.title')"
+            :mark="$t('agenticWorkflows.titleMark')"
+            :lead="$t('agenticWorkflows.lead')"
+        />
 
-    <UContainer>
-        <ol class="sheet border-t border-accented">
-            <li
-                v-for="(step, index) in STEPS"
-                :key="step"
-                class="flex flex-col gap-4 border-t border-default pt-5 pb-8 md:border-t-0 md:px-5 md:first:pl-0"
-            >
-                <span class="font-mono text-meta text-muted">0{{ index + 1 }}</span>
-                <span class="text-heading text-highlighted">
-                    {{ $t(`agenticWorkflows.steps.${step}.title`) }}
-                </span>
-                <span class="text-base">{{ $t(`agenticWorkflows.steps.${step}.body`) }}</span>
-            </li>
-        </ol>
-    </UContainer>
+        <UContainer>
+            <ol class="sheet border-t border-accented">
+                <li
+                    v-for="(step, index) in STEPS"
+                    :key="step"
+                    class="flex flex-col gap-4 border-t border-default pt-5 pb-8 md:border-t-0 md:px-5 md:first:pl-0"
+                >
+                    <span class="font-mono text-meta text-muted">0{{ index + 1 }}</span>
+                    <span class="text-heading text-highlighted">
+                        {{ $t(`agenticWorkflows.steps.${step}.title`) }}
+                    </span>
+                    <span class="text-base">{{ $t(`agenticWorkflows.steps.${step}.body`) }}</span>
+                </li>
+            </ol>
+        </UContainer>
+    </div>
 
     <WorkflowProjectMaps />
 

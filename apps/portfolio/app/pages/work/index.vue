@@ -20,6 +20,9 @@
                 >
                     {{ item.name }}
                 </h2>
+                <p v-if="item.inProgress" class="text-base text-primary">
+                    {{ $t("work.inProgress") }}
+                </p>
                 <p class="text-lead">{{ item.line }}</p>
                 <span class="self-start pt-2 link">{{ $t("work.cta") }}</span>
             </div>
