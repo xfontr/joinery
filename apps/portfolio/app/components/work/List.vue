@@ -3,10 +3,13 @@
         <h2 class="pb-10 text-section text-highlighted">
             {{ $t("workList.title") }} <mark>{{ $t("workList.titleMark") }}</mark>
         </h2>
-        <ul class="border-t border-accented">
+        <ul data-dim-rows class="border-t border-accented">
             <li
                 v-for="item in items"
                 :key="item.slug"
+                ref="rows"
+                :data-slug="item.slug"
+                :data-lit="(scrolled && lit === item.slug) || undefined"
                 class="page-grid items-start gap-y-4 border-t border-default py-7 first:border-t-0"
             >
                 <ULink :to="item.story ?? item.href" class="group col-span-4 md:col-span-3">
@@ -51,6 +54,8 @@
 </template>
 
 <script setup lang="ts">
+import { useEventListener, useIntersectionObserver } from "@vueuse/core";
+
 const { data: work } = await useWorkList();
 
 const items = computed(() =>
@@ -65,5 +70,25 @@ const items = computed(() =>
         shot: workScreenshot(entry),
         shotAlt: entry.screenshot?.alt ?? "",
     })),
+);
+
+const rows = useTemplateRef<HTMLElement[]>("rows");
+/** The row crossing the middle of the screen, which stays lit while the rest dim. */
+const lit = ref<string | null>(null);
+/** Scrolling is what lights a row, so a page that loads with the list mid-screen stays undimmed. */
+const scrolled = ref(false);
+
+useEventListener("scroll", () => (scrolled.value = true), { passive: true, once: true });
+
+useIntersectionObserver(
+    computed(() => rows.value ?? []),
+    (entries) => {
+        for (const entry of entries) {
+            const slug = (entry.target as HTMLElement).dataset.slug ?? null;
+            if (entry.isIntersecting) lit.value = slug;
+            else if (lit.value === slug) lit.value = null;
+        }
+    },
+    { rootMargin: "-48% 0px -48% 0px" },
 );
 </script>

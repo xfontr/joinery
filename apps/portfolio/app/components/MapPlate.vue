@@ -1,5 +1,5 @@
 <template>
-    <figure data-map-plate>
+    <figure ref="plate" data-map-plate>
         <svg
             data-workflow-glyph
             :viewBox="`${-PAD} -16 ${map.width + PAD * 2} ${map.height + 32}`"
@@ -16,8 +16,9 @@
                 :width="map.nodeWidth"
                 :height="map.nodeHeight"
                 :data-tone="node.tone"
+                data-node
             />
-            <g v-for="note in notes" :key="note.id" aria-hidden="true">
+            <g v-for="note in notes" :key="note.id" aria-hidden="true" data-note>
                 <path :d="note.line" data-leader />
                 <rect :x="note.x - 8" :y="note.y - 8" width="16" height="16" data-leader />
                 <text :x="note.textX" :y="note.textY" :text-anchor="note.anchor">
@@ -46,6 +47,33 @@ interface Props {
 }
 
 const { map } = defineProps<Props>();
+
+const plate = useTemplateRef<HTMLElement>("plate");
+
+/** The plan draws itself in order the first time it scrolls in; one already in view stays still. */
+useMotion(plate, "scroll", ({ gsap, scope }) => {
+    if (scope.getBoundingClientRect().top < window.innerHeight) return;
+
+    const nodes = gsap.utils
+        .toArray<SVGRectElement>("[data-node]", scope)
+        .sort(
+            (a, b) =>
+                a.x.baseVal.value - b.x.baseVal.value || a.y.baseVal.value - b.y.baseVal.value,
+        );
+
+    gsap.timeline({
+        defaults: { ease: "power3.out" },
+        scrollTrigger: { trigger: scope, start: "top 75%", once: true },
+    })
+        .from("[data-edge]", { drawSVG: 0, duration: 0.88, stagger: 0.02, ease: "power2.inOut" })
+        .from(
+            nodes,
+            { autoAlpha: 0, scale: 0.4, transformOrigin: "50% 50%", duration: 0.4, stagger: 0.024 },
+            0.12,
+        )
+        .from("[data-note] [data-leader]", { drawSVG: 0, duration: 0.48 }, "-=0.16")
+        .from("[data-note] text", { autoAlpha: 0, y: 6, duration: 0.32, stagger: 0.04 }, "-=0.24");
+});
 
 /** Room on each side of the glyph for the notes, in the glyph's own units. */
 const PAD = 130;

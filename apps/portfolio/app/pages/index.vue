@@ -1,12 +1,10 @@
 <template>
     <UContainer
+        ref="hero"
         as="section"
-        class="flex flex-col justify-between gap-12 pt-8 pb-10 md:min-h-hero md:gap-16 md:pt-16"
+        class="flex flex-col justify-between gap-12 overflow-x-clip pt-8 pb-10 md:min-h-hero md:gap-16 md:pt-16"
     >
-        <h1 class="text-hero text-highlighted">
-            {{ $t("index.title") }}<br />
-            <mark>{{ $t("index.titleMark") }}</mark>
-        </h1>
+        <HeroStatement :title="$t('index.title')" :mark="$t('index.titleMark')" />
         <div class="page-grid items-end gap-y-10">
             <p class="col-span-4 text-lead text-highlighted md:col-span-6">
                 {{ $t("index.lead") }}
@@ -47,5 +45,20 @@ const index = computed(() =>
         stage: entry.stage,
         to: entry.caseStudy ? `/work/${entry.slug}` : portalUrl(entry.live.href),
     })),
+);
+
+const hero = useTemplateRef<{ $el: HTMLElement }>("hero");
+
+/** As the first screen scrolls away, the statement's two lines part. */
+useMotion(
+    computed(() => hero.value?.$el ?? null),
+    "scroll",
+    ({ gsap, scope }) => {
+        const [first, second] = gsap.utils.toArray<HTMLElement>("[data-line]", scope);
+        const drift = { trigger: scope, start: "top top", end: "bottom top", scrub: 0.6 };
+
+        gsap.to(first ?? [], { x: "-5vw", ease: "none", scrollTrigger: drift });
+        gsap.to(second ?? [], { x: "7vw", ease: "none", scrollTrigger: drift });
+    },
 );
 </script>

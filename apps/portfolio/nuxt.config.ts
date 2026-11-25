@@ -142,6 +142,10 @@ export default defineNuxtConfig({
 
     vite: {
         plugins: [imagetools()],
+        // Found only once a page imports it, gsap re-bundles the deps mid-session and loads Vue twice
+        optimizeDeps: {
+            include: ["gsap", "gsap/DrawSVGPlugin", "gsap/ScrollTrigger", "gsap/SplitText"],
+        },
     },
 
     i18n: {

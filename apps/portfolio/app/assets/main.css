@@ -53,6 +53,8 @@
     --text-lead--letter-spacing: -0.012em;
     --text-meta: 0.8125rem;
     --text-meta--line-height: 1.5;
+
+    --ease-settle: cubic-bezier(0.2, 0, 0, 1);
 }
 
 /* Tailwind v4 preflight leaves native <button> at the browser default (`cursor: default`) rather
@@ -371,4 +373,15 @@ p {
 /* The front page's first screen, less the header above it */
 @utility min-h-hero {
     min-height: calc(100svh - 5.5rem);
+}
+
+/* Scrolling a list lights the row crossing mid-screen and dims the rest */
+@media (prefers-reduced-motion: no-preference) {
+    [data-dim-rows] > li {
+        transition: opacity 0.35s var(--ease-settle);
+    }
+
+    [data-dim-rows]:has(> [data-lit]) > li:not([data-lit]) {
+        opacity: 0.35;
+    }
 }
