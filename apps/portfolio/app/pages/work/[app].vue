@@ -20,8 +20,6 @@
             <WorkFigure :work class="col-span-4 md:col-span-6 md:col-start-7" />
         </UContainer>
 
-        <WorkflowProjectMaps :project="work.slug" class="mb-24" />
-
         <UContainer as="dl">
             <div
                 v-for="row in work.design"
@@ -44,6 +42,8 @@
             </h2>
             <DecisionQuestions :items="work.decisions" class="border-t border-accented" />
         </UContainer>
+
+        <WorkflowProjectMaps :project="work.slug" class="mt-32" />
     </template>
 
     <UContainer v-else as="section" class="flex flex-col gap-6 pt-10 pb-16">

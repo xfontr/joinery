@@ -1,9 +1,9 @@
 <template>
     <section v-if="maps.length" class="dark bg-muted text-default">
         <UContainer class="flex flex-col gap-20 py-24">
-            <h2 v-if="!project" class="text-section text-highlighted">
-                {{ $t("agenticWorkflows.projects.title") }}
-                <mark>{{ $t("agenticWorkflows.projects.titleMark") }}</mark>
+            <h2 class="text-section text-highlighted">
+                {{ $t(`${heading}.title`) }}
+                <mark>{{ $t(`${heading}.titleMark`) }}</mark>
             </h2>
             <article
                 v-for="item in maps"
@@ -14,9 +14,9 @@
                     class="col-span-4 flex flex-col gap-2"
                     :class="item.wide && 'md:col-span-12 md:flex-row md:items-baseline md:gap-8'"
                 >
-                    <component :is="project ? 'h2' : 'h3'" class="text-heading text-highlighted">
+                    <h3 v-if="!project" class="text-heading text-highlighted">
                         {{ item.title }}
-                    </component>
+                    </h3>
                     <p class="text-base text-highlighted">{{ item.done }}</p>
                     <ULink
                         raw
@@ -51,6 +51,7 @@ interface Props {
 
 const { t } = useI18n();
 const { data: projects } = await useWorkflowMaps();
+const heading = computed(() => (project ? "workApp.roadmap" : "agenticWorkflows.projects"));
 
 const maps = computed(() =>
     projects.value

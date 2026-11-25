@@ -227,6 +227,10 @@
         "missing": {
             "back": "Back to the front page",
             "title": "No such work"
+        },
+        "roadmap": {
+            "title": "The",
+            "titleMark": "roadmap"
         }
     },
     "workList": {
@@ -237,34 +241,6 @@
     "agenticWorkflows": {
         "head": "Project maps",
         "lead": "I plan each project as a map of tasks and build it ticket by ticket. The maps below are the real ones.",
-        "lessons": {
-            "all": "Every workflow, in the developer view",
-            "items": {
-                "answerFirst": {
-                    "paid": "Build tickets were filed the night before the final design (#208). A newsletter provider was swapped after it was already wired in (#242 → #299).",
-                    "rule": "Answer questions before filing work."
-                },
-                "blockedTicket": {
-                    "paid": "Otherwise an agent could start from a plan that changed an hour ago. The pick command checks GitHub first and refuses.",
-                    "rule": "A blocked ticket can't be picked."
-                },
-                "hostDecision": {
-                    "paid": "A hosting switch slipped in under a lint ticket and was reverted two days later (#377, #378).",
-                    "rule": "Changing host is its own decision."
-                },
-                "realDeploy": {
-                    "paid": "Four bugs only showed up once the site was deployed (#382, #387, #388, #395).",
-                    "rule": "Test deploy work on a real deploy."
-                },
-                "unknownsFirst": {
-                    "paid": "Hosting was picked on paper, then changed five times (#186, #244, #302, #377).",
-                    "rule": "Unknowns go first."
-                }
-            },
-            "line": "Each one cost a real project time. The numbers are the tickets where it happened.",
-            "title": "Lessons from",
-            "titleMark": "past projects"
-        },
         "projects": {
             "done": "{percent}% done",
             "mapLabel": "{title} as a map of blocks",
@@ -293,6 +269,17 @@
                 "body": "A task starts once everything it depends on is done.",
                 "title": "Start what's unblocked"
             }
+        },
+        "templates": {
+            "all": "Every template, in the developer view",
+            "items": {
+                "custom": "Anything the other two don't fit, like a developer tool or a package. It starts from the few blocks every project needs, and the rest is drafted for that project.",
+                "new-website": "A new site with nothing to migrate. The owner signs off four times: scope, brand, design and go-live.",
+                "website-rebuild": "An existing site, usually WordPress, rebuilt on the same brand. It comes from the Huella Legal rebuild, and the owner signs off three times: scope, design and go-live."
+            },
+            "line": "Every map above started as one of these. Each project keeps the blocks it needs and switches the rest off.",
+            "title": "Where a map",
+            "titleMark": "starts"
         },
         "title": "Project",
         "titleMark": "maps"

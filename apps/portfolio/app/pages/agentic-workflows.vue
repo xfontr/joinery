@@ -26,49 +26,37 @@
 
     <WorkflowProjectMaps />
 
-    <UContainer as="section" class="pt-32">
+    <UContainer v-if="templates.length" as="section" class="pt-32">
         <div class="page-grid items-end gap-y-6 pb-10">
             <h2 class="col-span-4 text-section text-highlighted md:col-span-6">
-                {{ $t("agenticWorkflows.lessons.title") }}
-                <mark>{{ $t("agenticWorkflows.lessons.titleMark") }}</mark>
+                {{ $t("agenticWorkflows.templates.title") }}
+                <mark>{{ $t("agenticWorkflows.templates.titleMark") }}</mark>
             </h2>
             <p class="col-span-4 text-base md:col-span-4 md:col-start-9">
-                {{ $t("agenticWorkflows.lessons.line") }}
+                {{ $t("agenticWorkflows.templates.line") }}
             </p>
         </div>
-        <ul class="border-t border-accented">
-            <li
-                v-for="lesson in LESSONS"
-                :key="lesson"
-                class="page-grid gap-y-2 border-t border-default py-6 first:border-t-0"
-            >
-                <span class="col-span-4 text-heading text-highlighted md:col-span-5">
-                    {{ $t(`agenticWorkflows.lessons.items.${lesson}.rule`) }}
-                </span>
-                <span class="col-span-4 text-base md:col-span-6 md:col-start-7">
-                    {{ $t(`agenticWorkflows.lessons.items.${lesson}.paid`) }}
-                </span>
-            </li>
-        </ul>
+        <TermList :items="templates" grid class="border-t border-accented" />
         <ULink raw :to="WORKFLOWS" class="mt-8 inline-block link">
-            {{ $t("agenticWorkflows.lessons.all") }} ↗
+            {{ $t("agenticWorkflows.templates.all") }} ↗
         </ULink>
     </UContainer>
 </template>
 
 <script setup lang="ts">
 const STEPS = ["template", "unblocked", "file", "agents", "lessons"] as const;
-const LESSONS = [
-    "answerFirst",
-    "unknownsFirst",
-    "hostDecision",
-    "realDeploy",
-    "blockedTicket",
-] as const;
 
 const WORKFLOWS = portalUrl("/workflows");
 
-const { t } = useI18n();
+const { t, te } = useI18n();
+const { data } = await useWorkflowTemplates();
+
+const templates = computed(() =>
+    data.value.templates.map(({ id, title, summary }) => {
+        const key = `agenticWorkflows.templates.items.${id}`;
+        return { id, term: title, detail: te(key) ? t(key) : summary };
+    }),
+);
 
 useSeoMeta({ title: t("agenticWorkflows.head"), description: t("agenticWorkflows.lead") });
 </script>
