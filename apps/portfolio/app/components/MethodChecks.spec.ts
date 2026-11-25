@@ -8,7 +8,7 @@ beforeEach(() => {
         method: {
             prove: {
                 checks: {
-                    lint: { claimCount: "{enabled} rules, {inHouse} ours" },
+                    lint: { claimCount: "{count} rules" },
                     tests: { claimCount: "{count} specs" },
                 },
             },
@@ -17,13 +17,22 @@ beforeEach(() => {
 });
 
 describe("MethodChecks", () => {
-    it("puts the collected counts into the tests and lint claims", async () => {
+    it("rounds a collected count down to fifty, so the claim doesn't date by the week", async () => {
+        const wrapper = await mountSuspended(MethodChecks, {
+            props: { specs: 563, rules: { enabled: 589, inHouse: 8 } },
+        });
+
+        expect(wrapper.text()).toContain("550 specs");
+        expect(wrapper.text()).toContain("550 rules");
+    });
+
+    it("states a count under fifty as it is, rather than rounding it to zero", async () => {
         const wrapper = await mountSuspended(MethodChecks, {
             props: { specs: 42, rules: { enabled: 2, inHouse: 1 } },
         });
 
         expect(wrapper.text()).toContain("42 specs");
-        expect(wrapper.text()).toContain("2 rules, 1 ours");
+        expect(wrapper.text()).toContain("2 rules");
     });
 
     it("falls back to the uncounted claims rather than stating zero", async () => {

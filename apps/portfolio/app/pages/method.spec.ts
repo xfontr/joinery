@@ -75,7 +75,7 @@ beforeEach(() => {
         method: {
             prove: {
                 checks: {
-                    lint: { claimCount: "{enabled} rules, {inHouse} ours" },
+                    lint: { claimCount: "{count} rules" },
                     tests: { claimCount: "{count} specs" },
                 },
             },
@@ -114,7 +114,7 @@ describe("method page", () => {
     it("words the portal's lint rule counts", async () => {
         const wrapper = await open({ rules: { enabled: 2, inHouse: 1 } });
 
-        expect(wrapper.get("#prove").text()).toContain("2 rules, 1 ours");
+        expect(wrapper.get("#prove").text()).toContain("2 rules");
     });
 
     it("states every rule without a number when nothing was ever collected", async () => {

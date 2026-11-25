@@ -50,7 +50,7 @@ mockNuxtImport("queryCollection", () => () => {
 });
 
 describe("WorkList", () => {
-    it("shows a screenshot beside each case study and none beside a tool", async () => {
+    it("shows a screenshot beside each entry that names one, and none beside one that doesn't", async () => {
         const wrapper = await mountSuspended(WorkList);
 
         const images = wrapper.findAll("img");

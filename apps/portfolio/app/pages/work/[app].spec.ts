@@ -29,6 +29,7 @@ const HUELLA = {
 const MARINA = {
     ...HUELLA,
     path: "/work/marina-roustan",
+    inProgress: true,
     name: "Marina Roustan",
 };
 
@@ -67,6 +68,18 @@ describe("/work/<app>", () => {
             ).toBe(true);
         }
         expect(setStatus).not.toHaveBeenCalled();
+    });
+
+    it("says a study still under way is in progress, so its screenshot isn't read as the new site", async () => {
+        const wrapper = await mountSuspended(Page, { route: "/work/marina-roustan" });
+
+        expect(wrapper.text()).toContain("work.inProgress");
+    });
+
+    it("says nothing about progress on a study that doesn't claim it", async () => {
+        const wrapper = await mountSuspended(Page, { route: "/work/huella-legal" });
+
+        expect(wrapper.text()).not.toContain("work.inProgress");
     });
 
     it("answers an unknown app with a 404 instead of an empty case page", async () => {

@@ -21,7 +21,7 @@ const map = (blocks: ProjectMap["blocks"]) =>
         tickets: null,
     }) satisfies ProjectMap;
 
-const open = async (blocks: ProjectMap["blocks"]) => {
+const open = async (blocks: ProjectMap["blocks"], project?: string) => {
     serveEndpoint(
         DATA_URL,
         () =>
@@ -37,7 +37,7 @@ const open = async (blocks: ProjectMap["blocks"]) => {
                 specs: null,
             }) satisfies SiteData,
     );
-    const wrapper = await mountSuspended(WorkflowProjectMaps);
+    const wrapper = await mountSuspended(WorkflowProjectMaps, { props: { project } });
     await flushPromises();
     return wrapper;
 };
@@ -65,6 +65,14 @@ describe("WorkflowProjectMaps", () => {
         const wrapper = await open({ done: 0, moving: 0, total: 0 });
 
         expect(wrapper.text()).toContain("0% done");
+    });
+
+    it("shows only the named project's map, so a case study never draws another's", async () => {
+        const named = await open({ done: 1, moving: 0, total: 1 }, "blog");
+        const other = await open({ done: 1, moving: 0, total: 1 }, "shop");
+
+        expect(named.findAll("article")).toHaveLength(1);
+        expect(other.find("section").exists()).toBe(false);
     });
 
     it("sends each map to its project's page on the developer portal", async () => {
