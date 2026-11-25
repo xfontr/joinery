@@ -12,3 +12,6 @@ at,script,command,target,flags,area,caller,tty,exit,ms
 2026-11-25,map,,,check,portfolio,claude-code,0,0,162
 2026-11-25,map,,,check,portfolio,claude-code,0,0,137
 2026-11-25,workflow,sync,,close,portfolio,claude-code,0,0,2470
+2026-11-25,map,,,check,portfolio,claude-code,0,0,144
+2026-11-25,map,,,check,portfolio,claude-code,0,0,127
+2026-11-25,map,,,check,portfolio,claude-code,0,0,105

@@ -1,5 +1,7 @@
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import type { VueWrapper } from "@vue/test-utils";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { nextTick } from "vue";
 import WorkList from "./List.vue";
 
 const ROWS = [
@@ -49,6 +51,40 @@ mockNuxtImport("queryCollection", () => () => {
     return query;
 });
 
+const observers: { callback: IntersectionObserverCallback }[] = [];
+
+class FakeObserver {
+    observe = vi.fn();
+    disconnect = vi.fn();
+
+    constructor(public callback: IntersectionObserverCallback) {
+        observers.push(this);
+    }
+}
+
+const cross = async (wrapper: VueWrapper, slug: string, isIntersecting: boolean) => {
+    const target = wrapper.get(`[data-slug="${slug}"]`).element;
+    observers
+        .at(-1)!
+        .callback(
+            [{ target, isIntersecting }] as unknown as IntersectionObserverEntry[],
+            {} as IntersectionObserver,
+        );
+    await nextTick();
+};
+
+const lit = (wrapper: VueWrapper) =>
+    wrapper.findAll("[data-lit]").map((row) => row.attributes("data-slug"));
+
+beforeEach(() => {
+    observers.length = 0;
+    vi.stubGlobal("IntersectionObserver", FakeObserver);
+});
+
+afterEach(() => {
+    vi.unstubAllGlobals();
+});
+
 describe("WorkList", () => {
     it("shows a screenshot beside each entry that names one, and none beside one that doesn't", async () => {
         const wrapper = await mountSuspended(WorkList);
@@ -70,5 +106,34 @@ describe("WorkList", () => {
             ]),
         );
         expect(links).not.toContain("/work/wp-editor");
+    });
+
+    it("dims nothing until the reader scrolls, even with a row already mid-screen", async () => {
+        const wrapper = await mountSuspended(WorkList);
+
+        await cross(wrapper, "huella-legal", true);
+
+        expect(lit(wrapper)).toEqual([]);
+    });
+
+    it("lights the row crossing the middle once the reader scrolls, and only that one", async () => {
+        const wrapper = await mountSuspended(WorkList);
+        window.dispatchEvent(new Event("scroll"));
+
+        await cross(wrapper, "huella-legal", true);
+        await cross(wrapper, "marina-roustan", true);
+        await cross(wrapper, "huella-legal", false);
+
+        expect(lit(wrapper)).toEqual(["marina-roustan"]);
+    });
+
+    it("lights nothing once the lit row leaves the middle", async () => {
+        const wrapper = await mountSuspended(WorkList);
+        window.dispatchEvent(new Event("scroll"));
+
+        await cross(wrapper, "wp-editor", true);
+        await cross(wrapper, "wp-editor", false);
+
+        expect(lit(wrapper)).toEqual([]);
     });
 });
