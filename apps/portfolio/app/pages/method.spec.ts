@@ -88,7 +88,7 @@ afterEach(() => {
 });
 
 describe("method page", () => {
-    it("counts and names the benchmarked sites the portal lists", async () => {
+    it("names every benchmarked site the portal lists", async () => {
         const wrapper = await open({
             benchmarks: [
                 { id: "primer-style", title: "primer.style", screenshot: "/a.webp" },
@@ -96,7 +96,6 @@ describe("method page", () => {
             ],
         });
 
-        expect(wrapper.get("#look").text()).toContain("2 studied");
         expect(wrapper.get("#look").text()).toContain("primer.style · rauno.me");
     });
 
@@ -104,12 +103,6 @@ describe("method page", () => {
         const wrapper = await open();
 
         expect(wrapper.get("#plan").text()).toContain("Website rebuild");
-    });
-
-    it("words the lessons the portal counted", async () => {
-        const wrapper = await open();
-
-        expect(wrapper.get("#plan").text()).toContain("3 lessons");
     });
 
     it("words the portal's spec count", async () => {

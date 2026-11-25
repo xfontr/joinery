@@ -30,7 +30,6 @@ const MARINA = {
     ...HUELLA,
     path: "/work/marina-roustan",
     name: "Marina Roustan",
-    inProgress: true,
 };
 
 const TOOL = {
@@ -68,18 +67,6 @@ describe("/work/<app>", () => {
             ).toBe(true);
         }
         expect(setStatus).not.toHaveBeenCalled();
-    });
-
-    it("flags a study still under way", async () => {
-        const wrapper = await mountSuspended(Page, { route: "/work/marina-roustan" });
-
-        expect(wrapper.find("aside").exists()).toBe(true);
-    });
-
-    it("shows no in-progress flag on a study that doesn't claim one", async () => {
-        const wrapper = await mountSuspended(Page, { route: "/work/huella-legal" });
-
-        expect(wrapper.find("aside").exists()).toBe(false);
     });
 
     it("answers an unknown app with a 404 instead of an empty case page", async () => {

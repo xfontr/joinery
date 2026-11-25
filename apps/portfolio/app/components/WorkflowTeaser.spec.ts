@@ -57,7 +57,7 @@ describe("WorkflowTeaser", () => {
         const wrapper = await open("huella-legal");
 
         expect(wrapper.get("a").attributes("href")).toBe("/agentic-workflows");
-        expect(wrapper.findAll("[data-workflow-glyph] rect")).toHaveLength(2);
+        expect(wrapper.findAll("[data-map-plate] rect[data-tone]")).toHaveLength(2);
     });
 
     it("draws no glyph while that plan is missing, rather than another project's", async () => {

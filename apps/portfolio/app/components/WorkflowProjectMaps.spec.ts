@@ -8,7 +8,7 @@ import WorkflowProjectMaps from "./WorkflowProjectMaps.vue";
 
 const DATA_URL = "https://portal.test/embed/data.json";
 
-const map = (tickets: ProjectMap["tickets"]) =>
+const map = (blocks: ProjectMap["blocks"]) =>
     ({
         stages: [],
         nodes: [],
@@ -17,11 +17,11 @@ const map = (tickets: ProjectMap["tickets"]) =>
         height: 0,
         nodeWidth: 164,
         nodeHeight: 30,
-        blocks: { done: 0, moving: 1, total: 1 },
-        tickets,
+        blocks,
+        tickets: null,
     }) satisfies ProjectMap;
 
-const open = async (tickets: ProjectMap["tickets"]) => {
+const open = async (blocks: ProjectMap["blocks"]) => {
     serveEndpoint(
         DATA_URL,
         () =>
@@ -29,7 +29,7 @@ const open = async (tickets: ProjectMap["tickets"]) => {
                 benchmarks: [],
                 decisions: [],
                 workflows: {
-                    projects: [{ id: "blog", title: "Blog", map: map(tickets), glyph: map(null) }],
+                    projects: [{ id: "blog", title: "Blog", map: map(blocks), glyph: map(blocks) }],
                     templates: [],
                     lessons: 0,
                 },
@@ -46,12 +46,7 @@ beforeEach(() => {
     useRuntimeConfig().public.dataUrl = DATA_URL;
     const { $i18n } = useNuxtApp();
     $i18n.mergeLocaleMessage($i18n.locale.value, {
-        agenticWorkflows: {
-            projects: {
-                blocks: "{done}/{total} blocks",
-                tickets: "{blocks}; {closed}/{total} tickets",
-            },
-        },
+        agenticWorkflows: { projects: { done: "{percent}% done" } },
     });
 });
 
@@ -60,21 +55,20 @@ afterEach(() => {
 });
 
 describe("WorkflowProjectMaps", () => {
-    it("says nothing about tickets for a project that was never synced", async () => {
-        const wrapper = await open(null);
+    it("states the share of blocks done, rounded to a whole percent", async () => {
+        const wrapper = await open({ done: 2, moving: 1, total: 3 });
 
-        expect(wrapper.text()).toContain("0/1 blocks");
-        expect(wrapper.text()).not.toContain("tickets");
+        expect(wrapper.text()).toContain("67% done");
     });
 
-    it("counts a synced project's closed tickets", async () => {
-        const wrapper = await open({ closed: 1, total: 1 });
+    it("states 0% for a map with no blocks yet, rather than an empty figure", async () => {
+        const wrapper = await open({ done: 0, moving: 0, total: 0 });
 
-        expect(wrapper.text()).toContain("1/1 tickets");
+        expect(wrapper.text()).toContain("0% done");
     });
 
     it("sends each map to its project's page on the developer portal", async () => {
-        const wrapper = await open(null);
+        const wrapper = await open({ done: 0, moving: 1, total: 1 });
 
         expect(wrapper.get("article a").attributes("href")).toBe(portalUrl("/workflows/blog"));
     });

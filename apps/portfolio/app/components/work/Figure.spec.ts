@@ -15,7 +15,6 @@ const WORK_ITEM: WorkCase = {
     why: "Why.",
     facts: [],
     countedOn: "29 Sep 2026",
-    inProgress: false,
     design: [],
     decisions: [],
     screenshot: { file: "huella-legal.jpg", alt: "The new home page", caption: "On staging." },
@@ -23,12 +22,11 @@ const WORK_ITEM: WorkCase = {
 };
 
 describe("WorkFigure", () => {
-    it("shows the work's screenshot with its alt text and links to the live site", async () => {
+    it("shows the work's screenshot with its alt text", async () => {
         const wrapper = await mountSuspended(Figure, { props: { work: WORK_ITEM } });
 
         const image = wrapper.find("img");
         expect(image.attributes("src")).toBeTruthy();
         expect(image.attributes("alt")).toBe(WORK_ITEM.screenshot.alt);
-        expect(wrapper.find("a").attributes("href")).toBe(WORK_ITEM.live.href);
     });
 });

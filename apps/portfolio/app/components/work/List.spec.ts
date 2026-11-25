@@ -50,11 +50,12 @@ mockNuxtImport("queryCollection", () => () => {
 });
 
 describe("WorkList", () => {
-    it("leads with the first case's screenshot and shows no other", async () => {
+    it("shows a screenshot beside each case study and none beside a tool", async () => {
         const wrapper = await mountSuspended(WorkList);
 
-        expect(wrapper.findAll("img")).toHaveLength(1);
-        expect(wrapper.get("img").attributes("src")).toBeTruthy();
+        const images = wrapper.findAll("img");
+        expect(images).toHaveLength(2);
+        for (const image of images) expect(image.attributes("src")).toBeTruthy();
     });
 
     it("links each case to its study and each tool to where it can be seen", async () => {

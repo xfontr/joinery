@@ -40,6 +40,14 @@ test("the skip link is the first stop and moves focus into the main landmark", a
     await expect(page.getByRole("main")).toBeFocused();
 });
 
+/** The main navigation, opening the phone menu first where the header folds it away. */
+const mainNav = async (page: Page) => {
+    const menu = page.getByRole("button", { name: t("app.visitor.menu.open") });
+    if (await menu.isVisible()) await menu.click();
+
+    return page.getByRole("navigation", { name: t("app.visitor.navLabel") });
+};
+
 /** Each element Tab lands on, in order, until focus leaves the page or `limit` stops. */
 const tabStops = async (page: Page, limit = 40) => {
     const stops: { label: string; ringed: boolean }[] = [];
@@ -84,7 +92,7 @@ test("the page states its language, so a screen reader reads it in English", asy
 test("the header marks the section being read", async ({ page }) => {
     await page.goto("/method/");
 
-    const nav = page.getByRole("navigation", { name: t("app.visitor.navLabel") });
+    const nav = await mainNav(page);
 
     await expect(nav.getByRole("link", { name: t("app.visitor.nav.method") })).toHaveAttribute(
         "aria-current",
@@ -96,7 +104,7 @@ test("the header marks the section being read", async ({ page }) => {
 test("a page change animates for a reader who allows motion", async ({ page }) => {
     await page.goto("/");
 
-    const nav = page.getByRole("navigation", { name: t("app.visitor.navLabel") });
+    const nav = await mainNav(page);
 
     expect(
         await transitioned(page, async () => {
@@ -110,7 +118,7 @@ test("a page change stays still for a reader who asked for reduced motion", asyn
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
 
-    const nav = page.getByRole("navigation", { name: t("app.visitor.navLabel") });
+    const nav = await mainNav(page);
 
     expect(
         await transitioned(page, async () => {
