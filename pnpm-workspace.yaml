@@ -5,9 +5,9 @@ packages:
 catalog:
   '@nuxt/fonts': 1.2.0
   '@nuxtjs/i18n': 10.6.0
-  nuxt: ^4.6.4
+  nuxt: ^4.7.0
   vue-tsc: ^3.3.0
-  vue: ^3.5.38
+  vue: ^3.5.46
   typescript: ^6.0.3
   '@types/node': ^26.6.2
   vitest: ^5.0.4
