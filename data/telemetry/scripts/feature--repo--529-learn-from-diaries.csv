@@ -3,3 +3,5 @@ at,script,command,target,flags,area,caller,tty,exit,ms
 2026-11-26,map,,,,repo,claude-code,0,0,156
 2026-11-26,map,,,check,repo,claude-code,0,0,134
 2026-11-26,invariants,,,,repo,claude-code,0,0,238
+2026-11-26,map,,,check,repo,claude-code,0,0,135
+2026-11-26,map,,,check,repo,claude-code,0,0,150

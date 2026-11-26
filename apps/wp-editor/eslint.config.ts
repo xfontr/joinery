@@ -6,7 +6,7 @@ export default [
     {
         // Pages that predate the length cap; drop a path once its page is split into sections.
         files: [
-            "app/pages/changesets/\\[id\\].vue",
+            String.raw`app/pages/changesets/\[id\].vue`,
             "app/pages/index.vue",
             "app/pages/settings.vue",
         ],
