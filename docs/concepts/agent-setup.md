@@ -12,14 +12,17 @@ file loads every turn; a project's loads once Claude reads something there.
 
 ## The hooks
 
-Two `PostToolUse` hooks fire after every edit, and one `PreToolUse` hook before every shell
+Two `PostToolUse` hooks fire after every edit, and four `PreToolUse` hooks before every shell
 command.
 
 | Hook | Enforces |
 | --- | --- |
 | [`eslint-fix.sh`](../../.claude/hooks/eslint-fix.sh) | Runs `eslint --fix` on the touched file, so style is corrected mechanically, and records each rule hit first for the portal's [lint usage](../../infrastructure/scripts/src/usage/README.md) |
 | [`check-invariants.sh`](../../.claude/hooks/check-invariants.sh) | Runs [`pnpm invariants:check`](../../infrastructure/scripts/src/invariants/README.md) after a manifest edit, and reminds about the cross-file steps of a new project or a boundary change |
-| [`guard-live.sh`](../../.claude/hooks/guard-live.sh) | Refuses `pnpm start`, `nuxt preview`, requests to the live WordPress site, force pushes and pushes to `master`: the things an unattended run must never do, whatever its prompt says |
+| [`guard-live.sh`](../../.claude/hooks/guard-live.sh) | Refuses `pnpm start`, `nuxt preview`, force pushes, pushes to `master` and any write to the live WordPress site: the things an unattended run must never do, whatever its prompt says. A read-only request to the live site asks the owner through the permission dialog instead, and is refused outright in bypass mode or a subagent |
+| [`workflow-close.sh`](../../.claude/hooks/workflow-close.sh) | Refuses to open the PR for a workflow ticket without its `estimate` diary line and its closed snapshot, reading the branch from the session's own directory so a worktree counts |
+| [`master-green.sh`](../../.claude/hooks/master-green.sh) | Refuses to open a PR while master's last CI run failed; CI's `master-health` job keeps a "master CI is red" issue open meanwhile |
+| [`lab-checklist.sh`](../../.claude/hooks/lab-checklist.sh) | Refuses to open the PR for a ticket built from a lab until its `## Lab checklist` comment is fully ticked |
 | [`reap-processes.sh`](../../.claude/hooks/reap-processes.sh) | On `SessionEnd`, kills every `nuxt dev` and `playwright test` the session started, so a closed session leaves no server or Chromium behind |
 
 The hooks are early feedback; `pre-commit` and CI run the same gates on edits made by hand.

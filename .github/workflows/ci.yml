@@ -90,6 +90,32 @@ jobs:
                       apps/marina-roustan/.playwright
                       apps/portfolio/.playwright
 
+    # PRs run only affected projects, so a red master push run reaches nobody unless it opens an issue.
+    master-health:
+        if: always() && github.event_name == 'push'
+        needs: [checks, e2e]
+        runs-on: ubuntu-latest
+        permissions:
+            issues: write
+        steps:
+            - env:
+                  GH_TOKEN: ${{ github.token }}
+                  GH_REPO: ${{ github.repository }}
+                  RESULT: ${{ contains(needs.*.result, 'failure') && 'failure' || 'success' }}
+                  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+              run: |
+                  title="master CI is red"
+                  open=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
+                  if [ "$RESULT" = failure ]; then
+                      if [ -n "$open" ]; then
+                          gh issue comment "$open" --body "Still red: $RUN_URL"
+                      else
+                          gh issue create --title "$title" --label bug --label repo --body "A push run on master failed: $RUN_URL"
+                      fi
+                  elif [ -n "$open" ]; then
+                      gh issue close "$open" --comment "Green again: $RUN_URL"
+                  fi
+
     # Needs a base ref to diff against, so it's meaningless on a push to master.
     dependency-review:
         if: github.event_name == 'pull_request'
