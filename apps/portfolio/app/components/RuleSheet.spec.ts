@@ -34,7 +34,7 @@ const FULL = {
         },
     ],
     workflows: {
-        projects: [{ id: "huella-legal", title: "Huella Legal", map: MAP, glyph: MAP }],
+        projects: [{ id: "huella-legal", title: "Huella Legal", map: MAP }],
         templates: [],
         lessons: 0,
     },

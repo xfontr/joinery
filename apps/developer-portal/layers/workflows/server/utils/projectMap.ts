@@ -2,7 +2,7 @@ import type { CapabilityState } from "../../shared/types/CapabilityState.ts";
 import type { ProjectView } from "../../shared/types/ProjectView.ts";
 
 /** A map's grid in SVG units; `header` is the band its stage titles sit in. */
-export interface MapScale {
+interface MapScale {
     column: number;
     nodeWidth: number;
     nodeHeight: number;
@@ -13,15 +13,6 @@ export interface MapScale {
 type MapTone = "done" | "moving" | "waiting";
 
 const FULL_MAP: MapScale = { column: 184, nodeWidth: 164, nodeHeight: 30, row: 40, header: 36 };
-
-/** Blocks only, no labels: the map at a glance. */
-export const GLYPH_MAP: MapScale = {
-    column: 52,
-    nodeWidth: 10,
-    nodeHeight: 10,
-    row: 16,
-    header: 0,
-};
 
 const MAX_CHARS = 21;
 
@@ -35,14 +26,14 @@ const clip = (text: string): string =>
     text.length > MAX_CHARS ? `${text.slice(0, MAX_CHARS - 1).trimEnd()}…` : text;
 
 /** A project as a static map: stages become columns, blocks rows, and each need one curve. */
-export const projectMap = (view: ProjectView, scale: MapScale = FULL_MAP) => {
+export const projectMap = (view: ProjectView) => {
     const {
         column: COLUMN,
         nodeWidth: NODE_WIDTH,
         nodeHeight: NODE_HEIGHT,
         row: ROW,
         header: HEADER,
-    } = scale;
+    } = FULL_MAP;
     const stages = view.stages
         .map((stage) => ({ ...stage, blocks: stage.capabilities.filter((block) => block.enabled) }))
         .filter((stage) => stage.blocks.length > 0);
