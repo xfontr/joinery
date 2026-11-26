@@ -40,6 +40,7 @@ Values come from these lists only. A new value is added here first.
 | `product` | A company selling a product |
 | `design-system` | A design system's docs site |
 | `editorial` | A publication, report, library or long read |
+| `practice` | A clinician or clinic selling care to the public |
 
 | Page types | |
 | --- | --- |
@@ -51,6 +52,7 @@ Values come from these lists only. A new value is added here first.
 | `case-study` | One project told in depth |
 | `dashboard` | A home of panels, stats and short lists, read at a glance |
 | `detail` | One item's page with tabs: a repo, a package, a project |
+| `contact` | An enquiry or booking page with a form |
 
 | Traits | |
 | --- | --- |
@@ -62,6 +64,7 @@ Values come from these lists only. A new value is added here first.
 | `code-figure` | ASCII, dot-matrix or other code-native imagery |
 | `photo-led` | Photography carries the page |
 | `motion-led` | Content depends on motion, WebGL or interaction |
+| `illustrated` | Drawn illustration carries the page |
 
 ## Finding entries
 

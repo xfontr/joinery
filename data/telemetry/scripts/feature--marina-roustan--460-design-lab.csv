@@ -98,3 +98,5 @@ at,script,command,target,flags,area,caller,tty,exit,ms
 2026-11-26,map,,,check,repo,claude-code,0,0,159
 2026-11-26,map,,,check,repo,claude-code,0,0,133
 2026-11-26,map,,,check,repo,claude-code,0,0,155
+2026-11-25,dev,,portfolio,,marina-roustan,human,1,0,71068161
+2026-11-26,dev,,,,marina-roustan,human,1,0,1880512
