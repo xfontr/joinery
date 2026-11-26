@@ -98,6 +98,15 @@ tab, filter, menu entry. Not one per pixel; a page is usually five to ten boxes.
   Never mention a gap only in the summary.
 - [`lab-checklist.sh`](../../hooks/lab-checklist.sh) refuses to open the PR while the comment is
   missing or has an unticked box.
+- **A correction on one page is a check on all of them.** When the owner corrects a pattern on one
+  page, find every other page showing the same thing and fix them in the same pass (#484, #490).
+
+## 4.5 What the ticket asks is what gets built
+
+- A ticket's points never shrink its scope. Thirteen points on a rebuild still means a rebuild, not
+  a reskin (#484).
+- When the ticket conflicts with older feedback, a memory or a note in another doc, ask the owner
+  before writing code. Never resolve it toward the cheaper path and report it in the summary.
 
 ## 5. Confirm before diving in
 

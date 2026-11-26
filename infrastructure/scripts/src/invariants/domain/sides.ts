@@ -76,7 +76,7 @@ const codeOf = ({ path, text }: SourceFile): string =>
         : blank(text);
 
 const mentions = (code: string, names: string[]): boolean =>
-    names.some((name) => new RegExp(`\\b${name}\\b`).test(code));
+    names.some((name) => new RegExp(String.raw`\b${name}\b`).test(code));
 
 const importersOf = (files: SourceFile[], shared: SourceFile[]): Map<string, Set<string>> => {
     const known = new Set(files.map(({ path }) => path));

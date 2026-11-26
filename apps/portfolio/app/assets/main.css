@@ -296,23 +296,6 @@ p {
     text-transform: uppercase;
 }
 
-[data-map-plate] text {
-    font-size: 10px;
-    fill: var(--ui-text-highlighted);
-}
-
-[data-map-plate] [data-note-tone] {
-    font-family: var(--font-mono);
-    font-size: 8.5px;
-    fill: var(--ui-text-muted);
-}
-
-[data-map-plate] [data-leader] {
-    fill: none;
-    stroke: var(--ui-text-muted);
-    stroke-width: 0.75;
-}
-
 [data-workflow-map] [data-edge] {
     fill: none;
     stroke: var(--ui-border-accented);
@@ -361,13 +344,25 @@ p {
     stroke: var(--ui-border-accented);
 }
 
-[data-workflow-glyph] rect {
+[data-workflow-glyph] rect[data-tone] {
     fill: var(--ui-primary);
 }
 
-[data-workflow-glyph] rect[data-tone="waiting"] {
-    fill: var(--ui-bg);
-    stroke: var(--ui-primary);
+[data-workflow-glyph] text {
+    font-size: 10px;
+    fill: var(--ui-text-highlighted);
+}
+
+[data-workflow-glyph] [data-note-tone] {
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    fill: var(--ui-text-muted);
+}
+
+[data-workflow-glyph] [data-leader] {
+    fill: none;
+    stroke: var(--ui-text-muted);
+    stroke-width: 0.75;
 }
 
 /* The front page's first screen, less the header above it */

@@ -11,25 +11,10 @@
                     {{ $t("workflowTeaser.cta") }}
                 </ULink>
             </div>
-            <div v-if="glyph" class="col-span-4 md:col-span-8 md:col-start-5">
-                <MapPlate
-                    :map="glyph"
-                    :label="$t('workflowTeaser.glyphLabel')"
-                    class="max-md:hidden"
-                />
-                <WorkflowGlyph
-                    :map="glyph"
-                    :label="$t('workflowTeaser.glyphLabel')"
-                    class="w-full md:hidden"
-                />
+            <div class="col-span-4 md:col-span-8 md:col-start-5">
+                <WorkflowGlyph annotated class="max-md:hidden" />
+                <WorkflowGlyph class="md:hidden" />
             </div>
         </UContainer>
     </section>
 </template>
-
-<script setup lang="ts">
-/** The project whose plan the teaser draws; its copy names it too. */
-const PLAN = "huella-legal";
-
-const { data: glyph } = await useWorkflowGlyph(PLAN);
-</script>

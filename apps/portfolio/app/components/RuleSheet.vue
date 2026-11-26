@@ -17,7 +17,7 @@
                 v-for="(item, index) in principles"
                 :key="item.id"
                 :data-rule="item.id"
-                class="border-t border-default transition-colors hover:bg-muted md:border-t-0 md:px-5 md:first:pl-0"
+                class="border-t border-default transition-colors hover:bg-muted md:border-t-0 md:px-5 md:first:-ml-5"
                 @pointerenter="hover(item.id, $event)"
                 @pointerleave="hovered = null"
             >
@@ -37,7 +37,7 @@
         <CursorPreview v-slot="{ subject }" :subject="hovered">
             <BenchmarksPreview v-if="subject === 'look'" :benchmarks />
             <DecisionsPreview v-else-if="subject === 'decide' && example" :report="example" />
-            <WorkflowPreview v-else-if="subject === 'plan' && plan" :map="plan" />
+            <WorkflowPreview v-else-if="subject === 'plan'" />
             <PipelinePreview v-else-if="subject === 'agents'" />
             <ChecksPreview v-else-if="subject === 'prove'" :specs :rules />
         </CursorPreview>
@@ -48,8 +48,6 @@
 import type { RuleId } from "~/types/RuleId";
 
 const DECISION = "0028-huella-legal-urls-and-cutover";
-/** The project rule 3 previews, the same one the workflow teaser draws. */
-const PLAN = "huella-legal";
 
 const PROOFS = {
     look: portalUrl("/benchmarks"),
@@ -61,19 +59,8 @@ const PROOFS = {
 
 const { t } = useI18n();
 
-const [
-    { data: benchmarks },
-    { data: plan },
-    { data: rules },
-    { data: specs },
-    { data: decisions },
-] = await Promise.all([
-    useBenchmarks(),
-    useWorkflowGlyph(PLAN),
-    useRuleCounts(),
-    useSpecTotal(),
-    useDecisionReports(),
-]);
+const [{ data: benchmarks }, { data: rules }, { data: specs }, { data: decisions }] =
+    await Promise.all([useBenchmarks(), useRuleCounts(), useSpecTotal(), useDecisionReports()]);
 
 const example = computed(() => decisions.value.find((report) => report.id === DECISION));
 

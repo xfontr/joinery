@@ -52,6 +52,12 @@
                     },
                     {
                         "type": "command",
+                        "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/master-green.sh",
+                        "timeout": 15,
+                        "statusMessage": "Checking master's CI is green"
+                    },
+                    {
+                        "type": "command",
                         "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/lab-checklist.sh",
                         "timeout": 20,
                         "statusMessage": "Checking the lab checklist is ticked"

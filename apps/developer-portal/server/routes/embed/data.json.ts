@@ -14,7 +14,7 @@ import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtif
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import { ruleCounts } from "#layers/telemetry/shared/lintUsage.ts";
 import { loadWorkflows } from "#layers/workflows/server/utils/workflows.ts";
-import { GLYPH_MAP, projectMap } from "#layers/workflows/server/utils/projectMap.ts";
+import { projectMap } from "#layers/workflows/server/utils/projectMap.ts";
 import { lessonCount } from "#layers/workflows/shared/workflows.ts";
 
 /** Every figure `apps/portfolio` shows, which it fetches at build; paths are relative to this site. */
@@ -47,7 +47,6 @@ export default defineEventHandler(async (event) => {
                 id: view.project.id,
                 title: view.project.title,
                 map: projectMap(view),
-                glyph: projectMap(view, GLYPH_MAP),
             })),
             templates: workflows.templates
                 .filter((template) => template.capabilities.length)

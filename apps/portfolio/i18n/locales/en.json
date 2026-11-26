@@ -289,6 +289,10 @@
         "glyphLabel": "Huella Legal's project map",
         "kicker": "Planning",
         "line": "This one is Huella Legal's. Each block lists what it waits on, and work starts on whatever is free.",
+        "notes": {
+            "first": "Content audit",
+            "last": "Quality sweep"
+        },
         "title": "Project",
         "titleMark": "maps"
     },

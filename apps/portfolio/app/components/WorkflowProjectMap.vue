@@ -24,7 +24,7 @@
         </ol>
 
         <!-- A map wider than the page scrolls, so a keyboard has to be able to reach it -->
-        <div tabindex="0" role="region" :aria-label="label" class="hidden overflow-x-auto md:block">
+        <section tabindex="0" :aria-label="label" class="hidden overflow-x-auto md:block">
             <svg
                 :width="map.width"
                 :height="map.height"
@@ -48,7 +48,7 @@
                     <text x="10" y="19">{{ node.label }}</text>
                 </g>
             </svg>
-        </div>
+        </section>
     </figure>
 </template>
 

@@ -1,9 +1,10 @@
 import { out } from "../shared/adapters/io.ts";
 import { flag, type Args } from "../shared/cli.ts";
 import { ExpectedError } from "../shared/errors.ts";
-import { createTicket, milestoneIssues } from "./adapters/gh.ts";
+import { createTicket, labelNames, milestoneIssues } from "./adapters/gh.ts";
 import { oneProject, projectMap } from "./adapters/files.ts";
 import { bundleFor, fileableNow, planFiling, type WorkflowMap } from "./domain/filing.ts";
+import { setupPlan } from "./domain/setup.ts";
 import { toSnapshot, type SnapshotIssue } from "./domain/snapshot.ts";
 import { sync } from "./sync.ts";
 
@@ -68,6 +69,13 @@ export const file = ({ positionals }: Args): void => {
     const id = oneProject([projectId ?? ""]);
     const map = projectMap(id);
     const write = flag("yes");
+
+    const missing = setupPlan(map, { milestone: true, labels: labelNames() }).labels;
+    if (missing.length > 0) {
+        const hint = `Missing labels ${missing.join(", ")}; run \`pnpm workflow:setup ${id} --yes\` first.`;
+        if (write) throw new ExpectedError(hint);
+        out.note(hint);
+    }
 
     if (capability) {
         const issues = liveIssues(map);

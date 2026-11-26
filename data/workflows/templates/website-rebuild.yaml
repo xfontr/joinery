@@ -269,9 +269,12 @@ capabilities:
     reuse: { plan: new }
     doneWhen:
       - Every page in the feature inventory has an approved direction at 390, 768 and 1280 px.
+      - Every build block, filed or not, has been reread against the approved lab and names the lab page it builds.
     lessons:
       - text: Build tickets for the first direction were filed the night before the final one existed.
         issues: [208]
+      - text: The build blocks kept the map's first draft after the lab changed the design, so a filed ticket built the old plan and was thrown away; every build block is redrafted against the approved lab before it is filed or picked.
+        issues: [479, 489]
     tickets:
       - title: "[OWNER] Approve the design direction"
         criteria:

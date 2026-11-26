@@ -14,4 +14,4 @@ export const t = createT(MESSAGES);
  * because a static 404 boots the app from `404.html`. One pattern, since Playwright reads a second
  * `allowedConsole` entry as the fixture's options.
  */
-export const NOT_FOUND = new RegExp(`${NOT_FOUND_DOCUMENT.source}|^\\[NUXT_E1005\\]`);
+export const NOT_FOUND = new RegExp(String.raw`${NOT_FOUND_DOCUMENT.source}|^\[NUXT_E1005\]`);
