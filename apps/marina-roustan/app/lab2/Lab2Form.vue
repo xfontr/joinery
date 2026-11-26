@@ -40,8 +40,21 @@
 <script setup lang="ts">
 import { contact, topics } from "./content";
 
-const { tema } = useRoute().query;
-const chosen = ref<string[]>(typeof tema === "string" && topics.includes(tema) ? [tema] : []);
+const route = useRoute();
+const fromQuery = () => {
+    const { tema } = route.query;
+    return typeof tema === "string" && topics.includes(tema) ? [tema] : [];
+};
+const chosen = ref<string[]>(fromQuery());
+
+// The home page links to its own form with `?tema=…#contacto`, which keeps this component mounted.
+watch(
+    () => route.query.tema,
+    () => {
+        const next = fromQuery();
+        if (next.length > 0) chosen.value = next;
+    },
+);
 const sent = ref(false);
 </script>
 

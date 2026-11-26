@@ -1,7 +1,7 @@
 export const direction = {
     name: "C · Consulta",
     idea: "La persona y el lugar: un campo amarillo con el titular y las acciones, “La primera vez” en tres pasos, en qué ayuda, quién es Marina, opiniones, la consulta y una página de contacto que separa hablar de escribir.",
-    look: "Young Serif para titulares, Hanken Grotesk para el texto. Blanco y arena, campos de amarillo sol y tinta azul marino.",
+    look: "Young Serif para titulares, Hanken Grotesk para el texto. Blanco y arena alternos; el amarillo sol solo en la primera pantalla y la tinta azul marino en el texto y el pie.",
 };
 
 export const changes = [
@@ -11,6 +11,9 @@ export const changes = [
     "El currículum se convierte en una página, Formación y trayectoria, con el PDF completo para descargar.",
     "La línea de crisis sale del pie de todas las páginas y pasa al formulario de contacto, como aviso de que no es para urgencias.",
     "Datos del CV que la web actual no muestra: colegiada 7538 del COPC, especialista en Psicología Clínica, consulta propia desde 1994 e idiomas.",
+    "Tomado de N y L+K: un aviso para quien llega derivado por un juzgado o un abogado, junto a “Cómo trabajo”.",
+    "Tomado de N y L+K: el trabajo con cáncer como sección propia, con el libro y el método GAFA, en lugar de una tarjeta bajo “Sobre mí”. Sin banda de color: sigue el blanco y arena del resto.",
+    "Tomado de N: el formulario en la propia portada. Cada tema y cada botón llevan a él con el motivo ya marcado.",
 ];
 
 export const decisions = [

@@ -10,7 +10,7 @@
                         Eixample, en terapia individual, de pareja o de grupo.
                     </p>
                     <div class="hero-actions">
-                        <NuxtLink to="/lab2/c/contacto" class="k-button">Pide cita</NuxtLink>
+                        <NuxtLink to="#contacto" class="k-button">Pide cita</NuxtLink>
                         <a
                             :href="contact.whatsapp"
                             class="k-button outline"
@@ -33,7 +33,7 @@
                             </NuxtLink>
                         </li>
                         <li>
-                            <NuxtLink to="/lab2/c/contacto">
+                            <NuxtLink to="#contacto">
                                 Otra cosa, o no lo sé<span aria-hidden="true">→</span>
                             </NuxtLink>
                         </li>
@@ -66,20 +66,35 @@
                         <h3>{{ item.title }}</h3>
                         <p>{{ concernDetail[item.title] }}</p>
                         <NuxtLink
-                            :to="`/lab2/c/contacto?tema=${encodeURIComponent(item.title)}`"
+                            :to="{ query: { tema: item.title }, hash: '#contacto' }"
                             class="more"
                             >Cuéntame <span aria-hidden="true">→</span></NuxtLink
                         >
                     </li>
                 </ul>
-                <div class="ways">
-                    <h3>Cómo trabajo</h3>
-                    <dl>
-                        <div v-for="item in therapies" :key="item.name">
-                            <dt>{{ item.name }}</dt>
-                            <dd>{{ item.line }}</dd>
-                        </div>
-                    </dl>
+                <div class="ways-row">
+                    <div class="ways">
+                        <h3>Cómo trabajo</h3>
+                        <dl>
+                            <div v-for="item in therapies" :key="item.name">
+                                <dt>{{ item.name }}</dt>
+                                <dd>{{ item.line }}</dd>
+                            </div>
+                        </dl>
+                    </div>
+                    <aside class="legal">
+                        <h3>¿Te deriva un juzgado o un abogado?</h3>
+                        <p>
+                            Hago coordinación de parentalidad e informes periciales, y los defiendo
+                            en juicio.
+                        </p>
+                        <NuxtLink :to="{ query: { tema: legalTopic }, hash: '#contacto' }"
+                            >Contactar sobre un caso <span aria-hidden="true">→</span></NuxtLink
+                        >
+                        <NuxtLink to="/lab2/c/trayectoria"
+                            >Ver mi trayectoria <span aria-hidden="true">→</span></NuxtLink
+                        >
+                    </aside>
                 </div>
             </div>
         </section>
@@ -100,18 +115,37 @@
                 <NuxtLink to="/lab2/c/trayectoria" class="more"
                     >Formación y trayectoria <span aria-hidden="true">→</span></NuxtLink
                 >
-                <div class="book">
-                    <img :src="book.image" alt="" width="500" height="800" />
-                    <div>
-                        <p class="book-kind">Mi libro</p>
-                        <h3>{{ book.title }}</h3>
-                        <p>{{ book.body }}</p>
-                    </div>
-                </div>
             </div>
         </section>
 
-        <section id="opiniones" class="sun">
+        <section id="cancer" class="sand">
+            <div class="k-wrap k-block cancer">
+                <div>
+                    <h2 class="k-h2">Más de 15 años acompañando a quien vive un cáncer</h2>
+                    <p>
+                        En consulta individual y en grupos para mujeres con cáncer de mama, con el
+                        método GAFA, que creé y publiqué en 2011. Durante el tratamiento y también
+                        después, cuando hay que reorganizar la vida.
+                    </p>
+                    <NuxtLink :to="{ query: { tema: 'Cáncer' }, hash: '#contacto' }" class="more"
+                        >Hablar de tu caso <span aria-hidden="true">→</span></NuxtLink
+                    >
+                </div>
+                <figure class="cancer-book">
+                    <img
+                        :src="book.image"
+                        :alt="`Portada de ${book.title}`"
+                        width="500"
+                        height="800"
+                    />
+                    <figcaption>
+                        Mi libro, <em>{{ book.title }}</em>
+                    </figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <section id="opiniones">
             <div class="k-wrap k-block">
                 <h2 class="k-h2">Lo que dicen quienes ya han venido</h2>
                 <div class="voices">
@@ -124,36 +158,35 @@
             </div>
         </section>
 
-        <section id="consulta" class="k-wrap k-block place">
-            <div class="place-photo" role="img" aria-label="Foto de la consulta, pendiente">
-                <span>Foto de la consulta<br />(pendiente: la pide Marina)</span>
-            </div>
-            <div>
-                <h2 class="k-h2">La consulta</h2>
-                <p>Te atiendo en un piso del Eixample, en la calle Comte d'Urgell.</p>
-                <dl class="place-facts">
-                    <dt>Dirección</dt>
-                    <dd>{{ contact.address }}, {{ contact.city }}</dd>
-                    <dt>Teléfono</dt>
-                    <dd>
-                        <a :href="contact.phoneHref">{{ contact.phone }}</a>
-                    </dd>
-                </dl>
-                <a :href="mapsUrl" class="k-button outline" target="_blank" rel="noopener"
-                    >Cómo llegar</a
-                >
+        <section id="consulta" class="sand">
+            <div class="k-wrap k-block place">
+                <div class="place-photo" role="img" aria-label="Foto de la consulta, pendiente">
+                    <span>Foto de la consulta<br />(pendiente: la pide Marina)</span>
+                </div>
+                <div>
+                    <h2 class="k-h2">La consulta</h2>
+                    <p>Te atiendo en un piso del Eixample, en la calle Comte d'Urgell.</p>
+                    <dl class="place-facts">
+                        <dt>Dirección</dt>
+                        <dd>{{ contact.address }}, {{ contact.city }}</dd>
+                        <dt>Teléfono</dt>
+                        <dd>
+                            <a :href="contact.phoneHref">{{ contact.phone }}</a>
+                        </dd>
+                    </dl>
+                    <a :href="mapsUrl" class="k-button outline" target="_blank" rel="noopener"
+                        >Cómo llegar</a
+                    >
+                </div>
             </div>
         </section>
 
-        <section class="sand">
-            <div class="k-wrap k-block final">
-                <h2 class="k-h2">¿Hablamos?</h2>
-                <p>Escríbeme una frase o llámame. Te contesto yo.</p>
-                <div class="hero-actions">
-                    <NuxtLink to="/lab2/c/contacto" class="k-button">Pide cita</NuxtLink>
-                    <a :href="contact.phoneHref" class="k-button outline">{{ contact.phone }}</a>
-                </div>
-            </div>
+        <section id="contacto">
+            <ContactSplit
+                level="h2"
+                title="¿Hablamos?"
+                lead="Escríbeme una frase o llámame. Te contesto yo y buscamos una hora."
+            />
         </section>
     </ConsultaShell>
 </template>
@@ -161,6 +194,7 @@
 
 <script setup lang="ts">
 import ConsultaShell from "~/lab2/c/ConsultaShell.vue";
+import ContactSplit from "~/lab2/c/ContactSplit.vue";
 import {
     book,
     concernDetail,
@@ -168,6 +202,7 @@ import {
     contact,
     credentials,
     intro,
+    legalTopic,
     mapsUrl,
     portrait,
     proposal,
@@ -297,8 +332,7 @@ h1 {
 }
 .steps h3,
 .concerns h3,
-.ways h3,
-.book h3 {
+.ways h3 {
     font-family: "Young Serif", Georgia, serif;
     font-size: 1.375rem;
     line-height: 1.25;
@@ -309,9 +343,6 @@ h1 {
 }
 .sand {
     background: var(--sand);
-}
-.sun {
-    background: var(--sun);
 }
 .concerns {
     margin-top: 2.25rem;
@@ -349,8 +380,79 @@ h1 {
 .consulta .more:hover {
     text-decoration: underline;
 }
-.ways {
+.ways-row {
     margin-top: 3rem;
+    display: grid;
+    gap: 1.25rem;
+}
+@media (min-width: 1000px) {
+    .ways-row {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    }
+}
+.legal {
+    padding: 1.75rem;
+    border-radius: 12px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+.legal h3 {
+    font-family: "Young Serif", Georgia, serif;
+    font-size: 1.375rem;
+    line-height: 1.25;
+}
+.legal p {
+    font-size: 1rem;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+}
+.consulta .legal a {
+    font-weight: 600;
+    text-decoration: none;
+}
+.consulta .legal a:hover {
+    text-decoration: underline;
+}
+.cancer {
+    display: grid;
+    gap: 2.5rem;
+}
+@media (min-width: 900px) {
+    .cancer {
+        grid-template-columns: minmax(0, 38rem) 11rem;
+        justify-content: space-between;
+        align-items: center;
+        gap: 5rem;
+    }
+}
+.cancer .k-h2 {
+    max-width: 20ch;
+}
+.cancer-book {
+    width: 9rem;
+}
+@media (min-width: 900px) {
+    .cancer-book {
+        width: 100%;
+    }
+}
+.cancer-book img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 3px;
+    box-shadow: 0 6px 18px rgb(29 41 67 / 0.18);
+}
+.cancer-book figcaption {
+    margin-top: 0.9rem;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    color: var(--muted);
+}
+.ways {
     padding: 1.75rem;
     background: #fff;
     border-radius: 12px;
@@ -424,30 +526,6 @@ h1 {
         gap: 0;
     }
 }
-.book {
-    margin-top: 2.5rem;
-    display: grid;
-    grid-template-columns: 6rem 1fr;
-    gap: 1.5rem;
-    padding: 1.5rem;
-    background: var(--sand);
-    border-radius: 12px;
-}
-.book img {
-    width: 100%;
-    height: auto;
-    border-radius: 3px;
-    box-shadow: 0 6px 18px rgb(29 41 67 / 0.2);
-}
-.book-kind {
-    font-weight: 600;
-    font-size: 0.9375rem;
-    color: var(--muted);
-}
-.book p:last-child {
-    font-size: 1rem;
-    color: var(--muted);
-}
 .voices {
     margin-top: 2.25rem;
     display: grid;
@@ -487,7 +565,7 @@ h1 {
 .place-photo {
     aspect-ratio: 4 / 3;
     border-radius: 12px;
-    background: var(--sand);
+    background: var(--paper);
     border: 1.5px dashed #c9c3b4;
     display: grid;
     place-items: center;
@@ -503,11 +581,5 @@ h1 {
 }
 .place-facts dt {
     font-weight: 600;
-}
-.final {
-    text-align: center;
-}
-.final .hero-actions {
-    justify-content: center;
 }
 </style>

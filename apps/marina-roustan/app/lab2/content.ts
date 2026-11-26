@@ -7,7 +7,9 @@ export { book, concerns, contact, intro, portrait };
 
 export const voices = testimonials.filter((item) => !("invented" in item));
 
-export const topics = [...concerns.map((item) => item.title), "Otra cosa"];
+export const legalTopic = "Caso judicial o peritaje";
+
+export const topics = [...concerns.map((item) => item.title), legalTopic, "Otra cosa"];
 
 export const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("Carrer del Comte d'Urgell 237, 08036 Barcelona")}`;
 
@@ -16,7 +18,7 @@ export const concernDetail: Record<string, string> = {
     "Ansiedad y estrés":
         "La exigencia de cada día puede llevarnos a adaptarnos tanto que enfermamos. Trabajamos qué la sostiene y cómo bajar el ritmo sin que todo se caiga.",
     Pareja: "Un espacio para que los dos podáis escucharos de verdad, entender qué os está pasando y decidir cómo seguir.",
-    Cáncer: "Llevo más de 15 años haciendo terapia individual y en grupo con pacientes con cáncer, durante el tratamiento y después, cuando hay que reorganizar la vida.",
+    Cáncer: "Terapia individual y en grupo para afrontar lo que la enfermedad deja en la vida y en el cuerpo.",
     "Después de un trauma":
         "El estrés postraumático aparece tras vivir algo que nos supera. Tratarlo a tiempo evita que los síntomas se cronifiquen.",
     "Familia y separación":

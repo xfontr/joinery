@@ -1,5 +1,5 @@
 {
-    "syncedAt": "2026-11-23T18:16:39.271Z",
+    "syncedAt": "2026-11-26T16:02:58.317Z",
     "milestone": "Marina Roustan",
     "issues": [
         {
@@ -109,7 +109,9 @@
             ],
             "createdAt": "2026-11-15T15:38:52Z",
             "closedAt": null,
-            "activity": [],
+            "activity": [
+                "2026-11-16"
+            ],
             "blockedBy": [
                 {
                     "number": 447,
