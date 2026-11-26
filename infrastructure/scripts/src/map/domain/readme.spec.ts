@@ -18,7 +18,7 @@ depConstraints: [
 
 const project = (root: string, tags: string[], description = ""): ProjectManifest => ({
     root,
-    name: `@monorepo/${root.split("/").at(-1) ?? ""}`,
+    name: `@joinery/${root.split("/").at(-1) ?? ""}`,
     description,
     tags,
 });
@@ -59,15 +59,14 @@ describe("readmeRegions", () => {
         expect(linesOf("layout")).toEqual([
             "```",
             "packages/",
-            "    configs/ @monorepo/configs",
+            "    configs/ @joinery/configs",
             "apps/",
-            "    admin/   @monorepo/admin — the back office",
-            "    web/     @monorepo/web — the site",
+            "    admin/   @joinery/admin — the back office",
+            "    web/     @joinery/web — the site",
             "```",
         ]);
     });
 
-    // A regex that silently stops matching would otherwise render empty tables and pass --check.
     it("refuses to render when boundaries.ts yields no constraints", () => {
         expect(() => readmeRegions([], PROJECTS, ["apps"])).toThrow("No depConstraints parsed");
     });

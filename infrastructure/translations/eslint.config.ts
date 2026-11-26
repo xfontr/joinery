@@ -1,3 +1,3 @@
-import { eslint } from "@monorepo/configs";
+import { eslint } from "@joinery/configs";
 
 export default eslint.createNodeConfig();

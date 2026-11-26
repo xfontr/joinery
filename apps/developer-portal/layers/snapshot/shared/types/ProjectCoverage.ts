@@ -3,11 +3,7 @@ import type { CoverageMetric } from "./CoverageMetric.ts";
 export interface ProjectCoverage {
     name: string;
     root: string;
-    /**
-     * False means no usable coverage report was found. Distinct from 0% — a project with no test
-     * target and a project whose tests cover nothing are different facts, and averaging them
-     * together is how a coverage number stops meaning anything.
-     */
+    /** False means no usable coverage report was found, which is distinct from 0%. */
     collected: boolean;
     files: number;
     lines?: CoverageMetric;

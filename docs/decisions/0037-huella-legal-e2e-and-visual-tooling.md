@@ -7,11 +7,11 @@ decision: accepted
 # 🧭 Huella Legal's e2e runs in-app in one pinned image, and coverage gates `test`
 
 > **Screenshot baselines were removed in #241.** Everything below about baselines describes the
-> setup that was dropped; the rest stands. See [Baselines removed](#-baselines-removed).
+> setup that was dropped; the rest stands. See [Baselines removed](#baselines-removed).
 
 ## Context
 
-The [implementation plan](https://github.com/xfontr/monorepo/blob/3891f29041e31884c6821e99fd5ecc9c5daab2af/docs/plans/huella-legal-implementation.md) gives each page ticket a
+The [implementation plan](https://github.com/xfontr/joinery/blob/3891f29041e31884c6821e99fd5ecc9c5daab2af/docs/plans/huella-legal-implementation.md) gives each page ticket a
 Playwright spec against the built app: an axe scan with zero violations and screenshots at 390, 768
 and 1280. It gives the app a coverage threshold, too. None of that exists yet. #189 asks five
 things before A1 (#192) builds the harness: where Playwright lives, which browsers and OS image the
@@ -58,10 +58,10 @@ Each row is one change. Line numbers are as of this report.
 | 1 | `nx.json:8` `namedInputs.production` | Add `!{projectRoot}/e2e/**/*` and `!{projectRoot}/playwright.config.ts`, so a baseline or fake-data edit never invalidates `build` |
 | 2 | `nx.json:97`, before `collect` | Add a target default `e2e` with `dependsOn: ["build"]`, inputs `default` + `^production`, outputs `{projectRoot}/.playwright` and `cache: true` |
 | 3 | `apps/huella-legal/vitest.config.ts:3` | Replace it with developer-portal's two-project config. Put `coverage` at the **root** `test`: the preset's block, plus `app/lab/**` and `app/pages/**` in `exclude`, plus the four thresholds |
-| 4 | `apps/huella-legal/package.json:13` `test` | Change it to `vitest . --watch=false --coverage`. Add `e2e: playwright test`, plus `@playwright/test` `1.63.0` (exact) and `@axe-core/playwright` in `devDependencies` alongside A1's `@nuxt/test-utils`, `@vue/test-utils` and `happy-dom`. The `nx` block gains `targets.e2e.inputs`: `default`, `^production` and the locale JSON row 6 serves. The app doesn't depend on `@monorepo/translations`, so without that input a copy change would replay a cached green run |
+| 4 | `apps/huella-legal/package.json:13` `test` | Change it to `vitest . --watch=false --coverage`. Add `e2e: playwright test`, plus `@playwright/test` `1.63.0` (exact) and `@axe-core/playwright` in `devDependencies` alongside A1's `@nuxt/test-utils`, `@vue/test-utils` and `happy-dom`. The `nx` block gains `targets.e2e.inputs`: `default`, `^production` and the locale JSON row 6 serves. The app doesn't depend on `@joinery/translations`, so without that input a copy change would replay a cached green run |
 | 5 | `apps/huella-legal/playwright.config.ts` (new) | `testDir: "e2e"` and `outputDir: ".playwright"`. Three Chromium projects by width. `snapshotPathTemplate` is `{testDir}/__screenshots__/{testFileName}/{projectName}/{arg}{ext}`, with no `{platform}` because only one platform writes baselines. `ignoreSnapshots: !process.env.CI`. Two `webServer` entries: `node e2e/upstream.ts`, and `node .output/server/index.mjs` with `PORT` and the `NUXT_CONTENT_VENDOR_*`/`NUXT_TRANSLATIONS_VENDOR_*` vars pointed at the upstream on `localhost`. `NUXT_TRANSLATIONS_VENDOR_OPTIONS_TOKEN` gets a dummy value, because `TolgeeProvider` rejects an empty token |
 | 6 | `apps/huella-legal/e2e/upstream.ts` (new) | The fake. `posts`, `pages`, `categories` and `tags` return `x-wp-total`/`x-wp-totalpages` and the `_embed` shape `WordpressProvider.ts` asks for. Its hosts are its own `localhost` origin. The translations route serves the committed locale JSON |
-| 7 | `apps/huella-legal/tsconfig.e2e.json` (new), `tsconfig.json:8` | Extend `@monorepo/configs/tsconfig/node.json` over `e2e/**/*.ts` and `playwright.config.ts`, and add it to `references`, as developer-portal's `tsconfig.tools.json` does. Without it, nothing typechecks these files |
+| 7 | `apps/huella-legal/tsconfig.e2e.json` (new), `tsconfig.json:8` | Extend `@joinery/configs/tsconfig/node.json` over `e2e/**/*.ts` and `playwright.config.ts`, and add it to `references`, as developer-portal's `tsconfig.tools.json` does. Without it, nothing typechecks these files |
 | 8 | `.github/workflows/ci.yml:46`, before `dependency-review` | Add the `e2e` job: `container.image` set to the image above with `options: --user 1001`, then the same checkout, pnpm, node and `--ignore-scripts` install as `checks`, then `nx-set-shas`, `nx affected -t e2e`, and an SHA-pinned `actions/upload-artifact` of `apps/huella-legal/.playwright` and `apps/huella-legal/e2e/__screenshots__` on failure. The image installs `git`, so `actions/checkout` does a real clone and `affected` has history |
 | 9 | `.github/dependabot.yml:39`, before `dependencies` | Add a `playwright` group matching `@playwright/test`, so the bump arrives as its own PR |
 | 10 | `.gitignore:20` | Add `.playwright` |
@@ -102,7 +102,7 @@ drift cost that row names.
 **Order.** Rows 3–4 go first. Two-project config narrows Vitest's `include` to `app`, `server`,
 `shared` and `tools`. Until it lands, `vitest .` collects `e2e/*.spec.ts` and crashes importing
 `@playwright/test`. Row 1 goes before rows 5–6, so adding those files never busts the build cache.
-Rows 8–9 go last, once `pnpm exec nx test:e2e @monorepo/huella-legal` passes locally with snapshots
+Rows 8–9 go last, once `pnpm exec nx test:e2e @joinery/huella-legal` passes locally with snapshots
 ignored. A1 does not wait for A2. A2 changes the translations route in `upstream.ts` if it switches
 vendor, and that is its only e2e cost.
 
@@ -130,7 +130,7 @@ vendor, and that is its only e2e cost.
 - Every action in `ci.yml` is pinned by SHA with a version comment. `actions/upload-artifact` is
   the first new one, and it follows suit.
 
-## 🧹 Baselines removed
+## Baselines removed
 
 #241 dropped every `toHaveScreenshot`, the PNGs under `e2e/__screenshots__/`, and the preset's
 `snapshotPathTemplate` and `ignoreSnapshots`. The specs' behaviour and axe assertions, the pinned
@@ -151,13 +151,13 @@ back is a row in the app README's Deliberately deferred table.
 
 | Claim | Check |
 | --- | --- |
-| The threshold gates `test` | Set `lines: 99` locally, and `pnpm exec nx test @monorepo/huella-legal --skip-nx-cache` fails naming the threshold |
+| The threshold gates `test` | Set `lines: 99` locally, and `pnpm exec nx test @joinery/huella-legal --skip-nx-cache` fails naming the threshold |
 | Coverage config is at the root | `grep -n "thresholds" apps/huella-legal/vitest.config.ts` shows one hit, outside `projects` |
 | Lab and pages are out of the denominator | After a `test` run, `grep -c "app/lab/\|app/pages/" apps/huella-legal/coverage/coverage-final.json` prints `0` |
-| E2E files don't feed the build | Touch `apps/huella-legal/e2e/upstream.ts`, then `pnpm exec nx build @monorepo/huella-legal` reads from cache |
+| E2E files don't feed the build | Touch `apps/huella-legal/e2e/upstream.ts`, then `pnpm exec nx build @joinery/huella-legal` reads from cache |
 | No browser install anywhere | `git grep -n "playwright install" -- .github apps` returns nothing |
 | Image and package agree | The tag in `grep -n "playwright:v" .github/workflows/ci.yml` equals `@playwright/test` in `apps/huella-legal/package.json` |
 | No fixture files | `git ls-files apps/huella-legal/e2e \| grep -v "\.ts$"` returns nothing |
-| E2E files typecheck | A type error in `e2e/upstream.ts` fails `pnpm exec nx typecheck @monorepo/huella-legal` |
-| CI reuses the build | The `e2e` job's log shows `@monorepo/huella-legal:build` as `[remote cache]` |
+| E2E files typecheck | A type error in `e2e/upstream.ts` fails `pnpm exec nx typecheck @joinery/huella-legal` |
+| CI reuses the build | The `e2e` job's log shows `@joinery/huella-legal:build` as `[remote cache]` |
 | Docs agree | `pnpm docs:map --check` passes, and the FEATURES row for `pnpm e2e` has a doc link |

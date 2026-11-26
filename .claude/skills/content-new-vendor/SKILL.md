@@ -1,11 +1,11 @@
 ---
 name: content-new-vendor
-description: Add a CMS vendor to @monorepo/content — a ContentProvider subclass, its options type, configProblems(), one registry line and a spec. Use when adding or changing a content vendor such as Contentful, Sanity, Strapi or another WordPress-like API.
+description: Add a CMS vendor to @joinery/content — a ContentProvider subclass, its options type, configProblems(), one registry line and a spec. Use when adding or changing a content vendor such as Contentful, Sanity, Strapi or another WordPress-like API.
 ---
 
 # Adding a content vendor
 
-The steps are in the [Vendors section](../../../packages/content/README.md#-vendors) of the package README. Follow
+The steps are in the [Vendors section](../../../packages/content/README.md#vendors) of the package README. Follow
 them; this file is what the prose can't enforce. Read
 [`wordpress/`](../../../packages/content/src/core/adapters/providers/wordpress) first — it is the only vendor, so it
 *is* the pattern, including the split into a provider, its constants, its mapping helpers and its
@@ -36,7 +36,7 @@ response types.
    only**, because it is left out of the cache key: anything that picks the document (a space, an
    environment, a dataset) goes in `baseURL` as the path or host segment the vendor's API already
    uses (`https://cdn.contentful.com/spaces/<space>/environments/<env>`). An identity field in
-   `options` makes two spaces share cache entries. The shape is `@monorepo/i18n`'s too, so change
+   `options` makes two spaces share cache entries. The shape is `@joinery/i18n`'s too, so change
    both packages or neither.
 
 3. **`configProblems()` covers `options` only, and is optional.** `baseURL` is already checked in
@@ -69,8 +69,8 @@ provider passes the path its API defines (`/wp-json/wp/v2/posts`). All I/O goes 
 injected `HttpClient`; a provider that imports `ofetch` directly has bound itself to a transport.
 
 If the vendor needs a resource family the domain doesn't have, that is a change to
-`core/domain/content.ts` and a conversation about `Resource` being two closed unions — see the
-README's deferred table before opening it up.
+`core/domain/content.ts` and a conversation about `Resource` being two closed unions; raise it with
+the user before opening it up.
 
 ## No service layer
 
@@ -83,7 +83,7 @@ A `<Name>Provider.spec.ts` beside it, covering the URL contract, the mapping, an
 misconfigured construction. Then:
 
 ```sh
-pnpm exec nx run-many -t lint typecheck test --projects @monorepo/content
+pnpm exec nx run-many -t lint typecheck test --projects @joinery/content
 ```
 
 Nothing else. Config typing, lazy loading and the Nuxt routes follow from the registry line.

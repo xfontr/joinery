@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { isMap, parseDocument, type Document } from "yaml";
 import {
     assembleWorkflows,
+    diaryHeader,
     PROJECT_ID,
     projectYaml,
     SETTLED_STATES,
@@ -88,6 +89,13 @@ const milestoneProblem = (workflows: Workflows, id: string, milestone: string): 
     return owner ? `\`${milestone}\` is already ${owner.project.id}'s milestone` : null;
 };
 
+/** Opens the project's diary, keeping the one a dropped project of the same id left. */
+const startDiary = async (id: string, title: string): Promise<void> => {
+    const path = resolve(workflowsDir(), "projects", `${id}.diary.md`);
+
+    if (!existsSync(path)) await writeFile(path, diaryHeader(title), "utf8");
+};
+
 const createProject = async (
     edit: Record<string, unknown>,
     id: string,
@@ -144,6 +152,8 @@ const createProject = async (
         if ((error as NodeJS.ErrnoException).code === "EEXIST") return `${id} already exists`;
         throw error;
     }
+
+    await startDiary(id, title);
     return null;
 };
 
@@ -237,7 +247,6 @@ export const applyEdit = async (body: unknown): Promise<string | null> => {
     if (edit.action === "create") return createProject(edit, id, path, workflows);
     if (!existsSync(path)) return `${id} doesn't exist`;
 
-    // GitHub keeps the milestone and its tickets; only the files that draw the project go.
     if (edit.action === "delete") {
         await rm(path);
         await rm(resolve(workflowsDir(), "projects", `${id}.snapshot.json`), { force: true });

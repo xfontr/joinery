@@ -1,113 +1,136 @@
-import { mountSuspended, mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { reactive, ref } from "vue";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { DecisionOutcome, DecisionStatus } from "#layers/snapshot/shared/decisions.ts";
+import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
+import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import Page from "./[id].vue";
 
-const state = vi.hoisted(() => ({
-    reports: null as unknown,
-    route: null as { params: { id: string } } | null,
-    page: null as { value: unknown } | null,
+const artifacts = vi.hoisted(() => ({ docs: null as DocsArtifact | null }));
+mockNuxtImport("docsArtifact", () => () => artifacts.docs);
+
+beforeEach(() => {
+    artifacts.docs = null;
+});
+
+const docs = vi.hoisted(() => ({
+    entries: [] as { path: string; title: string; body?: unknown }[],
 }));
-mockNuxtImport("useDecisionReports", () => () => state.reports);
-mockNuxtImport("useRoute", () => () => state.route);
-mockNuxtImport("useAsyncData", () => () => ({ data: state.page }));
+
+mockNuxtImport("queryCollection", () => () => ({
+    path: (path: string) => ({
+        first: () => Promise.resolve(docs.entries.find((entry) => entry.path === path) ?? null),
+    }),
+}));
+
 const setStatus = vi.hoisted(() => vi.fn());
 mockNuxtImport("setResponseStatus", () => setStatus);
 
 const global = {
     stubs: {
-        UDashboardPanel: {
-            template: "<section><slot name='header' /><slot name='body' /></section>",
-        },
-        UDashboardNavbar: { template: "<header><slot name='right' /></header>" },
-        UDashboardSidebarCollapse: true,
-        UBreadcrumb: {
-            props: { items: Array },
-            template: "<nav>{{ items?.map(item => item.label).join(' / ') }}</nav>",
-        },
-        StatusPill: {
-            props: { label: String, to: String },
-            template: "<a :href='to'>{{ label }}</a>",
-        },
-        UPageBody: { template: "<div><slot /></div>" },
         ContentRenderer: { props: { value: Object }, template: "<div>{{ value?.title }}</div>" },
-        USeparator: true,
-        UContentToc: { template: "<aside>toc</aside>" },
-        NuxtLink: { props: { to: String }, template: "<a :href='to'><slot /></a>" },
     },
 };
 
 const report = (
     id: string,
-    status: "implemented" | "to-implement",
-    decision: "accepted" | "superseded",
-    supersededBy: string | null,
-) => ({
-    id,
+    decisionStatus: DecisionStatus,
+    decisionOutcome: DecisionOutcome,
+    decisionSupersededBy: string | null = null,
+): DocPage => ({
     path: `docs/decisions/${id}.md`,
-    number: id.slice(0, 4),
+    kind: "decision",
     title: id,
-    status,
-    decision,
-    supersededBy,
-    updatedAt: "2026-09-20",
     words: 10,
+    updatedAt: "2026-09-20",
+    decisionStatus,
+    decisionOutcome,
+    decisionSupersededBy,
+    audit: null,
+    brokenLinks: [],
 });
+
+const open = async (route: string) => {
+    const wrapper = await mountSuspended(Page, { global, route });
+    await flushPromises();
+    return wrapper;
+};
+
+const pills = (wrapper: VueWrapper) =>
+    wrapper.findAllComponents({ name: "StatusPill" }).map((pill) => pill.props());
+
 beforeEach(() => {
-    state.reports = ref([
-        report("0001-first", "implemented", "accepted", null),
-        report("0002-second", "to-implement", "superseded", "0003-third.md"),
-        report("0003-third", "implemented", "accepted", null),
-    ]);
-    state.route = reactive({ params: { id: "0002-second" } });
-    state.page = ref({ title: "Decision page", body: { toc: { links: [{ id: "one" }] } } });
     setStatus.mockClear();
+    docs.entries = [
+        { path: "/docs/decisions/0001-first", title: "First" },
+        { path: "/docs/decisions/0002-second", title: "Second" },
+        { path: "/docs/decisions/0003-third", title: "Third" },
+    ];
+    artifacts.docs = {
+        generatedAt: "2026-11-01T00:00:00Z",
+        pages: [
+            report("0001-first", "implemented", "accepted"),
+            report("0002-second", "to-implement", "superseded", "0003-third.md"),
+            report("0003-third", "implemented", "accepted"),
+        ],
+        brokenLinkCount: 0,
+    };
 });
 
 describe("decision detail page", () => {
     it("answers a missing report with a 404 so the prerender crawler fails on a dead link", async () => {
-        state.page = ref(null);
-        await mountSuspended(Page, { global });
+        await open("/decisions/missing");
+
         expect(setStatus).toHaveBeenCalledWith(404);
     });
 
     it("leaves a found report on 200", async () => {
-        await mountSuspended(Page, { global });
+        await open("/decisions/0002-second");
+
         expect(setStatus).not.toHaveBeenCalled();
     });
 
-    it("renders status, superseded replacement and both neighbours in decision order", async () => {
-        const wrapper = await mountSuspended(Page, { global });
-        expect(wrapper.text()).toContain("Decision page");
-        expect(wrapper.text()).toContain("To implement");
-        expect(wrapper.text()).toContain("toc");
-        expect(wrapper.find("a[href='/decisions/0003-third']").exists()).toBe(true);
+    it("shows the report's status and links a superseded one to its replacement", async () => {
+        const wrapper = await open("/decisions/0002-second");
+
+        expect(pills(wrapper)).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ to: "/decisions/0003-third" }),
+                expect.objectContaining({ label: "decisions.status.to-implement" }),
+            ]),
+        );
+    });
+
+    it("links both neighbours in decision order", async () => {
+        const wrapper = await open("/decisions/0002-second");
+
         expect(wrapper.find("a[href='/decisions/0001-first']").exists()).toBe(true);
         expect(wrapper.find("a[href='/decisions/0003-third']").exists()).toBe(true);
     });
 
-    it("omits the previous link for the first report and the next link for the last report", async () => {
-        state.route = reactive({ params: { id: "0001-first" } });
-        const first = await mountSuspended(Page, { global });
+    it.each([
+        ["first", "/decisions/0001-first", "/decisions/0002-second", "/decisions/0001-first"],
+        ["last", "/decisions/0003-third", "/decisions/0002-second", "/decisions/0003-third"],
+    ])("links only the one neighbour the %s report has", async (_, route, linked, self) => {
+        const wrapper = await open(route);
 
-        expect(first.find("a[href='/decisions/0001-first']").exists()).toBe(false);
-        expect(first.find("a[href='/decisions/0002-second']").exists()).toBe(true);
-
-        state.route!.params.id = "0003-third";
-        await first.vm.$nextTick();
-
-        expect(first.find("a[href='/decisions/0002-second']").exists()).toBe(true);
-        expect(first.find("a[href='/decisions/0003-third']").exists()).toBe(false);
+        expect(wrapper.find(`a[href='${linked}']`).exists()).toBe(true);
+        expect(wrapper.find(`a[href='${self}']`).exists()).toBe(false);
     });
 
-    it("shows the not-found state and updates the selected content when the route changes", async () => {
-        state.route = reactive({ params: { id: "missing" } });
-        state.page = ref(null);
-        const wrapper = await mountSuspended(Page, { global });
-        expect(wrapper.text()).toContain("No such report");
-        state.route!.params.id = "0001-first";
-        state.page!.value = { title: "First page" };
-        await wrapper.vm.$nextTick();
-        expect(wrapper.text()).toContain("First page");
+    it("says there is no such report instead of rendering an empty one", async () => {
+        const wrapper = await open("/decisions/missing");
+
+        expect(wrapper.text()).toContain("decision.missing.title");
+    });
+
+    it("loads the new report when the route changes under it", async () => {
+        const wrapper = await open("/decisions/0001-first");
+
+        await useRouter().push("/decisions/0003-third");
+        await flushPromises();
+
+        expect(wrapper.find("a[href='/decisions/0003-third']").exists()).toBe(false);
+        expect(wrapper.find("a[href='/decisions/0002-second']").exists()).toBe(true);
     });
 });

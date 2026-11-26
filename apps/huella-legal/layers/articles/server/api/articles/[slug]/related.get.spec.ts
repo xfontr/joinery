@@ -1,6 +1,7 @@
-import type { Entry } from "@monorepo/content";
-import { fakeEntry, fakeTerm } from "@monorepo/content/testing";
+import type { Entry } from "@joinery/content";
+import { fakeEntry, fakeTerm } from "@joinery/content/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 import type { ArticleSummary } from "../../../../shared/types/ArticleSummary";
 
 const CATEGORY = fakeTerm();
@@ -12,7 +13,7 @@ const nitro = vi.hoisted(() => ({
     listEntries: vi.fn(),
 }));
 
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 vi.stubGlobal("getRouterParam", () => "la-culpa");
 vi.stubGlobal("useRuntimeConfig", () => ({ articles: { hiddenTerms: ["oculta"] } }));
 vi.stubGlobal("useContent", () => ({ getEntry: nitro.getEntry, listEntries: nitro.listEntries }));
@@ -63,7 +64,6 @@ describe("GET /api/articles/:slug/related", () => {
         expect(nitro.listEntries).not.toHaveBeenCalled();
     });
 
-    // The page hides the band on an error, so an empty fallback here would hide that something failed
     it("fails with the list's status rather than answering an empty list", async () => {
         nitro.listEntries.mockRejectedValue(Object.assign(new Error("http"), { statusCode: 502 }));
 

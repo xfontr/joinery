@@ -1,7 +1,14 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { readTemplate } from "#layers/workflows/shared/workflows.ts";
 import WorkflowTemplatePicker from "./WorkflowTemplatePicker.vue";
+
+const MESSAGES = {
+    workflowTemplatePicker: {
+        counts: "{blocks} blocks by default · {fast}–{block} tickets · {points} SP",
+        legend: "Template",
+    },
+};
 
 const template = (id: string, title: string) =>
     readTemplate({
@@ -19,6 +26,10 @@ const mount = () =>
         },
         global: { stubs: { UIcon: true } },
     });
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("WorkflowTemplatePicker", () => {
     it("marks only the chosen template and reports the one clicked", async () => {

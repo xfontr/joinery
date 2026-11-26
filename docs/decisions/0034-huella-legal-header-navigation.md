@@ -10,7 +10,7 @@ decision: accepted
 
 The header has to serve three jobs: reading, finding the next good read, and persuading legal
 professionals to publish. It rendered four flat links through `UNavigationMenu`, and
-[`/sobre/`](../../apps/huella-legal/layers/archive/app/pages/sobre.vue) was reachable only from the
+[`/sobre/`](../../apps/huella-legal/layers/archive/app/pages/about.vue) was reachable only from the
 footer, so a would-be author couldn't easily find out what the journal is. huellalegal.com has the
 same gap: its "Sobre" item links to `/colaboradores/`.
 
@@ -97,7 +97,7 @@ is the answer only if the dropdowns go.
 
 | Claim | Check |
 | --- | --- |
-| No menu or floating-ui code is a static import of the layout | `pnpm exec nx build @monorepo/huella-legal`, then confirm that the chunk in `.output/public/_nuxt` containing `ShellSiteHeader` imports no chunk containing `NavigationMenuRoot` or `middlewareData` |
+| No menu or floating-ui code is a static import of the layout | `pnpm exec nx build @joinery/huella-legal`, then confirm that the chunk in `.output/public/_nuxt` containing `ShellSiteHeader` imports no chunk containing `NavigationMenuRoot` or `middlewareData` |
 | A phone never loads the desktop menu | `SiteHeader.spec.ts`: *holds the inline menu below lg* |
 | The active marker follows a client-side navigation | `e2e/shell.spec.ts`: *the header follows a client-side navigation before anyone has touched it* |
 | `/sobre/` is one step from every header | `e2e/shell.spec.ts`: *the about page is one step from the header*, on all three viewports |

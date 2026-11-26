@@ -1,8 +1,7 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@monorepo/configs/playwright/test";
+import { axeViolations } from "@joinery/configs/playwright/utils/a11y";
+import { expect, test } from "@joinery/configs/playwright/utils/test";
+import { t } from "./copy.ts";
 import { POSTS, SUBJECT, TAG } from "./fakes.ts";
-
-const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 
 test.beforeEach(async ({ page }) => {
     const response = await page.goto("/areas/");
@@ -13,7 +12,7 @@ test.beforeEach(async ({ page }) => {
 test("the subjects index links every subject with posts", async ({ page }) => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Áreas");
 
-    const grid = page.getByRole("region", { name: "Áreas" });
+    const grid = page.getByRole("region", { name: t("categories.title") });
 
     const subjects = new Set(POSTS.flatMap(({ terms }) => terms[0]?.name ?? []));
 
@@ -38,7 +37,7 @@ test("the formats band leads to the archive filtered by each format, thesis incl
 });
 
 test("the A to Z links each topic to its tag, without the thesis marker", async ({ page }) => {
-    const topics = page.getByRole("region", { name: "Temas de la A a la Z" });
+    const topics = page.getByRole("region", { name: t("subjectsTopics.title") });
 
     await expect(topics.getByRole("link", { name: new RegExp(`^${TAG.name}\\s`) })).toHaveAttribute(
         "href",
@@ -49,20 +48,18 @@ test("the A to Z links each topic to its tag, without the thesis marker", async 
 
 test("the on-page links jump to each section", async ({ page }) => {
     await page
-        .getByRole("navigation", { name: "En esta página" })
+        .getByRole("navigation", { name: t("subjectsSectionNav.label") })
         .getByRole("link", { name: /temas$/ })
         .click();
 
     await expect(page).toHaveURL(/#temas$/);
-    await expect(page.getByRole("heading", { name: "Temas de la A a la Z" })).toBeInViewport();
+    await expect(page.getByRole("heading", { name: t("subjectsTopics.title") })).toBeInViewport();
 });
 
 test("the subjects index has no WCAG AA violations", async ({ page }, testInfo) => {
-    const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
     await testInfo.attach(`areas-${testInfo.project.name}`, {
         body: await page.screenshot({ fullPage: true }),
         contentType: "image/png",
     });
-    expect(violations).toEqual([]);
+    expect(await axeViolations(page)).toEqual([]);
 });

@@ -1,5 +1,5 @@
 export default defineAppConfig({
     nav: {
-        docs: { label: "Documentation", icon: "i-lucide-library", to: "/docs" },
+        docs: { icon: "i-lucide-library", to: "/wiki" },
     },
 });

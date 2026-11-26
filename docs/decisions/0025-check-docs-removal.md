@@ -9,7 +9,7 @@ decision: accepted
 ## Context
 
 [`0011`](./0011-docs-system-enforcement.md) moved four docs checks into one CI gate,
-`pnpm exec nx check-docs @monorepo/developer-portal`: broken relative links, the mirrored
+`pnpm exec nx check-docs @joinery/developer-portal`: broken relative links, the mirrored
 `check-invariants.sh` rules, and decision filenames and frontmatter (including number collisions).
 `bf29d16` took the step out of `ci.yml` and `3414e2c` (#141) deleted the target and
 `tools/check-docs/index.ts`. Nothing recorded where each check went, so filed reports and a live

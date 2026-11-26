@@ -1,47 +1,53 @@
 ---
 name: house-docs
-description: The documentation voice for this repo — README structure, emoji headings, tables over bullets, and the "Deliberately deferred" tradeoff section. Use when writing or editing any markdown here: a README, a CLAUDE.md, a module doc, or a new section in an existing one.
+description: The documentation voice for this repo — short, scannable READMEs, one emoji on the title, tables over prose. Use when writing or editing any markdown here: a README, a CLAUDE.md, a module doc, or a new section in an existing one.
 ---
 
 # Writing docs here
 
-The READMEs in this repo are the best thing in it. They explain *why* a decision was made and what
-breaks if it's undone, which is exactly what an agent writing docs unprompted does not do. Match
-them.
+A reader opens a doc to answer one question. They should find it in under a minute. Agents read the
+code, ADRs and git history; a doc earns its place by holding what those can't show.
 
-Read the neighbouring README before writing one.
-[`packages/content/README.md`](../../../packages/content/README.md) is the fullest example.
+## Who reads it
+
+| Kind | For | Holds |
+| --- | --- | --- |
+| `README.md` | People first | What it is, how to run it, the commands, env vars and gotchas |
+| `CLAUDE.md` | Agents | Rules that aren't visible in the code and get broken anyway |
+| `docs/decisions/` | Both | The *why*. Rationale goes here, not in a README |
 
 ## Shape
 
-- Title is `# 📦 @monorepo/<name>` for a package, `# 🤖 …` / `# 👤 <layer>` style for anything else.
-  One emoji, then the name.
-- Every `##` heading carries an emoji and is sentence case. Recurring ones, in the order they tend
-  to appear: `🗂 Structure`, `🚀 Usage` / `🚀 Development`, `🔑 Environment`, `🏷 Vendors`,
-  `🔌 The ports`, `✅ Validation`, `⚠️ Errors`, `📐 Boundaries`, `🧭 Deliberately deferred`.
-- Wrap prose at roughly 100 columns. Hard-wrapped paragraphs, not one line per sentence.
-- Open with two or three sentences saying what the thing is and what it is *for*. No badge wall, no
-  feature list.
+- Title: one emoji, then the name — `# 📦 @joinery/<name>` for a package.
+- Open with one or two sentences: what it is and what it's for. No badges, no feature list.
+- `##` and deeper headings are plain text in sentence case, no emoji: the title carries the only one.
+  Use only the sections the thing needs.
+- Hard-wrap at roughly 100 columns.
+
+## Length
+
+- **A paragraph is three lines at most.** Longer means it's a list, a table, or should be cut.
+- **A README rarely needs more than ~150 lines.** Past that, split by subject next to the code or cut.
+- **Tables for anything enumerable** — commands, env vars, routes, errors, files.
+- **One line of why, then link the ADR.** Never re-argue a decision; the decision report already
+  does.
+- Don't explain what the code, a type or a file name already says. Don't list every file — name the
+  folders a reader would look for.
+- Code blocks: the three lines that matter.
+- No "Deliberately deferred" section by default. Add one only when the user asks or a known gap
+  would surprise the next person; one row per gap, one line per row.
+- No marketing tone, no closing summary, no history of how it got this way.
 
 ## Rules
 
-- **Tables for anything enumerable.** Env vars, commands, errors and their status codes, resources,
-  tradeoffs. A bullet list of `name — description` pairs should have been a table.
-- **State the why and the consequence.** "`url` is absolute, so no transport is ever configured with
-  vendor knowledge" — not "`url` is a string containing the full URL". If a sentence only restates
-  a signature, delete it.
-- **Link to the source** when naming an invariant, using a relative path and backticking the link
-  text when it is a filename. Cross-link between READMEs the same way.
-- **Name the loose ends.** A stub gets a `## ⚠️ Still a stub` section saying what is fake and what
-  swapping it would cost. A known inconsistency gets written down, not smoothed over.
-- **`## 🧭 Deliberately deferred`** — a `| Later need | What changes |` table for everything you
-  chose not to build, with enough detail that the next person can act on it. This is the section
-  that makes these docs worth reading; write it even when it feels premature.
-- Code blocks are illustrative, not exhaustive. Show the three lines that matter.
-- No marketing tone, no "powerful", no "simply", no closing summary that repeats the intro.
+- Link to the source when naming an invariant, with a relative path.
+- Don't restate the root README or another project's README — link to it.
+- A known stub or inconsistency gets one line saying so, not a section.
+- `docs/FEATURES.md` is rendered by `pnpm docs:map` and matches each capability to the doc that
+  names it. Cutting the only mention of a command leaves its row empty, so re-render and check.
+- Headings are link targets. Renaming one means fixing every `#anchor` that points at it.
 
 ## Out of scope
 
 - `CHANGELOG.md` is generated by `nx release`. Never touch one.
-- Don't restate the root README inside a package README — link to it.
 - Trailing whitespace is preserved in markdown (`.editorconfig`), so a deliberate hard break stays.

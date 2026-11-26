@@ -1,5 +1,5 @@
 {
-    "name": "@monorepo/huella-legal",
+    "name": "@joinery/huella-legal",
     "description": "Huella Legal, a WIP law blog redesign (Nuxt 4)",
     "private": true,
     "type": "module",
@@ -69,8 +69,8 @@
     },
     "dependencies": {
         "@iconify-json/lucide": "^1.2.147",
-        "@monorepo/content": "workspace:*",
-        "@monorepo/observability": "workspace:*",
+        "@joinery/content": "workspace:*",
+        "@joinery/observability": "workspace:*",
         "@netlify/blobs": "^11.1.7",
         "@netlify/functions": "^6.1.1",
         "@nuxt/fonts": "catalog:",
@@ -100,9 +100,8 @@
         "vanilla-cookieconsent": "^3.2.1"
     },
     "devDependencies": {
-        "@axe-core/playwright": "^4.13.0",
         "@faker-js/faker": "^10.6.0",
-        "@monorepo/configs": "workspace:*",
+        "@joinery/configs": "workspace:*",
         "@nuxt/test-utils": "^4.3.2",
         "@playwright/test": "catalog:",
         "@storybook/vue3-vite": "^10.6.0",

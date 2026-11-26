@@ -3,7 +3,6 @@ export default defineNuxtConfig({
 
     modules: ["@nuxt/ui"],
 
-    // A local single-user tool; rendering in the browser keeps CodeMirror and the iframes simple.
     ssr: false,
     devtools: false,
 
@@ -15,7 +14,6 @@ export default defineNuxtConfig({
 
     devServer: {
         host: "127.0.0.1",
-        // Off huella-legal's 3000 and the translations service's 4000, so all three run at once.
         port: 3100,
     },
 

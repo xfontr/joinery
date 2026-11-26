@@ -4,7 +4,7 @@
             <UButton
                 v-for="type in types"
                 :key="type.id"
-                :label="`${type.title} · ${type.cost} SP`"
+                :label="$t('workflowPagePicker.add', { type: type.title, points: type.cost })"
                 icon="i-lucide-plus"
                 color="neutral"
                 variant="outline"
@@ -29,8 +29,8 @@
                         <UInput
                             v-if="card.editing"
                             :model-value="card.title"
-                            :placeholder="`${card.typeTitle} name`"
-                            :aria-label="`${card.typeTitle} name`"
+                            :placeholder="$t('workflowPagePicker.name', { type: card.typeTitle })"
+                            :aria-label="$t('workflowPagePicker.name', { type: card.typeTitle })"
                             autofocus
                             class="w-full"
                             @update:model-value="rename(card.key, String($event))"
@@ -41,7 +41,7 @@
                             v-else
                             type="button"
                             class="block w-full cursor-text truncate py-1 text-left font-semibold"
-                            :aria-label="`Rename ${card.title}`"
+                            :aria-label="$t('workflowPagePicker.rename', { page: card.title })"
                             @click="editing = card.key"
                         >
                             {{ card.title }}
@@ -50,7 +50,11 @@
                     </div>
                     <UButton
                         icon="i-lucide-x"
-                        :aria-label="`Remove ${card.title || card.typeTitle.toLowerCase()}`"
+                        :aria-label="
+                            $t('workflowPagePicker.remove', {
+                                page: card.title || card.typeTitle.toLowerCase(),
+                            })
+                        "
                         color="neutral"
                         variant="ghost"
                         size="sm"
@@ -61,7 +65,7 @@
                 <div class="flex flex-wrap items-center gap-1.5">
                     <UBadge :label="card.typeTitle" color="neutral" variant="subtle" size="sm" />
                     <UBadge
-                        :label="`${card.points} SP`"
+                        :label="$t('workflowPagePicker.points', { points: card.points })"
                         color="neutral"
                         variant="subtle"
                         size="sm"
@@ -85,6 +89,8 @@ interface Props {
 
 const { template, errors } = defineProps<Props>();
 const pages = defineModel<{ key: number; type: string; title: string }[]>({ required: true });
+
+const { t } = useI18n();
 
 const editing = ref<number | null>(null);
 
@@ -116,8 +122,13 @@ const cards = computed(() => {
             typeTitle: type?.title ?? page.type,
             points,
             note: [
-                ...setup.map((block) => `Includes ${block.title}, ${block.complexity ?? 0} SP`),
-                ...shared.map((block) => `${block.title} already counted`),
+                ...setup.map((block) =>
+                    t("workflowPagePicker.includes", {
+                        block: block.title,
+                        points: block.complexity ?? 0,
+                    }),
+                ),
+                ...shared.map((block) => t("workflowPagePicker.counted", { block: block.title })),
             ].join(" · "),
             editing: editing.value === page.key,
             // An empty title is the state a new block starts in, not a mistake yet.

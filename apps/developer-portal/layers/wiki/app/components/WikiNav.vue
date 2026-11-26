@@ -2,14 +2,29 @@
     <nav class="flex flex-col gap-5 text-sm">
         <div v-for="section in sections" :key="section.id" class="flex flex-col gap-1">
             <div
-                class="flex items-center gap-1.5 px-2 text-2xs font-medium tracking-wide text-dimmed uppercase"
+                class="flex items-center gap-1.5 px-2 text-xs font-medium tracking-wide text-dimmed uppercase"
             >
                 <UIcon :name="section.icon" class="size-3.5" />
                 {{ section.label }}
             </div>
 
             <div v-for="group in section.groups" :key="group.key" class="flex flex-col">
+                <NuxtLink
+                    v-if="soleEntry(group)"
+                    :to="`/wiki${soleEntry(group)?.path}`"
+                    class="flex items-center gap-1 rounded-md px-2 py-1 font-mono text-xs transition-colors hover:bg-elevated/50"
+                    :class="
+                        soleEntry(group)?.path === current
+                            ? 'bg-elevated text-primary'
+                            : 'text-muted'
+                    "
+                >
+                    <span class="size-3 shrink-0" />
+                    <span class="flex-1 truncate">{{ group.label }}</span>
+                </NuxtLink>
+
                 <div
+                    v-else
                     class="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted transition-colors hover:bg-elevated/50"
                 >
                     <button
@@ -29,7 +44,7 @@
 
                     <NuxtLink
                         v-if="overviewPath(group)"
-                        :to="`/docs${overviewPath(group)}`"
+                        :to="`/wiki${overviewPath(group)}`"
                         class="flex-1 truncate font-mono transition-colors hover:text-primary"
                     >
                         {{ group.label }}
@@ -45,9 +60,11 @@
                 </div>
 
                 <NuxtLink
-                    v-for="entry in isOpen(section, group) ? group.entries : []"
+                    v-for="entry in isOpen(section, group) && !soleEntry(group)
+                        ? group.entries
+                        : []"
                     :key="entry.path"
-                    :to="`/docs${entry.path}`"
+                    :to="`/wiki${entry.path}`"
                     class="flex items-center gap-2 rounded-md py-1 pr-2 pl-6 transition-colors hover:bg-elevated/50"
                     :class="
                         entry.path === current
@@ -64,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import type { WikiGroup, WikiSection } from "#layers/wiki/shared/wiki.ts";
+import type { WikiEntry, WikiGroup, WikiSection } from "#layers/wiki/app/utils/wiki.ts";
 
 interface Props {
     sections: WikiSection[];
@@ -73,23 +90,23 @@ interface Props {
 
 const { sections, current = "" } = defineProps<Props>();
 
+const { t } = useI18n();
+
 const holdsCurrent = (group: WikiGroup): boolean =>
     group.entries.some((entry) => entry.path === current);
 
-/**
- * Every group here — a project, or a docs subdirectory — is that directory's own README first and
- * whatever else it holds after, so the group label doubles as a link to it. Without this, a project
- * a reader isn't already inside is a name they can only toggle open, never go to.
- */
-const overviewPath = (group: WikiGroup): string | null =>
-    group.entries.find((entry) => entry.label === "Overview")?.path ?? null;
+/** A group that is only its README is a link, not a folder holding one page called "Overview". */
+const soleEntry = (group: WikiGroup): WikiEntry | null =>
+    group.entries.length === 1 ? (group.entries[0] ?? null) : null;
 
-/** Every group starts folded except the one the reader is already inside — that one has to show where they are. */
+/** Every group lists its directory's own README first, so the group label doubles as a link to it. */
+const overviewPath = (group: WikiGroup): string | null =>
+    group.entries.find((entry) => entry.label === t("wiki.overview"))?.path ?? null;
+
 const opensByDefault = (group: WikiGroup): boolean => holdsCurrent(group);
 
-// Records which groups a click has flipped away from their default, rather than which are open —
-// so a group that opens itself because it holds the current page still folds on a click, and one
-// left alone keeps tracking `holdsCurrent` as the reader navigates rather than freezing at load.
+// Which groups a click flipped away from their default, not which are open, so a group left alone
+// keeps tracking `holdsCurrent` as the reader navigates.
 const toggled = ref(new Set<string>());
 
 const isOpen = (section: WikiSection, group: WikiGroup): boolean => {

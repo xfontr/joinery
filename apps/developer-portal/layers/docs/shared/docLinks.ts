@@ -1,8 +1,5 @@
 import { toCollectionPath } from "./docPages.ts";
 
-// A link in these docs points at a file and is correct on GitHub, which reads them first — so it is
-// fixed here rather than in the markdown.
-
 /** Produced here, consumed by `ProseA`, which alone knows the forge's URL. */
 export const REPO_SCHEME = "repo:";
 
@@ -23,6 +20,16 @@ const resolveAgainst = (base: string[], path: string): string => {
     }
 
     return out.join("/");
+};
+
+/** Where the build serves a docs folder's images; a folder is listed in the docs layer's `nuxt.config.ts`. */
+export const DOC_ASSETS = "/doc-assets";
+
+/** A relative image resolved to where the build serves it, or null for one that is already a URL. */
+export const resolveDocImage = (src: string, fromPath: string): string | null => {
+    if (src === "" || ABSOLUTE.test(src) || src.startsWith("/")) return null;
+
+    return `${DOC_ASSETS}/${resolveAgainst(segmentsOf(fromPath).slice(0, -1), src)}`;
 };
 
 /** A `<file>` in a link is an instruction to whoever copies the doc, not a target. */
@@ -54,7 +61,8 @@ export const resolveDocLink = (
 
     if (resolved === "") return null;
 
-    if (isPage(resolved)) return `/docs${toCollectionPath(resolved)}${anchor}`;
+    if (isPage(resolved)) return `/wiki${toCollectionPath(resolved)}${anchor}`;
 
-    return `${REPO_SCHEME}${resolved}`;
+    // `@nuxt/content` turns any non-http href ending in `.md` into a relative route, dropping the scheme.
+    return `${REPO_SCHEME}${resolved.replace(/\.(mdx?)$/i, "%2E$1")}`;
 };

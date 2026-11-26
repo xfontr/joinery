@@ -42,7 +42,6 @@ describe("newsletter card", () => {
         expect(wrapper.findComponent({ name: "NewsletterForm" }).props("layout")).toBe("stacked");
     });
 
-    // The sidebar form has no band around it, so the form must bring its own notice
     it("carries the privacy notice like every other newsletter form", async () => {
         const wrapper = await mountSuspended(NewsletterCard);
 

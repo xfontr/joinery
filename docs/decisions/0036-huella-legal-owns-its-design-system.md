@@ -8,7 +8,7 @@ decision: accepted
 
 ## Context
 
-`@monorepo/ui` was planned as a thin wrapper around a component library, probably Nuxt UI, while
+`@joinery/ui` was planned as a thin wrapper around a component library, probably Nuxt UI, while
 Huella Legal was becoming a law blog with a visual system unlikely to appear in another app. #26
 asks whether the package should stay headless or own a shared visual layer before the layout, page
 and form work in #28–#35 starts.
@@ -21,7 +21,7 @@ without using it, and developer-portal consumes Nuxt UI directly.
 
 ## Result
 
-**Huella Legal owns every current visual decision inside `apps/huella-legal`; `@monorepo/ui` is
+**Huella Legal owns every current visual decision inside `apps/huella-legal`; `@joinery/ui` is
 retired rather than filled speculatively.** Huella Legal consumes Nuxt UI directly for accessible
 component behaviour and configures its own tokens, component defaults and product components.
 Nuxt UI is a styled, themeable system built on Reka UI rather than a headless library, and its
@@ -39,7 +39,7 @@ Line numbers are as of this report.
 | Where | Current state | Change |
 | --- | --- | --- |
 | `packages/ui/**` | One placeholder button plus Storybook and package scaffolding | Remove the project; do not replace it with a wrapper around Nuxt UI or Reka UI |
-| `apps/huella-legal/package.json:20-32` | Declares `@monorepo/ui` but imports none of it | Remove `@monorepo/ui` and add `@nuxt/ui` as the app's direct dependency |
+| `apps/huella-legal/package.json:20-32` | Declares `@joinery/ui` but imports none of it | Remove `@joinery/ui` and add `@nuxt/ui` as the app's direct dependency |
 | `apps/huella-legal/nuxt.config.ts:4` | Registers no UI module or global stylesheet | Register `@nuxt/ui` and `~/assets/css/main.css`; keep Huella configuration in this app |
 | `apps/huella-legal/app/assets/css/main.css` (new) | No global visual foundation exists | Import Tailwind CSS and Nuxt UI, then define the Figma-derived colour, type, spacing, radius and motion tokens |
 | `apps/huella-legal/app/app.config.ts` (new) | No semantic component theme exists | Map Huella tokens to Nuxt UI semantic colours and defaults; override component slots only where the design calls for it |
@@ -63,11 +63,11 @@ normal theming first and opt individual components out only when the design requ
 
 | Option | Why not |
 | --- | --- |
-| Keep `@monorepo/ui` headless and re-export Nuxt UI | It creates a second API surface without decoupling consumers from Nuxt UI, and there is no shared consumer contract to design it against |
-| Put Huella tokens and styled components in `@monorepo/ui` | It gives product-specific code a workspace-wide name and lets future apps depend accidentally on Huella's brand |
+| Keep `@joinery/ui` headless and re-export Nuxt UI | It creates a second API surface without decoupling consumers from Nuxt UI, and there is no shared consumer contract to design it against |
+| Put Huella tokens and styled components in `@joinery/ui` | It gives product-specific code a workspace-wide name and lets future apps depend accidentally on Huella's brand |
 | Keep the empty package as a future extraction target | The placeholder already costs releases, tests, Storybook deployment and documentation; Git makes recreating a package cheaper than maintaining a promise with no consumer |
 | Build every Huella primitive from native HTML and CSS | It preserves visual ownership but also makes the app own accessibility and interaction behaviour that Nuxt UI already supplies |
-| Split Huella's design system into a new `@monorepo/huella-ui` package | There is one consumer, so a package adds release and boundary machinery without reuse; app-local components already provide an internal design system |
+| Split Huella's design system into a new `@joinery/huella-ui` package | There is one consumer, so a package adds release and boundary machinery without reuse; app-local components already provide an internal design system |
 
 ## Consequences
 
@@ -109,10 +109,10 @@ implementations before choosing whether to extract behaviour, tokens, or the who
 
 | Claim | Check |
 | --- | --- |
-| The speculative shared project is gone | `pnpm exec nx show projects | rg '^@monorepo/ui$'` returns no match |
+| The speculative shared project is gone | `pnpm exec nx show projects | rg '^@joinery/ui$'` returns no match |
 | Huella owns its UI dependency and theme | `rg -n '@nuxt/ui|main.css' apps/huella-legal/package.json apps/huella-legal/nuxt.config.ts apps/huella-legal/app` finds the module, stylesheet and app config only under the app |
-| No app reaches through the retired package | `rg -n '@monorepo/ui' apps packages --glob '!**/coverage/**'` returns no match |
+| No app reaches through the retired package | `rg -n '@joinery/ui' apps packages --glob '!**/coverage/**'` returns no match |
 | Storybook plumbing for the placeholder is gone | `rg -n '[/}]storybook' .github/workflows/developer-portal-deploy.yml apps/developer-portal/nuxt.config.ts apps/developer-portal/app/pages/projects.vue` returns no match; Huella's own sits at `huella-legal-storybook` and stays |
 | Generated and written docs agree with the workspace | `pnpm docs:map --check` and the `doc-drift-check` pass report no drift |
-| The affected projects remain healthy | `pnpm exec nx run-many -t lint test typecheck --projects=@monorepo/huella-legal,@monorepo/developer-portal` passes, followed by `pnpm exec nx build @monorepo/huella-legal` |
+| The affected projects remain healthy | `pnpm exec nx run-many -t lint test typecheck --projects=@joinery/huella-legal,@joinery/developer-portal` passes, followed by `pnpm exec nx build @joinery/huella-legal` |
 

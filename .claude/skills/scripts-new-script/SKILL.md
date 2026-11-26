@@ -1,12 +1,12 @@
 ---
 name: scripts-new-script
-description: Add a script to @monorepo/scripts — the index.ts/main.ts/adapters/domain folder, the package.json line, the README row and the docs:map re-render. Use when adding a new repo-local CLI under infrastructure/scripts, or when splitting an existing one.
+description: Add a script to @joinery/scripts — the index.ts/main.ts/adapters/domain folder, the package.json line, the README row and the docs:map re-render. Use when adding a new repo-local CLI under infrastructure/scripts, or when splitting an existing one.
 ---
 
 # Adding a script
 
 The layout rule and the import direction are in the
-[package README](../../../infrastructure/scripts/README.md#-structure). Follow it; this file is what
+[package README](../../../infrastructure/scripts/README.md#structure). Follow it; this file is what
 the prose can't enforce. Read [`drift/`](../../../infrastructure/scripts/src/drift) first —
 it is the smallest complete example of all four layers.
 
@@ -19,7 +19,7 @@ src/<name>/index.ts      five lines, copied verbatim from any other script
 src/<name>/main.ts       the command
 src/<name>/adapters/     one file per boundary out
 src/<name>/domain/       the pure part
-src/<name>/README.md     what it's for, a 🗂 Structure block, 🧭 Deliberately deferred
+src/<name>/README.md     what it's for, its commands, a 🗂 Structure block
 ```
 
 plus a line in [`package.json`](../../../infrastructure/scripts/package.json)'s `scripts` shaped

@@ -1,4 +1,4 @@
-import type { startWebTelemetry } from "@monorepo/observability";
+import type { startWebTelemetry } from "@joinery/observability";
 
 type Faro = ReturnType<typeof startWebTelemetry>;
 
@@ -27,7 +27,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
             triggers.abort();
 
-            const telemetry = await import("@monorepo/observability");
+            const telemetry = await import("@joinery/observability");
 
             faro = telemetry.startWebTelemetry(observability);
             for (const error of earlyErrors.splice(0)) faro.api.pushError(error);

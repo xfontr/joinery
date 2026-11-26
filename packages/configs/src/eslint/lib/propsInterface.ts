@@ -1,10 +1,10 @@
-import monorepo from "../rules/index.ts";
+import joinery from "../rules/index.ts";
 
 const propsInterface: object = {
     files: ["**/*.vue"],
-    plugins: { monorepo },
+    plugins: { joinery },
     rules: {
-        "monorepo/props-shape": "error",
+        "joinery/props-shape": "error",
     },
 };
 

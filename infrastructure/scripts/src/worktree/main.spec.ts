@@ -7,13 +7,15 @@ const files = vi.hoisted(() => ({
     isInstalled: vi.fn(),
 }));
 const pnpm = vi.hoisted(() => ({ install: vi.fn() }));
-const io = vi.hoisted(() => ({ out: { success: vi.fn() } }));
 vi.mock("./adapters/git.ts", () => git);
 vi.mock("./adapters/files.ts", () => files);
 vi.mock("./adapters/pnpm.ts", () => pnpm);
-vi.mock("../shared/adapters/io.ts", () => io);
+vi.mock("../shared/adapters/io.ts");
 
 import { main } from "./main.ts";
+import * as ioModule from "../shared/adapters/io.ts";
+
+const io = vi.mocked(ioModule, true);
 
 const PORCELAIN = `worktree /repo
 branch refs/heads/master

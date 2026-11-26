@@ -1,139 +1,333 @@
-import { mountSuspended, mockNuxtImport } from "@nuxt/test-utils/runtime";
+import { serveEndpoint } from "@joinery/configs/vitest/utils/nuxt";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { ref } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { IssuesRead } from "#layers/github/app/utils/issues.ts";
+import type { Badges } from "#layers/snapshot/shared/types/Badges.ts";
+import type { MenuRow } from "~/types/MenuRow";
+import type { RailFigure } from "~/types/RailFigure";
+import type { SearchSection } from "~/utils/search";
 import Layout from "./default.vue";
+import en from "../../i18n/locales/en.json";
 
-const state = vi.hoisted(() => ({
-    issues: null as unknown,
-    badges: null as unknown,
-    menus: {} as Record<string, unknown>,
-    sections: null as unknown,
-    execute: vi.fn(),
-}));
-mockNuxtImport("useIssues", () => () => ({ data: state.issues }));
-mockNuxtImport("useFetch", () => (url: string) => ({
-    data: url === "/api/badges" ? state.badges : ref(state.menus[url] ?? []),
-}));
-mockNuxtImport("useAsyncData", () => () => ({
-    data: state.sections,
-    status: ref("idle"),
-    execute: state.execute,
-}));
+const github = vi.hoisted(() => ({ read: null as unknown }));
+mockNuxtImport("useIssues", () => () => ({ data: github.read, shown: github.read }));
 
-const Search = {
-    name: "UDashboardSearch",
-    props: { groups: Array },
-    emits: ["update:open"],
-    template:
-        "<div class='search'><a v-for='item in groups?.[0]?.items' :href='item.to'>{{ item.label }}</a></div>",
+const search = vi.hoisted(() => vi.fn((): Promise<SearchSection[]> => Promise.resolve([])));
+mockNuxtImport("queryCollectionSearchSections", () => search);
+
+const shell = vi.hoisted(() => ({ badges: null as Badges | null }));
+mockNuxtImport("shellBadges", () => () => shell.badges);
+
+const MENUS = [
+    "/api/decisions/menu",
+    "/api/audits/menu",
+    "/api/workflows/menu",
+    "/api/projects/menu",
+];
+
+const NEVER_COLLECTED = {
+    advisories: 0,
+    worstSeverity: null,
+    lineCoverage: null,
+    docPages: null,
+    brokenLinks: 0,
+    collected: null,
+} satisfies Badges;
+
+const serve = ({
+    badges = {} as Partial<Badges>,
+    decisions = [] as MenuRow[],
+    projects = [] as MenuRow[],
+    tooling = { value: "—", alert: false } as RailFigure,
+} = {}) => {
+    shell.badges = { ...NEVER_COLLECTED, ...badges };
+    serveEndpoint("/api/telemetry/figure", () => tooling);
+    const answers: Record<string, MenuRow[]> = {
+        "/api/decisions/menu": decisions,
+        "/api/projects/menu": projects,
+    };
+    for (const menu of MENUS) serveEndpoint(menu, () => answers[menu] ?? []);
 };
-const global = {
-    stubs: {
-        UDashboardGroup: { template: "<main><slot /></main>" },
-        UDashboardSidebar: {
-            template:
-                "<aside><slot name='default' :collapsed='false' /><slot name='footer' :collapsed='false' /></aside>",
-        },
-        UDashboardSearchButton: { template: "<button aria-label='search'>search</button>" },
-        UNavigationMenu: {
-            props: { items: Array, modelValue: Array },
-            template:
-                "<nav :data-open='modelValue?.join()'><template v-for='item in items'><a :href='item.to' @click.prevent='item.onClick?.()'>{{ item.label }} {{ item.badge }}</a><a v-for='child in item.children' class='child' :href='child.to'>{{ child.label }}</a></template></nav>",
-        },
-        UDashboardSearch: Search,
-        NuxtLink: { props: { to: String }, template: "<a :href='to'><slot /></a>" },
-        UIcon: true,
-        UColorModeButton: true,
-        UButton: {
-            inheritAttrs: false,
-            props: { to: String },
-            template: "<a :href='to' v-bind='$attrs'><slot /></a>",
-        },
+
+const open = async (route = "/") => {
+    const wrapper = await mountSuspended(Layout, { route });
+    await flushPromises();
+    return wrapper;
+};
+
+const rail = (wrapper: VueWrapper) => wrapper.findComponent({ name: "UNavigationMenu" });
+
+interface Item {
+    label: string;
+    to: string;
+    badge?: { label: string; class: string };
+    children?: Item[];
+}
+
+const items = (wrapper: VueWrapper) => rail(wrapper).props("items") as Item[];
+
+/** Every app with the pages under it, as label and destination, in order. */
+const tree = (wrapper: VueWrapper) =>
+    items(wrapper).map(({ label, to, children }) => [
+        label,
+        to,
+        (children ?? []).map((child) => [child.label, child.to]),
+    ]);
+
+const page = (wrapper: VueWrapper, label: string) =>
+    items(wrapper)
+        .flatMap((app) => app.children ?? [])
+        .find((found) => found.label === label)!;
+
+const status = (wrapper: VueWrapper) => wrapper.find("footer[aria-label='Status']").text();
+
+/** Each status figure as its link spells it out in full. */
+const figures = (wrapper: VueWrapper) =>
+    wrapper.findAll("footer[aria-label='Status'] a").map((link) => link.attributes("title"));
+
+const KINDS: MenuRow[] = [
+    { labelKey: "app.menu.allProjects", to: "/projects", badge: "2" },
+    {
+        labelKey: "app.menu.kinds.apps",
+        to: "/projects?kind=apps",
+        badge: "2",
+        children: [
+            { label: "blog", to: "/projects/blog", badge: "40%", coverage: 40 },
+            { label: "site", to: "/projects/site", badge: "—", coverage: null },
+        ],
     },
-};
+];
+
+const DECISION = { label: "0036 Drop the UI kit", to: "/decisions/0036-ui" };
 
 beforeEach(() => {
-    state.issues = ref({ issues: [], error: null });
-    state.badges = ref({ advisories: 0 });
-    state.menus = {};
-    state.sections = ref([]);
-    state.execute.mockClear();
+    github.read = ref<IssuesRead>({ fetchedAt: "", error: null, issues: [] });
+    search.mockClear();
+});
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", en);
 });
 
 describe("default layout", () => {
-    it("groups navigation by purpose and points renamed entries to their routes", async () => {
-        const wrapper = await mountSuspended(Layout, { global });
-        expect(wrapper.text()).toContain("Overview");
-        expect(wrapper.text()).toContain("Dependencies");
-        expect(wrapper.text()).toContain("Explore");
-        expect(wrapper.text()).toContain("Build");
-        expect(wrapper.text()).toContain("Engineering health");
-        expect(wrapper.text()).not.toContain("undefined");
-        expect(
-            wrapper.findAll("nav a").map((link) => [link.text().trim(), link.attributes("href")]),
-        ).toEqual([
-            ["Overview", "/"],
-            ["Projects", "/projects"],
-            ["What's new", "/changelog"],
-            ["Documentation", "/docs"],
-            ["Architecture", "/graph"],
-            ["Decisions", "/decisions"],
-            ["Audits", "/audits"],
-            ["Workflows", "/workflows"],
-            ["Work in progress", "/issues"],
-            ["Coverage", "/coverage"],
-            ["Tooling usage", "/telemetry"],
-            ["Dependencies", "/deps"],
+    it("groups every page under its app, each pointing at its route", async () => {
+        serve();
+        const wrapper = await open();
+
+        expect(tree(wrapper)).toEqual([
+            ["Home", "/", []],
+            [
+                "Catalog",
+                "/projects",
+                [
+                    ["Projects", "/projects"],
+                    ["Architecture", "/graph"],
+                    ["What's new", "/changelog"],
+                ],
+            ],
+            [
+                "Docs",
+                "/wiki",
+                [
+                    ["Documentation", "/wiki"],
+                    ["Decisions", "/decisions"],
+                    ["Audits", "/audits"],
+                    ["Benchmarks", "/benchmarks"],
+                ],
+            ],
+            [
+                "Work",
+                "/workflows",
+                [
+                    ["Workflows", "/workflows"],
+                    ["Work in progress", "/issues"],
+                ],
+            ],
+            [
+                "Health",
+                "/coverage",
+                [
+                    ["Coverage", "/coverage"],
+                    ["Dependencies", "/deps"],
+                    ["Tooling usage", "/telemetry"],
+                ],
+            ],
         ]);
     });
 
-    it("unfolds an entry into the rows its menu route answers, and leaves an empty one a plain link", async () => {
-        state.menus = {
-            "/api/decisions/menu": [{ label: "0036 Drop the UI kit", to: "/decisions/0036-ui" }],
-        };
-        const wrapper = await mountSuspended(Layout, { global });
-        expect(
-            wrapper.findAll("nav a.child").map((link) => [link.text(), link.attributes("href")]),
-        ).toEqual([["0036 Drop the UI kit", "/decisions/0036-ui"]]);
+    it("unfolds a page into the rows its menu route answers, and leaves an empty one a plain link", async () => {
+        serve({ decisions: [DECISION] });
+        const wrapper = await open();
+
+        expect(page(wrapper, "Decisions").children).toEqual([expect.objectContaining(DECISION)]);
+        expect(page(wrapper, "Audits").children).toBeUndefined();
     });
 
-    it("opens a submenu when its entry is clicked, not only from the arrow beside it", async () => {
-        state.menus = {
-            "/api/decisions/menu": [{ label: "0036 Drop the UI kit", to: "/decisions/0036-ui" }],
-        };
-        const wrapper = await mountSuspended(Layout, { global });
-        const decisions = wrapper.findAll("nav a").find((link) => link.text() === "Decisions")!;
+    it("unfolds the app holding the current page, including a page under an entry's route", async () => {
+        serve();
+        const wrapper = await open("/projects/scripts");
 
-        await decisions.trigger("click");
-
-        expect(decisions.element.closest("nav")?.getAttribute("data-open")).toBe("decisions");
+        expect(wrapper.find("nav a[href='/graph']").exists()).toBe(true);
+        expect(wrapper.find("nav a[href='/decisions']").exists()).toBe(false);
     });
 
-    it("folds the open submenu back when another entry is clicked, so only one stays open", async () => {
-        state.menus = {
-            "/api/decisions/menu": [{ label: "0036 Drop the UI kit", to: "/decisions/0036-ui" }],
-        };
-        const wrapper = await mountSuspended(Layout, { global });
-        const entry = (label: string) =>
-            wrapper.findAll("nav a").find((link) => link.text().trim() === label)!;
+    it("keeps an app unfolded when a page inside it folds its own rows", async () => {
+        serve({ decisions: [DECISION] });
+        const wrapper = await open(DECISION.to);
 
-        await entry("Decisions").trigger("click");
-        await entry("Coverage").trigger("click");
+        await wrapper.find("nav a[href='/decisions'] [data-slot='linkTrailing']").trigger("click");
+        await flushPromises();
 
-        expect(wrapper.findAll("nav[data-open='decisions']")).toHaveLength(0);
+        expect(wrapper.find(`nav a[href='${DECISION.to}']`).exists()).toBe(false);
+        expect(wrapper.find("nav a[href='/audits']").exists()).toBe(true);
     });
 
-    it("renders non-zero badges, uses the repository source link, and defers search data", async () => {
-        state.issues = ref({ issues: [{ number: 1 }], error: null });
-        state.badges = ref({ advisories: 3 });
-        const wrapper = await mountSuspended(Layout, { global });
-        expect(wrapper.text()).toContain("3");
-        expect(wrapper.text()).toContain("1");
-        expect(state.execute).not.toHaveBeenCalled();
-        expect(wrapper.find("a[aria-label='View source on GitHub']").attributes("target")).toBe(
-            "_blank",
+    it("prints each Health page's figure in its tone, and nothing for a figure never collected", async () => {
+        github.read = ref<IssuesRead>({
+            fetchedAt: "2026-11-18T10:00:00Z",
+            error: null,
+            issues: [
+                {
+                    number: 1,
+                    title: "One",
+                    body: "",
+                    url: "",
+                    labels: [],
+                    assignees: [],
+                    createdAt: "",
+                    updatedAt: "",
+                },
+            ],
+        });
+        serve({
+            badges: {
+                advisories: 3,
+                worstSeverity: "high",
+                collected: { branch: "master", commit: "abc1234", at: "2026-11-18T10:00:00Z" },
+            },
+            tooling: { value: "40%", alert: true },
+        });
+        const wrapper = await open();
+
+        expect(page(wrapper, "Work in progress").badge).toEqual({ label: "1", class: "" });
+        expect(page(wrapper, "Dependencies").badge).toEqual({ label: "3 adv.", class: "tone-bad" });
+        expect(page(wrapper, "Tooling usage").badge).toEqual({
+            label: "40% fail",
+            class: "tone-bad",
+        });
+        expect(page(wrapper, "Coverage").badge).toBeUndefined();
+    });
+
+    it("lists a menu's groups on the page that holds them", async () => {
+        serve({ projects: KINDS });
+        const wrapper = await open("/projects");
+
+        expect(page(wrapper, "Projects").children?.map((row) => row.label)).toEqual([
+            "All projects",
+            "Apps",
+        ]);
+    });
+
+    it("leaves a page folded on its own landing, and unfolds it on a page below", async () => {
+        serve({ projects: KINDS });
+        const landing = await open("/projects");
+        const below = await open("/projects/blog");
+
+        expect(landing.find("nav a[href='/projects?kind=apps']").exists()).toBe(false);
+        expect(below.find("nav a[href='/projects/site']").exists()).toBe(true);
+    });
+
+    it("lists a group's members, each in its coverage tone, on a member's own page", async () => {
+        serve({ projects: KINDS });
+        const wrapper = await open("/projects/blog");
+
+        expect(page(wrapper, "Projects").children).toEqual([
+            expect.objectContaining({
+                to: "/projects/blog",
+                badge: { label: "40%", class: "tone-bad" },
+            }),
+            expect.objectContaining({ to: "/projects/site", badge: { label: "—", class: "" } }),
+        ]);
+    });
+
+    it("prints the snapshot's branch, commit and figures in the status bar", async () => {
+        serve({
+            badges: {
+                advisories: 2,
+                worstSeverity: "high",
+                lineCoverage: 81,
+                docPages: 12,
+                brokenLinks: 1,
+                collected: { branch: "master", commit: "abc1234def", at: "2026-11-18T10:00:00Z" },
+            },
+        });
+        const wrapper = await open();
+
+        expect(status(wrapper)).toContain("master");
+        expect(status(wrapper)).toContain("@abc1234");
+        expect(figures(wrapper)).toEqual([
+            "coverage: 81% lines",
+            "advisories: 2 worst high",
+            "tooling: — failed",
+            "issues: — open",
+            "docs: 12 1 broken link",
+        ]);
+    });
+
+    it("says the snapshot was never collected instead of printing zeros", async () => {
+        serve();
+        const wrapper = await open();
+
+        expect(status(wrapper)).toContain("never collected");
+        expect(figures(wrapper)).toContain("coverage: — lines");
+        expect(figures(wrapper)).toContain("advisories: — none");
+    });
+
+    it("links the repository's source, in a new tab", async () => {
+        serve();
+        useRuntimeConfig().public.repoUrl = "https://github.com/acme/repo";
+        const wrapper = await open();
+        useRuntimeConfig().public.repoUrl = "";
+        const source = wrapper.find("a[aria-label='View source on GitHub']");
+
+        expect(source.attributes("href")).toBe("https://github.com/acme/repo");
+        expect(source.attributes("target")).toBe("_blank");
+    });
+
+    it("builds the search data only once search is first opened", async () => {
+        serve();
+        const wrapper = await open();
+
+        expect(search).not.toHaveBeenCalled();
+
+        await wrapper.findComponent({ name: "UDashboardSearch" }).setValue(true, "open");
+        await flushPromises();
+
+        expect(search).toHaveBeenCalledOnce();
+    });
+
+    it("offers a page by its name in the search box, not only the docs that mention it", async () => {
+        search.mockResolvedValueOnce([
+            {
+                id: "/docs/benchmarks/readme",
+                title: "Benchmarks",
+                titles: [],
+                level: 1,
+                content: "",
+            },
+        ]);
+        serve();
+        const wrapper = await open();
+        const palette = wrapper.findComponent({ name: "UDashboardSearch" });
+
+        await palette.setValue(true, "open");
+        await flushPromises();
+        await palette.setValue("benchmarks", "searchTerm");
+
+        await vi.waitFor(() =>
+            expect(document.body.querySelector("a[href='/benchmarks']")).not.toBeNull(),
         );
-        await wrapper.findComponent(Search).vm.$emit("update:open", true);
-        expect(state.execute).toHaveBeenCalledOnce();
     });
 });

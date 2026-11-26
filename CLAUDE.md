@@ -6,19 +6,19 @@ gets got wrong anyway. Shared checks live in scripts and CI; Claude additionally
 [`.claude/settings.json`](./.claude/settings.json), two `PostToolUse` hooks for earlier feedback
 and a `PreToolUse` guard that keeps agents off live systems.
 
-## ✍️ Style
+## Style
 
 - 4-space indent, double quotes, semicolons, 100 columns. Prettier enforces it as an ESLint rule
-  through `@monorepo/configs`, so `pnpm exec eslint --fix`, run from the project's directory since
+  through `@joinery/configs`, so `pnpm exec eslint --fix`, run from the project's directory since
   the root has no `eslint` binary, settles any argument. There is no
   `.prettierrc`, so a Prettier editor extension would format with its own defaults; the workspace
   settings turn it off and leave formatting to the ESLint extension.
 - `package.json` files are 2-space because pnpm rewrites them that way. Leave them alone.
 - **A comment carries one fact that isn't in the code, in one sentence.** See
-  [💬 Comments](#-comments).
+  [💬 Comments](#comments).
 - Same rule for docs. When writing or editing markdown, follow the `house-docs` skill.
 
-## 💬 Comments
+## Comments
 
 Default to none. **A comment carries one fact that isn't in the code, in one sentence.** The rule is
 not "a comment must justify its line" — that one is satisfied by writing a better argument, which is
@@ -53,7 +53,7 @@ how `infrastructure/scripts` reached one comment line per four lines of code.
 `packages/content` and `apps/huella-legal` sit at 4–6% comment lines and are the calibration; a file
 far outside that is worth opening. The `comment-cleanup` skill runs the pass.
 
-## 🚫 Things that look reasonable and are wrong here
+## Things that look reasonable and are wrong here
 
 - **Never add a build step to a package.** `packages/*` export raw TypeScript/Vue source; consumers
   compile them. No `build` script, no `dist/`, no `tsup`/`unbuild`, no `main`/`types` fields — the
@@ -77,33 +77,39 @@ far outside that is worth opening. The `comment-cleanup` skill runs the pass.
   do not want them suggested, offered, prepared for or asked about. Answer the question or change
   the code and stop there — an unprompted "want me to branch off and apply this?" is noise, not
   helpfulness. Act on any of it only when asked in those words; the branch and commit rules under
-  [⌨️ Commands](#️-commands) are reference for when that happens, not a prompt to bring it up.
+  [⌨️ Commands](#commands) are reference for when that happens, not a prompt to bring it up.
   A `/ship-issue` run is that ask, and only its ship step acts on it.
 - **Never invent structure the repo already solves.** A new file or folder copies the closest
   existing precedent — a huella-legal layer, a developer-portal folder, a scripts
   `domain/`/`adapters/` split — and keeps its naming. A folder shape found nowhere in the repo
   needs the user's agreement first. The settled naming rules are in
   [`docs/concepts/conventions.md`](./docs/concepts/conventions.md).
+- **Never screenshot a feature you built to check it.** Nobody looks at those, Claude included;
+  lint, specs and the build are the check. Screenshots the work itself calls for, such as benchmark
+  captures or lab pages for the owner's review, are a different thing and stay.
+- **Never build from a lab without its checklist.** A ticket that names a `/lab/...` path gets a
+  `## Lab checklist` comment listing every lab page's features before any code, and every box
+  ticked before the PR; `start-issue` step 4 has the shape and a hook enforces it.
 - **Never write a decision report unprompted.** Only when the user asks for one; you may ask whether
   they want one, but never write it on your own judgement. A `/ship-issue` run on a `spike` ticket
   is that ask.
 
-## 📦 Dependencies
+## Dependencies
 
 - **Prefer a maintained library to hand-rolled code.** For a solved problem — parsing, decoding,
   escaping, validation, dates — add the package to the project that needs it, without asking. A new
   dependency is not a cost to argue down; reimplementing one is. A short dependency list is not a
   reason to keep it short.
-- Internal: `"@monorepo/x": "workspace:*"`. Every project also has `@monorepo/configs` in
+- Internal: `"@joinery/x": "workspace:*"`. Every project also has `@joinery/configs` in
   `devDependencies`.
-- Shared third-party (nuxt, vue, vite, typescript, vitest, playwright, eslint, node types, hono):
+- Shared third-party (nuxt, vue, typescript, vitest, playwright, eslint, node types, hono):
   `"catalog:"`,
   pinned once in `pnpm-workspace.yaml`. Adding or bumping a catalog entry is an Nx `sharedGlobals`
   input — it invalidates every project's cache, which is intended but worth knowing before you
   bump something to fix one package.
 - Everything else: a version range in the package that needs it.
 
-## ⌨️ Commands
+## Commands
 
 `pnpm lint | typecheck | test | build` at the root run against **affected** projects only — what
 changed since `master`, same as CI and the pre-push hook.
@@ -116,8 +122,8 @@ changed since `master`, same as CI and the pre-push hook.
 | Branch off an issue | `pnpm issue:pick <number> [--type=…] [--project=…] [--title=…]` — only when asked |
 | A new worktree that won't lint | `pnpm worktree:prepare <path>`, from an installed checkout |
 | The whole workspace | `pnpm exec nx run-many -t <target>` |
-| One project | `pnpm exec nx <target> @monorepo/<name>` |
-| What targets a project has | `pnpm exec nx show project @monorepo/<name>` |
+| One project | `pnpm exec nx <target> @joinery/<name>` |
+| What targets a project has | `pnpm exec nx show project @joinery/<name>` |
 | Why something rebuilt | `pnpm graph` |
 
 Reach for `pnpm check` over a bare `nx` call. Nx switches to `--outputStyle=summary` when it detects
@@ -134,7 +140,7 @@ the traps in it.
 - Branches must match `^(hotfix|fix|feature|release)/[^/]+/[0-9]+-.+`, and `master` is not
   pushable. `pnpm issue:pick` builds `<type>/<area>/<issue number>-<slug>`, `<area>` being the
   folder the issue's `app:`/`package:`/`infra:` label names, or `repo` without one. There is one gh
-  Project board, `Monorepo`; a finite effort is a milestone, not a new board.
+  Project board, `Joinery`; a finite effort is a milestone, not a new board.
 - [`commitlint.config.mjs`](./commitlint.config.mjs) just extends `@commitlint/config-conventional`
   with no overrides, and two of that preset's rules aren't obvious from a rejection message: the
   **type is lower-case** and the **subject is not** sentence-case, start-case, Pascal-case or
@@ -142,13 +148,14 @@ the traps in it.
   the next version.
 - Pre-push runs lint, test and typecheck **in the working tree**, not the pushed commits, so an
   uncommitted fix can pass a push whose commits are red. Only the `TODO`/`FIXME` scan is range-based.
-- CI runs those three **plus `build`**, `pnpm docs:map --check` and `pnpm invariants:check`, so a
-  green push is not yet a green pipeline — `apps/huella-legal` typechecks on build, which is where
-  most of that difference shows up. Both checks also run in pre-commit.
+- CI runs lint, typecheck, **`test:coverage`** (so thresholds bite), **`build`** and `test:e2e`, plus
+  `pnpm docs:map --check`, `pnpm invariants:check` and `pnpm unused:check`, so a green push is not
+  yet a green pipeline — `apps/huella-legal` typechecks on build, which is where most of that
+  difference shows up. The first two also run in pre-commit, the third in pre-push.
 - A fresh clone gets no hooks until `pnpm quick-start` runs, because lifecycle scripts are banned
   and `husky` has no `prepare` script to install itself.
 
-## 🔗 The two places that must agree
+## The two places that must agree
 
 The root README's tag tables and workspace-layout block sit between `<!-- docs:map:… -->` markers
 and are rendered by `pnpm docs:map` from
@@ -160,8 +167,8 @@ re-render; CI's `docs:map --check` fails a hand edit between the markers, the wa
 A Nuxt app's `tsconfig.json` is `files: []` plus references into `.nuxt/`, so anything that opens it
 fails while that directory is missing. Two mechanisms cover it. In [`nx.json`](./nx.json), `lint`,
 `typecheck`, `test` and `build` depend on a `nuxt-prepare` target that only exists where a project
-defines that script — currently `apps/developer-portal`, `apps/huella-legal` and
-`apps/marina-roustan`. Everything else is covered by
+defines that script — currently every app: `developer-portal`, `huella-legal`, `marina-roustan`,
+`wp-editor` and `portfolio`. Everything else is covered by
 [`prepareNuxt.mjs`](./packages/configs/src/vitest/setup/prepareNuxt.mjs), which every Vitest preset carries
 and which runs `nuxi prepare` when a project has a `nuxt.config.ts` and no `.nuxt`: `test:coverage`,
 the per-spec targets `@nx/vitest` generates, and a bare `pnpm vitest`. A new Nuxt app needs the
@@ -170,7 +177,7 @@ the symptom is `lint` failing to parse every file rather than anything mentionin
 [`0015`](./docs/decisions/0015-nuxt-prepare-wiring.md) has the measurements and
 [`0024`](./docs/decisions/0024-nuxt-prepare-test-edge.md) why `test` has the edge again.
 
-## 🛠️ Skills
+## Skills
 
 | Skill | Use it when |
 | --- | --- |
@@ -184,10 +191,11 @@ the symptom is `lint` failing to parse every file rather than anything mentionin
 | `start-issue` | Starting work on a specific issue — from the branch you're on, or from a number, link or description |
 | `decision-report` | "Do a spike on this" — research an architectural question and write the answer to `docs/decisions/`. Filing the *issue* is `github-issue` |
 | `audit-report` | "Audit X", "static analysis of X" — a numbered findings list for one project, filed to `docs/audits/` and worked down finding by finding |
-| `content-new-vendor` | Adding a CMS vendor to `@monorepo/content` |
-| `i18n-new-vendor` | Adding a TMS vendor to `@monorepo/i18n` |
+| `benchmark` | "Benchmark X", "find references for X" — sourced from juried galleries, analysed site by site, synthesised into what to take and how; written up with `decision-report` |
+| `content-new-vendor` | Adding a CMS vendor to `@joinery/content` |
+| `i18n-new-vendor` | Adding a TMS vendor to `@joinery/i18n` |
 | `scripts-new-script` | Adding a repo-local CLI under `infrastructure/scripts` |
-| `configs-new-rule` | Adding, changing or scoping a lint rule in `@monorepo/configs`, or turning a review finding into one |
-| `wp-bulk-edit` | A site-wide content pass on the blog through `@monorepo/wp-editor`: open a changeset, write proposals in batches, validate |
+| `configs-new-rule` | Adding, changing or scoping a lint rule in `@joinery/configs`, or turning a review finding into one |
+| `wp-bulk-edit` | A site-wide content pass on the blog through `@joinery/wp-editor`: open a changeset, write proposals in batches, validate |
 | `project-workflow` | Starting, ticketing, organising or reporting on an effort tracked in [`docs/workflows/`](./docs/workflows/README.md) — a site rebuild, a launch |
-| `ship-issue` | Taking issues to merged PRs unattended, as `/ship-issue <numbers>`. A saved workflow in [`.claude/workflows/`](./.claude/workflows/ship-issue.js), not a skill; see [agent setup](./docs/concepts/agent-setup.md#-the-ship-issue-pipeline) |
+| `ship-issue` | Taking issues to merged PRs unattended, as `/ship-issue <numbers>`. A saved workflow in [`.claude/workflows/`](./.claude/workflows/ship-issue.js), not a skill; see [agent setup](./docs/concepts/agent-setup.md#the-ship-issue-pipeline) |

@@ -1,9 +1,9 @@
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { PlaywrightTestConfig } from "@playwright/test";
-import { SERVER_CONSOLE_ENV } from "./server.ts";
+import { SERVER_CONSOLE_ENV } from "./setup/server.ts";
 
-export interface PlaywrightOptions {
+interface PlaywrightOptions {
     port: number;
     /** Starts the built app; it reads `PORT` and gets `env` on top of the runner's own. */
     command: string;
@@ -29,13 +29,20 @@ export const createConfig = ({
         testDir: "e2e",
         outputDir: ".playwright",
         forbidOnly: !!process.env.CI,
+        fullyParallel: true,
+        // Each worker runs its own Chromium, and parallel agent sessions each start a run
+        workers: process.env.CI ? undefined : 2,
         reporter: "list",
-        globalTeardown: fileURLToPath(new URL("./teardown.ts", import.meta.url)),
+        globalTeardown: fileURLToPath(new URL("./setup/teardown.ts", import.meta.url)),
         use: { baseURL },
-        projects: widths.map((width) => ({
+        projects: widths.map((width, index) => ({
             name: `${width}px`,
             use: { browserName: "chromium", viewport: { width, height: 900 } },
-            grepInvert: width >= desktopFrom ? /@mobile/ : /@desktop/,
+            grepInvert: new RegExp(
+                [width >= desktopFrom ? "@mobile" : "@desktop", index > 0 && "@any-width"]
+                    .filter(Boolean)
+                    .join("|"),
+            ),
         })),
         webServer: {
             command,

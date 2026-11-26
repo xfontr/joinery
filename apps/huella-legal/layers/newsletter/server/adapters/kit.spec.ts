@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 
 const nitro = vi.hoisted(() => ({
     fetch: vi.fn(),
@@ -7,15 +8,12 @@ const nitro = vi.hoisted(() => ({
 
 vi.stubGlobal("useRuntimeConfig", () => ({ newsletter: nitro.newsletter }));
 vi.stubGlobal("$fetch", nitro.fetch);
-vi.stubGlobal("createError", (input: Record<string, unknown>) =>
-    Object.assign(new Error("http"), input),
-);
+stubNitro();
 
 const { addSubscriber } = await import("./kit");
 
 const created = (state: string) => ({ subscriber: { id: 42, state } });
 
-// The shape `$fetch` rejects with: Kit's error list arrives as `data`
 const refused = (message: string) =>
     Object.assign(new Error("Unprocessable Entity"), {
         statusCode: 422,

@@ -1,6 +1,6 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
-import { defineComponent, h } from "vue";
+import { defineComponent, h, nextTick } from "vue";
 import CommentsSection from "./CommentsSection.vue";
 
 const CommentForm = defineComponent({
@@ -65,7 +65,7 @@ describe("comments section", () => {
         expect(form().props("postId")).toBe("42");
 
         form().vm.$emit("cancelReply");
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(form().props("replyTo")).toBeUndefined();
     });
@@ -105,8 +105,7 @@ describe("comments section", () => {
         it("puts the newest thread first on request, keeping each thread's replies in order", async () => {
             const wrapper = await mount(MANY);
 
-            wrapper.findComponent({ name: "USelect" }).vm.$emit("update:modelValue", "newest");
-            await wrapper.vm.$nextTick();
+            await wrapper.findComponent({ name: "USelect" }).setValue("newest");
 
             expect(topLevel(wrapper)).toEqual(
                 ["7", "6", "5", "4", "1"].map((id) => `comentario-${id}`),
@@ -132,7 +131,6 @@ describe("comments section", () => {
         expect(wrapper.text()).toContain("t(commentsSection.closed)");
     });
 
-    // Read in the browser, the thread may fail or still be on its way; the form works either way
     it("offers the form before the thread arrives, without replies or an empty state", async () => {
         const wrapper = await mount();
 

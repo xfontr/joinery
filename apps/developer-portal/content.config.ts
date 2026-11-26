@@ -1,5 +1,5 @@
 import { resolve } from "node:path";
-import { defineCollection, defineContentConfig } from "@nuxt/content";
+import { defineCollection, defineContentConfig, z } from "@nuxt/content";
 
 const WORKSPACE_ROOT = resolve(import.meta.dirname, "../..");
 
@@ -7,6 +7,11 @@ export default defineContentConfig({
     collections: {
         docs: defineCollection({
             type: "page",
+            schema: z.object({
+                url: z.string().optional(),
+                kind: z.string().optional(),
+                verdict: z.string().optional(),
+            }),
             source: {
                 cwd: WORKSPACE_ROOT,
                 include: "**/*.md",
@@ -18,8 +23,9 @@ export default defineContentConfig({
                     "**/.report/**",
                     "**/dist/**",
                     "**/coverage/**",
+                    "**/CLAUDE.md",
+                    "apps/portfolio/content/**",
                     "**/storybook-static/**",
-                    // Each is a full checkout of the repo at a point in time — every doc in it duplicates one already collected.
                     "**/.claude/worktrees/**",
                 ],
             },

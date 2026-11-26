@@ -1,84 +1,51 @@
 <template>
     <UDashboardPanel id="telemetry">
         <template #header>
-            <UDashboardNavbar title="Tooling usage">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
+            <PageHeader :title="$t('telemetry.title')">
+                <template #intro>
+                    <PageFacts v-model:series="series" :provenance :facts />
                 </template>
-                <template #right>
-                    <SnapshotAge :manifest="snapshot?.manifest ?? null" artifact="usage" />
-                </template>
-            </UDashboardNavbar>
+            </PageHeader>
         </template>
 
         <template #body>
-            <div class="flex flex-col gap-4">
-                <UAlert
-                    v-if="!hasRuns"
-                    color="neutral"
-                    variant="subtle"
-                    icon="i-lucide-info"
-                    title="No runs committed yet"
-                    description="Scripts record each run into .git, and the next commit carries the rows into data/telemetry/scripts. Commit, then run pnpm exec nx collect @monorepo/developer-portal."
-                />
+            <WidgetPanel v-if="!hasRuns" :title="$t('telemetry.empty.title')">
+                <I18nT
+                    keypath="telemetry.empty.body"
+                    tag="p"
+                    scope="global"
+                    class="px-4 py-6 text-sm text-muted"
+                >
+                    <template #git>
+                        <code class="font-mono">{{ GIT }}</code>
+                    </template>
+                    <template #folder>
+                        <code class="font-mono">{{ FOLDER }}</code>
+                    </template>
+                    <template #command>
+                        <code class="font-mono">{{ COLLECT }}</code>
+                    </template>
+                </I18nT>
+            </WidgetPanel>
 
-                <template v-if="usage">
-                    <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                        <StatTile
-                            label="Runs"
-                            :value="totals.runs"
-                            :hint="`Last ${usage.windowDays} days`"
-                        />
-                        <StatTile
-                            label="Run by an agent"
-                            :value="`${totals.agentShare}%`"
-                            :hint="`Last ${usage.windowDays} days`"
-                        />
-                        <StatTile
-                            label="Failed"
-                            :value="`${totals.failureRate}%`"
-                            :hint="`Alert from ${MIN_RUNS} runs at ${FAILING_RATE * 100}%`"
-                            :tone="totals.failing ? 'warn' : 'neutral'"
-                        />
-                        <StatTile
-                            label="Idle scripts"
-                            :value="`${totals.idle}/${rows.length}`"
-                            :hint="`No run in ${usage.windowDays} days`"
-                        />
-                    </div>
+            <template v-if="usage">
+                <TelemetryDaily :usage :series />
 
-                    <TelemetryScriptActivity :usage />
+                <TelemetryScriptActivity :usage />
 
-                    <TelemetryUsageTriage :usage />
+                <TelemetryUsageTriage :usage />
 
-                    <TelemetryLintUsage :lint="usage.lint" />
-                </template>
-            </div>
+                <TelemetryLintUsage :lint="usage.lint" />
+            </template>
         </template>
     </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { FAILING_RATE, MIN_RUNS } from "#layers/telemetry/shared/usage.ts";
-import { isFailing, scriptRows, sumDays } from "#layers/telemetry/shared/usageView.ts";
+const GIT = ".git";
+const FOLDER = "data/telemetry/scripts";
+const COLLECT = "pnpm exec nx collect @joinery/developer-portal";
 
-const { data: snapshot } = await useSnapshot("usage");
-
-const usage = computed(() => snapshot.value?.usage ?? null);
-
-const hasRuns = computed(() => Object.keys(usage.value?.scripts ?? {}).length > 0);
-
-const rows = computed(() => (usage.value ? scriptRows(usage.value) : []));
-
-const totals = computed(() => {
-    const sum = sumDays(rows.value);
-
-    return {
-        runs: sum.runs,
-        agentShare: percentOf(sum.agent, sum.runs),
-        failureRate: percentOf(sum.failures, sum.runs),
-        failing: isFailing(sum),
-        idle: rows.value.filter((row) => row.runs === 0).length,
-    };
-});
+const { usage, hasRuns, provenance, facts } = useTelemetryPage();
+const series = ref("runs");
 </script>

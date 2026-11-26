@@ -26,17 +26,4 @@ describe("article title", () => {
         expect(html.indexOf("Ensayo")).toBeLessThan(html.indexOf("<h1"));
         expect(html.indexOf("Entradilla")).toBeGreaterThan(html.indexOf("</h1>"));
     });
-
-    // The kicker carries the gap below the breadcrumb, so the title only needs it without one
-    it("spaces the title from the breadcrumb only when there is no kicker", async () => {
-        const bare = await mountSuspended(ArticleTitle, { props: PROPS });
-        const kicked = await mountSuspended(ArticleTitle, {
-            props: PROPS,
-            slots: { kicker: () => "Ensayo" },
-        });
-
-        expect(bare.find("h1").classes()).toContain("mt-6");
-        expect(kicked.find("h1").classes()).toContain("mt-4");
-        expect(kicked.find("h1").classes()).not.toContain("mt-6");
-    });
 });

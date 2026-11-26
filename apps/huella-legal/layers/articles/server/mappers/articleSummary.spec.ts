@@ -1,5 +1,5 @@
-import type { Entry, Term } from "@monorepo/content";
-import { faker, fakeAsset, fakeAuthor, fakeEntry, fakeTerm } from "@monorepo/content/testing";
+import type { Entry, Term } from "@joinery/content";
+import { faker, fakeAsset, fakeAuthor, fakeEntry, fakeTerm } from "@joinery/content/testing";
 import { describe, expect, it } from "vitest";
 import { toArticleSummary } from "./articleSummary";
 
@@ -53,7 +53,6 @@ describe("toArticleSummary", () => {
 });
 
 describe("the primary category", () => {
-    // 103 of 105 posts have exactly one category; the rest are read by their first
     it("is the first category", () => {
         expect(summarise({ terms: [category("civil"), category("penal")] }).category?.slug).toBe(
             "civil",

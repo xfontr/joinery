@@ -71,7 +71,6 @@ describe("decisions", () => {
         });
     });
 
-    // One old report carries prose in its `issue:` field rather than a number.
     it("reads a non-numeric issue field as no issue rather than NaN", () => {
         expect(parseDecision("p", "---\nissue: **two files**\n---").issue).toBeUndefined();
     });

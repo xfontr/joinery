@@ -3,8 +3,8 @@
 id: website-rebuild
 title: Website rebuild
 summary: >-
-  An existing site, usually WordPress, rebuilt as a Nuxt app on the same brand. Three owner sign-offs
-  — scope, design, go-live — hold back only the blocks that need them; everything else flows.
+  An existing site, usually WordPress, rebuilt as a Nuxt app on the same brand. The owner signs off
+  three times: scope, design and go-live.
 
 stages:
   - id: discovery
@@ -248,12 +248,23 @@ capabilities:
       - text: Figma, then Penpot, then code — three tools in a week. Design in code from the start.
         issues: [27]
 
+  - id: lab-review
+    stage: design
+    title: Lab design review
+    complexity: 3
+    dependsOn: [design-lab]
+    summary: Every lab direction run through Impeccable before you pick one, so the choice is made with each direction's AI tells already named.
+    reuse: { plan: method, from: docs/decisions/0043-impeccable-for-ai-made-designs.md }
+    doneWhen:
+      - The Impeccable detector has scanned every lab page at 390 and 1280 px, and an Impeccable critique of each direction is done.
+      - The findings are listed on the design approval ticket for you to accept or drop; the agent changes nothing in the lab on its own.
+
   - id: design-approval
     stage: design
     title: Design approval
     complexity: 1
     kind: owner
-    dependsOn: [design-lab]
+    dependsOn: [design-lab, lab-review]
     summary: You pick one direction per page, from lab screenshots at 390, 768 and 1280 px.
     reuse: { plan: new }
     doneWhen:
@@ -336,7 +347,7 @@ capabilities:
     title: Content source
     complexity: 13
     dependsOn: [app-scaffold, content-audit, content-migration]
-    summary: Read the content — a CMS through @monorepo/content, or Markdown through Nuxt Content.
+    summary: Read the content — a CMS through @joinery/content, or Markdown through Nuxt Content.
     reuse: { plan: package, from: packages/content }
     doneWhen:
       - Articles, pages, taxonomies and authors render from the real source, with errors handled.
@@ -435,14 +446,27 @@ capabilities:
     title: Page shell
     complexity: 3
     dependsOn: [component-kit, ci-deploy]
-    summary: The route that finds a page by its slug in the content source, and the 404 and error pages; layouts are page templates.
+    summary: The route that finds a page by its slug in the content source; layouts are page templates.
     reuse: { plan: method, from: apps/huella-legal/layers/reading }
     doneWhen:
       - A page from the content source renders at its slug on the page template the code assigns it, confirmation landings included.
-      - The 404 and error pages render inside the shell.
     lessons:
       - text: The about page and the newsletter confirmation page were not in the plan.
         issues: [249, 328, 400]
+
+  - id: error-pages
+    stage: build
+    title: 404 and error pages
+    complexity: 2
+    dependsOn: [navigation-shell]
+    summary: The page an unknown URL or a failed request lands on, inside the header and footer, with a way back.
+    reuse: { plan: method, from: apps/huella-legal/app/error.vue }
+    doneWhen:
+      - An unknown URL answers with status 404 and a not-found page inside the shell that links home.
+      - A server error shows its own page with a retry, never the not-found copy or Nuxt's default page.
+      - The production build serves the not-found page for a missing URL, prerendered routes included.
+    lessons:
+      - text: The developer portal shipped with neither page because no block in its map named them.
 
   - id: home-page
     stage: build
@@ -620,6 +644,27 @@ capabilities:
           - Editors have a written guide for the tasks they do every week.
 
   # ── Hardening ──────────────────────────────────────────────────────────────────────────────────
+  - id: build-review
+    stage: build
+    title: Build review
+    complexity: 3
+    kind: owner
+    dependsOn: [stage:build]
+    summary: You look at the whole build at once, every page and feature together, before hardening sets it in stone; or you settle it as skipped when the build was small.
+    reuse: { plan: method, from: .claude/skills/project-workflow/SKILL.md }
+    doneWhen:
+      - Every page the build made is seen side by side at 390 and 1280 px, and any colour, size or radius off the design system is listed.
+      - The features as built are checked against the site brief, with what to add or drop.
+      - Each build ticket has a line on where its agent departed from the brief.
+      - Every change you ask for is filed as a ticket or settled.
+    lessons:
+      - text: Six build blocks across two designs shipped with no block looking at them together; the review was added after the build had started.
+        issues: [484]
+    tickets:
+      - title: "[OWNER] Review the build as a whole"
+        criteria:
+          - The overview is linked in a comment, and every change asked for is filed or settled.
+
   - id: performance
     stage: hardening
     title: Performance
@@ -659,6 +704,18 @@ capabilities:
     lessons:
       - text: All of it came as one ticket on cutover day.
         issues: [362]
+
+  - id: ai-review
+    stage: hardening
+    title: AI design and copy review
+    complexity: 5
+    dependsOn: [build-review]
+    summary: Every page through Impeccable for design and no-ai-slop for copy, once the build review's changes are in.
+    reuse: { plan: method, from: docs/decisions/0043-impeccable-for-ai-made-designs.md }
+    doneWhen:
+      - The Impeccable detector has scanned every page at 390 and 1280 px, and an Impeccable critique of each page template is done.
+      - The design findings are listed for you; only the ones you accept are fixed or filed, and type, colour and layout never change without your pick.
+      - Every string the build wrote, the locale files and any page written in code, has been through no-ai-slop's detect mode, and each pattern it names is listed with its line for you to accept or keep. Migrated content is the owner's and stays out.
 
   - id: seo
     stage: hardening
@@ -718,7 +775,7 @@ capabilities:
     title: Go-live approval
     complexity: 1
     kind: owner
-    dependsOn: [seo, performance, security, accessibility, legacy-redirects, quality-sweep, env-discipline, images, observability, content-migration, search, newsletter, contact-form, comments, consent-analytics, i18n]
+    dependsOn: [build-review, ai-review, seo, performance, security, accessibility, legacy-redirects, quality-sweep, env-discipline, images, observability, content-migration, search, newsletter, contact-form, comments, consent-analytics, i18n]
     summary: You approve the cutover once every switched-on feature is done and a preview deploy passes the field performance, axe, security-header and SEO checks.
     reuse: { plan: new }
     doneWhen:

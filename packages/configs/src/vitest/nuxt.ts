@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { defineConfig } from "vitest/config";
 import type { CoverageOptions } from "vitest/node";
-import createNodeConfig from "./node.ts";
+import createNodeConfig, { gated } from "./node.ts";
 
 const stubs = fileURLToPath(new URL("./setup/stubs.ts", import.meta.url));
 const autoUnmount = fileURLToPath(new URL("./setup/autoUnmount.ts", import.meta.url));
@@ -63,7 +63,10 @@ const defineNuxtProject = async (root: string, test: object) => {
     return withEnv({ JITI_MODULE_CACHE: "0" }, () => defineVitestProject({ root, test }));
 };
 
-/** A `node` project for `server/`, `shared/`, `modules/` and `tools/`, and `nuxt` and `nuxt-isolated` projects for `app/`, in the root and every layer. */
+/**
+ * A `node` project for `server/`, `shared/`, `modules/` and `tools/`, and `nuxt` and
+ * `nuxt-isolated` projects for `app/`, in the root and every layer.
+ */
 const createNuxtConfig = async ({
     root,
     nodeSpecs = [],
@@ -77,6 +80,8 @@ const createNuxtConfig = async ({
 
     const nuxtBase = await defineNuxtProject(root, {
         fileParallelism: false,
+        // Four Nuxt suites booting side by side on a 4-core CI runner have run past the 10 s default
+        hookTimeout: 20_000,
         sequence: { groupOrder: 1 },
         setupFiles: [nodeTest.setupFiles ?? [], autoUnmount, setupFiles].flat(),
         environmentOptions: {
@@ -89,6 +94,8 @@ const createNuxtConfig = async ({
                     buildDir: join(root, "node_modules/.cache/nuxt-vitest"),
                     // nuxt-seo-utils warns on that boot about test-utils' `ssr: false` otherwise
                     site: { indexable: false },
+                    // Specs pin routes, not the path a deploy mounts the app under
+                    app: { baseURL: "/" },
                 },
             },
         },
@@ -115,6 +122,9 @@ const createNuxtConfig = async ({
             nuxtProject({
                 name: "nuxt-isolated",
                 isolate: true,
+                fileParallelism: true,
+                // Vitest rejects two projects with different worker counts in one group
+                sequence: { groupOrder: 2 },
                 include: mockingSpecs,
                 exclude: nodeSpecs,
             }),
@@ -128,7 +138,7 @@ const createNuxtConfig = async ({
                 ...coverage,
                 include: [...(coverage?.include ?? []), ...LAYER_SOURCES],
                 exclude: [...(coverage?.exclude ?? []), ...coverageExclude],
-                thresholds,
+                thresholds: gated(thresholds),
             },
             projects: projects.filter((project) => project !== false),
         },

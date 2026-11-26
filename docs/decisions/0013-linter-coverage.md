@@ -173,9 +173,9 @@ question from the one this decision answered, and it should be measured on `apps
 
 ## Confirmation
 
-`eslint-plugin-regexp` is in and applied — `pnpm exec nx lint @monorepo/configs` failing on a
+`eslint-plugin-regexp` is in and applied — `pnpm exec nx lint @joinery/configs` failing on a
 reintroduced ReDoS pattern is the check. The link-checker decision is settled by #103:
-`brokenLinkCount` gates CI through `pnpm exec nx check-docs @monorepo/developer-portal`, which landed under
+`brokenLinkCount` gates CI through `pnpm exec nx check-docs @joinery/developer-portal`, which landed under
 #106 rather than the `docs:map --check` mechanism this decision anticipated; `#anchor` links stay
 unverified, a deliberate exclusion since none of the four breaks found here were anchor breaks. The
 remaining two items are not yet built: once `noUncheckedIndexedAccess` lands in `base.json`,

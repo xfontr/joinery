@@ -1,4 +1,4 @@
-import { fakeAuthor, faker } from "@monorepo/content/testing";
+import { fakeAuthor, faker } from "@joinery/content/testing";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
 import ArticleAuthorCard from "./AuthorCard.vue";
@@ -57,7 +57,6 @@ describe("author card", () => {
         expect(wrapper.find("a").text()).toBe("t(authorCard.profile)");
     });
 
-    // 9 of 42 authors have no bio
     it("leaves out the bio paragraph for an author without one", async () => {
         const wrapper = await mountSuspended(ArticleAuthorCard, {
             props: { author: { ...AUTHOR, bio: undefined }, to: "/colaboradores/maria" },

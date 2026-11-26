@@ -3,7 +3,7 @@ import { stripLeadingEmoji, toCollectionPath, toTitleCase } from "./docPages.ts"
 
 describe("stripLeadingEmoji", () => {
     it("keeps a title that opens with a package name, which is not decoration", () => {
-        expect(stripLeadingEmoji("@monorepo/ui")).toBe("@monorepo/ui");
+        expect(stripLeadingEmoji("@joinery/ui")).toBe("@joinery/ui");
     });
 
     it("strips the emoji the house style opens every heading with", () => {

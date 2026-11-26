@@ -1,7 +1,6 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@monorepo/configs/playwright/test";
-
-const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
+import { axeViolations } from "@joinery/configs/playwright/utils/a11y";
+import { expect, test } from "@joinery/configs/playwright/utils/test";
+import { t } from "./copy.ts";
 
 const PATH = "/sobre/";
 
@@ -23,7 +22,6 @@ test("shows the quote with its author", async ({ page }) => {
     ).toBeVisible();
 });
 
-// The count-up is drawn by CSS, so the number itself must stay in the text
 test("keeps every figure readable as text, whatever the counter animation shows", async ({
     page,
 }) => {
@@ -41,7 +39,7 @@ test("the call to action's fingerprint holds its draw until it scrolls into view
     await page.goto(PATH);
 
     const band = page.locator("section", {
-        has: page.getByRole("heading", { name: "Deja tu huella." }),
+        has: page.getByRole("heading", { name: t("aboutCallToAction.title") }),
     });
     const fingerprint = band.locator("svg[aria-hidden='true']").first();
 
@@ -63,14 +61,11 @@ test("the footer's about link lands on it", async ({ page }) => {
     await expect(page).toHaveURL(new RegExp(`${PATH}$`));
 });
 
-// Reduced motion leaves every scroll-revealed block visible, so axe and the screenshot see them all
 test("the about page has no WCAG AA violations", async ({ page }, testInfo) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(PATH);
 
-    const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
-    expect(violations).toEqual([]);
+    expect(await axeViolations(page)).toEqual([]);
 
     const path = testInfo.outputPath(`about-${testInfo.project.name}.png`);
 

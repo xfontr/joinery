@@ -1,6 +1,6 @@
 ---
 name: nuxt-module-route
-description: Add a BFF route or a cached server import to the Nuxt half of @monorepo/content or @monorepo/i18n — the cached handler or function, the path and TTL consts, the module registration and the spec. Use when adding, changing or caching a server route or a Nitro auto-import inside a package's src/nuxt/runtime.
+description: Add a BFF route or a cached server import to the Nuxt half of @joinery/content or @joinery/i18n — the cached handler or function, the path and TTL consts, the module registration and the spec. Use when adding, changing or caching a server route or a Nitro auto-import inside a package's src/nuxt/runtime.
 ---
 
 # Adding to a package's Nuxt module
@@ -12,8 +12,8 @@ The two modules expose their core differently, and the first decision is which s
 
 | Shape | When | Example |
 | --- | --- | --- |
-| A cached **route** (`addServerHandler`) | The browser, or a framework loader that only speaks HTTP, needs the data, and it is meant to be public | [`@monorepo/i18n`](../../../packages/i18n/src/nuxt): `/api/translations/:locale` |
-| A cached **server import** (`addServerImports`) | Only the app's own server code reads it, and the app decides what reaches the browser | [`@monorepo/content`](../../../packages/content/src/nuxt): `useContent(event)` |
+| A cached **route** (`addServerHandler`) | The browser, or a framework loader that only speaks HTTP, needs the data, and it is meant to be public | [`@joinery/i18n`](../../../packages/i18n/src/nuxt): `/api/translations/:locale` |
+| A cached **server import** (`addServerImports`) | Only the app's own server code reads it, and the app decides what reaches the browser | [`@joinery/content`](../../../packages/content/src/nuxt): `useContent(event)` |
 
 Never add a public route just so the app's server can `$fetch` it in-process — that is a self-call
 with a second set of paths, casts and status codes, and an endpoint nobody needed.
@@ -47,7 +47,7 @@ export const TRANSLATIONS_STALE_MAX_AGE = 60 * 60 * 24;
 Nitro reads cache options when the handler or function is defined, so a TTL cannot vary per call —
 a genuinely different TTL means a different cached handler or function. Don't work around it with a
 conditional inside `getKey`. A window an app should tune, such as a short one for local dev, is
-module options instead: `@monorepo/content` takes `content.cache` with defaults in `config.ts` and
+module options instead: `@joinery/content` takes `content.cache` with defaults in `config.ts` and
 reads it from `useRuntimeConfig()` once, at module scope.
 
 ## 2. Two places declare the runtime config
@@ -160,8 +160,8 @@ contract the two packages share.
 ## Verify
 
 ```sh
-pnpm exec nx run-many -t lint typecheck test --projects @monorepo/content @monorepo/i18n
-pnpm exec nx build @monorepo/huella-legal  # registration only shows up once a real app installs the module
+pnpm exec nx run-many -t lint typecheck test --projects @joinery/content @joinery/i18n
+pnpm exec nx build @joinery/huella-legal  # registration only shows up once a real app installs the module
 ```
 
 A route that 404s in the app, or a server import that is "not defined" there, but passes its spec,

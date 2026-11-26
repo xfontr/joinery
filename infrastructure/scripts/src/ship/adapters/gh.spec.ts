@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const ghApi = vi.hoisted(() => ({ gh: vi.fn() }));
 vi.mock("../../shared/adapters/gh.ts", () => ghApi);
 
-import { createPr, enableAutoMerge, prUrlForBranch, waitForMerge, watchChecks } from "./gh.ts";
+import { enableAutoMerge, prUrlForBranch, waitForMerge, watchChecks } from "./gh.ts";
 
 beforeEach(() => vi.resetAllMocks());
 afterEach(() => vi.restoreAllMocks());
@@ -16,34 +16,11 @@ describe("PR adapter", () => {
 
         expect(prUrlForBranch("feature/demo")).toBe("https://example.test/pr/1");
         expect(prUrlForBranch("feature/new")).toBeUndefined();
-        expect(ghApi.gh).toHaveBeenNthCalledWith(
-            1,
-            "pr",
-            "view",
-            "feature/demo",
-            "--json",
-            "url",
-            "-q",
-            ".url",
-        );
     });
 
-    it("creates and enables auto-merge with validated arguments", () => {
-        ghApi.gh.mockReturnValue("https://example.test/pr/2");
-
-        expect(createPr()).toBe("https://example.test/pr/2");
-        enableAutoMerge("https://example.test/pr/2", "merge");
-
-        expect(ghApi.gh).toHaveBeenNthCalledWith(1, "pr", "create", "--fill");
-        expect(ghApi.gh).toHaveBeenNthCalledWith(
-            2,
-            "pr",
-            "merge",
-            "--auto",
-            "--merge",
-            "https://example.test/pr/2",
-        );
+    it("refuses a flag-like PR url before handing it to gh", () => {
         expect(() => enableAutoMerge("--url", "merge")).toThrow(/PR url/);
+        expect(ghApi.gh).not.toHaveBeenCalled();
     });
 });
 

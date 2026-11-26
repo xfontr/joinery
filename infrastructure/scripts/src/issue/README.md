@@ -1,299 +1,93 @@
 # 📝 issue
 
-Three subcommands over `gh`, around the same tracker: `add` files an issue from the terminal,
-`pick` takes one off the project board and puts you on a branch for it — and, once `add` succeeds from
-`master`, calls `pick` directly instead of telling you to run it separately. `brief` prints an
-issue with everything it points at, for whoever is about to implement it. They live in one folder
-because they share the project prompt, the cancel handling, and now that direct call between them —
-splitting them back apart means duplicating both. The `gh` wrapper, the file cache and the cancel
-helper itself moved out to [`../shared/`](../shared/) once [`drift/`](../drift/README.md) needed
-them too; `issue/adapters/gh.ts` still holds everything genuinely specific to filing and picking issues
-(`listProjects`, `listLabels`, `listIssues`, `assignToMe`, `developBranch`).
+Three commands over `gh`: `add` files an issue from the terminal, `pick` branches off one, and
+`brief` prints an issue with everything it points at. Ctrl+C at any prompt exits without side
+effects.
 
 ```sh
-pnpm issue:add     # node src/issue/index.ts add
-pnpm issue:pick    # node src/issue/index.ts pick
-pnpm issue:brief   # node src/issue/index.ts brief
-
-pnpm issue:add --refresh                 # skip the 24h project/label cache for this run
-pnpm issue:pick 288 --type=feature       # no prompts; see "Picking by number" below
-pnpm issue:brief 288                     # or no number, on that issue's branch
+pnpm issue:add                       # four prompts, then gh issue create
+pnpm issue:pick                      # choose from the board, branch, assign, move to In Progress
+pnpm issue:pick 288 --type=feature   # no prompts — the form agents use
+pnpm issue:brief 288                 # or no number, on that issue's branch
 ```
 
-`index.ts` is a dispatcher and nothing else; an unknown or missing subcommand prints the usage and
-exits `1`. Ctrl+C at any prompt exits without creating an issue or touching the branch.
-
-## 🗂 Structure
+## Structure
 
 ```
-index.ts               hands { add, brief, pick } to run(), which dispatches on the first argument
-add.ts                 the filing flow, offering a pick when it finishes on master
-brief.ts               one issue, its blockers, decisions, projects and linked docs, printed once
-pick.ts                the pick-an-issue-and-branch flow, cache-backed when gh is unreachable
-adapters/gh.ts         repo owner, connectivity, projects, labels, open issues, one issue's thread, assign, develop branch
-adapters/git.ts        current branch, find a branch for an issue, checkout
-adapters/files.ts      decision frontmatter, project folders, whether a path exists
-adapters/prompts.ts    this folder's prompt vocabulary — the option lists, the none option, the missing-scope hint
-domain/branch.ts       slug and branch-name building, reading a branch name back, label → branch type
-domain/brief.ts        blockers, references, decision matching and the brief's layout
-domain/search.ts       what a typed search matches, for the two prompts that have one
+index.ts         dispatches add | pick | brief
+add.ts           the filing flow
+pick.ts          the pick-and-branch flow
+brief.ts         the brief
+adapters/        gh, git, files, prompts
+domain/          branch names, search matching, pick options, the brief's layout, live-vs-cache choice
 ```
 
-This is the one folder with several commands, so it's also the one where `index.ts` passes a record
-rather than a single `main` — an unknown or missing subcommand prints the usage on stderr and exits
-1, which `run` does for every script rather than each one hand-rolling it.
+The generic `gh()` wrapper, the file cache and the cancel helper live in
+[`../shared/`](../shared/README.md).
 
-`gh.ts`'s own `gh()` wrapper and `createIssue`, the file cache, `orExit`, the output surface and
-`git()` itself live in [`../shared/`](../shared/README.md) — see that folder's README for why.
-
-## 🚀 `pnpm issue:add`
-
-Four prompts and a confirmation between having a thought and having a tracked issue. It exists so
-that filing a task never costs enough to be worth skipping; anything it can't express, you edit on
-GitHub afterwards.
+## `pnpm issue:add`
 
 | Step | What it does |
 | --- | --- |
-| Project | `gh project list` for the repo's owner, open projects only, plus a *none* option. With exactly one open board there's nothing to choose, so it's used without asking |
-| Label | `gh label list`, plus a *none* option — searchable by name *or* description |
-| Title | Free text, required |
-| Description | Free text, required — one line, becomes the whole issue body |
-| Draft | Shows title, body, label and project |
-| Confirm | *No* cancels and files nothing; *yes* runs `gh issue create` and prints the issue URL |
-| Pick? | Only asked if you're now on `master` — *yes* runs `pick` in-process, same as `pnpm issue:pick` |
+| Project | Open boards plus *none*. Skipped when there's exactly one |
+| Label | Searchable by name or description, plus *none* |
+| Title, description | One line each; the description is the whole body |
+| Confirm | *Yes* files it and prints the URL |
+| Pick? | Only when on `master`: *yes* runs `pick` for the new issue |
 
-### 🪝 Filing from `master` offers a pick
+No templates, on purpose: this is for issues that would otherwise never get written. The
+`github-issue` skill has the templated shapes.
 
-The issue most worth filing from `master` is the one you're about to start — so once `gh issue
-create` succeeds, `offerPick` in [`add.ts`](./add.ts) checks `currentBranch()` and, if it's
-`master`, asks. *Yes* calls the same `pick` this package exports for `pnpm issue:pick` directly,
-rather than telling you to run it yourself as a second command. The check runs after the issue is
-already filed, so a `No` or a cancelled prompt here never costs you the issue — only the branch.
-
-### 📐 No template
-
-The body is whatever you typed, verbatim. There is no task/bug/spike shape, no acceptance criteria,
-no repro steps — that structure is what made the previous version of this script something you
-avoided using.
-
-The [`github-issue`](../../../../.claude/skills/github-issue/SKILL.md) skill still has the three
-templates, and Claude still fills them in when it files an issue. The two produce different-looking
-issues on purpose: the skill is for issues worth the ceremony, this is for the ones that would
-otherwise never get written down.
-
-## 🌱 `pnpm issue:pick`
-
-The other direction: you want to work, you don't want to open GitHub, find a ticket, copy its
-number and hand-type a branch name.
+## `pnpm issue:pick`
 
 | Step | What it does |
 | --- | --- |
-| Project | `gh project list`, open projects only — no *none* here, the board is what's being read. Skipped with exactly one open board, which also drops the *back* row from the next prompt |
-| Issue | The project's **open** issues, `#number title` with the labels and the URL as a hint — searchable by number, title or label |
-| Resume | Only if a branch for that issue already exists — *yes* checks it out and stops here |
-| Branch type | `feature`, `fix`, `hotfix`, `release` |
-| Branch title | Free text, pre-filled with the issue title; slugified, so edit it down to something short |
-| — | `gh issue develop <number> --name <type>/<area>/<number>-<slug> --checkout`, then `gh issue edit --add-assignee @me`, then `gh project item-edit --field Status --value "In Progress"` |
+| Project | Skipped when there's exactly one open board |
+| Issue | The board's open issues, searchable by number, title or label |
+| Resume | If a branch for that issue exists, *yes* checks it out and stops |
+| Branch type, title | `feature`/`fix`/`hotfix`/`release`, and a title pre-filled from the issue |
+| Then | `gh issue develop` (linked on the issue), assign `@me`, move to *In Progress* |
 
-Before the branch, `pick` reads the issue's blocked-by links live and stops while any is open,
-naming each one; `--force` skips the check. A resumed branch isn't checked, since the work already
-started. The links are GitHub's own, written by `pnpm workflow:file` or by hand on the issue, so an
-agent can't start on a ticket a stale snapshot showed as ready. `pnpm issue:brief` lists the same
-links under *Blockers*, beside any older `**Blocked by:**` line in the body.
+- Branches are `<type>/<area>/<number>-<slug>`. The area is the first `app:`, `package:` or `infra:`
+  label without its prefix, else `repo`.
+- An open blocked-by link stops the pick; `--force` skips the check.
+- Assigning and moving the card only warn on failure; the branch stays.
+- When `gh` is unreachable, `pick` browses the cached projects and issues, then fails at the
+  branch step.
 
-`gh issue develop` over `git checkout -b`: the branch it creates is linked on the issue's
-Development panel, the same link the "Create a branch" button on the issue would give you, and a
-branch name alone — however it's formatted — never gets you.
+### Picking by number
 
-The issue URL sits in the picker's hint so the terminal can turn it into a link — that's the "let me
-read the ticket before I commit to it" escape hatch, and the reason the prompt shows nothing else
-about the issue. clack draws a hint only for the row you're on, which is what keeps a column of
-URLs from burying the titles.
+`pnpm issue:pick <number>` asks nothing:
 
-### 🔢 Picking by number
-
-`pnpm issue:pick <number>` asks nothing. It's the form an agent uses — no terminal means no
-prompt, and the bare command fails at once naming this form rather than hanging on a `select`.
-Every answer the prompts would collect comes off the issue or a flag:
-
-| Answer | From |
+| Flag | Default |
 | --- | --- |
-| Board | `--project=<board title>`, else the issue's first board. Only the *In Progress* move uses it, so an issue on no board just skips that move |
-| Area | The issue's area label, as in [the branch name](#-why-the-area-sits-between-the-type-and-the-number) |
-| Branch type | `--type=<feature\|fix\|hotfix\|release>`, else the label: `enhancement` is `feature`, `bug` is `fix`. A `spike`, or both labels, fails and names the flag |
-| Branch title | `--title=<text>`, else the issue title. One that slugs to nothing fails, as the prompt's validation does |
-| Resume | An existing branch for the number is checked out, without asking |
-| Blocked | `--force` branches off an issue with an open blocker; without it the pick stops |
+| `--type=<feature\|fix\|hotfix\|release>` | From the label: `enhancement` → `feature`, `bug` → `fix`. Otherwise required |
+| `--title=<text>` | The issue title |
+| `--project=<board title>` | The issue's first board |
+| `--force` | Branch even with an open blocker |
 
-Flags take the `--name=value` form only. `run` parses argv into a set of flags and a list of
-positionals, so `--type fix` would read `fix` as a second positional.
+Flags take the `--name=value` form only.
 
-### 🔎 Two of the four prompts are searchable
+## `pnpm issue:brief`
 
-`Issue` and `Label` are clack's `autocomplete`; `Project` and `Branch type` are a plain `select`.
-The line isn't the widget, it's the list:
-
-| Prompt | Why |
-| --- | --- |
-| Issue — searchable | A board grows without anyone deciding to grow it. Typing `63`, a word from the title, or `spike` beats arrowing through twenty rows, and `#` is optional because the picker prints it and nobody types it |
-| Label — searchable | Thirteen and counting, and you always know the one you want. The description is searched too: `wontfix` and `good first issue` are remembered by meaning, not spelling |
-| Project — plain | One board, so it's usually skipped altogether. A search box over a handful of rows would cost a keystroke and save none |
-| Branch type — plain | Four values, fixed by the branch-name rule. Typing `fix` there would match `hotfix` too, so searching is worse than pointing |
-
-The predicates live in [`domain/search.ts`](./domain/search.ts) rather than inline in the prompt,
-which is what lets `#63` vs `63` and label-vs-description be pinned by a spec instead of discovered
-in front of a board. Both *back* and *none* rows drop out the moment you type: having typed
-anything, you're looking for a row, not for the way out.
-
-### 📴 Falling back to cache when `gh` is unreachable
-
-`pick` tries the normal, cache-backed path first — free when the 24h project cache is still warm,
-since `cached()` never touches the network on a hit, same as `issue:add`'s project prompt. The
-`gh api rate_limit` round trip (`isOnline` in [`gh.ts`](./adapters/gh.ts)) only runs when that comes back
-empty, to tell "gh is actually unreachable" apart from `listProjects` swallowing a missing `project`
-scope to mean something unrelated — paying for that probe only when there's an empty result to
-explain, instead of on every run. A confirmed-offline project stage prints a warning and switches
-`listProjects` to reading the file cache directly, however old it is. `listIssues` is deliberately
-uncached online, though, so a warm project cache can leave the project stage never checking
-connectivity at all — `pickIssue` in [`pick.ts`](./pick.ts) covers that by trying the live fetch
-first and only falling back to the issue cache if that call actually throws. `developBranch` and the
-assignment still go over the network same as ever, so an offline pick gets you as far as choosing a
-branch name and then fails there if `gh` is still unreachable — the fallback is for browsing, not
-for filing offline.
-
-### 🔢 Why the area sits between the type and the number
-
-`feature/huella-legal/28-set-up-main-layouts`. The prefix satisfies the
-`^(hotfix|fix|feature|release)/[^/]+/[0-9]+-.+` gate in
-[`.husky/pre-push`](../../../../.husky/pre-push). The area comes from the issue's labels, through
-`areaFor` in [`domain/branch.ts`](./domain/branch.ts): the first `app:`, then `package:`, then
-`infra:` label, minus its prefix, so it names the folder the work lives in. An issue with none of
-those is about the repo as a whole and gets `repo`, which keeps every issue branchable without a
-mandatory label prompt. The number right after it is what `branchForIssue` in `git.ts`
-matches on. That lookup is why
-picking the same issue twice offers the existing branch instead of dying on `gh issue develop`'s
-"branch already exists". Renaming a branch by hand to drop either segment costs you the resume,
-nothing else.
-
-Answering *no* to the resume prompt still creates a new branch — a `fix/` on top of a `feature/` for
-the same ticket is a real thing, just not the common one.
-
-### 🙋 The assignment is last and can't fail the run
-
-`gh issue edit <n> --add-assignee @me`, after the checkout, wrapped in a `try` that only warns.
-Two things fall out of that ordering: a repo you can't write to costs you the assignment and not the
-branch, and there's no "am I already assigned?" check anywhere — `@me` resolves server-side and
-re-adding an existing assignee is a no-op, so both round trips the check would need are skipped.
-
-It runs on the resume path too. Re-picking an issue you already own is the no-op case, which is
-cheaper than reasoning about whether it is.
-
-### 📋 Moving the issue to *In Progress*
-
-Runs right after the assignment, same `try`-and-warn shape: `gh project item-edit <project number>
---owner <owner> --url <issue url> --field "Status" --value "In Progress"`, addressed by name rather
-than by node ID. The node-ID form (`--id`, `--field-id`, `--project-id`,
-`--single-select-option-id`) needs a `gh project field-list` round trip first to resolve those IDs;
-`item-edit` already does that resolution server-side when handed names instead, so there's no second
-call to make or cache. This assumes the default GitHub Projects template's "Status" field and "In
-Progress" option — a board that renamed either fails the call, which is swallowed the same way as
-the assignment: a warning, and the branch and assignment stay.
-
-It runs on the resume path too, for the same reason the assignment does.
-
-### 🔍 Why not `gh project item-list`
-
-Reading the board directly is the obvious call and the wrong one: it hands back closed issues and
-draft items with no number, so both need filtering out, and it needs the project's number and owner
-on top of the `gh project list` call already made. `gh issue list --json projectItems` is one call,
-open-only by definition, and the project filter is a `some()` on the result. It caps at 100 issues,
-which is roughly 90 more than this board will ever hold.
-
-## 📇 `pnpm issue:brief`
-
-Everything `start-issue` used to collect by hand before writing code, in one print: the issue's
-state, labels, assignees and board column, its body and every comment untrimmed, then four
-sections that are each a lookup the reader would otherwise run.
+Prints the issue's state, labels, assignees, board column, body and every comment, then:
 
 | Section | Found by |
 | --- | --- |
-| Blockers | Every `#n` on a `Blocked by` line, each fetched for its title and state |
-| Decisions | `docs/decisions/*.md` whose frontmatter `issue:` is this issue or any issue the thread mentions, plus any `ADR 0028`-style mention. Matched on frontmatter, since a decision's file number is its own |
-| Projects | `app:`, `package:` and `infra:` labels, the branch's area, and project paths in the text, each with its `CLAUDE.md` |
-| Docs mentioned | Paths under `docs/` or `.claude/` that the thread names and that exist |
+| Blockers | Every `#n` on a `Blocked by` line, with title and state |
+| Decisions | `docs/decisions/*.md` whose `issue:` is this issue or one the thread mentions, plus `ADR 0028`-style mentions |
+| Projects | `app:`/`package:`/`infra:` labels, the branch's area and paths in the text, each with its `CLAUDE.md` |
+| Docs mentioned | Paths under `docs/` or `.claude/` that exist |
 
-Comments aren't capped. Threads here are short, and the decision often sits in the comment a cap
-would cut.
+With no number, it reads the one in the branch name.
 
-With no number it reads the one in the current branch name, through `issueFromBranch` in
-[`domain/branch.ts`](./domain/branch.ts). The area only counts toward Projects when the
-branch is the issue's own.
+## Caching
 
-## 🗄 Caching projects, labels and issues
+Projects and labels are cached for 24 h under `node_modules/.cache/@joinery/scripts/`; `--refresh`
+bypasses it. The issue list is always fetched live and cached only as the offline fallback.
 
-Projects and labels change on the order of quarters, not per run. [`../shared/adapters/cache.ts`](../shared/adapters/cache.ts)
-wraps `listProjects` and `listLabels` in a 24h file cache at `node_modules/.cache/@monorepo/scripts/`, so
-most runs skip both `gh` round trips entirely. It sits under `node_modules` on purpose: already
-gitignored, already per-clone, and a `pnpm install` clears it for free without another invalidation
-path to maintain.
+## Requirements
 
-`listIssues` is a different shape of caching, not that TTL: a stale issue list is the one answer
-this script exists to avoid, so online it fetches and overwrites the cache on *every* `pick`, no
-24h gate at all. The cache exists purely for offline mode — the one case where there's no fresh
-fetch to prefer over it, `cache.ts`'s `readCache`/`writeCache` (also what `drift/` uses for its own
-dedup key) skip the TTL check entirely and hand back whatever's on disk, however old.
-
-`--refresh` on either command bypasses the read and overwrites the file, for the one time a day the
-24h window is wrong (a project just got created, a label just got renamed):
-
-```sh
-pnpm issue:pick --refresh
-```
-
-A cache write failing (read-only `node_modules`, no space) only costs you the cache, the same
-fail-open stance the missing `project` scope already gets in `listProjects` — see
-[`gh.ts`](./adapters/gh.ts).
-
-## ✅ Tests
-
-[`domain/branch.spec.ts`](./domain/branch.spec.ts) covers `slugify`, `branchName`, `issueFromBranch`
-and `branchTypeFor`, and [`domain/brief.spec.ts`](./domain/brief.spec.ts) the brief's matching and
-layout, per [`writing-tests`](../../../../.claude/skills/writing-tests/SKILL.md).
-[`../shared/adapters/cache.spec.ts`](../shared/adapters/cache.spec.ts) covers the TTL and `--refresh` bypass in
-`cached`, plus the TTL-free reads and writes in `readCache`/`writeCache`. `isOnline` and the offline
-branches of `listProjects`/`listIssues` are `gh` calls and cache reads respectively, both already
-covered by the functions underneath them, so they get no spec of their own.
-
-## 🔑 Requirements
-
-`gh` authenticated. Both flows additionally need the `project` OAuth scope, which a plain
-`gh auth login` doesn't grant:
-
-```sh
-gh auth refresh -s project
-```
-
-Without it `gh project list` fails and `listProjects` returns nothing. For `add` that costs you the
-project prompt, not the issue; for `pick` there is nothing left to do, so it warns and exits.
-
-`pick`'s assignment additionally needs write access to the repo — a plain `gh auth login` grants the
-scope, but a read-only collaborator still can't self-assign. That path warns and keeps the branch.
-Moving the issue to *In Progress* needs write access to the project itself, which the `project`
-scope above doesn't imply on its own; the same warn-and-keep-the-branch fallback covers it.
-
-## 🧭 Deliberately deferred
-
-| Later need | What changes |
-| --- | --- |
-| A multi-line description | `@clack/prompts` `text` is single-line; this would need an `$EDITOR` handoff (`gh issue create --editor` already does exactly that, if you'd rather drop the prompt) |
-| More than one label | `autocomplete` becomes `autocompleteMultiselect` — same options, same filter — and `gh.ts` maps over `--label` instead of taking one |
-| Assignee, milestone, issue type | Each is another `gh issue create` flag and another prompt; add them only if you'd actually answer them every time |
-| Filtering `pick` by board status | `listIssues` already has it in hand — a second prompt, or a `--status` argument threaded through `index.ts`. Filtering by *label* no longer needs either: the issue search matches labels, so typing `spike` is the filter |
-| A board with a renamed "Status" field or "In Progress" option | `moveToInProgress` assumes the default GitHub Projects template naming; a `field-list` lookup would replace the hardcoded names if a board ever renames them |
-| Assigning someone other than yourself | `--add-assignee` takes any login, but then it needs a prompt fed by `gh api repos/{owner}/{repo}/assignees`; `@me` exists so this doesn't |
-| Hiding issues already assigned to someone else | `listIssues` would fetch `assignees` and filter — worth it on a shared board, pointless on a solo one |
-| Branching from something other than the default branch | `developBranch` takes a `--base`, and `pick` prompts for it; today `gh issue develop` always bases off the repo's default branch. That's also the one thing lost versus plain `git checkout -b`: stacking a `fix/` branch on an unpushed `feature/` branch no longer works, because `--base` names a *remote* branch |
-| A dirty working tree when `pick` runs | `git checkout -b` carries the changes over silently, which is usually what you want; a `git status --porcelain` guard would be the alternative |
-| Choosing a repo other than the one you're in | `gh` infers it from the working directory today; every call would need `--repo` and a prompt to feed it |
-| A default branch other than `master` | `offerPick` in `add.ts` checks `currentBranch() === "master"` literally, matching this repo; a `gh repo view --json defaultBranchRef` call would replace the literal if this ever runs somewhere else |
-| Filing an issue while offline | `createIssue` still needs a live `gh`; the offline fallback only covers browsing cached projects and issues in `pick`, not `add` |
+`gh` logged in with the `project` scope (`gh auth refresh -s project`). Without it `add` loses the
+project prompt and `pick` can't run. Assigning needs repo write access; moving the card needs project
+write access and the default "Status" / "In Progress" field names.

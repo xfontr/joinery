@@ -1,0 +1,9 @@
+<template>
+    <UAlert
+        color="neutral"
+        variant="subtle"
+        icon="i-lucide-lock"
+        :title="$t('settingsReadOnly.title')"
+        :description="$t('settingsReadOnly.description')"
+    />
+</template>

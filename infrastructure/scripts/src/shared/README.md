@@ -1,53 +1,30 @@
 # 🧰 shared
 
-The doors out of this package, plus the two things every entry point agrees on. Nothing here knows
-a script exists — that direction is the whole rule, and it's what keeps `shared/` from turning into
-the folder everything ends up in.
+What more than one script needs. Nothing here knows a script exists.
 
-## 🗂 What's here
+## What's here
 
-Same shape as a script folder, minus the command — the two files at the root are what every entry
-point stands on, and the rest is sorted by whether it can reach the outside world.
-
-| File | The door it is |
+| File | What it is |
 | --- | --- |
-| [`cli.ts`](./cli.ts) | `run` — argv parsed once, one command or a record of them, and one meaning per exit code. Also `fail` and `flag` |
-| [`domain/cli.ts`](./domain/cli.ts) | the argv parser behind `run`, `optionValue` for a `--name=value` flag, and `detailOf` for a child's stderr |
-| [`errors.ts`](./errors.ts) | `ExpectedError` and `CancelledError`, the two throws `run` treats as answers rather than bugs |
-| [`adapters/io.ts`](./adapters/io.ts) | the terminal. `out.*` in clack when someone's watching, plain lines when nobody is, and `requireTerminal` before any prompt |
-| [`adapters/exec.ts`](./adapters/exec.ts) | subprocesses — `run` for one that answers a question, `capture` for one whose non-zero exit is the answer, `inherit` for one that owns the terminal, and the `assertNotFlagLike` guard for values that would otherwise read as flags |
-| [`adapters/git.ts`](./adapters/git.ts) | `git` itself, plus `repoRoot()` and `at()` for resolving against the repo rather than cwd |
-| [`adapters/gh.ts`](./adapters/gh.ts) | `gh`, and `createIssue` on top of it |
-| [`adapters/usage.ts`](./adapters/usage.ts) | `appendUsage`, the one write `run()` makes after every command, Ctrl+C included — to a buffer inside `.git`, failing open |
-| [`adapters/cache.ts`](./adapters/cache.ts) | the file cache under `node_modules/.cache/@monorepo/scripts` |
-| [`adapters/prompts.ts`](./adapters/prompts.ts) | `orExit`, so a cancelled prompt anywhere unwinds to `run` |
-| [`domain/usage.ts`](./domain/usage.ts) | what a recorded run is: the CSV columns, which flags keep their value, the caller, the target and the area. Read by [`usage/`](../usage/README.md) |
-| [`domain/layout.ts`](./domain/layout.ts) | `PROJECT_ROOTS` — repo layout as data, with no way to read the repo |
-| [`domain/logs.ts`](./domain/logs.ts) | `stripAnsi` and `excerpt`: a tool log cut to its error lines, shared by `ci-failures` and `worktree` |
+| [`cli.ts`](./cli.ts) | `run` (argv parsed once, one meaning per exit code), `fail` and `flag` |
+| [`errors.ts`](./errors.ts) | `ExpectedError` and `CancelledError`, which `run` treats as answers, not bugs |
+| [`adapters/io.ts`](./adapters/io.ts) | The terminal: `out.*`, and `requireTerminal` before any prompt |
+| [`adapters/exec.ts`](./adapters/exec.ts) | Subprocesses: `run`, `capture`, `inherit`, and `assertNotFlagLike` |
+| [`adapters/git.ts`](./adapters/git.ts) | `git`, `repoRoot()` and `at()` |
+| [`adapters/gh.ts`](./adapters/gh.ts) | `gh` and `createIssue` |
+| [`adapters/usage.ts`](./adapters/usage.ts) | `appendUsage`, the row `run()` records after every command |
+| [`adapters/cache.ts`](./adapters/cache.ts) | The file cache under `node_modules/.cache/@joinery/scripts` |
+| [`adapters/prompts.ts`](./adapters/prompts.ts) | `orExit`, so a cancelled prompt unwinds to `run` |
+| [`domain/cli.ts`](./domain/cli.ts) | The argv parser, `optionValue`, `detailOf` |
+| [`domain/usage.ts`](./domain/usage.ts) | What a recorded run holds — see [`usage/`](../usage/README.md) |
+| [`domain/layout.ts`](./domain/layout.ts) | `PROJECT_ROOTS` |
+| [`domain/logs.ts`](./domain/logs.ts) | `stripAnsi` and `excerpt` |
 
-`layout.ts` is in `domain/` rather than next to `git.ts` for one reason: `drift/domain/detect.ts` is
-pure and needs `PROJECT_ROOTS`, so keeping that constant in a module that shells out to `git` would
-drag a subprocess into a file whose whole value is having no side effects.
+Code moves here when a second script needs it. Facts about the environment (the repo root, the
+terminal) live here from the start, so there's only one copy.
 
-## 📥 What moves here
+## No side effects at module scope
 
-A piece moves in when a **second** script folder needs it — that rule is in the
-[package README](../../README.md#-adding-a-script) and it still holds for anything script-shaped. The
-exception is the rows above marked *adapter*: those are facts about the environment, and two copies
-of one is a bug waiting rather than a duplication to tolerate. The repo root used to be resolved
-three separate ways in three files, all correct, all one edit from disagreeing.
-
-## 🚫 No side effects at module scope
-
-No `run()`, `git()` or `readFileSync` at the top level of a file — here or in a script folder. This
-is the rule with the most scar tissue behind it:
-
-- `repoRoot()` memoises on first call instead of resolving at import, because the two modules that
-  used to resolve it eagerly couldn't be imported at all outside a git checkout — which is why
-  neither had a spec.
-- `cache.ts` reads `--refresh` per call, not once at module load. When it read argv eagerly, the
-  answer depended on module-registry state, and its spec needed `vi.resetModules()` in a
-  `beforeEach` to test the flag at all.
-
-Read `process.argv` and `process.env` in a command, or through `flag()`, where the answer can't be
-frozen before the command runs.
+No `run()`, `git()` or `readFileSync` at a file's top level, and read `process.argv`/`process.env`
+inside a command or through `flag()`. Breaking this once made two modules unimportable outside a git
+checkout.

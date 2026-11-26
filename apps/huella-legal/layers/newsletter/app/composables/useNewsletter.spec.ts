@@ -1,6 +1,7 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import type { Challenge } from "#layers/forms/app/types/Challenge";
+import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
+import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent } from "vue";
 import { useNewsletter } from "./useNewsletter";
 
 const FIELDS = { email: "lucia@ejemplo.es", honeypot: "" };
@@ -14,24 +15,9 @@ mockNuxtImport(
         url === "/api/newsletter" ? fetch(url, options) : globalThis.$fetch(url, options as never),
 );
 
-// A challenge with a token at hand: the waiting and the reset are FormChallenge's own spec
 const challenge = vi.fn((send: (token: string) => Promise<unknown>) => send("tok")) as Challenge;
 
-const setUp = async () => {
-    let controller: ReturnType<typeof useNewsletter> | undefined;
-
-    await mountSuspended(
-        defineComponent({
-            setup: () => {
-                controller = useNewsletter();
-
-                return () => null;
-            },
-        }),
-    );
-
-    return controller!;
-};
+const setUp = async () => (await withSetup(() => useNewsletter())).value;
 
 beforeEach(() => {
     vi.clearAllMocks();

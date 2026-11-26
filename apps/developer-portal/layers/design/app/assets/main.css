@@ -2,10 +2,54 @@
 @import "@nuxt/ui";
 
 @theme static {
-    --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+    --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
-    /* One step under `text-xs`, for timestamps, tags and labels beside a title */
-    --text-2xs: 0.6875rem;
+    /* Warm neutrals; every surface, text and border role of the identity is a step of this ramp */
+    --color-paper-50: #f8f5ef;
+    --color-paper-100: #f1ece3;
+    --color-paper-200: #e8e1d4;
+    --color-paper-300: #ddd5c6;
+    --color-paper-400: #a89f90;
+    --color-paper-500: #857d70;
+    --color-paper-600: #5f594f;
+    --color-paper-700: #29251f;
+    --color-paper-800: #221f1a;
+    --color-paper-900: #1c1915;
+    --color-paper-950: #12100e;
+
+    /* The one accent: 600 on light surfaces, 300 on dark ones */
+    --color-terracotta-50: #fdf3ee;
+    --color-terracotta-100: #fbe3d6;
+    --color-terracotta-200: #f7c3a8;
+    --color-terracotta-300: #f08a5d;
+    --color-terracotta-400: #e0703f;
+    --color-terracotta-500: #c4582c;
+    --color-terracotta-600: #994021;
+    --color-terracotta-700: #7a331b;
+    --color-terracotta-800: #5c2715;
+    --color-terracotta-900: #3f1b0f;
+    --color-terracotta-950: #261009;
+
+    --font-display: Fraunces, Georgia, serif;
+
+    /* Display steps; with `text-2xl`, `base`, `sm` and `xs` they make the scale's eight */
+    --text-statement: 8rem;
+    --text-statement--line-height: 1;
+    --text-statement--letter-spacing: -0.02em;
+    --text-statement--font-weight: 300;
+    --text-title: 4.5rem;
+    --text-title--line-height: 1;
+    --text-title--letter-spacing: -0.02em;
+    --text-title--font-weight: 300;
+    --text-section: 3rem;
+    --text-section--line-height: 1;
+    --text-section--letter-spacing: -0.02em;
+    --text-section--font-weight: 300;
+    --text-heading: 2.25rem;
+    --text-heading--line-height: 1.1;
+    --text-heading--letter-spacing: -0.02em;
+    --text-heading--font-weight: 300;
 }
 
 /* Tailwind v4 preflight leaves native <button> at the browser default (`cursor: default`) rather
@@ -15,32 +59,17 @@ button:not(:disabled) {
     cursor: pointer;
 }
 
-/**
- * Status roles, not colours. Every number in this app that carries a verdict — a coverage
- * percentage, an unreleased-commit count — is written against these three, so the light/dark steps
- * swap in one place.
- *
- * They were validated as a set against each surface (lightness band, chroma floor, CVD separation,
- * normal-vision separation, contrast) rather than picked by eye. Five bands were tried first and
- * failed: an orange and a red land 7.1 apart on the normal-vision scale, which no amount of
- * colourblind-safe intent fixes. Three steps pass, and every one of them sits beside the number it
- * describes — nothing here is ever a colour alone.
- */
-:root {
-    --tone-good: #008300;
-    --tone-warn: #eda100;
-    --tone-bad: #e34948;
-}
-
-.dark {
-    --tone-good: #199e70;
-    --tone-warn: #c98500;
-    --tone-bad: #e34948;
-}
-
 .tone-good { color: var(--tone-good); }
 .tone-warn { color: var(--tone-warn); }
 .tone-bad { color: var(--tone-bad); }
+
+@layer base {
+    /* Any utility outranks this layer, so a component only spells out how its ring differs */
+    :focus-visible {
+        outline: 2px solid var(--ui-primary);
+        outline-offset: 2px;
+    }
+}
 
 /* The V8 coverage report and the Nx graph client are iframed in as-is and only render on white. */
 .embedded-report {
@@ -99,4 +128,176 @@ button:not(:disabled) {
 @keyframes widget-wiggle {
     from { rotate: -0.4deg; }
     to { rotate: 0.4deg; }
+}
+
+::view-transition-group(*) {
+    animation-duration: 0.45s;
+    animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* `siteReveal.js` sets `data-page-transition="mode"` when a page arrives from the personal site */
+@view-transition {
+    navigation: auto;
+}
+
+[data-view-switch] [aria-current="true"] {
+    view-transition-name: view-switch-current;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 0.15s;
+}
+
+:root[data-page-transition="mode"]::view-transition-old(root) {
+    animation: none;
+}
+
+:root[data-page-transition="mode"]::view-transition-new(root) {
+    animation: page-reveal 0.7s cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+
+@keyframes page-reveal {
+    from {
+        clip-path: circle(0 at var(--reveal-x) var(--reveal-y));
+    }
+
+    to {
+        clip-path: circle(var(--reveal-r) at var(--reveal-x) var(--reveal-y));
+    }
+}
+
+/* The identity's roles; `:root` so Nuxt UI's teleported overlays take them too */
+:root {
+    --ui-bg: var(--color-paper-100);
+    --ui-bg-muted: var(--color-paper-200);
+    --ui-bg-elevated: var(--color-paper-50);
+    --ui-bg-accented: var(--color-paper-300);
+    --ui-bg-inverted: var(--color-paper-900);
+
+    --ui-text-dimmed: var(--color-paper-600);
+    --ui-text-muted: var(--color-paper-600);
+    --ui-text-toned: var(--color-paper-700);
+    --ui-text: var(--color-paper-800);
+    --ui-text-highlighted: var(--color-paper-900);
+    --ui-text-inverted: var(--color-paper-50);
+
+    --ui-border: var(--color-paper-300);
+    --ui-border-muted: var(--color-paper-200);
+    --ui-border-accented: var(--color-paper-400);
+    --ui-border-inverted: var(--color-paper-900);
+
+    --ui-primary: var(--color-terracotta-600);
+    --ui-radius: 0.125rem;
+    --ui-container: 72rem;
+    --radius-xs: 0.125rem;
+    --radius-sm: 0.125rem;
+    --radius-md: 0.125rem;
+    --radius-lg: 0;
+    --radius-xl: 0;
+    --radius-2xl: 0;
+
+    /* Validated as a set with the `dataviz` skill's validator; five steps failed, three pass */
+    --tone-good: #006641;
+    --tone-warn: #7a4100;
+    --tone-bad: #b30942;
+}
+
+body {
+    font-family: var(--font-sans);
+    background: var(--ui-bg);
+    color: var(--ui-text);
+}
+
+/* With macOS set to always show scrollbars, every scrolling column otherwise gets a grey OS bar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--ui-border-accented) transparent;
+}
+
+.dark {
+    --ui-bg: var(--color-paper-900);
+    --ui-bg-muted: var(--color-paper-950);
+    --ui-bg-elevated: var(--color-paper-800);
+    --ui-bg-accented: var(--color-paper-700);
+    --ui-bg-inverted: var(--color-paper-100);
+
+    --ui-text-dimmed: var(--color-paper-400);
+    --ui-text-muted: var(--color-paper-400);
+    --ui-text-toned: var(--color-paper-300);
+    --ui-text: var(--color-paper-200);
+    --ui-text-highlighted: var(--color-paper-50);
+    --ui-text-inverted: var(--color-paper-900);
+
+    --ui-border: var(--color-paper-700);
+    --ui-border-muted: var(--color-paper-800);
+    --ui-border-accented: var(--color-paper-500);
+    --ui-border-inverted: var(--color-paper-100);
+
+    --ui-primary: var(--color-terracotta-300);
+
+    --tone-good: #36a184;
+    --tone-warn: #ad8c1f;
+    --tone-bad: #e4676b;
+}
+
+/* A marked word in a headline takes the accent instead of a highlight */
+mark {
+    background: none;
+    color: var(--ui-primary);
+    font-style: italic;
+}
+
+/* An ink fill that stays dark in both modes, such as the developer rail; it sets the fill itself */
+@utility surface-ink {
+    --ui-bg: var(--color-paper-950);
+    --ui-bg-elevated: var(--color-paper-900);
+    --ui-text-muted: var(--color-paper-400);
+    --ui-text: var(--color-paper-100);
+    --ui-text-highlighted: var(--color-paper-50);
+    --ui-text-inverted: var(--color-paper-950);
+    --ui-border: var(--color-paper-700);
+    --ui-primary: var(--color-terracotta-300);
+    --tone-good: #329546;
+    --tone-warn: #cb6b0b;
+    --tone-bad: #f53864;
+    background: var(--ui-bg);
+    color: var(--ui-text);
+}
+
+/* A count or a percentage that leads a panel or a fact */
+[data-figure] {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+}
+
+/* A percentage drawn as a hairline under its own figure, in the figure's tone */
+[data-meter] {
+    background: linear-gradient(
+            to right,
+            currentcolor calc(var(--pct, 0) * 1%),
+            var(--ui-border-muted) 0
+        )
+        left bottom / 100% 2px no-repeat;
+}
+
+td[data-meter] {
+    background-size: calc(100% - 1.5rem) 2px;
+    background-position: right 0.75rem bottom 0.375rem;
+}
+
+/* A sideways-scrolling row fades at its right edge, so a phone reader knows there is more */
+[data-scroll-x] {
+    mask-image: linear-gradient(to left, transparent, #000 2rem);
+}
+
+/* Rendered prose keeps a reading measure; tables and code keep the full width */
+[data-prose] :is(p, li, h2, h3, h4, blockquote) {
+    max-width: 72ch;
+}
+
+/* A README under a page that already shows its title drops its own `# heading` */
+[data-readme] h1:first-child {
+    display: none;
 }

@@ -10,6 +10,7 @@ import layerIsolation from "./layerIsolation.ts";
 import layerBoundaries from "./layerBoundaries.ts";
 import { constTables, constTablesVue } from "./constTables.ts";
 import propsInterface from "./propsInterface.ts";
+import pageLength from "./pageLength.ts";
 import { disableReasons, disableReasonsVue } from "./disableReasons.ts";
 import { defaultExports, defaultExportsVue } from "./defaultExports.ts";
 import templateI18n from "./templateI18n.ts";
@@ -23,6 +24,7 @@ import configFiles from "./configFiles.ts";
 import pureDomain from "./pureDomain.ts";
 import routeMeta from "./routeMeta.ts";
 import tailwind from "./tailwind.ts";
+import i18nKeys from "./i18nKeys.ts";
 import regexp from "./regexp.ts";
 import awaitInLoop from "./awaitInLoop.ts";
 import ternaries from "./ternaries.ts";
@@ -57,6 +59,7 @@ const vueOnly: object[] = [
     layerIsolation,
     constTablesVue,
     propsInterface,
+    pageLength,
     templateI18n,
     templateCalls,
     typeDefinitionsVue,
@@ -73,6 +76,7 @@ export {
     baseIgnores,
     routeMeta,
     tailwind,
+    i18nKeys,
     layerBoundaries,
     pureDomain,
 };

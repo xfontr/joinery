@@ -1,159 +1,205 @@
-import { mountSuspended, mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { nextTick, ref, watch } from "vue";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
+import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import Page from "./changelog.vue";
 
-const state = vi.hoisted(() => ({
-    asyncData: vi.fn(),
-    query: vi.fn(),
-    changelogs: [] as unknown[],
-    pages: {} as Record<string, unknown>,
-    snapshot: null as { value: unknown } | null,
-}));
-mockNuxtImport("useSnapshot", () => () => ({ data: state.snapshot }));
-mockNuxtImport("useAsyncData", () => state.asyncData);
-mockNuxtImport("queryCollection", () => state.query);
-
-const global = {
-    stubs: {
-        UDashboardPanel: {
-            template: "<section><slot name='header' /><slot name='body' /></section>",
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
         },
-        UDashboardNavbar: {
-            props: { title: String },
-            template: "<header>{{ title }}<slot name='right' /></header>",
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
         },
-        UDashboardSidebarCollapse: true,
-        UCard: { template: "<article><slot /></article>" },
-        UAlert: {
-            props: { title: String, description: String },
-            template: "<div class='alert'>{{ title }} {{ description }}</div>",
+    },
+    changelog: {
+        empty: {
+            hint: "They are written by {command}, never by hand.",
+            title: "No CHANGELOG.md in the workspace yet.",
         },
-        ContentRenderer: { props: { value: Object }, template: "<div>{{ value?.title }}</div>" },
-        UIcon: true,
+        intro: "This page brings together generated release histories and unreleased activity across the workspace.",
+        sinceRelease: "{count} commits since the last release",
+        title: "What's new",
+    },
+    changelogList: {
+        unreleased: "+{count} unreleased",
+        version: "v{version}",
+    },
+    changelogNotes: {
+        conventional: {
+            description: "{percent}% of the last 100 commits parse as a version bump.",
+            title: "Conventional subjects",
+        },
+        unreleased: {
+            description: "{projects} — commits waiting on a first release, so no changelog yet.",
+            title: "Never released",
+        },
+    },
+    pageHeader: {
+        wordmark: "joinery",
     },
 };
 
-const setupAsyncData = (): void => {
-    const entries = ref(state.changelogs);
-    const query = {
-        where: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        all: vi.fn().mockResolvedValue(state.changelogs),
-        path: vi.fn().mockImplementation((path: string) => ({
-            first: vi.fn().mockResolvedValue(state.pages[path]),
-        })),
-    };
-    state.query.mockReturnValue(query);
-    state.asyncData.mockImplementation(
-        (
-            key: string | (() => string),
-            handler: () => Promise<unknown>,
-            options: { watch?: unknown[] } = {},
-        ) => {
-            const data = ref<unknown>(
-                key === "changelogs"
-                    ? entries.value
-                    : (state.pages["/packages/ui/CHANGELOG"] ?? null),
-            );
-            if (options.watch) {
-                watch(options.watch, async () => {
-                    data.value = await handler();
-                });
-            }
-
-            return { data, status: ref("success"), execute: vi.fn() };
-        },
-    );
-};
+const artifacts = vi.hoisted(() => ({ metrics: null as MetricsArtifact | null }));
+mockNuxtImport("metricsArtifact", () => () => artifacts.metrics);
 
 beforeEach(() => {
-    vi.clearAllMocks();
-    state.changelogs = [];
-    state.pages = {};
-    state.snapshot = ref({
-        metrics: { projects: [], conventionalCommitRate: null, commitsSinceLastRelease: 0 },
-        manifest: {},
-    });
-    setupAsyncData();
+    artifacts.metrics = null;
+});
+
+const docs = vi.hoisted(() => ({
+    changelogs: [] as { path: string; title: string }[],
+    pages: {} as Record<string, { title: string }>,
+}));
+
+mockNuxtImport("queryCollection", () => () => {
+    const query = {
+        where: () => query,
+        select: () => query,
+        all: () => Promise.resolve(docs.changelogs),
+        path: (path: string) => ({ first: () => Promise.resolve(docs.pages[path] ?? null) }),
+    };
+    return query;
+});
+
+const global = {
+    stubs: {
+        ContentRenderer: { props: { value: Object }, template: "<div>{{ value?.title }}</div>" },
+    },
+};
+
+const project = (root: string, metrics: Partial<ProjectMetrics>): ProjectMetrics => ({
+    name: root,
+    root,
+    specs: 0,
+    commits: null,
+    commitsLastTwoWeeks: null,
+    coverageLinesPct: null,
+    unreleasedCommits: null,
+    currentVersion: null,
+    hasChangelog: false,
+    ...metrics,
+});
+
+const METRICS = {
+    generatedAt: "2026-11-01T00:00:00Z",
+    commit: "abc",
+    branch: "master",
+    projects: [],
+    invariantFindings: [],
+    conventionalCommitRate: null,
+    commitsSinceLastRelease: 0,
+} satisfies MetricsArtifact;
+
+const serve = (metrics: Partial<MetricsArtifact> = {}) => {
+    artifacts.metrics = { ...METRICS, ...metrics };
+};
+
+const entries = (wrapper: VueWrapper) =>
+    wrapper.findAll("button").filter((button) => button.find(".font-mono").exists());
+
+const alert = (wrapper: VueWrapper, title: string) =>
+    wrapper.findAllComponents({ name: "UAlert" }).find((found) => found.props("title") === title);
+
+beforeEach(() => {
+    docs.changelogs = [];
+    docs.pages = {};
+});
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
 });
 
 describe("changelog page", () => {
-    it("explains the empty workspace when no changelogs exist", async () => {
+    it("says the workspace has no changelog yet instead of an empty list", async () => {
+        serve();
         const wrapper = await mountSuspended(Page, { global });
-        expect(wrapper.text()).toContain("What's new");
+
         expect(wrapper.text()).toContain("No CHANGELOG.md in the workspace yet.");
+        expect(entries(wrapper)).toHaveLength(0);
     });
 
-    it("joins metrics by project root and warns when shipped commits have no changelog", async () => {
-        state.changelogs = [
+    it("lists each changelog by project with its version and unreleased commits", async () => {
+        docs.changelogs = [{ path: "/packages/ui/CHANGELOG", title: "UI" }];
+        serve({
+            projects: [project("packages/ui", { currentVersion: "3.2.1", unreleasedCommits: 4 })],
+        });
+        const wrapper = await mountSuspended(Page, { global });
+
+        const [entry] = entries(wrapper);
+
+        expect(entries(wrapper)).toHaveLength(1);
+        expect(entry!.find(".font-mono").text()).toBe("UI");
+        expect(entry!.text()).toContain("v3.2.1");
+        expect(entry!.find(".tone-warn").text()).toBe("+4 unreleased");
+    });
+
+    it("opens the first changelog and switches to the one picked", async () => {
+        docs.changelogs = [
             { path: "/packages/ui/CHANGELOG", title: "UI" },
             { path: "/packages/i18n/CHANGELOG", title: "i18n" },
         ];
-        state.pages = {
-            "/packages/ui/CHANGELOG": { title: "UI page" },
-            "/packages/i18n/CHANGELOG": { title: "i18n page" },
+        docs.pages = {
+            "/packages/ui/CHANGELOG": { title: "UI history" },
+            "/packages/i18n/CHANGELOG": { title: "i18n history" },
         };
-        state.snapshot = ref({
-            metrics: {
-                projects: [
-                    {
-                        root: "packages/ui",
-                        currentVersion: "3.2.1",
-                        unreleasedCommits: 4,
-                        hasChangelog: true,
-                    },
-                    {
-                        root: "packages/content",
-                        currentVersion: null,
-                        unreleasedCommits: 2,
-                        hasChangelog: false,
-                    },
-                ],
-                conventionalCommitRate: null,
-                commitsSinceLastRelease: 0,
-            },
-            manifest: {},
-        });
-        setupAsyncData();
+        serve();
         const wrapper = await mountSuspended(Page, { global });
 
-        expect(wrapper.text()).toContain("UI page");
-        expect(wrapper.text()).toContain("UI");
-        expect(wrapper.text()).toContain("v3.2.1");
-        expect(wrapper.text()).toContain(
+        expect(wrapper.text()).toContain("UI history");
+
+        await entries(wrapper)[1]!.trigger("click");
+        await flushPromises();
+
+        expect(wrapper.text()).toContain("i18n history");
+        expect(wrapper.text()).not.toContain("UI history");
+    });
+
+    it("names the projects that shipped commits without ever releasing", async () => {
+        docs.changelogs = [{ path: "/packages/ui/CHANGELOG", title: "UI" }];
+        serve({
+            projects: [
+                project("packages/ui", { hasChangelog: true, unreleasedCommits: 4 }),
+                project("packages/content", { unreleasedCommits: 2 }),
+                project("packages/quiet", { unreleasedCommits: 0 }),
+            ],
+        });
+        const wrapper = await mountSuspended(Page, { global });
+
+        expect(alert(wrapper, "Never released")?.props("description")).toBe(
             "Content — commits waiting on a first release, so no changelog yet.",
         );
-        await wrapper.findAll("button")[1]!.trigger("click");
-        await nextTick();
-        expect(wrapper.text()).toContain("i18n page");
     });
 
-    it("shows a neutral conventional-subject alert at 100 percent", async () => {
-        state.changelogs = [{ path: "/packages/ui/CHANGELOG", title: "UI" }];
-        state.snapshot = ref({
-            metrics: { projects: [], conventionalCommitRate: 100, commitsSinceLastRelease: 0 },
-            manifest: {},
-        });
-        setupAsyncData();
+    it.each([
+        [100, "neutral"],
+        [75, "warning"],
+    ])("reports a %i%% conventional-subject rate in a %s alert", async (rate, color) => {
+        docs.changelogs = [{ path: "/packages/ui/CHANGELOG", title: "UI" }];
+        serve({ conventionalCommitRate: rate });
         const wrapper = await mountSuspended(Page, { global });
 
-        expect(wrapper.text()).toContain(
-            "Conventional subjects 100% of the last 100 commits parse as a version bump.",
-        );
-    });
-
-    it("warns when malformed conventional subjects make the rate imperfect", async () => {
-        state.changelogs = [{ path: "/packages/ui/CHANGELOG", title: "UI" }];
-        state.snapshot = ref({
-            metrics: { projects: [], conventionalCommitRate: 75, commitsSinceLastRelease: 0 },
-            manifest: {},
+        expect(alert(wrapper, "Conventional subjects")?.props()).toMatchObject({
+            color,
+            description: `${rate}% of the last 100 commits parse as a version bump.`,
         });
-        setupAsyncData();
-        const wrapper = await mountSuspended(Page, { global });
-
-        expect(wrapper.text()).toContain(
-            "Conventional subjects 75% of the last 100 commits parse as a version bump.",
-        );
     });
 });

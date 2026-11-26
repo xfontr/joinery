@@ -7,7 +7,7 @@
             </li>
         </ul>
 
-        <p class="text-2xs text-dimmed">↑ {{ yLabel }}</p>
+        <p class="text-xs text-dimmed">↑ {{ yLabel }}</p>
 
         <div class="relative ml-8 h-72 border-b border-l border-accented">
             <div
@@ -17,7 +17,7 @@
                 :style="tick.style"
             >
                 <span
-                    class="absolute right-full mr-1.5 -translate-y-1/2 text-2xs text-dimmed tabular-nums"
+                    class="absolute right-full mr-1.5 -translate-y-1/2 text-xs text-dimmed tabular-nums"
                 >
                     {{ tick.label }}
                 </span>
@@ -29,7 +29,7 @@
                 :style="tick.style"
             >
                 <span
-                    class="absolute top-full mt-1 -translate-x-1/2 text-2xs text-dimmed tabular-nums"
+                    class="absolute top-full mt-1 -translate-x-1/2 text-xs text-dimmed tabular-nums"
                 >
                     {{ tick.label }}
                 </span>
@@ -47,7 +47,7 @@
             <span
                 v-for="quadrant in quadrants"
                 :key="quadrant.label"
-                class="absolute max-w-2/5 truncate rounded-xs bg-default/85 px-1 text-2xs font-semibold tracking-wide uppercase"
+                class="absolute max-w-2/5 truncate rounded-xs bg-default/85 px-1 text-xs font-semibold tracking-wide uppercase"
                 :title="quadrant.label"
                 :class="[CORNERS[quadrant.corner], quadrant.bad ? 'tone-bad' : 'text-muted']"
             >
@@ -62,7 +62,7 @@
                 />
                 <span
                     v-if="point.labelled"
-                    class="absolute z-10 max-w-40 translate-y-1/2 truncate rounded-xs bg-default/85 px-0.5 font-mono text-2xs whitespace-nowrap"
+                    class="absolute z-10 max-w-40 translate-y-1/2 truncate rounded-xs bg-default/85 px-0.5 font-mono text-xs whitespace-nowrap"
                     :style="point.label"
                     :title="point.title"
                 >
@@ -71,7 +71,7 @@
             </template>
         </div>
 
-        <figcaption class="mt-3 text-center text-2xs text-dimmed">{{ xLabel }} →</figcaption>
+        <figcaption class="mt-3 text-center text-xs text-dimmed">{{ xLabel }} →</figcaption>
     </figure>
 </template>
 
@@ -87,9 +87,13 @@ interface Props {
     quadrants: readonly { corner: Corner; label: string; bad?: boolean }[];
     xLabel: string;
     yLabel: string;
+    /** The copy key a point's tooltip is worded with, given its `name` and `detail`. */
+    pointKey: string;
 }
 
-const { chart, kinds, quadrants, xLabel, yLabel } = defineProps<Props>();
+const { chart, kinds, quadrants, xLabel, yLabel, pointKey } = defineProps<Props>();
+
+const { t } = useI18n();
 
 /** Past this share of the width a point's name goes on its left, so it never runs off the plot. */
 const LABEL_FLIP = 60;
@@ -134,7 +138,7 @@ const thresholds = computed(() => ({
 const dots = computed(() =>
     chart.points.map((point) => ({
         name: point.name,
-        title: point.title,
+        title: t(pointKey, { name: point.name, ...point.detail }),
         labelled: point.labelled,
         dot: { left: pct(point.x), bottom: pct(point.y), ...fill(kinds[point.kind]) },
         label:

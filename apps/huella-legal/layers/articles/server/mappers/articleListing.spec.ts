@@ -1,4 +1,4 @@
-import { fakeAuthor, fakeEntry, fakeTerm } from "@monorepo/content/testing";
+import { fakeAuthor, fakeEntry, fakeTerm } from "@joinery/content/testing";
 import { describe, expect, it } from "vitest";
 import type { ArticleSummary } from "../../shared/types/ArticleSummary";
 import type { ListingQuery } from "../../shared/types/ListingQuery";
@@ -32,7 +32,6 @@ describe("toArticleListing", () => {
         expect(toArticleListing([], QUERY)).toMatchObject({ items: [], total: 0, totalPages: 1 });
     });
 
-    // The index is kept newest first, so oldest first is that order reversed
     it("puts the oldest first when asked", () => {
         const articles = index(3);
 

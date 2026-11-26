@@ -1,118 +1,69 @@
 # 🔄 A change, end to end
 
-What happens between picking an issue and it becoming a released version. This guide is the one
-place the whole flow is written down: the root README keeps only the rules
-([Git conventions](../../README.md#-git-conventions), [Versioning](../../README.md#-versioning)),
-and each step below links to the hook, script or workflow that does it.
+From picking an issue to a released version. Each step links to the hook, script or workflow that
+does it.
 
-## 1. Pick the issue, get the branch
+## 1. Pick the issue
 
 ```sh
 pnpm issue:pick
 ```
 
-Lists the open issues on the `Monorepo` board and — once you pick one — creates
-`<type>/<area>/<issue number>-<slug>`, checks it out, and assigns you the issue. `<type>` is one
-of `hotfix`/`fix`/`feature`/`release`, the only prefixes the push gate in step 3 accepts, and
-`<area>` is the folder the issue's `app:`, `package:` or `infra:` label names, or `repo` without
-one. Everything downstream reads the
-issue number back out of this branch name, so a branch made by hand without one of these prefixes,
-an area segment and a following number opts out of steps 2 and 5 silently rather than failing
-loudly.
+Creates and checks out `<type>/<area>/<issue number>-<slug>` and assigns you. Later steps read the
+issue number from that name; a hand-made branch without it silently skips steps 2 and 5.
 
 ## 2. Commit
 
-The [`pre-commit`](../../.husky/pre-commit) hook runs `pnpm docs:map --check`, so a stale generated
-feature map blocks the commit, and
-[`pnpm invariants:check`](../../infrastructure/scripts/src/invariants/README.md), so a lifecycle
-script, a package build step or a broken package contract does too. When the commit stages a
-`.env.example`, it also runs
-[`pnpm env:sync`](../../infrastructure/scripts/src/env-sync/README.md), which never blocks. Last, it
-runs [`pnpm usage:flush`](../../infrastructure/scripts/src/usage/README.md) and stages its output, so
-the commit carries a row for every script run and every lint hit on an agent's edit since the
-previous one, in `data/telemetry/<log>/<branch>.csv`.
+| Hook | Does |
+| --- | --- |
+| [`pre-commit`](../../.husky/pre-commit) | Blocks on a stale `docs/FEATURES.md` or a failing [`invariants:check`](../../infrastructure/scripts/src/invariants/README.md). Runs [`env:sync`](../../infrastructure/scripts/src/env-sync/README.md) if a `.env.example` is staged. Stages [`usage:flush`](../../infrastructure/scripts/src/usage/README.md)'s telemetry |
+| [`commit-msg`](../../.husky/commit-msg) | Adds the issue number (`feat: add thing` → `feat: [#50] add thing`), then runs commitlint |
 
-The [`commit-msg`](../../.husky/commit-msg) hook runs before `commitlint` sees your message. It
-reads the issue number out of the current branch name and rewrites the subject to carry it —
-`feat: add thing` on `feature/website/50-slug` becomes `feat: [#50] add thing` — then hands the
-result to `commitlint`. Amending the same commit on the same branch is a no-op rewrite, not a second
-tag stacking on the first, and a branch with no number leaves the message alone.
-
-`commitlint` applies `@commitlint/config-conventional` with no overrides. Two of its rules aren't
-obvious from a rejection message: the type is lower-case, and the subject is **not** sentence-case,
-start-case, Pascal-case or upper-case — so `feat: add thing` passes and `feat: Add thing` does not.
+Commitlint is `@commitlint/config-conventional`: lower-case type, and a subject that isn't
+capitalised. `feat: add thing` passes; `feat: Add thing` doesn't.
 
 ## 3. Push
 
-[`pre-push`](../../.husky/pre-push) runs, in order:
+[`pre-push`](../../.husky/pre-push), in order:
 
-1. **Branch name** must match `^(hotfix|fix|feature|release)/[^/]+/[0-9]+-.+`, or the push is
-   rejected outright. This is also what makes `master` unpushable.
-2. **TODO/FIXME scan** over the diff of the commits being pushed — the only range-based step. A new
-   marker blocks the push and points at `pnpm issue:add` to file it instead. A branch's first push
-   diffs against the empty tree, so there every marker in the tree counts as new.
-3. **`pnpm audit`**, over the whole workspace, skipped when the push only deletes a branch. It never
-   fails the push.
-4. **Lint, test, typecheck**, each against affected projects in the working tree — any failure
-   blocks the push. Uncommitted and staged changes are checked too, so a dirty tree can pass or fail
-   differently from the commits actually being pushed.
+1. Branch name must match `^(hotfix|fix|feature|release)/[^/]+/[0-9]+-.+`.
+2. No new `TODO`/`FIXME` in the pushed commits — file it with `pnpm issue:add` instead.
+3. `pnpm audit`, warning only.
+4. Lint, test and typecheck on affected projects — **in the working tree**, so uncommitted changes
+   count.
+5. `pnpm unused:check` on the whole workspace, since an export goes unused when its last importer
+   changes, not itself.
 
 ## 4. Ship
 
-```sh
-pnpm issue:ship
-```
-
-[`issue:ship`](../../infrastructure/scripts/src/ship/README.md) pushes the current branch (so step 3
-runs), opens or reuses its PR, arms GitHub's auto-merge, then blocks until every check concludes and
-reports whether the PR merged or a check failed. Pushing and opening the PR by hand reaches the same
-place.
+`pnpm issue:ship` ([README](../../infrastructure/scripts/src/ship/README.md)) pushes, opens or reuses
+the PR, arms auto-merge and waits for checks.
 
 ## 5. The PR fills itself in
 
-Opening a PR from a branch that steps 1–3 built triggers
-[`pr-metadata.yml`](../../.github/workflows/pr-metadata.yml): it reads the branch type and issue
-number back out of `head_ref`, reads that issue's title, assignees and project via `gh`, and copies
-assignees and project onto the PR as-is while tagging the title with the branch type and issue
-number (`feature: [48] <issue title>`) — so the PR never ships with GitHub's bare "same as branch
-name" defaults. It needs the `PROJECTS_TOKEN` secret, and forks never get it — the workflow no-ops
-on a fork's PR. [`repo-secrets.md`](./repo-secrets.md) covers provisioning it.
-
-[`pr-labeler.yml`](../../.github/workflows/pr-labeler.yml) adds architectural path labels, and
-[`docs-review.yml`](../../.github/workflows/docs-review.yml) posts an advisory documentation-drift
-review when the PR plausibly changes a documented public surface. Neither is a required check.
+- [`pr-metadata.yml`](../../.github/workflows/pr-metadata.yml) copies the issue's title, assignees and
+  project onto the PR. Needs `PROJECTS_TOKEN`; no-ops on forks.
+- [`pr-labeler.yml`](../../.github/workflows/pr-labeler.yml) adds path labels, and
+  [`pr-docs-review.yml`](../../.github/workflows/pr-docs-review.yml) posts an advisory docs review.
 
 ## 6. CI
 
-Every PR, and every push to `master`, runs [`ci.yml`](../../.github/workflows/ci.yml):
+[`ci.yml`](../../.github/workflows/ci.yml) on every PR and push to `master`:
 
-| Step | Runs on | Pre-push ran it? |
+| Step | Scope | Already run locally? |
 | --- | --- | --- |
-| `pnpm docs:map --check` | The whole workspace | No — pre-commit did |
-| `pnpm invariants:check`, with `--base` on a PR | The whole workspace | No — pre-commit did, without the version check |
-| `lint`, `typecheck`, `test` | Affected projects | Yes |
-| `build` | Affected projects | No |
-| `actions/dependency-review-action` | The PR's own diff, `warn-only` | No — the local stand-in is `pnpm audit` |
+| `docs:map --check`, `invariants:check` | Whole workspace | Yes, pre-commit |
+| `unused:check` | Whole workspace | Yes, pre-push |
+| `lint`, `typecheck`, `test:coverage`, `build` | Affected | Lint, typecheck and test (without coverage) at pre-push |
+| `test:e2e` | Affected, in parallel with `checks` and not required | No |
+| Dependency review | The PR's diff | `pnpm audit`, roughly |
 
-`build` is the asymmetry worth knowing before trusting a green push: `apps/huella-legal` typechecks
-as part of its build, which is where a local pass and a red CI run most often diverge.
+So coverage thresholds and builds fail only in CI — and huella-legal typechecks during its build.
 
-The `master` ruleset requires a PR but no approving review. Its required checks are `checks`, `e2e`
-and `dependency-review` from CI, plus `huella-legal` from Netlify deployment, which builds the PR's
-preview, and SonarCloud code scanning gates on top. So an auto-merge armed by `pnpm issue:ship` lands the moment those pass.
+The `master` ruleset requires a PR with no review. Required checks: `checks` and
+`dependency-review` from CI, `huella-legal` from the Netlify workflow, plus SonarCloud.
 
-## 7. Merge, then release — separately
+## 7. Release
 
-Merging to `master` is not a release. Versions and changelogs are cut only by running the
-**Release** workflow (`workflow_dispatch`) by hand, which computes each `packages/*` project's
-version from the Conventional Commit messages that touched it since its last tag — never from a
-number anyone typed. The [root README](../../README.md#-versioning) has the bump rules, and
-[`docs/concepts/versioning.md`](../concepts/versioning.md) covers why the chain is built the way it
-is; this guide stops at "it's a separate, manual step."
-
-## 🧭 Deliberately deferred
-
-| Later need | What changes |
-| --- | --- |
-| Release triggered automatically on merge | Would remove the manual `workflow_dispatch` step here — not the current design, and changing it is a decision for [`docs/decisions/`](../decisions/README.md), not a silent edit to this file |
-| Pre-push checking exactly the pushed commits | Lint, test and typecheck would have to run in a temporary checkout of `$LOCAL_SHA`. Worth it only if a dirty tree passing the hook starts letting red commits through |
+Merging isn't releasing. Run the **Release** workflow by hand; see
+[versioning](../concepts/versioning.md).

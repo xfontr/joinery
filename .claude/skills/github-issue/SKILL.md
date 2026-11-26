@@ -37,7 +37,7 @@ Every issue also gets one **area label**, which says which folder the work lives
 (CI, docs, conventions). The kind label from step 1 sits next to it. Deployment and pipeline work
 for an app takes that app's label, not `repo`. Ask if the folder isn't obvious from the request.
 
-There is one board, `Monorepo`, and every issue goes on it: pass it through to `gh issue create`
+There is one board, `Joinery`, and every issue goes on it: pass it through to `gh issue create`
 (step 4) so the issue actually lands there instead of just existing in the repo. A finite effort,
 such as a launch, is a milestone, not a board.
 
@@ -95,7 +95,7 @@ Show the drafted title, body, label and project to the user before running this 
 is outward-facing (it notifies watchers) even though it's easy to edit or close after the fact:
 
 ```sh
-gh issue create --title "<title>" --body "<body>" --label "<kind>" --label "<area>" --project "Monorepo"
+gh issue create --title "<title>" --body "<body>" --label "<kind>" --label "<area>" --project "Joinery"
 ```
 
 Drop `--project` only if the user says so.

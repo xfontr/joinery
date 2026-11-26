@@ -56,7 +56,6 @@ describe("article view", () => {
         expect(wrapper.find('a[href="/el-dolo/"]').exists()).toBe(true);
     });
 
-    // The band is named and linked after the category, so it has nothing to stand on without one
     it("leaves out the related band for an uncategorised article", async () => {
         nuxt.article = ref({ ...ARTICLE, category: undefined });
 

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 
 const nitro = vi.hoisted(() => ({ fetch: vi.fn(), ip: vi.fn(), header: vi.fn() }));
 
@@ -9,9 +10,7 @@ vi.stubGlobal("useRuntimeConfig", () => ({
 vi.stubGlobal("$fetch", nitro.fetch);
 vi.stubGlobal("getRequestIP", nitro.ip);
 vi.stubGlobal("getRequestHeader", nitro.header);
-vi.stubGlobal("createError", (input: Record<string, unknown>) =>
-    Object.assign(new Error("http"), input),
-);
+stubNitro();
 
 const { createComment } = await import("./wordpress");
 

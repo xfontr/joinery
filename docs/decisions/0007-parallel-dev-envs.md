@@ -11,7 +11,7 @@ decision: accepted
 Running multiple git worktrees at once (multiple branches, or multiple agents) means running this
 repo's dev servers side by side. Four projects can be run locally: `developer-portal` (Nuxt dev),
 `huella-legal` (Nuxt dev, plus `preview` after a build), `translations` (`pnpm dev`/`serve`, plus
-`docker:up`), and `@monorepo/ui`'s Storybook — up to 7 ports per worktree, one of them
+`docker:up`), and `@joinery/ui`'s Storybook — up to 7 ports per worktree, one of them
 (`translations`) also reachable by `huella-legal` over HTTP rather than run standalone. None of the
 Nuxt or Storybook ports are configurable today, so running the same project from two worktrees
 collides on whichever default port it picks. The question: is a one-line-per-app `PORT` fallback

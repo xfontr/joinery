@@ -1,309 +1,111 @@
-# 📦 @monorepo/configs
+# 📦 @joinery/configs
 
-Shared ESLint, Vitest, Playwright and TypeScript configuration for the workspace. It centralizes rules and
-presets so projects stay consistent without copying configuration.
+Shared ESLint, Vitest, Playwright and TypeScript presets. Every project's config file is a thin
+wrapper over one of these, so a change here lands everywhere at once.
 
-The ESLint and Vitest halves reach every project, this one included. One project extends no
-tsconfig preset: `apps/huella-legal` only references the four `.nuxt/tsconfig.*.json` Nuxt
-generates. That is the framework's own layout rather than drift — but worth knowing, because a
-compiler option added here does not reach it.
+Raw TypeScript, tagged `type:config`: it depends on nothing in the workspace. `apps/huella-legal`
+extends no tsconfig preset (it references Nuxt's generated ones), so a compiler option added here
+doesn't reach it.
 
-Shipped as raw TypeScript, and tagged `type:config`: it depends on nothing in the workspace, and
-everything is allowed to depend on it.
+## Layout
 
-## 🚀 Usage
+One folder per tool under `src/`, each sorted the same way:
 
-**ESLint** — `eslint.config.ts`:
+| Where | What it is | Who imports it |
+| --- | --- | --- |
+| Tool folder root | A preset | A project's config file |
+| `setup/` | Wiring the preset hooks in itself | Nobody directly |
+| `utils/` | A test helper | Specs, as `@joinery/configs/<tool>/utils/<name>` |
 
-```ts
-import { eslint } from "@monorepo/configs";
+ESLint has `lib/` (one file per concern, mapped in [`lib/README.md`](./src/eslint/lib/README.md))
+and `rules/` (in-house `joinery/*` rules, each with a `RuleTester` spec).
 
-export default eslint.createNodeConfig();  // or createVueConfig() / createNuxtConfig()
-```
-
-**Vitest** — `vitest.config.ts`:
-
-```ts
-import { vitest } from "@monorepo/configs";
-
-export default vitest.createNodeConfig();  // or createVueConfig(viteConfig)
-```
-
-`createVueConfig` takes the project's own Vite config and merges into it, so the component
-compilation your build already does is the same compilation the tests get. It also swaps in
-happy-dom. Both presets report coverage in `text`, `html`, `clover`, `json`, `json-summary` and
-`lcov`, and each format has a named consumer: the terminal, a human, external tooling, the merge in
-[`@monorepo/scripts`](../../infrastructure/scripts/src/coverage-report/README.md) — which reads
-`coverage-final.json` — and [`@monorepo/developer-portal`](../../apps/developer-portal/README.md), which reads
-`coverage-summary.json` and nothing else.
-
-Coverage is collected on `test:coverage`, a separate script from `test`, so the pre-push hook and CI's
-default run stay on the fast, uninstrumented path. A consuming project needs `@vitest/coverage-v8`
-in its own `devDependencies` (`catalog:`) — the provider is a peer of `vitest`, not a transitive
-dependency of this package. Both presets also declare an explicit `include`: v8 otherwise only
-instruments files a test actually imported, so an untested file would vanish from the report instead
-of counting as 0%.
-
-Both presets also carry one `globalSetup`,
-[`prepareNuxt.mjs`](./src/vitest/setup/prepareNuxt.mjs): in a project with a `nuxt.config.ts` and no
-`.nuxt`, it runs `nuxi prepare` before anything is transformed, because a Nuxt app's `tsconfig.json` is
-`files: []` plus references into that directory and every file fails to load while it's missing. It
-returns immediately everywhere else, so no project has to opt in or out. It is the one `.mjs` file
-here, and has to be: a `.ts` setup file is transformed by the pipeline it exists to repair.
-
-Every preset also carries one setup file, [`consoleGuard.ts`](./src/vitest/setup/consoleGuard.ts): **any
-console output fails the test that produced it**, or the whole file when it happened while the file
-was collected. CI never prints a passing task's output, so a warning that doesn't fail a test is a
-warning nobody reads. A test that expects output stubs it with
-`vi.spyOn(console, "warn").mockImplementation(() => {})` and asserts on the spy. The guard restores
-every spy after each test, so a stub never outlives it. Vue's `<Suspense>` notice is the one
-exemption. [`0032`](../../docs/decisions/0032-console-output-policy.md) has the policy.
-
-**Vitest for a Nuxt app** — `vitest.config.ts`:
+## Usage
 
 ```ts
-export default vitest.createNuxtConfig({ root: import.meta.dirname, thresholds: { lines: 90 } });
+import { eslint, vitest } from "@joinery/configs";
+
+export default eslint.createNodeConfig(); // or createVueConfig() / createNuxtConfig()
+export default vitest.createNodeConfig(); // or createVueConfig(viteConfig) / createNuxtConfig({ root })
 ```
-
-Three projects: `node` for `server/`, `shared/`, `modules/` and `tools/`, and `nuxt` and
-`nuxt-isolated` for `app/`, booted through `@nuxt/test-utils` on happy-dom. All three also cover the
-same directories inside each `layers/*`, which Nuxt auto-registers, and the layers' sources count
-towards coverage. The options are only what differs per app:
-
-| Option | What it does |
-| --- | --- |
-| `root` | The app root, `import.meta.dirname` |
-| `nodeSpecs` | Specs that need no Nuxt runtime but sit outside the `node` globs, such as one under `app/` or at the app root; they move to the `node` project |
-| `setupFiles` | Setup files for the two Nuxt projects only, after the console guard. They run after the Nuxt entry registers its boot but before it runs |
-| `coverageExclude` | Paths kept out of the denominator |
-| `thresholds` | Vitest's coverage thresholds. They only bite on a `--coverage` run |
-
-- **The `node` project stubs the Nitro globals no spec controls**, today only `defineRouteMeta`, in
-  [`stubs.ts`](./src/vitest/setup/stubs.ts). A spec still stubs the ones whose behaviour it asserts
-  on, such as `readBody`.
-- **`nuxt` runs its specs in one shared environment (`isolate: false`), and `nuxt-isolated` gives
-  each its own.** Sharing one runs huella-legal's 78 eligible files in about 7s, and took its Nuxt
-  specs from 84s to 31s. A spec that calls `vi.mock`, `mockNuxtImport` or `mockComponent` goes to
-  `nuxt-isolated`, because a module mock outlives its file in a shared environment. The preset sorts specs by reading them, so there is no list to keep.
-- **Anything else a spec changes globally, it puts back in `afterEach`.** In the shared environment
-  the next file inherits fake timers, stubbed globals or a DOM the previous one left behind, and
-  breaks without naming the cause. Fake timers left on stalled every `router.replace` in the next
-  file for five seconds. [`autoUnmount.ts`](./src/vitest/setup/autoUnmount.ts) unmounts every
-  wrapper after each test, since components left mounted re-render on every later reactive change,
-  such as huella-legal's per-test i18n reset. So a spec that empties `document.body` by hand breaks
-  the unmount of anything it teleported there.
-- **Coverage is set on the root config**, because Vitest ignores a coverage block on a project.
-- **`@nuxt/test-utils` is resolved from the app, not from here**, so the config half runs the same
-  copy the app's specs import from `@nuxt/test-utils/runtime`. The app installs it along with
-  `@vue/test-utils` and `happy-dom`. `@vue/test-utils` is also an optional peer here, for
-  `autoUnmount.ts`, and pnpm links both to one copy, which the flag that setup file sets depends on.
-- **The test boot builds into `node_modules/.cache/nuxt-vitest`, never the app's `.nuxt`.** Nx
-  loads every `vitest.config.ts` to build its project graph, so this boot runs before any task,
-  including `build`. Booting into `.nuxt` left it half-written, with no `tsconfig.*.json`, and
-  `nuxt build`'s typecheck then failed on the app's `tsconfig.json` references (`TS5083`).
-- **Nuxt boots with `JITI_MODULE_CACHE=0`.** With jiti's module cache on, a TypeScript Nuxt module
-  that installs `@nuxtjs/i18n` (as `@monorepo/i18n/nuxt` does) throws Node's
-  `ERR_INTERNAL_ASSERTION` as an unhandled rejection. `nuxi` logs it and carries on, but Vitest and
-  Nx's plugin worker both die, and the worker loads every `vitest.config.ts` to infer targets, so
-  one broken config stops every `nx` command. The variable is restored once Nuxt has booted.
-
-**Playwright** — `playwright.config.ts`:
-
-```ts
-import { playwright } from "@monorepo/configs";
-
-export default playwright.createConfig({
-    port: 4310,
-    command: "node --import ./e2e/server.ts .output/server/index.mjs",
-    env: { … },
-});
-```
-
-Chromium at 390, 768 and 1280 px, one project per width. A test tagged `@desktop` runs only from
-`desktopFrom` (1024 px, Tailwind's `lg`) and one tagged `@mobile` only below it, so a test for a
-layout one width range doesn't have is never collected there rather than skipped at runtime. Specs
-live in `e2e/` and output in `.playwright/`. There are no screenshot baselines, for the reason
-[Huella Legal's README](../../apps/huella-legal/README.md#-e2e) gives. `@playwright/test` is a
-`catalog:` entry, pinned to the version in CI's image tag, so the app and this package resolve the
-same copy; a second one fails every spec with "Requiring @playwright/test second time".
-
-The preset also owns the console half of [`0032`](../../docs/decisions/0032-console-output-policy.md):
-
-| Piece | The app's side |
-| --- | --- |
-| [`test.ts`](./src/playwright/test.ts) | Specs import `test`, `expect` and `NOT_FOUND_DOCUMENT` from `@monorepo/configs/playwright/test`. A test fails on any browser console message or page error its `allowedConsole` patterns don't match. `page.goto` and `page.reload` return only once Nuxt has hydrated the page, so a spec never clicks or types into server-rendered markup nothing listens to yet |
-| [`server.ts`](./src/playwright/server.ts) | The `node --import` preload calls `recordServerConsole()` from `@monorepo/configs/playwright/server`, a subpath so the Nitro process never loads the ESLint and Vitest halves of the barrel |
-| [`teardown.ts`](./src/playwright/teardown.ts) | Nothing: `createConfig` sets it as `globalTeardown` and passes the log path in `E2E_SERVER_CONSOLE`. It fails the run on anything the server logged, and on a missing log, which means the preload never called the recorder |
-| [`e2eFixture.ts`](./src/eslint/lib/e2eFixture.ts) | Nothing: both ESLint presets forbid importing `test` from `@playwright/test` in `e2e/**/*.spec.ts` |
-
-**TypeScript** — `tsconfig.json`:
 
 ```json
-{
-    "extends": "@monorepo/configs/tsconfig/node.json",
-    "include": ["src", "eslint.config.ts"]
-}
+{ "extends": "@joinery/configs/tsconfig/node.json" }
 ```
 
-`base.json` is strict, `ES2022` with ESNext modules, bundler-resolved and `noEmit` — no project here
-emits its own JS. It adds `noUncheckedIndexedAccess` on top of `strict`, which does not imply it:
-`arr[0]` and `match[1]` are typed `T | undefined`, so a guard on them reads as necessary rather than
-as dead code — see [`0013`](../../docs/decisions/0013-linter-coverage.md) for why the two travel
-together. `node.json` adds `types: ["node"]` on top, and is what every consumer actually
-extends; no consumer extends `base.json` directly, since the config file in the `include` needs
-Node types even in a package that otherwise doesn't.
+`tsconfig/base.json` is strict plus `noUncheckedIndexedAccess`; every consumer extends `node.json`.
 
-## 🧰 What the ESLint factories bundle
+## Vitest
 
-- `@eslint/js` + `typescript-eslint` — type-checked for node and vue. Nuxt gets it for `.ts` only,
-  minus specs, stories and `.storybook/`: those import `.vue` files, which resolve to error types
-  outside `vue-tsc`, and a Nuxt `.vue` file gets no type-aware pass at all. Before that split, a
-  spread `AsyncData` and a floating promise reached `master` in the only user-facing code here
-- `eslint-plugin-vue` (strongly-recommended) for the Vue configs
-- Prettier as the `format/prettier` rule from `eslint-plugin-format`, at 100 columns, 4-space
-  indent, semicolons, double quotes, trailing commas and parenthesised arrow params. An object,
-  array, call or expression that Prettier would wrap fails lint until `--fix` wraps it; a line it
-  cannot break — a long string, comment, identifier or template literal — still passes. Prettier
-  also owns `.vue` templates, so every `vue/*` layout rule is off rather than fighting it into a
-  `--fix` loop. A project's root `*.config.ts` is formatted and linted like any file, with only
-  the type-aware rules off, since it sits outside the project's tsconfig
-- `eslint-plugin-prefer-arrow-functions` plus core `prefer-arrow-callback`, from
-  [`lib/arrowFunctions.ts`](./src/eslint/lib/arrowFunctions.ts) — every `function` declaration,
-  expression and object method becomes an arrow under `--fix`. The rule leaves a function alone
-  when converting it would change behaviour: one that reads `this`, `arguments` or `new.target`, a
-  generator, a TypeScript overload or assertion signature, or one the file uses at module init
-  before its declaration, where a `const` would hit the temporal dead zone
-- core `prefer-destructuring`, from [`lib/destructuring.ts`](./src/eslint/lib/destructuring.ts) —
-  `const name = user.name` becomes `const { name } = user`. Only declarations are checked: arrays
-  (`const first = list[0]`) and plain assignments (`this.x = opts.x`) are left alone, since
-  destructuring either one reads worse. A rename (`const n = user.name`) also passes
-- `@typescript-eslint/no-use-before-define` under `**/*.ts` and `**/*.vue`, from
-  [`lib/useBeforeDefine.ts`](./src/eslint/lib/useBeforeDefine.ts) — a module reads bottom-up,
-  every helper above the code that calls it. That is the one order a rule can check, and with every
-  function a `const` arrow it is also the order that can never hit the temporal dead zone at module
-  init. Types are exempt, so an `interface` may sit below its first use. The rule is scoped per
-  glob because the node factory registers `typescript-eslint` for `.ts` only, and an unscoped copy
-  crashes on JSON and `.mjs`
-- `eslint-plugin-jsonc` key sorting for `**/projects/*/*.json`, so the TMS locale files in
-  [`infrastructure/translations`](../../infrastructure/translations) stay diffable. The glob matches
-  that layout — `projects/<project>/<locale>.json` — not a `locales/` directory
-- `@vitest/eslint-plugin` for `**/*.spec.ts`
-- `no-console` everywhere but specs, from [`lib/console.ts`](./src/eslint/lib/console.ts). The goal
-  is that no log lands by mistake, so a deliberate one opts out on its own line,
-  `// eslint-disable-next-line no-console -- <reason>`, and never per file or folder: that would wave
-  the next accidental log through too. The rule flags every `console.x` reference, not only calls
-- core `no-eval`, `no-implied-eval`, `no-new-func`, `no-script-url` and a `no-restricted-properties`
-  ban on `innerHTML`, `outerHTML`, `insertAdjacentHTML` and `document.write`, everywhere but specs,
-  plus `vue/no-v-html` for the Vue configs, from [`lib/unsafeCode.ts`](./src/eslint/lib/unsafeCode.ts).
-  Raw HTML reaches the page only through a `v-html` that opts out on its own lines with the reason
-  its input is safe
-- `eslint-plugin-regexp` (`flat/recommended`) plus `regexp/no-super-linear-move`, from
-  [`lib/regexp.ts`](./src/eslint/lib/regexp.ts) — ESLint core does not read inside a regex literal,
-  and this repo parses markdown, commit subjects and command output with them. It catches
-  super-linear backtracking, dead alternatives and unread capturing groups;
-  [`0013`](../../docs/decisions/0013-linter-coverage.md) has the sweep. The preset leaves the
-  quantifier-before-anchor shape (`\s*x$`, `-+$`) off, and all four quadratic regexes SonarCloud
-  reported in #232 had it
-- `eslint-plugin-sonarjs` (`recommended`) everywhere but specs, from
-  [`lib/sonarjs.ts`](./src/eslint/lib/sonarjs.ts) — the same JS/TS rules SonarCloud analyses, so a
-  finding fails `pnpm check` and pre-push instead of the quality gate on the PR. Specs are exempt
-  because their fixtures — temp dirs, fake passwords, skipped tests — trip it by design
-- `no-await-in-loop` and `no-nested-ternary` everywhere but specs, from
-  [`lib/awaitInLoop.ts`](./src/eslint/lib/awaitInLoop.ts) and
-  [`lib/ternaries.ts`](./src/eslint/lib/ternaries.ts). Independent awaits go through `Promise.all`; a
-  loop that must stay sequential — paced writes, one prompt after another — says why in a block
-  disable around it. Specs are exempt because their steps are sequential by design
-- `@typescript-eslint/require-array-sort-compare` with `ignoreStringArrays: false`, in every `.ts`
-  that gets type information, from [`lib/sortCompare.ts`](./src/eslint/lib/sortCompare.ts). A bare
-  `sort()` orders strings by UTF-16 code unit, so `"Área"` lands after `"Zona"`; name the comparison,
-  usually `localeCompare`
-- `@nx/enforce-module-boundaries` — the layering rules. [`lib/boundaries.ts`](./src/eslint/lib/boundaries.ts)
-  is the enforced copy; the tag table in the
-  [root README](../../README.md#-architecture--boundaries) is rendered from it by `pnpm docs:map`
-- `no-restricted-imports` under `**/src/core/**`, from
-  [`lib/coreIsolation.ts`](./src/eslint/lib/coreIsolation.ts) — the framework-agnostic half of a
-  package may not import `@nuxt/*`, `@nuxtjs/*`, `nitropack`, `h3` or `#nuxt/*`. That invariant is
-  stated in the `content` and `i18n` CLAUDE.md files, and the tag rule above cannot reach it: it
-  reasons about project-to-project edges, never subpaths inside one project
-- `no-restricted-imports` under Nuxt `app/` and `server/`, from
-  [`lib/layerIsolation.ts`](./src/eslint/lib/layerIsolation.ts) — neither layer may import the
-  Node-only `tools/` tree, keeping collection commands out of browser and server bundles
-- `monorepo/lookup-table-shape` under `**/*.ts` and `**/*.vue`, from
-  [`lib/constTables.ts`](./src/eslint/lib/constTables.ts) — a module-scope lookup table keyed by a
-  closed union is `UPPER_SNAKE = { … } as const satisfies Record<K, V>`, never annotated: the
-  annotation widens the values and `Partial` makes every lookup `| undefined`. `Record<string, …>`
-  and `Record<number, …>` are left alone, since those tables are indexed by keys nobody can list
-- `monorepo/props-shape` under `**/*.vue`, from [`lib/propsInterface.ts`](./src/eslint/lib/propsInterface.ts) — Vue
-  configs only. `defineProps` takes a type reference named `Props`, and `Props` is declared with
-  `interface`. No plugin rule covers this; `vue/define-props-declaration` only picks type-based over
-  runtime, and an inline literal satisfies it. Runtime `defineProps({…})` is left alone. An optional
-  prop never defaults to `undefined`, in `withDefaults` or a destructure, because that is already its
-  value when omitted; `vue/require-default-prop` asked for exactly that, so it is off
-- `monorepo/template-global-i18n` under `**/*.vue`, from [`lib/templateI18n.ts`](./src/eslint/lib/templateI18n.ts) —
-  Vue configs only. A `<template>` translates with the global `$t` (and `$te`, `$tm`, `$rt`, `$d`,
-  `$n`), never the `t` from `useI18n()`, so a template-only component needs no `useI18n()` call.
-  `<script>` is untouched, since `useHead` and friends still need `t`. `$t` reads global messages
-  only, so a component with `useScope: "local"` needs a disable comment
-- `monorepo/no-template-call` under `**/*.vue`, from [`lib/templateCalls.ts`](./src/eslint/lib/templateCalls.ts) —
-  Vue configs only. A template call that reads nothing but component state belongs in a `computed`,
-  which caches it instead of re-running it on every render. Calls on a `$` global, inside a `v-on`
-  handler, or reading a `v-for` or slot variable are allowed, since a `computed` cannot take the row
-  as an argument. Only the outermost offending call in an expression is reported
-- `monorepo/require-route-meta`, from [`lib/routeMeta.ts`](./src/eslint/lib/routeMeta.ts) — in no
-  factory; a project opts in with `[...eslint.createNuxtConfig(), eslint.routeMeta]`. Every file
-  under `server/api/` or `server/routes/` calls `defineRouteMeta` at top level with an `openAPI`
-  object literal holding `tags` and `summary`, since without one the route still appears in
-  Nitro's OpenAPI document, untagged and undescribed. The call sits after the `export default`
-  handler, so a route reads handler first. `apps/huella-legal` opts in
-- `no-restricted-imports` under `**/domain/**`, from [`lib/pureDomain.ts`](./src/eslint/lib/pureDomain.ts) —
-  in no factory; a project opts in with `[...eslint.createNodeConfig(), eslint.pureDomain]`. A
-  `domain/` file imports no `fs`, subprocess, `process` or `@clack/prompts`, nothing from
-  `adapters/`, and reads no `process` global, so its specs need no mocks. It sets
-  `no-restricted-imports` with its own options, so it replaces `coreIsolation` on any file both
-  reach; append it only where no `src/core/` holds a `domain/`. `infrastructure/scripts` opts in
-- `monorepo/layer-boundaries`, from [`lib/layerBoundaries.ts`](./src/eslint/lib/layerBoundaries.ts) —
-  in no factory; a Nuxt app split into layers opts in with
-  `eslint.layerBoundaries({ cores: [...], kit: [...] })`. `cores` names the layers every feature may
-  use, and every other folder under `layers/` is a feature, so a new layer is covered without
-  editing a list. `kit` names the paths outside `layers/` that every layer may use, such as
-  `app/utils/`. The kit uses only itself, a core uses only itself and the kit, and a feature also
-  uses the cores, never another feature, so each feature can be deleted alone. Nothing else outside
-  `layers/` is usable from a layer. Written imports are checked, whether relative, `~/` or
-  `#layers/<name>/…`, and so are auto-imports, placed through the maps `nuxi prepare` writes into
-  `.nuxt/`. The one exception is a feature's `app/pages/`, which may render another feature's
-  components, since a page composes a screen. Both apps opt in
-- `monorepo/disable-needs-reason` and `reportUnusedDisableDirectives: "error"`, from
-  [`lib/disableReasons.ts`](./src/eslint/lib/disableReasons.ts) — every `eslint-disable` names the
-  rules it silences and ends in `-- <why>`, a block `eslint-disable` is closed with `eslint-enable`,
-  and a disable that no longer hides anything fails. `<template>` comments are checked too. A
-  blanket `/* eslint-disable */` silences this rule's own report, so review still has to catch one
-- `monorepo/named-default-export`, from [`lib/defaultExports.ts`](./src/eslint/lib/defaultExports.ts) —
-  a default-exported function or class carries a name, so stack traces, profiles and auto-imports
-  show it instead of `default`. A call such as `defineEventHandler(…)` and a config-file object or
-  array literal are left alone
-- `vue/v-bind-style` with `sameNameShorthand: "always"`, in [`vue.ts`](./src/eslint/vue.ts) — a binding whose
-  name and value match is written `:id`, never `:id="id"`. `--fix` rewrites it
-- `vue/prefer-separate-static-class`, in [`vue.ts`](./src/eslint/vue.ts) — a class that never
-  changes goes in the static `class` attribute, never as a string literal inside `:class`.
-  Conditional expressions are left alone, and `--fix` moves the rest
-- `vue/no-setup-props-reactivity-loss`, in [`vue.ts`](./src/eslint/vue.ts) — destructuring
-  `props`, or copying a prop into a variable, at the root of `setup()` or `<script setup>` fails,
-  since the copy stops tracking the prop. Destructuring `defineProps()` itself stays reactive on
-  Vue 3.5+ and passes, as does any read inside a `computed` or other function
-- `vue/block-order`, in [`vue.ts`](./src/eslint/vue.ts) — a `.vue` file is `<template>`, then
-  `<script>`, then `<style>`. `--fix` moves the blocks
-- `vue/define-macros-order`, in [`vue.ts`](./src/eslint/vue.ts) — `<script setup>` reads imports,
-  then types, then `defineProps`, `defineEmits`, `defineModel` and `defineSlots` in that order,
-  then everything else. Types are exempt from the ordering; by convention the helper types come first
-  and `Props` sits last, just above `defineProps`. `--fix` moves the macros up
-- `@typescript-eslint/consistent-type-definitions: interface`, from [`lib/typeDefinitions.ts`](./src/eslint/lib/typeDefinitions.ts) —
-  a plain object shape is an `interface`, never `type X = { … }`. Unions, intersections and mapped types stay
-  `type`, and `--fix` rewrites the rest
+- Coverage runs on `test:coverage`, never `test`. A project needs `@vitest/coverage-v8` in its own
+  `devDependencies`. `COVERAGE_THRESHOLDS=off` disables thresholds (the portal deploy sets it).
+- **Any console output fails the test** ([`consoleGuard.ts`](./src/vitest/setup/consoleGuard.ts),
+  [0032](../../docs/decisions/0032-console-output-policy.md)). Stub it with
+  `vi.spyOn(console, "warn").mockImplementation(() => {})` and assert on the spy.
+- [`prepareNuxt.mjs`](./src/vitest/setup/prepareNuxt.mjs) runs `nuxi prepare` when a Nuxt project
+  has no `.nuxt` yet.
+- This package's own `test:e2e` runs its `browser` Vitest project, the specs that launch
+  Playwright; `test` and `test:coverage` leave them out.
 
-The shared pieces live in [`src/eslint/lib`](./src/eslint/lib), whose `index.ts` lists them as
-`shared`, spread by [`node.ts`](./src/eslint/node.ts) and [`vue.ts`](./src/eslint/vue.ts), and
-`vueOnly`, spread by `vue.ts` alone. If you're adding a rule for everyone, it goes in `lib`; if it's
-for one flavour, it goes in the factory. Every `monorepo/*`
-rule lives in [`src/eslint/rules`](./src/eslint/rules) with a `RuleTester` spec beside it, because a
-second `no-restricted-syntax` config on the same files replaces the first one's selectors instead
-of adding to them. [`lib/README.md`](./src/eslint/lib/README.md) maps each file to its concern.
+### Nuxt apps
+
+`createNuxtConfig({ root, nodeSpecs?, setupFiles?, coverageExclude?, thresholds? })` builds three
+projects, each covering the app root and every `layers/*`:
+
+| Project | Specs | Environment |
+| --- | --- | --- |
+| `node` | `server/`, `shared/`, `modules/`, `tools/`, plus `nodeSpecs` | Node, Nitro globals stubbed by [`stubs.ts`](./src/vitest/setup/stubs.ts) |
+| `nuxt` | `app/` | One shared Nuxt environment, one file at a time |
+| `nuxt-isolated` | `app/` specs that call `vi.mock`, `mockNuxtImport` or `mockComponent` | Isolated, files in parallel. Sorted automatically |
+
+- In the shared `nuxt` project, a spec must restore anything global it changes (fake timers, stubbed
+  globals, the DOM) in `afterEach`, or the next file breaks without naming the cause.
+- Helpers: [`vitest/utils/nuxt`](./src/vitest/utils/nuxt.ts) (`withSetup`, `serveEndpoint`,
+  `slotStub`) and [`vitest/utils/nitro`](./src/vitest/utils/nitro.ts) (`stubNitro()` before the
+  dynamic `import()` of a server file).
+- `@nuxt/test-utils` is resolved from the app, not this package; the app installs it with
+  `@vue/test-utils` and `happy-dom`.
+- The test boot builds into `node_modules/.cache/nuxt-vitest`, never `.nuxt`, and runs with
+  `JITI_MODULE_CACHE=0`. Both prevent failures that take down every `nx` command.
+
+## Playwright
+
+```ts
+export default playwright.createConfig({ port, command, env });
+```
+
+- Chromium at 390, 768 and 1280 px. Tag a test `@desktop` (≥ 1024 px), `@mobile` (below) or
+  `@any-width` (first width only, for `request`/`<head>`-only tests). Tests run fully parallel, on
+  two workers locally and Playwright's default in CI.
+- Specs import `test` from `@joinery/configs/playwright/utils/test`, never `@playwright/test`
+  (lint enforces it). Any browser console output fails the test unless `allowedConsole` matches it;
+  `page.goto` waits for hydration.
+- The server preload calls `recordServerConsole()` from `@joinery/configs/playwright/setup/server`,
+  and teardown fails the run on anything the server logged.
+- Helpers: [`utils/a11y`](./src/playwright/utils/a11y.ts) (`axeViolations`, asserted with `toEqual([])`) and
+  [`utils/i18n`](./src/playwright/utils/i18n.ts) (`createT`, `rawKeysIn`).
+- `@playwright/test` must stay a `catalog:` entry; a second resolved copy fails every spec.
+
+## What the ESLint factories bundle
+
+Every factory includes Prettier as a lint rule (100 columns, 4 spaces, double quotes), type-checked
+`typescript-eslint` (not for Nuxt `.vue` files), `@nx/enforce-module-boundaries`, SonarJS, regexp
+safety, and the house style rules: arrow functions, destructuring, `interface` over `type`,
+helpers declared above use, no nested ternaries, no `await` in loops, sorted-with-comparator arrays,
+no `console`, no raw-HTML sinks, and `eslint-disable` must give a reason. Vue configs add
+`eslint-plugin-vue` and the `joinery/*` template rules. Specs get `@vitest/eslint-plugin` and must
+assert behaviour, not call order or `wrapper.vm`.
+
+[`lib/README.md`](./src/eslint/lib/README.md) has the file for each. Opt-in pieces a project appends
+after its factory:
+
+| Export | Does | Used by |
+| --- | --- | --- |
+| `eslint.layerBoundaries({ cores, kit })` | Enforces Nuxt layer directions, auto-imports included | `huella-legal`, `developer-portal` |
+| `eslint.routeMeta` | Every Nitro route has `defineRouteMeta` with `tags` and `summary` | `huella-legal` |
+| `eslint.i18nKeys(localeGlob)` | Every static `t()` key exists | `huella-legal` |
+| `eslint.tailwind(entryPoint)` | `better-tailwindcss` rules | Every app |
+| `eslint.pureDomain` | No I/O, `process` or `adapters/` in `domain/` | `infrastructure/scripts` |
+
+A rule for everyone goes in `lib/`; a rule for one flavour goes in its factory. The
+`configs-new-rule` skill has the steps.

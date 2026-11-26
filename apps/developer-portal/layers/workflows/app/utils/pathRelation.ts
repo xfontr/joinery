@@ -4,7 +4,7 @@ import type { CapabilityView } from "#layers/workflows/shared/workflows.ts";
 export const pathRelation = (
     shown: CapabilityView[],
     selected: string | null,
-): Record<string, string> => {
+): Record<string, "" | "needed" | "waits"> => {
     if (!selected) return Object.fromEntries(shown.map(({ id }) => [id, ""]));
 
     const byId = new Map(shown.map((capability) => [capability.id, capability]));
@@ -28,9 +28,7 @@ export const pathRelation = (
 
     return {
         ...Object.fromEntries([...walk(selected, (c) => c.needs)].map((id) => [id, "needed"])),
-        ...Object.fromEntries(
-            [...walk(selected, (c) => c.unblocks)].map((id) => [id, "waits on it"]),
-        ),
+        ...Object.fromEntries([...walk(selected, (c) => c.unblocks)].map((id) => [id, "waits"])),
         [selected]: "",
     };
 };

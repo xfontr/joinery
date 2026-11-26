@@ -1,0 +1,341 @@
+{
+    "app": {
+        "skipLink": "Skip to content",
+        "visitor": {
+            "footer": {
+                "copyright": "© 2026 Xifré Font",
+                "noTracking": "Nothing here tracks you.",
+                "line": "Every decision, plan, audit and check, raw.",
+                "title": "Want everything?",
+                "titleMark": "Open the developer view."
+            },
+            "menu": {
+                "close": "Close",
+                "open": "Menu",
+                "title": "Site menu"
+            },
+            "nav": {
+                "about": "About",
+                "method": "Method",
+                "work": "Work",
+                "workflows": "Project maps"
+            },
+            "navLabel": "Main",
+            "wordmark": "xifre.dev"
+        }
+    },
+    "index": {
+        "head": "This is where I build things",
+        "lead": "Websites, mostly. And the tools I made to build them, the plans, and every decision I wasn't sure about, written down. Most companies keep that stuff behind closed doors, but I'm not a company, so it's all here.",
+        "rules": {
+            "agents": {
+                "line": "Each ticket runs the same steps from plan to merge, with three reviews on the way.",
+                "proof": "How a change gets merged"
+            },
+            "decide": {
+                "line": "A call that could go either way gets a short write-up anyone can read.",
+                "proof": "Keeping Huella Legal's old links working"
+            },
+            "label": "How a site gets made here",
+            "look": {
+                "line": "A design starts from a study of other sites, each measured the same way: type, colour, layout.",
+                "proof": "The sites studied",
+                "proofCount": "{count} sites studied"
+            },
+            "plan": {
+                "line": "A project is mapped as tickets, with what each one waits on, before any code.",
+                "proof": "The project map, below"
+            },
+            "prove": {
+                "line": "Tests, accessibility and lint run on every change, and a failure blocks the merge.",
+                "proof": "What gets checked",
+                "proofCount": "{enabled} lint rules, {inHouse} written in-house"
+            }
+        },
+        "title": "This is where",
+        "titleMark": "I build things."
+    },
+    "method": {
+        "agents": {
+            "pipeline": {
+                "build": {
+                    "does": "Writes the change, then runs lint, types and tests.",
+                    "step": "Build"
+                },
+                "pick": {
+                    "does": "Takes the next ticket and reads everything it links to.",
+                    "step": "Pick"
+                },
+                "plan": {
+                    "does": "Lists the files to change, each copied from an existing example.",
+                    "step": "Plan"
+                },
+                "polish": {
+                    "does": "Trims comments and checks the docs still match the code.",
+                    "step": "Polish"
+                },
+                "review": {
+                    "does": "Three agents review architecture, correctness and tests at once.",
+                    "step": "Review"
+                },
+                "ship": {
+                    "does": "Opens the pull request and merges it once CI passes.",
+                    "step": "Ship"
+                }
+            }
+        },
+        "decide": {
+            "decisions": {
+                "board": {
+                    "answer": "On one GitHub board for every project, with a label per area.",
+                    "question": "Where is work tracked?"
+                },
+                "comments": {
+                    "answer": "One fact the code can't show, in one sentence.",
+                    "question": "How much should a code comment say?"
+                },
+                "console": {
+                    "answer": "No. Any console output fails the build, in the source and in tests.",
+                    "question": "Can a stray console message reach production?"
+                },
+                "visitor": {
+                    "answer": "Here, in the visitor view. The developer view is one click away.",
+                    "question": "Where does someone who doesn't code land on this site?"
+                }
+            }
+        },
+        "example": {
+            "line": "A law magazine rebuilt with these five rules."
+        },
+        "head": "Method",
+        "lead": "Every project here follows them. Each one is backed by a check that fails the build, a skill the agents load, or a public record.",
+        "prove": {
+            "checks": {
+                "accessibility": {
+                    "area": "Accessibility",
+                    "claim": "Pages are tested against WCAG AA in a real browser.",
+                    "cta": "The shared test kit"
+                },
+                "design": {
+                    "area": "System design",
+                    "claim": "Strict boundaries between every app and package.",
+                    "cta": "Dependency graph"
+                },
+                "lint": {
+                    "area": "Lint rules",
+                    "claim": "Lint rules, some of them tailored to this repo.",
+                    "claimCount": "+{count} lint rules on, some of them tailored to this repo.",
+                    "cta": "Which rules fire most"
+                },
+                "observability": {
+                    "area": "Observability",
+                    "claim": "The apps report their errors and slow requests.",
+                    "cta": "Observability setup"
+                },
+                "repository": {
+                    "area": "Repository",
+                    "claim": "Repo-wide rules are checked on every commit, push and CI run.",
+                    "cta": "The checks"
+                },
+                "tests": {
+                    "area": "Tests",
+                    "claim": "Tests, from single functions to full pages in a real browser.",
+                    "claimCount": "+{count} test files, from single functions to full pages in a real browser.",
+                    "cta": "Coverage by project"
+                }
+            }
+        },
+        "title": "Five rules,",
+        "titleMark": "all automated"
+    },
+    "rules": {
+        "agents": {
+            "body": "Every change runs the same {steps} steps from plan to merge, and reviews for architecture, correctness and tests must pass before it lands. Any step can stop and ask me.",
+            "more": "How a change gets merged",
+            "title": "Let agents do the legwork."
+        },
+        "decide": {
+            "body": "When a call could go either way, I write a short report: the question, the options, what was picked and why. The next person, or agent, reads it instead of asking again.",
+            "more": "All decisions",
+            "title": "Write decisions down."
+        },
+        "look": {
+            "body": "I start each design from a study of other sites, some an awards jury picked and some that just caught my eye, and measure each one the same way: type, colour, layout.",
+            "more": "All studies",
+            "title": "Look before drawing."
+        },
+        "plan": {
+            "body": "Each project starts from a template with every task the job needs, what each one waits on, and what went wrong last time.",
+            "more": "Project maps",
+            "title": "Plan the whole job."
+        },
+        "prove": {
+            "body": "These run on every push and again in CI.",
+            "title": "Check every change."
+        }
+    },
+    "about": {
+        "github": "GitHub",
+        "head": "About",
+        "intro": {
+            "start": "The",
+            "middle": "came about after I read a",
+            "end": "about Portal, their developer platform built on Backstage. My first thought was: hold on, with a monorepo this big, I can actually build one for my own stuff. So I did."
+        },
+        "lead": "I'm Xifré Font, a senior frontend developer in Barcelona, and a lawyer in a previous life.",
+        "linkedin": "LinkedIn",
+        "post": "a Spotify post",
+        "repo": "This repo",
+        "story": {
+            "label": "How we got here",
+            "items": {
+                "playground": {
+                    "term": "A playground",
+                    "detail": "I wanted to see what a big monorepo really looks like: **Nx boundaries**, domain-driven design, **hexagonal adapters** for outside vendors like WordPress and the translation tool, and **a lint rule for every convention**, so nothing depends on someone remembering it."
+                },
+                "tooling": {
+                    "term": "The tooling",
+                    "detail": "Then came the scripts, to speed up the work and the back-and-forth with AI. And the **decision records (ADRs)**, which I'm a bit proud of: every call has its reason written down, so nothing here is truly arbitrary. The tooling also **reports its own usage**. This way, an unused script gets cut instead of being mindlessly maintained."
+                },
+                "workflows": {
+                    "term": "Workflows",
+                    "detail": "Building Huella Legal end to end taught me which steps come back on every project. I turned that into **workflow templates**, so the next rebuild, or the next site from scratch, starts from what already worked."
+                },
+                "apps": {
+                    "term": "Real apps",
+                    "detail": "At some point it stopped being just a playground: it was good enough to grow **real apps** on. First **Huella Legal**, the law magazine I founded while studying, then Marina Roustan, and there are more to come."
+                }
+            }
+        },
+        "title": "Ok cool, but",
+        "titleMark": "who is this?",
+        "developerView": "developer view"
+    },
+    "work": {
+        "cta": "Read the case study",
+        "head": "Work",
+        "inProgress": "In progress",
+        "lead": "Who each site is for, what changed, and the decisions behind it.",
+        "title": "Case",
+        "titleMark": "studies"
+    },
+    "workApp": {
+        "decisions": {
+            "title": "Key",
+            "titleMark": "decisions"
+        },
+        "missing": {
+            "back": "Back to the front page",
+            "title": "No such work"
+        },
+        "roadmap": {
+            "title": "The",
+            "titleMark": "roadmap"
+        }
+    },
+    "workList": {
+        "caseStudy": "Read the case study",
+        "title": "Sites and",
+        "titleMark": "tools"
+    },
+    "agenticWorkflows": {
+        "head": "Project maps",
+        "lead": "I plan each project as a map of tasks and build it ticket by ticket. The maps below are the real ones.",
+        "projects": {
+            "done": "{percent}% done",
+            "mapLabel": "{title} as a map of blocks",
+            "open": "Open the live map",
+            "title": "Current",
+            "titleMark": "projects"
+        },
+        "steps": {
+            "agents": {
+                "body": "Open tickets are built in the order that unblocks the most work.",
+                "title": "Build what's ready"
+            },
+            "file": {
+                "body": "The whole map is agreed before the first ticket goes out.",
+                "title": "Plan, then file"
+            },
+            "lessons": {
+                "body": "When something goes wrong, I log it in a diary, then use the diary to improve the workflows.",
+                "title": "Lessons go back in"
+            },
+            "template": {
+                "body": "A ready-made task list for the job: website rebuild, new website, or custom project.",
+                "title": "Start from a template"
+            },
+            "unblocked": {
+                "body": "A task starts once everything it depends on is done.",
+                "title": "Start what's unblocked"
+            }
+        },
+        "templates": {
+            "all": "Every template, in the developer view",
+            "items": {
+                "custom": "Anything the other two don't fit, like a developer tool or a package. It starts from the few blocks every project needs, and the rest is drafted for that project.",
+                "new-website": "A new site with nothing to migrate. The owner signs off four times: scope, brand, design and go-live.",
+                "website-rebuild": "An existing site, usually WordPress, rebuilt on the same brand. It comes from the Huella Legal rebuild, and the owner signs off three times: scope, design and go-live."
+            },
+            "line": "Every map above started as one of these. Each project keeps the blocks it needs and switches the rest off.",
+            "title": "Where a map",
+            "titleMark": "starts"
+        },
+        "title": "Project",
+        "titleMark": "maps"
+    },
+    "workflowTeaser": {
+        "cta": "See the live maps",
+        "glyphLabel": "Huella Legal's project map",
+        "kicker": "Planning",
+        "line": "This one is Huella Legal's. Each block lists what it waits on, and work starts on whatever is free.",
+        "title": "Project",
+        "titleMark": "maps"
+    },
+    "workflowProjectMap": {
+        "legend": {
+            "done": "done",
+            "moving": "moving now",
+            "waiting": "waiting on another block"
+        },
+        "owner": "the owner's call"
+    },
+    "checksPreview": {
+        "accessibility": "WCAG AA",
+        "lint": {
+            "count": "{count} rules",
+            "none": "Every change"
+        },
+        "tests": {
+            "count": "{count} files",
+            "none": "Every change"
+        }
+    },
+    "decisionsPreview": {
+        "number": "Decision {number}"
+    },
+    "decisions": {
+        "status": {
+            "implemented": "Implemented",
+            "to-implement": "To implement",
+            "wont-implement": "Won't implement"
+        }
+    },
+    "error": {
+        "head": "Error {status}",
+        "kicker": "Error {status}",
+        "notFound": {
+            "title": "There's no page at this address",
+            "lead": "The link may be mistyped. Every page here is reachable from the front page.",
+            "home": "Front page",
+            "developer": "Developer view"
+        },
+        "server": {
+            "title": "This page failed to load",
+            "lead": "Something broke while it was loading. Trying again usually works.",
+            "retry": "Try again",
+            "home": "Front page"
+        }
+    },
+    "portalLink": "Developer portal"
+}

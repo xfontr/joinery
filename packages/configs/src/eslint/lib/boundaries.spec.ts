@@ -26,13 +26,13 @@ const violations = async (importer: string, specifier: string): Promise<string[]
 
 describe("boundaries", () => {
     it("rejects an integration package importing another, the edge the tag table forbids", async () => {
-        expect(await violations("packages/content/src/edge.ts", "@monorepo/i18n")).toEqual([
+        expect(await violations("packages/content/src/edge.ts", "@joinery/i18n")).toEqual([
             'A project tagged with "type:integration" can only depend on libs tagged with "type:config"',
         ]);
     });
 
     it("lets an app import an integration package, so the rejection above isn't the rule failing everything", async () => {
-        expect(await violations("apps/huella-legal/server/edge.ts", "@monorepo/content")).toEqual(
+        expect(await violations("apps/huella-legal/server/edge.ts", "@joinery/content")).toEqual(
             [],
         );
     });

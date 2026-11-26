@@ -18,13 +18,23 @@
                     :class="[capability.state, capability.id === highlight && 'is-highlighted']"
                     :aria-pressed="capability.id === highlight"
                     :style="{ '--state': capabilityColor(capability.state) }"
-                    :title="`${capability.title} · ${capabilityStateLabel(capability.state)}`"
-                    :aria-label="`${capability.title}, ${capabilityStateLabel(capability.state)}`"
+                    :title="
+                        $t('workflowSkyline.title', {
+                            title: capability.title,
+                            state: $t(`workflows.capabilityState.${capability.state}`),
+                        })
+                    "
+                    :aria-label="
+                        $t('workflowSkyline.label', {
+                            title: capability.title,
+                            state: $t(`workflows.capabilityState.${capability.state}`),
+                        })
+                    "
                     @click.stop="(emit('select-stage', stage.id), emit('select', capability.id))"
                 />
             </div>
 
-            <span class="h-0.5 rounded-full bg-(--hue) opacity-70" aria-hidden="true" />
+            <span class="h-0.5 bg-(--hue) opacity-70" aria-hidden="true" />
 
             <!-- Stretched over the whole column, so a click between the squares picks the stage too -->
             <button

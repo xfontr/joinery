@@ -27,7 +27,7 @@
             />
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <UFormField name="name" :label="$t('publishForm.name.label')" required>
-                    <UInput v-model="state.name" type="text" autocomplete="name" class="w-full" />
+                    <UInput v-model="state.name" autocomplete="name" class="w-full" />
                 </UFormField>
                 <UFormField name="email" :label="$t('publishForm.email.label')" required>
                     <UInput
@@ -98,6 +98,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Challenge } from "#layers/forms/app/types/Challenge";
 import { useFormSubmission } from "#layers/forms/app/composables/useFormSubmission";
 import type { Form, SelectItem } from "@nuxt/ui";
 import {

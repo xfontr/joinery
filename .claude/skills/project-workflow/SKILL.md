@@ -17,7 +17,8 @@ Report it in three lines: what waits on the user, the top of the ready list, and
 For the picture, run `pnpm workflow:sync <id>` and point the user at `/workflows/<id>` in the portal.
 
 Never tune anything to how many agents are running. The ready list is the same for one agent or a
-hundred.
+hundred. A *Can file now* section means blocks sit unfiled while agents could take them: file them
+before answering (step 2).
 
 ## 1. Starting a project
 
@@ -34,6 +35,9 @@ hundred.
    portal's new-project wizard, behind the plus card on the Workflows page, writes this same file, if the user would rather click through it.
    Put features only this project has under `extras`, each with its `dependsOn`. Set
    `ticketSize` unless it is `block`.
+   Written by hand, open `data/workflows/projects/<id>.diary.md` beside it, copying
+   [`marina-roustan.diary.md`](../../../data/workflows/projects/marina-roustan.diary.md)'s header
+   and no lines; the wizard does this itself.
 3. GitHub side: `pnpm workflow:setup <id>` prints the milestone and labels it would create. Show
    the user, and only on their go run it with `--yes`, since it writes to GitHub. Run it again after
    a feature is switched on, for the new blocks' `cap:` labels.
@@ -52,33 +56,65 @@ its own block and ticket cost. A page that fits no type is an ordinary extra wit
 
 ## 1.5 Drafting a map for a custom project
 
-A `custom` project starts with no blocks; its map is the project file's `extras`, which you draft and
-the user checks. Read the repo first, then ask only what the code can't tell you: what it is for,
-who uses it, what done looks like, and what is still undecided.
+A `custom` project starts with six recommended blocks from the template — `scope-signoff`,
+`error-pages`, `build-review`, `ai-review`, `docs-update` and `go-live` — and the rest of its map is the project
+file's `extras`, which you draft and the user checks. Switch a recommended block off only where it
+can't apply, such as `error-pages` on a dev-only tool or a package, with a one-line comment above
+the switch saying why; never redraw one as an extra, since an extra can't reuse a template id.
+Read the repo first, then ask only what the code can't tell you: what it is for, who uses it, what
+done looks like, and what is still undecided.
 
 1. **One block per thing an agent can finish and a check can verify**, at most 13 points on the
-   [complexity scale](../../../docs/workflows/README.md#-complexity). Anything bigger gets suggested
+   [complexity scale](../../../docs/workflows/README.md#complexity). Anything bigger gets suggested
    `tickets` or becomes two blocks.
 2. **Every open question is a `spike`, and every call only the user can make is an `owner` block**,
    such as scope, a provider or an API shape. Build blocks that depend on the answer go in
    `dependsOn`, so filing waits for them.
 3. **Every block has `doneWhen`**, written as checks rather than tasks, and a `reuse` naming the
-   precedent to copy — a package, a script folder, a layer — with a path that exists.
+   precedent to copy — a package, a script folder, a layer — with a path that exists. Copy is
+   written in place as the page is built and reviewed by the owner on that page, never approved
+   up front as a list in the ticket.
 4. **Write lessons only from issues that happened**, with their numbers. Leave them out rather than
    inventing any.
-5. **Stages are `plan`, `build` and `ship`.** End with an `owner` block in `ship` that needs every
-   other block, so the release is a decision too.
+5. **Stages are `plan`, `build` and `ship`.** The template's `go-live` owner block needs every other
+   `ship` block, so the release is a decision too; never add a second one.
 
 Show the user the map in the portal at `/workflows/<id>` before running `workflow:setup`, and
 change the file until they agree with it. If a second project of the same kind turns up, its map
 becomes a template.
 
+## 1.6 Every build ends in a review
+
+Per-ticket review sees one block; nobody sees the build as a whole. Every template carries a
+`build-review` owner block with `dependsOn: [stage:build]`, so it waits on every build block, the
+project's own pages included; in `custom` it is a recommended block, switched off only for a build
+too small to review.
+
+When the build closes, the agent prepares the overview its `doneWhen` asks for and the user makes
+the calls. The user may instead settle it as skipped in its panel, but that is their call; never
+settle it yourself (`developer-portal-front-door` drew six build blocks over two designs and no
+review).
+
+Two AI reviews sit around it, both run by the agent with the tools
+[`0043`](../../../docs/decisions/0043-impeccable-for-ai-made-designs.md) sets up. `lab-review` runs
+Impeccable over every lab direction before `design-approval`, so the owner picks with the AI tells
+already named. `ai-review` follows `build-review` and runs Impeccable on every page and no-ai-slop
+on every string the build wrote, before `go-live`. Both list findings for the owner; neither
+changes a typeface, colour or layout on its own. `custom` carries only `ai-review`, as a
+recommended block.
+
 ## 2. Filing a block
 
-File what the map says can be filed, not a stage. In the portal a block that can be filed reads
+File everything the map says can be filed, never one block at a time: the point of the map is that
+every unblocked block has a ticket an agent can take in parallel. A block that needs only build
+blocks can be filed as soon as those have tickets. In the portal a block that can be filed reads
 *Can file now*; one that can't reads *Waits* and names what it waits on.
 
-1. `pnpm workflow:file <id> <block>` prints the tickets, their labels and their blocked-by links
+After any filing, any close and any merge, run `pnpm workflow:file <id>` with no block. It lists
+every block that can be filed now; with `--yes` it files them, round after round until nothing more
+opens.
+
+1. `pnpm workflow:file <id> <block>` files one block. It prints the tickets, their labels and their blocked-by links
    without writing anything. Under a `ticketSize` other than `block` it is one ticket for the
    block and the others its size bundles it with, filed whole or not at all. It refuses a block still waiting on an open `spike` or `owner` block,
    because that decision can still change what the tickets say (#208, #242 → #299).
@@ -86,7 +122,7 @@ File what the map says can be filed, not a stage. In the portal a block that can
    and `doneWhen`. If that would be too thin for an agent to act on, add `tickets` to the template
    first; the next project inherits them.
 3. Show the user the dry run. Filing is outward-facing.
-4. `pnpm workflow:file <id> <block> --yes`, then `pnpm workflow:sync <id>`.
+4. `pnpm workflow:file <id> --yes`, which re-syncs.
 
 A dependency that turns up later is added on GitHub, on the issue's *Relationships* panel or with
 `gh issue edit <n> --add-blocked-by <m>`, not in the project file. After filing, GitHub wins.
@@ -127,17 +163,22 @@ anything started or closed stays.
 
 ## 7. Keeping the diary
 
-When the project has a `<id>.diary.md`, append one line in the
-[diary's shape](../../../docs/workflows/README.md#-diary), with the time from `date`, on these
-events only: the user says they start or stop, a ticket closes (an `estimate` line), or the map, an
-estimate, a rule or a command turns out wrong. A correction from the user is logged as it happens,
-but only for what it shows about the process: a gap in the map or the planning, a rule that misled,
-work that took more rounds or longer than expected, a bug and its fix. The user's decisions
-themselves, such as which design direction they prefer or what to keep, never go in: they mean
-nothing out of context and are stale within a day. Never log routine success, and never grade your
-own work in it. Write the fact and the issue number, and leave the verdict to the user.
+Every project has a `<id>.diary.md`. Append one line in the
+[diary's shape](../../../docs/workflows/README.md#diary), dated from `date +%F`, when:
 
-## 🎨 The design stage of a website rebuild
+- the PR that closes a ticket is about to open (an `estimate` line). That PR closes the block: commit
+  the line, `pnpm workflow:sync <id> --close` and any unfiled block the work proved wrong to its branch
+  before `gh pr create` or `pnpm issue:ship`, never after the merge. `workflow-close.sh` refuses
+  the PR otherwise;
+- the user corrects or complains about the workflow, the tooling or your output, or says something
+  went well, logged as it happens;
+- the map, a ticket's text, a rule or a command turns out wrong, or plainly works.
+
+Before appending, ask: does this line say something worked or went wrong? If not, don't write it.
+What the work found (measurements, the decision, a green `pnpm check`) belongs in the decision report
+or the commit. Never praise your own work.
+
+## The design stage of a website rebuild
 
 What the `website-rebuild` design capabilities expect, learned on Huella:
 
@@ -158,5 +199,5 @@ What the `website-rebuild` design capabilities expect, learned on Huella:
 ```sh
 pnpm workflow:sync <id>
 pnpm workflow:next <id>
-pnpm exec nx collect @monorepo/developer-portal   # invariants include every workflow file's rules
+pnpm exec nx collect @joinery/developer-portal   # invariants include every workflow file's rules
 ```

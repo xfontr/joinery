@@ -4,29 +4,31 @@ Every file here is one ESLint concern, exported as a config object. [`index.ts`]
 them in two arrays: `shared`, which [`node.ts`](../node.ts) and [`vue.ts`](../vue.ts) both spread,
 and `vueOnly`, which only `vue.ts` adds. A rule belongs in this folder when it
 applies to **every** project the package touches; a rule for one flavour goes in the factory that
-composes it instead — see the [package README](../../../README.md#-what-the-eslint-factories-bundle).
-`routeMeta.ts`, `tailwind.ts`, `layerBoundaries.ts` and `pureDomain.ts` are composed by no factory: a
-project opts in by appending `eslint.routeMeta`, `eslint.tailwind(entryPoint)`,
-`eslint.layerBoundaries({ cores, kit })` or `eslint.pureDomain` after its factory.
+composes it instead — see the [package README](../../../README.md#what-the-eslint-factories-bundle).
+`routeMeta.ts`, `tailwind.ts`, `i18nKeys.ts`, `layerBoundaries.ts` and `pureDomain.ts` are composed by
+no factory: a project opts in by appending `eslint.routeMeta`, `eslint.tailwind(entryPoint)`,
+`eslint.i18nKeys(localeGlob)`, `eslint.layerBoundaries({ cores, kit })` or `eslint.pureDomain`
+after its factory.
 
-A rule no plugin ships lives in [`../rules`](../rules) as a `monorepo/<name>` rule with a
+A rule no plugin ships lives in [`../rules`](../rules) as a `joinery/<name>` rule with a
 `RuleTester` spec beside it, and a file here switches it on. Every file registers the same plugin
 object from [`rules/index.ts`](../rules/index.ts): ESLint throws `Cannot redefine plugin` when two
 different objects under one name meet on a file.
 
-## 🗂 What's here
+## What's here
 
 | File | What it configures |
 | --- | --- |
 | [`index.ts`](./index.ts) | The `shared` and `vueOnly` lists the factories spread, in order. A plugin preset that needs no local customization is composed straight here instead of getting its own file |
-| [`boundaries.ts`](./boundaries.ts) | `@nx/enforce-module-boundaries` and the `depConstraints` table — the enforced copy of the Nx tag table; `pnpm docs:map` renders the readable one into the [root README](../../../../../README.md#-architecture--boundaries) |
-| [`coreIsolation.ts`](./coreIsolation.ts) | `no-restricted-imports` under `**/src/core/**`, keeping the framework-agnostic half of `content`/`i18n` free of the Nuxt and Nitro runtime — the list is in the [package README](../../../README.md#-what-the-eslint-factories-bundle) |
+| [`boundaries.ts`](./boundaries.ts) | `@nx/enforce-module-boundaries` and the `depConstraints` table — the enforced copy of the Nx tag table; `pnpm docs:map` renders the readable one into the [root README](../../../../../README.md#architecture--boundaries) |
+| [`coreIsolation.ts`](./coreIsolation.ts) | `no-restricted-imports` under `**/src/core/**`, keeping the framework-agnostic half of `content`/`i18n` free of the Nuxt and Nitro runtime — the list is in the [package README](../../../README.md#what-the-eslint-factories-bundle) |
 | [`pureDomain.ts`](./pureDomain.ts) | `no-restricted-imports` and `no-restricted-globals` under `**/domain/**`, keeping a `domain/` folder free of `fs`, subprocesses, `process`, `@clack/prompts` and `adapters/`. Opt-in, appended by `infrastructure/scripts` |
 | [`layerIsolation.ts`](./layerIsolation.ts) | `no-restricted-imports` under `app/` and `server/`, keeping Nuxt's browser-facing layers free of the Node-only `tools/` layer |
-| [`constTables.ts`](./constTables.ts) | `monorepo/lookup-table-shape`: `constTables` for `**/*.ts` and `constTablesVue` for `**/*.vue` (Vue configs only). A module-scope lookup table keyed by a closed union is `UPPER_SNAKE = { … } as const satisfies Record<K, V>` — never annotated, never `Partial`. `Record<string, …>` and `Record<number, …>` are left alone |
-| [`propsInterface.ts`](./propsInterface.ts) | `monorepo/props-shape` under `**/*.vue`: `defineProps<Props>()` with `Props` declared as a separate `interface` rather than an inline type literal, and no optional prop defaulted to `undefined`. Vue configs only |
-| [`templateI18n.ts`](./templateI18n.ts) | `monorepo/template-global-i18n` under `**/*.vue`, requiring the global `$t`/`$te`/`$tm`/`$rt`/`$d`/`$n` inside `<template>` instead of the `useI18n()` binding. Vue configs only |
-| [`templateCalls.ts`](./templateCalls.ts) | `monorepo/no-template-call` under `**/*.vue`, moving template calls that read only component state into a `computed`. `$` globals, `v-on` handlers and calls on `v-for`/slot variables pass. Vue configs only |
+| [`constTables.ts`](./constTables.ts) | `joinery/lookup-table-shape`: `constTables` for `**/*.ts` and `constTablesVue` for `**/*.vue` (Vue configs only). A module-scope lookup table keyed by a closed union is `UPPER_SNAKE = { … } as const satisfies Record<K, V>` — never annotated, never `Partial`. `Record<string, …>` and `Record<number, …>` are left alone |
+| [`propsInterface.ts`](./propsInterface.ts) | `joinery/props-shape` under `**/*.vue`: `defineProps<Props>()` with `Props` declared as a separate `interface` rather than an inline type literal, and no optional prop defaulted to `undefined`. Vue configs only |
+| [`pageLength.ts`](./pageLength.ts) | `vue/max-lines-per-block` under `**/pages/**/*.vue`, lab pages exempt: 60 template and 50 script lines, blanks skipped. A page's template lists its sections, and a section with a name of its own is a component under `components/<page>/`. Its message only counts lines, so the fix is here and in [conventions](../../../../../docs/concepts/conventions.md). Vue configs only |
+| [`templateI18n.ts`](./templateI18n.ts) | `joinery/template-global-i18n` under `**/*.vue`, requiring the global `$t`/`$te`/`$tm`/`$rt`/`$d`/`$n` inside `<template>` instead of the `useI18n()` binding. Vue configs only |
+| [`templateCalls.ts`](./templateCalls.ts) | `joinery/no-template-call` under `**/*.vue`, moving template calls that read only component state into a `computed`. `$` globals, `v-on` handlers and calls on `v-for`/slot variables pass. Vue configs only |
 | [`arrowFunctions.ts`](./arrowFunctions.ts) | `prefer-arrow-functions/prefer-arrow-functions` and core `prefer-arrow-callback` for scripts and `**/*.vue`, so `--fix` turns every `function` an arrow can replace into one |
 | [`destructuring.ts`](./destructuring.ts) | Core `prefer-destructuring` for scripts and `**/*.vue`, on variable declarations and objects only — array access and assignments are exempt |
 | [`typeDefinitions.ts`](./typeDefinitions.ts) | `@typescript-eslint/consistent-type-definitions: interface`: `typeDefinitions` for `**/*.ts` and `typeDefinitionsVue` for `**/*.vue` (Vue configs only) |
@@ -42,15 +44,16 @@ different objects under one name meet on a file.
 | [`format.ts`](./format.ts) | `format/prettier` with the Prettier options inline: `format` for scripts, `formatVue` for `**/*.vue` (Vue configs only), which also turns off every `vue/*` rule of type `layout` |
 | [`console.ts`](./console.ts) | `noConsole`: `no-console` at `error` for everything but `**/*.spec.ts`, where the Vitest console guard takes over |
 | [`unsafeCode.ts`](./unsafeCode.ts) | `unsafeCode`: core `no-eval`, `no-implied-eval`, `no-new-func`, `no-script-url` and a `no-restricted-properties` ban on the raw-HTML sinks, everywhere but specs. `unsafeCodeVue`: `vue/no-v-html` under `**/*.vue` (Vue configs only) |
-| [`e2eFixture.ts`](./e2eFixture.ts) | `no-restricted-imports` of `test` from `@playwright/test` in `**/e2e/**/*.spec.ts`, so every Playwright spec goes through `@monorepo/configs/playwright/test` and its console guard |
-| [`disableReasons.ts`](./disableReasons.ts) | `monorepo/disable-needs-reason` and `reportUnusedDisableDirectives: "error"`: `disableReasons` for scripts and `disableReasonsVue` for `**/*.vue` (Vue configs only). Every `eslint-disable` names its rules and ends in `-- <why>`, a block disable is closed, and a disable that hides nothing fails |
-| [`defaultExports.ts`](./defaultExports.ts) | `monorepo/named-default-export`: `defaultExports` for scripts and `defaultExportsVue` for `**/*.vue` (Vue configs only). A default-exported function or class has a name; calls and literals are left alone |
-| [`routeMeta.ts`](./routeMeta.ts) | `monorepo/require-route-meta` under `server/api/` and `server/routes/`: a top-level `defineRouteMeta` whose `openAPI` object literal has `tags` and `summary`, placed after the `export default` handler. Opt-in, for a Nitro app with `experimental.openAPI` on |
-| [`layerBoundaries.ts`](./layerBoundaries.ts) | `monorepo/layer-boundaries` under `layers/` and the `kit` paths: the kit uses only itself, a core only itself and the kit, a feature also the cores and never another feature, and no layer anything else outside `layers/`, written or auto-imported. A feature's `app/pages/` may still render another feature's components. Every layer not named in `cores` is a feature. Opt-in, for a Nuxt app split into layers |
+| [`e2eFixture.ts`](./e2eFixture.ts) | `eslint-plugin-playwright`'s `flat/recommended` and a `no-restricted-imports` of `test` from `@playwright/test` in `**/e2e/**/*.spec.ts`, so every Playwright spec goes through `@joinery/configs/playwright/utils/test` and its console guard. A shared step named `expect…` counts as an assertion |
+| [`disableReasons.ts`](./disableReasons.ts) | `joinery/disable-needs-reason` and `reportUnusedDisableDirectives: "error"`: `disableReasons` for scripts and `disableReasonsVue` for `**/*.vue` (Vue configs only). Every `eslint-disable` names its rules and ends in `-- <why>`, a block disable is closed, and a disable that hides nothing fails |
+| [`defaultExports.ts`](./defaultExports.ts) | `joinery/named-default-export`: `defaultExports` for scripts and `defaultExportsVue` for `**/*.vue` (Vue configs only). A default-exported function or class has a name; calls and literals are left alone |
+| [`routeMeta.ts`](./routeMeta.ts) | `joinery/require-route-meta` under `server/api/` and `server/routes/`: a top-level `defineRouteMeta` whose `openAPI` object literal has `tags` and `summary`, placed after the `export default` handler. Opt-in, for a Nitro app with `experimental.openAPI` on |
+| [`layerBoundaries.ts`](./layerBoundaries.ts) | `joinery/layer-boundaries` under `layers/` and the `kit` paths: the kit uses only itself, a core only itself and the kit, a feature also the cores and never another feature, and no layer anything else outside `layers/`, written or auto-imported. A feature's `app/pages/` may still render another feature's components. Every layer not named in `cores` is a feature. Opt-in, for a Nuxt app split into layers |
 | [`tailwind.ts`](./tailwind.ts) | `eslint-plugin-better-tailwindcss`'s `recommended-error` rules under `**/*.vue` and `**/*.ts`, minus `enforce-consistent-line-wrapping`, which fights Prettier. Opt-in: a project with Tailwind spreads `eslint.tailwind(entryPoint)`, naming its CSS entry point |
-| [`vitest.ts`](./vitest.ts) | `@vitest/eslint-plugin`'s `recommended` rules, globals and `typecheck: true`, scoped to `**/*.spec.ts` |
+| [`i18nKeys.ts`](./i18nKeys.ts) | `@intlify/vue-i18n/no-missing-keys` under `**/*.vue` and `**/*.ts` outside specs, stories and `e2e/`: every static `t()`/`$t()` key exists in the locale files the app names. Opt-in: an app with `@nuxtjs/i18n` spreads `eslint.i18nKeys(localeGlob)` |
+| [`vitest.ts`](./vitest.ts) | `@vitest/eslint-plugin`'s `recommended` rules, globals and `typecheck: true`, scoped to `**/*.spec.ts`, plus `vitest/no-restricted-matchers` banning `toHaveBeenNthCalledWith` and snapshots, and `joinery/no-implementation-details`: a spec reads what a component renders, never `wrapper.vm` (bar `vm.$emit`) |
 
-## 🚫 What doesn't belong here
+## What doesn't belong here
 
 A file earns its place by **customizing** a plugin's config — a `files` glob, a merged or
 overridden rule, a `settings` block — or by switching on a rule from [`../rules`](../rules), as

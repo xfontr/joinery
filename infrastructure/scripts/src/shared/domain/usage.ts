@@ -26,12 +26,12 @@ export const LOGS: readonly { name: string; columns: readonly string[] }[] = [
 ];
 
 /** The only flags whose value is kept, because each takes one of a fixed set of words. */
-export const VALUE_FLAGS: ReadonlySet<string> = new Set(["type", "project"]);
+const VALUE_FLAGS: ReadonlySet<string> = new Set(["type", "project"]);
 
 /** Set by `.husky/*`, so the checks a hook runs on every commit don't read as anyone's choice. */
-export const HOOK_ENV = "MONOREPO_GIT_HOOK";
+const HOOK_ENV = "JOINERY_GIT_HOOK";
 
-export const UNSCOPED_AREA = "repo";
+const UNSCOPED_AREA = "repo";
 
 const BRANCH_AREA = /^(?:feature|fix|hotfix|release)\/([^/]+)\//;
 

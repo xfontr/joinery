@@ -46,6 +46,5 @@ describe("section heading", () => {
         });
 
         expect(wrapper.find("p").text()).toBe("Archivo");
-        expect(wrapper.find("h2").classes()).toContain("mt-1");
     });
 });

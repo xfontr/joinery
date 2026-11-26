@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
 import type { AuditFinding } from "#layers/snapshot/shared/audits.ts";
 import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
-import { countAll, filterAudits, scopesOf, sortAudits, toAuditReports } from "./auditReports.ts";
+import {
+    countAll,
+    filterAudits,
+    openAudits,
+    scopesOf,
+    sortAudits,
+    toAuditReports,
+} from "./auditReports.ts";
 
 const row = (id: string, status: AuditFinding["status"]): AuditFinding => ({
     id,
@@ -30,16 +37,16 @@ const page = (
 });
 
 const PAGES: DocPage[] = [
-    page("docs/audits/2026-09-20-scripts.md", "@monorepo/scripts", [
+    page("docs/audits/2026-09-20-scripts.md", "@joinery/scripts", [
         row("B1", "fixed"),
         row("B2", "wont-fix"),
     ]),
-    page("docs/audits/2026-09-25-developer-portal.md", "@monorepo/developer-portal", [
+    page("docs/audits/2026-09-25-developer-portal.md", "@joinery/developer-portal", [
         row("B1", "open"),
         row("B2", "fixed"),
         row("B3", null),
     ]),
-    page("docs/audits/2026-09-22-ui.md", "@monorepo/ui", [row("B1", "open")], {
+    page("docs/audits/2026-09-22-ui.md", "@joinery/ui", [row("B1", "open")], {
         title: "🔎 The UI kit",
     }),
     page("docs/audits/README.md", null, [], { kind: "doc", audit: null }),
@@ -70,10 +77,10 @@ describe("toAuditReports", () => {
 
 describe("filterAudits and sortAudits", () => {
     it("filters on state and scope together", () => {
-        expect(idsOf(filterAudits(REPORTS, { state: "open", scope: "@monorepo/ui" }))).toEqual([
+        expect(idsOf(filterAudits(REPORTS, { state: "open", scope: "@joinery/ui" }))).toEqual([
             "2026-09-22-ui",
         ]);
-        expect(filterAudits(REPORTS, { state: "closed", scope: "@monorepo/ui" })).toEqual([]);
+        expect(filterAudits(REPORTS, { state: "closed", scope: "@joinery/ui" })).toEqual([]);
     });
 
     it("searches the scope as well as the title", () => {
@@ -109,9 +116,18 @@ describe("countAll and scopesOf", () => {
 
     it("lists each scope once, sorted, for the filter", () => {
         expect(scopesOf(REPORTS)).toEqual([
-            "@monorepo/developer-portal",
-            "@monorepo/scripts",
-            "@monorepo/ui",
+            "@joinery/developer-portal",
+            "@joinery/scripts",
+            "@joinery/ui",
+        ]);
+    });
+});
+
+describe("openAudits", () => {
+    it("leaves out a closed audit and puts the one with most open findings first", () => {
+        expect(idsOf(openAudits(REPORTS))).toEqual([
+            "2026-09-25-developer-portal",
+            "2026-09-22-ui",
         ]);
     });
 });

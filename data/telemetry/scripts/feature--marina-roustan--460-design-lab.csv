@@ -88,3 +88,13 @@ at,script,command,target,flags,area,caller,tty,exit,ms
 2026-11-15,issue,pick,,,marina-roustan,claude-code,0,0,11877
 2026-11-15,issue,brief,,,marina-roustan,claude-code,0,0,1653
 2026-11-15,issue,brief,,,marina-roustan,claude-code,0,0,1917
+2026-11-25,dev,,portfolio,,repo,human,1,0,412999
+2026-11-25,env-sync,,,,repo,claude-code,0,0,37
+2026-11-25,dev,,portfolio,,repo,human,1,0,1589103
+2026-11-26,map,,,check,repo,claude-code,0,0,160
+2026-11-26,map,,,check,repo,claude-code,0,0,167
+2026-11-26,map,,,check,repo,claude-code,0,0,149
+2026-11-26,map,,,check,repo,claude-code,0,0,146
+2026-11-26,map,,,check,repo,claude-code,0,0,159
+2026-11-26,map,,,check,repo,claude-code,0,0,133
+2026-11-26,map,,,check,repo,claude-code,0,0,155

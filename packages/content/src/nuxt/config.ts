@@ -1,6 +1,6 @@
 import type { VendorConfig } from "#core/registry";
 
-export interface CacheWindow {
+interface CacheWindow {
     maxAge: number;
     // Off refetches an expired entry before answering, instead of serving it while it refreshes
     swr: boolean;

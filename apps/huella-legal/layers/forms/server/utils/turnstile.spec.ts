@@ -1,15 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 
 const nitro = vi.hoisted(() => ({ verify: vi.fn() }));
 
 vi.stubGlobal("verifyTurnstileToken", nitro.verify);
-vi.stubGlobal("createError", (input: Record<string, unknown>) =>
-    Object.assign(new Error("http"), input),
-);
+stubNitro();
 
 const { assertChallenge } = await import("./turnstile");
 
-// The shape `$fetch` rejects with: siteverify's JSON body arrives as `data`
 const rejected = (statusCode: number, data: unknown) =>
     Object.assign(new Error("fetch failed"), { statusCode, data });
 

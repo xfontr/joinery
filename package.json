@@ -1,5 +1,5 @@
 {
-    "name": "monorepo",
+    "name": "joinery",
     "version": "0.0.1",
     "description": "",
     "author": "Xifré Font",
@@ -9,7 +9,7 @@
         "node": "^22.18.0 || >=24.12.0"
     },
     "scripts": {
-        "quick-start": "husky && pnpm env:sync && pnpm test:coverage && pnpm exec nx collect @monorepo/developer-portal",
+        "quick-start": "husky && pnpm env:sync && pnpm test:coverage && pnpm exec nx collect @joinery/developer-portal",
         "dev": "pnpm --silent --dir infrastructure/scripts cli src/dev/index.ts",
         "lint": "nx affected --base=master -t lint",
         "typecheck": "nx affected --base=master -t typecheck",
@@ -27,6 +27,7 @@
         "docs:drift": "pnpm --silent --dir infrastructure/scripts cli src/drift/index.ts",
         "docs:map": "pnpm --silent --dir infrastructure/scripts cli src/map/index.ts",
         "invariants:check": "pnpm --silent --dir infrastructure/scripts cli src/invariants/index.ts",
+        "unused:check": "nx run-many -t nuxt-prepare --outputStyle=static-failures-only && knip --no-progress",
         "usage:flush": "pnpm --silent --dir infrastructure/scripts cli src/usage/index.ts",
         "env:sync": "pnpm --silent --dir infrastructure/scripts cli src/env-sync/index.ts",
         "workflow:setup": "pnpm --silent --dir infrastructure/scripts cli src/workflow/index.ts setup",
@@ -42,12 +43,13 @@
     "devDependencies": {
         "@commitlint/cli": "^21.2.4",
         "@commitlint/config-conventional": "^21.2.4",
-        "@nx/eslint": "24.0.5",
-        "@nx/js": "24.0.5",
-        "@nx/nuxt": "24.0.5",
-        "@nx/vite": "24.0.5",
-        "@nx/vitest": "24.0.5",
+        "@nx/eslint": "24.0.6",
+        "@nx/js": "24.0.6",
+        "@nx/nuxt": "24.0.6",
+        "@nx/vite": "24.0.6",
+        "@nx/vitest": "24.0.6",
         "husky": "^9.1.7",
-        "nx": "24.0.5"
+        "knip": "^6.47.0",
+        "nx": "24.0.6"
     }
 }

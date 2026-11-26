@@ -1,95 +1,49 @@
 # 🗺 `pnpm docs:map`
 
-Renders [`docs/FEATURES.md`](../../../../docs/FEATURES.md): every command, git hook, workflow and
-agent skill in the repo, each with the doc that explains it. It exists because this repo's docs are
-all *reference* — a README answers "how does X work" for an X you already know about, and nothing
-answered "what is in here". See
-[`0001-feature-discoverability.md`](../../../../docs/decisions/0001-feature-discoverability.md).
-It also renders the root README's tag tables and workspace-layout block — see
-[🧱 The README regions](#-the-readme-regions).
+Renders [`docs/FEATURES.md`](../../../../docs/FEATURES.md), the index of every command, git hook,
+workflow and agent skill with the doc that explains it, plus the root README's
+[generated regions](#the-readme-regions).
 
 | Command | What it does |
 | --- | --- |
-| `pnpm docs:map` | Re-render the map and the README regions |
-| `pnpm docs:map --check` | Exit 1 if either checked-in file differs from the render — the CI step |
+| `pnpm docs:map` | Re-render both |
+| `pnpm docs:map --check` | Exit 1 if either file differs from the render. Runs in CI and pre-commit |
 
-## 🗂 Structure
+## Structure
 
 ```
-index.ts                  hands main to run()
-main.ts                   render, then write it or assert it with --check
-adapters/files.ts         the filesystem and git side
-domain/capabilities.ts    what counts as a capability, and which doc explains one
-domain/render.ts          capabilities + docs → the markdown
-domain/readme.ts          boundaries.ts + project manifests → the README regions
+main.ts                   render, then write or --check
+adapters/files.ts         filesystem and git
+domain/capabilities.ts    what counts as a capability, and which doc explains it
+domain/render.ts          the markdown
+domain/readme.ts          the README regions
 ```
 
-The `--check` contract below is unchanged by that split — it still exits 1 on a stale map and 0 on
-a current one, only now through the exit convention every script here shares.
-
-## 🔍 What it finds
-
-Four kinds, each read from the file that already declares it. Nothing is registered by hand, which
-is the point: a hand-kept list is what let the `commit-msg` subject rewriting and `packages/ui`'s
-Storybook stay undocumented for as long as they did.
+## What it finds
 
 | Kind | Read from | Skipped |
 | --- | --- | --- |
-| Command | root `package.json`, then each project's | `lint`, `typecheck`, `test`, `test:dev`, `test:coverage`, `build` — every project has them and the root README covers them once. A project script the root already wraps is skipped too, so one capability never gets two invocations |
-| Hook | `.husky/*` | `_/`, which is husky's own generated shim |
+| Command | Root `package.json`, then each project's | `lint`, `typecheck`, `test`, `test:dev`, `test:coverage`, `build`, and project scripts the root already wraps |
+| Hook | `.husky/*` | `_/` |
 | Workflow | `.github/workflows/*.yml` | — |
-| Skill | `.claude/skills/*/SKILL.md` | — |
+| Skill | `.claude/skills/*/SKILL.md`, named by frontmatter | — |
 
-A skill's name comes from its frontmatter rather than its directory, because the frontmatter is
-what the agent dispatches on.
+## Picking the doc
 
-## 📄 Picking the doc
+Every markdown file is a candidate except changelogs, the map itself and the capability's own source
+file. The token must appear standalone (`release:dry` doesn't answer for `release`). Ranked by
+audience first — `README.md`, then other docs, then `CLAUDE.md`, then `SKILL.md` — then by nearness.
 
-Every markdown file in the tree is a candidate except two kinds, each of which would produce a
-match that isn't an answer: a generated `CHANGELOG.md` and the map itself. A capability's own source
-file is excluded as well — otherwise every skill would cite its own `SKILL.md` and the column would
-be uniformly full and worthless.
+A capability no doc names shows `—`. `--check` doesn't fail on it, since some are undocumented on
+purpose; the fix is to write the doc, never to edit the map.
 
-Candidates are ranked by **audience** first, then nearness: `README.md`, then anything else, then
-`CLAUDE.md`, then `SKILL.md`. Audience has to win, and that ordering is the one real bug this had —
-ranking by nearness first made every skill cite whichever *other* skill mentioned it, because two
-shared segments under `.claude/skills/` beat the root `CLAUDE.md` table that actually indexes them.
-Within one audience, nearness keeps a `packages/content` command pointing at `packages/content/README.md`
-rather than at the root README.
-
-A token has to stand alone to count, so a doc covering `release:dry` does not answer for
-`release`, and one covering `test:coverage` does not answer for `test`.
-
-## ✅ What `--check` does not do
-
-It asserts only that the checked-in file matches the render. It deliberately **does not** fail on a
-`—` row, because some capabilities are undocumented on purpose — `pnpm release` runs from the
-Release workflow and never locally, so a gate demanding a doc for it would be demanding the wrong
-thing, and a check that cries wolf gets switched off within a week. The `—` stays visible in the
-map, which is where a human can judge it.
-
-The forcing function comes from the exact-match half regardless: a new script, hook, workflow or
-skill changes the render, so it fails CI until the map is regenerated.
-
-## 🧱 The README regions
-
-Three blocks of the root README are generated, each between a `<!-- docs:map:<name> -->` and
-`<!-- /docs:map:<name> -->` marker pair. Everything outside the markers stays hand-written.
+## The README regions
 
 | Region | Rendered from |
 | --- | --- |
-| `layout` | Each project's `package.json` `name` and `description`, grouped by root in `PROJECT_ROOTS` order |
-| `type-tags` | The `type:*` entries in `boundaries.ts`'s `depConstraints`, in file order, plus every project holding the tag |
-| `scope-tags` | The `scope:*` entries, the same way |
+| `layout` | Each project's `package.json` `name` and `description` |
+| `type-tags` | The `type:*` constraints in `boundaries.ts`, plus the projects holding each tag |
+| `scope-tags` | The `scope:*` constraints, the same way |
 
-`boundaries.ts` is read as text rather than imported, because a relative import from another
-project trips the boundary rule it declares. A render that parses no constraint, or a README with a
-marker missing, exits 1 instead of writing empty tables.
-
-## 🧭 Deliberately deferred
-
-| Later need | What changes |
-| --- | --- |
-| Env vars in the map | They're the one part of the surface with a real per-project doc already (each README's `🔑 Environment` table), and `.env.example` names them without explaining them — add a fifth kind only if a var ever goes undocumented |
-| A capability nothing declares | The renderer can only index what a `package.json`, hook, workflow or skill file states. A convention living purely in prose has no source to read, and would need the hand-written row this avoids — that is the signal to reconsider the whole approach, not to add an exception |
-| Nx targets that aren't package scripts | Every target today is inferred from a script or a plugin default; a `project.json` would change that, and this repo has none by design |
+Each sits between `<!-- docs:map:<name> -->` markers in the root README. A missing marker or an
+unparseable `boundaries.ts` exits 1 rather than writing empty tables.

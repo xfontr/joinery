@@ -7,6 +7,9 @@ app:huella-legal:
 app:marina-roustan:
     - changed-files:
           - any-glob-to-any-file: apps/marina-roustan/**
+app:portfolio:
+    - changed-files:
+          - any-glob-to-any-file: apps/portfolio/**
 package:configs:
     - changed-files:
           - any-glob-to-any-file: packages/configs/**

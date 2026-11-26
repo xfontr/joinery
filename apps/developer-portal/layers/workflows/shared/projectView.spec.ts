@@ -226,7 +226,7 @@ describe("projectView", () => {
         const stray = issue(7, [], { state: "open", reason: null });
 
         expect(view({}, [], [stray]).unsorted).toEqual([
-            { issue: stray, reason: "not in the milestone" },
+            { issue: stray, reason: "noMilestone", detail: "" },
         ]);
     });
 
@@ -249,10 +249,16 @@ describe("projectView", () => {
             issue(4, ["comments"]),
         ]);
 
-        expect(result.unsorted.map(({ issue: { number }, reason }) => [number, reason])).toEqual([
-            [1, "no cap: label"],
-            [2, "unknown capability nope"],
-            [3, "its capability is switched off"],
+        expect(
+            result.unsorted.map(({ issue: { number }, reason, detail }) => [
+                number,
+                reason,
+                detail,
+            ]),
+        ).toEqual([
+            [1, "noLabel", "cap:"],
+            [2, "unknown", "nope"],
+            [3, "off", ""],
         ]);
     });
 
@@ -316,8 +322,8 @@ describe("groups", () => {
     it("sends a ticket labelled with a group to To organise, since a group holds no tickets", () => {
         const result = groupedView({}, [issue(7, ["blog"], { state: "open", reason: null })]);
 
-        expect(result.unsorted.map(({ reason }) => reason)).toEqual([
-            "blog is a group; label one of its capabilities instead",
+        expect(result.unsorted.map(({ reason, detail }) => [reason, detail])).toEqual([
+            ["group", "blog"],
         ]);
     });
 });
@@ -465,5 +471,31 @@ describe("tickets to file", () => {
 
         expect(result.tickets.filed).toBe(1);
         expect(result.tickets.toFile).toEqual({ block: 2, supervised: 1, fast: 1 });
+    });
+});
+
+describe("stage needs", () => {
+    const REVIEWED = {
+        ...TEMPLATE,
+        stages: [...TEMPLATE.stages, { id: "ship", title: "Ship" }],
+        capabilities: [
+            ...TEMPLATE.capabilities,
+            { id: "review", stage: "ship", title: "Review", dependsOn: ["stage:build"] },
+        ],
+    };
+
+    it("holds a block needing a whole stage behind a page the project added to it, and skips what's off", () => {
+        const result = view(
+            { extras: [{ id: "landing", stage: "build", title: "Landing" }] },
+            [],
+            [],
+            REVIEWED,
+        );
+
+        expect(capabilityOf(result, "review")?.needs.sort()).toEqual([
+            "article-page",
+            "landing",
+            "search",
+        ]);
     });
 });

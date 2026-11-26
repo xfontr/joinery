@@ -3,6 +3,7 @@ import {
     activityByIssue,
     describeSnapshot,
     sameIssues,
+    settleCloses,
     syncTargetOf,
     toSnapshot,
     type GhIssue,
@@ -184,6 +185,78 @@ describe("sameIssues", () => {
         const after = toSnapshot("Site", [issue({})], [issue({ number: 5 })], NO_ACTIVITY, "");
 
         expect(sameIssues(before, after)).toBe(false);
+    });
+});
+
+describe("settleCloses", () => {
+    const ON_BRANCH = "2026-11-18T10:00:00Z";
+    const MERGED = "2026-11-18T18:41:53Z";
+
+    const branchSync = () =>
+        settleCloses(
+            toSnapshot(
+                "Site",
+                [
+                    issue({ pullRequests: 1 }),
+                    issue({ number: 2, blockedBy: [{ number: 1, state: "OPEN", closedAt: null }] }),
+                ],
+                [],
+                new Map([[1, ["2026-11-18"]]]),
+                ON_BRANCH,
+            ),
+            null,
+            1,
+        );
+
+    it("closes the branch's own ticket, so the PR carries the block's close", () => {
+        const { issues } = branchSync();
+
+        expect(issues[0]).toMatchObject({
+            state: "closed",
+            reason: "completed",
+            closedAt: ON_BRANCH,
+            pr: false,
+        });
+        expect(issues[1]?.blockedBy).toEqual([{ number: 1, open: false, closedAt: ON_BRANCH }]);
+    });
+
+    it("leaves the committed file alone when synced after the merge", () => {
+        const committed = branchSync();
+        const afterMerge = settleCloses(
+            toSnapshot(
+                "Site",
+                [
+                    issue({ state: "CLOSED", stateReason: "COMPLETED", closedAt: MERGED }),
+                    issue({
+                        number: 2,
+                        blockedBy: [{ number: 1, state: "CLOSED", closedAt: MERGED }],
+                    }),
+                ],
+                [],
+                new Map([[1, ["2026-11-18", "2026-11-18"]]]),
+                MERGED,
+            ),
+            committed,
+            null,
+        );
+
+        expect(sameIssues(committed, afterMerge)).toBe(true);
+    });
+
+    it("takes GitHub's word when the ticket was closed as not planned instead", () => {
+        const { issues } = settleCloses(
+            toSnapshot(
+                "Site",
+                [issue({ state: "CLOSED", stateReason: "NOT_PLANNED", closedAt: MERGED })],
+                [],
+                NO_ACTIVITY,
+                MERGED,
+            ),
+            branchSync(),
+            null,
+        );
+
+        expect(issues[0]).toMatchObject({ reason: "not_planned", closedAt: MERGED });
     });
 });
 

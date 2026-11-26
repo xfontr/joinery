@@ -1,4 +1,4 @@
-import { MAX_SEARCH_LENGTH, type TermResource } from "@monorepo/content";
+import { MAX_SEARCH_LENGTH, type TermResource } from "@joinery/content";
 import type { H3Event } from "h3";
 import * as v from "valibot";
 import type { ArticleListing } from "../../../shared/types/ArticleListing";
@@ -92,7 +92,7 @@ defineRouteMeta({
             {
                 name: "query",
                 in: "query",
-                // `MAX_SEARCH_LENGTH` from `@monorepo/content`, since route meta only takes literals
+                // `MAX_SEARCH_LENGTH` from `@joinery/content`, since route meta only takes literals
                 description:
                     "Up to 100 characters, trimmed; matches every word, ignoring accents and case",
                 schema: { type: "string" },

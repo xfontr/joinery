@@ -1,80 +1,181 @@
-import { mountSuspended, mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { ref } from "vue";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import type { VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { CoverageArtifact } from "#layers/snapshot/shared/types/CoverageArtifact.ts";
 import Page from "./coverage.vue";
 
-const state = vi.hoisted(() => ({ snapshot: null as { value: unknown } | null }));
-mockNuxtImport("useSnapshot", () => () => ({ data: state.snapshot }));
-
-const global = {
-    stubs: {
-        UDashboardPanel: {
-            template: "<section><slot name='header' /><slot name='body' /></section>",
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
         },
-        UDashboardNavbar: { template: "<header><slot name='right' /></header>" },
-        UDashboardSidebarCollapse: true,
-        SnapshotAge: true,
-        StatTile: {
-            props: { label: String, value: [String, Number] },
-            template: "<div class='tile'>{{ label }} {{ value }}</div>",
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
         },
-        UCard: { template: "<article><slot name='header' /><slot /></article>" },
-        UAlert: {
-            props: { title: String, description: String },
-            template: "<div>{{ title }} {{ description }}</div>",
+    },
+    common: {
+        metrics: {
+            branches: "branches",
+            functions: "functions",
+            lines: "lines",
+            statements: "statements",
         },
-        UButton: { props: { to: String }, template: "<a :href='to'><slot />Open full</a>" },
-        UIcon: true,
+    },
+    coverage: {
+        provenance: "Vitest coverage · {collected} of {total} projects · collected {age}",
+        title: "Coverage",
+    },
+    healthCoverageReport: {
+        empty: "No HTML report copied in. Run {test} from the workspace root, then {collect}.",
+        frame: "Coverage report",
+        meta: "The merged report pnpm test:coverage renders, copied in by the collector",
+        open: "Open full",
+        title: "Line-by-line report",
+    },
+    healthCoverageTable: {
+        columns: {
+            files: "Files",
+            project: "Project",
+        },
+        meta: "Sorted by line coverage, lowest first",
+        notCollected: "not collected",
+        note: "The workspace figure is weighted by size, not averaged across projects — an average lets one large well-tested package hide a small untested one.",
+        title: "Coverage by project",
+        workspace: "Workspace",
+    },
+    pageHeader: {
+        wordmark: "joinery",
     },
 };
 
+const COVERAGE = {
+    generatedAt: "2026-11-01T00:00:00Z",
+    totals: { lines: 80, statements: 81, functions: 82, branches: 83 },
+    report: false,
+    projects: [
+        {
+            name: "tested",
+            root: "packages/tested",
+            collected: true,
+            files: 3,
+            lines: { total: 100, covered: 91, pct: 91 },
+            statements: { total: 100, covered: 90, pct: 90 },
+            functions: { total: 100, covered: 89, pct: 89 },
+            branches: { total: 100, covered: 88, pct: 88 },
+        },
+        { name: "missing", root: "packages/missing", collected: false, files: 0 },
+    ],
+} satisfies CoverageArtifact;
+
+const artifacts = vi.hoisted(() => ({ coverage: null as CoverageArtifact | null }));
+mockNuxtImport("coverageArtifact", () => () => artifacts.coverage);
+
+const serve = (coverage: CoverageArtifact) => {
+    artifacts.coverage = coverage;
+};
+
+const row = (wrapper: VueWrapper, project: string) =>
+    wrapper
+        .findAll("tbody tr")
+        .find((tr) => tr.find("td").text() === project)!
+        .findAll("td")
+        .map((td) => td.text());
+
 beforeEach(() => {
-    state.snapshot = ref(null);
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
 });
 
 describe("coverage page", () => {
-    it("renders all weighted totals and distinguishes collected from uncollected projects", async () => {
-        state.snapshot!.value = {
-            coverage: {
-                totals: { lines: 80, statements: 81, functions: 82, branches: 83 },
-                projects: [
-                    {
-                        name: "tested",
-                        collected: true,
-                        files: 3,
-                        lines: { pct: 91 },
-                        statements: { pct: 90 },
-                        functions: { pct: 89 },
-                        branches: { pct: 88 },
-                    },
-                    { name: "missing", collected: false, files: 0 },
-                ],
-            },
-            manifest: {},
-        };
-        const wrapper = await mountSuspended(Page, { global });
+    it("shows each collected project's four metrics and its file count", async () => {
+        serve(COVERAGE);
+        const wrapper = await mountSuspended(Page);
 
-        expect(wrapper.text()).toContain("80%");
-        expect(wrapper.text()).toContain("83%");
-        expect(wrapper.text()).toContain("91%");
-        expect(wrapper.text()).toContain("3");
-        expect(wrapper.text()).toContain("not collected");
+        expect(row(wrapper, "tested")).toEqual(["tested", "91%", "90%", "89%", "88%", "3"]);
     });
 
-    it("shows the collection instruction without a report and embeds the base-aware report when present", async () => {
-        state.snapshot!.value = {
-            coverage: { totals: null, projects: [], report: false },
-            manifest: {},
-        };
-        let wrapper = await mountSuspended(Page, { global });
-        expect(wrapper.text()).toContain("No HTML report copied in");
+    it("marks a project with no report uncollected instead of giving it a percentage", async () => {
+        serve(COVERAGE);
+        const wrapper = await mountSuspended(Page);
 
-        state.snapshot!.value = {
-            coverage: { totals: null, projects: [], report: true },
-            manifest: {},
-        };
-        wrapper = await mountSuspended(Page, { global });
+        expect(row(wrapper, "missing")).toEqual(["missing", "not collected"]);
+    });
+
+    it("puts the least covered project first, so the gap leads the table", async () => {
+        serve({
+            ...COVERAGE,
+            projects: [
+                COVERAGE.projects[0]!,
+                {
+                    ...COVERAGE.projects[0]!,
+                    name: "thin",
+                    root: "packages/thin",
+                    lines: { total: 100, covered: 40, pct: 40 },
+                },
+            ],
+        });
+        const wrapper = await mountSuspended(Page);
+
+        expect(wrapper.findAll("tbody tr").map((tr) => tr.find("td").text())).toEqual([
+            "thin",
+            "tested",
+        ]);
+    });
+
+    it("links each project to the coverage tab of its own page", async () => {
+        serve(COVERAGE);
+        const wrapper = await mountSuspended(Page);
+
+        expect(wrapper.find("tbody a").attributes("href")).toBe("/projects/tested?tab=coverage");
+    });
+
+    it("heads the table with the workspace totals and the summed file count", async () => {
+        serve(COVERAGE);
+        const wrapper = await mountSuspended(Page);
+        const totals = wrapper
+            .findAll("thead tr")[1]!
+            .findAll("td")
+            .map((td) => td.text());
+
+        expect(totals).toEqual(["Workspace", "80%", "81%", "82%", "83%", "3"]);
+    });
+
+    it("leaves out the totals when nothing was collected", async () => {
+        serve({ ...COVERAGE, totals: null });
+        const wrapper = await mountSuspended(Page);
+
+        expect(wrapper.text()).not.toContain("80%");
+    });
+
+    it("embeds the copied report and links to it, under the app's base path", async () => {
+        serve({ ...COVERAGE, report: true });
+        const wrapper = await mountSuspended(Page);
+
         expect(wrapper.find("iframe").attributes("src")).toContain("/embed/coverage/index.html");
-        expect(wrapper.find("a").attributes("href")).toContain("/embed/coverage/index.html");
+        expect(wrapper.find("a[target=_blank]").attributes("href")).toBe(
+            wrapper.find("iframe").attributes("src"),
+        );
+    });
+
+    it("shows no report frame until the collector has copied one in", async () => {
+        serve(COVERAGE);
+        const wrapper = await mountSuspended(Page);
+
+        expect(wrapper.find("iframe").exists()).toBe(false);
     });
 });

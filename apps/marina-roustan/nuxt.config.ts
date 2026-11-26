@@ -7,6 +7,9 @@ export default defineNuxtConfig({
 
     devtools: false,
 
+    // `@nuxt/schema` 4.6 resolves an unset host to `{}`, which `nuxt dev` then crashes on
+    devServer: { host: "localhost" },
+
     app: {
         head: {
             htmlAttrs: { lang: "es" },

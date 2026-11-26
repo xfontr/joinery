@@ -1,14 +1,14 @@
 import { KIND_LABELS, type WorkflowMap } from "./filing.ts";
 import { CAPABILITY_LABEL_PREFIX } from "./snapshot.ts";
 
-export interface SetupPlan {
+interface SetupPlan {
     /** Null when the milestone already exists. */
     milestone: string | null;
     labels: string[];
 }
 
 /** Every label filing this project's switched-on, unsettled blocks will put on a ticket. */
-export const labelsFor = (map: WorkflowMap): string[] => {
+const labelsFor = (map: WorkflowMap): string[] => {
     const blocks = map.blocks.filter((block) => map.isOn(block) && !map.settled.has(block.id));
 
     return [

@@ -1,6 +1,6 @@
 {
-  "name": "@monorepo/developer-portal",
-  "description": "the repository's public portal/front door over its docs, projects, architecture and engineering health",
+  "name": "@joinery/developer-portal",
+  "description": "the repository's developer portal over its docs, projects, architecture, workflows and engineering health",
   "private": true,
   "type": "module",
   "imports": {
@@ -15,6 +15,7 @@
     "test": "vitest . --watch=false",
     "test:dev": "vitest .",
     "test:coverage": "vitest . --watch=false --coverage",
+    "test:e2e": "playwright test",
     "collect": "node tools/collect/index.ts"
   },
   "nx": {
@@ -34,6 +35,17 @@
           "runtime": "node apps/developer-portal/tools/lib/snapshotStamp.ts"
         }
       ]
+    },
+    "targets": {
+      "test:e2e": {
+        "inputs": [
+          "default",
+          "^production",
+          {
+            "env": "CI"
+          }
+        ]
+      }
     }
   },
   "dependencies": {
@@ -41,22 +53,31 @@
     "@iconify-json/lucide": "^1.2.128",
     "@nuxt/content": "^3.16.0",
     "@nuxt/ui": "^4.11.0",
+    "@nuxtjs/i18n": "catalog:",
+    "@nuxtjs/robots": "^7.0.2",
+    "@vueuse/core": "^15.0.0",
     "nuxt": "catalog:",
+    "nuxt-seo-utils": "^9.0.2",
     "vue": "catalog:",
     "vue-draggable-plus": "^0.6.1",
+    "vue-router": "^5.4.0",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
-    "@monorepo/configs": "workspace:*",
+    "@joinery/configs": "workspace:*",
     "@nuxt/test-utils": "^4.3.2",
+    "@playwright/test": "catalog:",
     "@types/node": "catalog:",
+    "@types/serve-handler": "^6.1.4",
     "@vitest/coverage-v8": "catalog:",
     "@vue/test-utils": "^2.4.11",
     "eslint": "catalog:",
     "happy-dom": "^21.0.1",
+    "serve-handler": "^6.1.8",
     "tailwindcss": "^4.3.3",
     "typescript": "catalog:",
     "vitest": "catalog:",
-    "vue-tsc": "catalog:"
+    "vue-tsc": "catalog:",
+    "wrangler": "^4.166.0"
   }
 }

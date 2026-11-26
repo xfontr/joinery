@@ -10,8 +10,6 @@ const command = (invocation: string, source: string, token: string): Capability 
 });
 
 describe("mentions", () => {
-    // `pnpm release` is deliberately undocumented (releases run from the Release workflow), so a
-    // doc that only covers `release:dry` must not make its row look answered.
     it("does not let a longer script name satisfy the shorter one it starts with", () => {
         expect(mentions("Locally: `pnpm release:dry`", "release")).toBe(false);
         expect(mentions("| `pnpm test:coverage` |", "test")).toBe(false);
@@ -50,22 +48,20 @@ describe("rootCommands", () => {
 });
 
 describe("projectCommands", () => {
-    // Eight projects times five standard targets would bury the handful of commands that are
-    // actually specific to one project.
     it("drops the targets every project declares, leaving only what is specific to one", () => {
         const rows = projectCommands(
-            [{ root: "packages/ui", name: "@monorepo/ui", scripts: ["lint", "test", "storybook"] }],
+            [{ root: "packages/ui", name: "@joinery/ui", scripts: ["lint", "test", "storybook"] }],
             [],
         );
 
         expect(rows).toEqual([
-            command("pnpm exec nx storybook @monorepo/ui", "packages/ui/package.json", "storybook"),
+            command("pnpm exec nx storybook @joinery/ui", "packages/ui/package.json", "storybook"),
         ]);
     });
 
     it("drops a script the root already exposes, so one capability never gets two invocations", () => {
         const rows = projectCommands(
-            [{ root: "infrastructure/scripts", name: "@monorepo/scripts", scripts: ["issue:add"] }],
+            [{ root: "infrastructure/scripts", name: "@joinery/scripts", scripts: ["issue:add"] }],
             ["issue:add"],
         );
 
@@ -108,7 +104,6 @@ describe("documentedBy", () => {
         );
     });
 
-    // Nearness alone sent skills to a sibling skill, and ranking alone to whichever README named them.
     it.each([
         { other: ".claude/skills/doc-drift-check/SKILL.md", text: "follow the house-docs skill" },
         {
@@ -136,7 +131,7 @@ describe("documentedBy", () => {
             },
         ];
         const capability = command(
-            "pnpm exec nx storybook @monorepo/ui",
+            "pnpm exec nx storybook @joinery/ui",
             "packages/ui/package.json",
             "storybook",
         );

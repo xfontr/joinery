@@ -1,7 +1,8 @@
 ---
 issue: 144
 status: implemented
-decision: accepted
+decision: superseded
+supersededBy: 0039-developer-portal-benchmark.md
 ---
 
 # 🧭 The developer portal gets one intent-led public front door
@@ -121,6 +122,6 @@ permissions for different authenticated users. The public, read-only site has ne
 | Project purpose is sourced rather than copied | `rg -n "queryCollection\(\"docs\"\)|description" apps/developer-portal/app/pages/projects.vue` finds the README query, and no new portal-owned project catalog file exists |
 | The accessible architecture precedes the expert graph | `rg -n "How the pieces fit|Detailed Nx graph" apps/developer-portal/app/pages/graph.vue` returns the two headings in that order |
 | Public indexing is no longer explicitly blocked | `rg -n "noindex" apps/developer-portal` returns no hit outside historical decision reports |
-| Existing routes and static hosting still work | `pnpm exec nx build-static @monorepo/developer-portal` prerenders `/`, `/projects`, `/graph`, `/docs`, `/issues`, `/changelog`, `/coverage`, `/deps`, `/reviews` and `/scorecards` |
-| The app remains valid | `pnpm exec nx run-many -t lint typecheck test --projects=@monorepo/developer-portal` passes |
+| Existing routes and static hosting still work | `pnpm exec nx build-static @joinery/developer-portal` prerenders `/`, `/projects`, `/graph`, `/docs`, `/issues`, `/changelog`, `/coverage`, `/deps`, `/reviews` and `/scorecards` |
+| The app remains valid | `pnpm exec nx run-many -t lint typecheck test --projects=@joinery/developer-portal` passes |
 | The public-surface documentation agrees with the implementation | Run the `doc-drift-check` skill against `apps/developer-portal/README.md`, then `pnpm docs:map --check` |

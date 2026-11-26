@@ -1,44 +1,36 @@
-# 📦 @monorepo/observability
+# 📦 @joinery/observability
 
-Shared browser and server telemetry setup: Grafana Faro for web applications and OpenTelemetry for
-Node services. It keeps initialization consistent across applications.
+Thin wrappers over Grafana Faro (browser) and the OpenTelemetry SDK (Node), so every app starts
+telemetry the same way. Both land in Grafana Cloud's Tempo, so a browser span and the server span it
+caused share a trace.
 
 ```ts
-import { startWebTelemetry } from "@monorepo/observability";
+import { startWebTelemetry } from "@joinery/observability";
 
 const faro = startWebTelemetry({
     url: "<faro-collector-url>",
-    app: { name: "@monorepo/huella-legal", version: "1.0.0", environment: "production" },
+    app: { name: "@joinery/huella-legal", version: "1.0.0", environment: "production" },
 });
 
 faro.api.pushError(new Error("boom"));
 ```
 
 ```ts
-import { startNodeTelemetry } from "@monorepo/observability/node";
+import { startNodeTelemetry } from "@joinery/observability/node";
 
 const provider = startNodeTelemetry({
     url: "<otlp-gateway-url>",
     instanceId: "123456",
     token: "glc_…",
-    app: { name: "@monorepo/huella-legal", version: "1.0.0", environment: "production" },
+    app: { name: "@joinery/huella-legal", version: "1.0.0", environment: "production" },
 });
 ```
 
-That is the whole package — [`src/index.ts`](./src/index.ts) and [`src/node.ts`](./src/node.ts).
-Both are wrappers over their vendor, not an abstraction over telemetry vendors: no ports, no
-adapters, no registry. The config is whatever Faro and the OpenTelemetry SDK take.
+That's the whole package: [`src/index.ts`](./src/index.ts) and [`src/node.ts`](./src/node.ts). The
+two entries must never import each other — one needs `window`, the other Node built-ins.
+[`@joinery/huella-legal`](../../apps/huella-legal/README.md#observability) is the worked example.
 
-The two entries must stay apart. Faro touches `window`; the Node one pulls in `diagnostics_channel`,
-`node:async_hooks` and a protobuf exporter. Importing one from the other would drag either set into
-the wrong bundle.
-
-For a worked example, [`@monorepo/huella-legal`](../../apps/huella-legal) calls both — the browser one from
-`app/plugins/observability.client.ts`, the Node one from `server/plugins/observability.ts` — and
-skips the call entirely when no collector URL is set, so local dev sends nothing without needing a
-flag.
-
-## 📥 What you get for free
+## What you get for free
 
 **Browser.** `getWebInstrumentations()` covers errors, unhandled rejections, web vitals, console and
 session tracking. `TracingInstrumentation` adds fetch/XHR spans and registers a global OpenTelemetry
@@ -53,39 +45,23 @@ stamped with `service.name`, `service.version` and `deployment.environment.name`
 
 The inbound span is *not* included — see the gotcha below.
 
-## ⚠️ Gotchas
+## Gotchas
 
 - **Browser only for the default entry.** Faro touches `window` while initializing, so it must not
   run during SSR — in Nuxt that means a `.client` plugin.
-- **No inbound span. The caller opens it.** `HttpInstrumentation` is deliberately not installed,
-  because it cannot work here: patching `node:http` under ESM needs
-  `--import @opentelemetry/instrumentation/hook.mjs` preloaded, and under Nitro the module is
-  imported before any server plugin runs anyway. Shipping it would only add a dependency and a
-  startup warning. So outbound fetches would report as their own root traces unless the caller
-  opens a request span to hang them on — see [`@monorepo/huella-legal`](../../apps/huella-legal/server/plugins/observability.ts),
-  which wraps `nitroApp.h3App.handler`. `UndiciInstrumentation` is unaffected by all of this: it
-  listens on `diagnostics_channel` rather than patching a module.
+- **No inbound span. The caller opens it.** `HttpInstrumentation` can't patch `node:http` under ESM
+  without a preload, and Nitro imports it before any plugin runs. Without a request span, outbound
+  fetches become root traces — [huella-legal](../../apps/huella-legal/server/plugins/observability.ts)
+  wraps `nitroApp.h3App.handler` to open one.
 - **`app.version` is the caller's to supply.** Telemetry stamped `0.0.0` cannot be attributed to a
   release.
-- **Stack traces arrive minified.** De-obfuscating them needs source maps uploaded from the caller's
-  own build — a bundler concern, not a runtime one, so it would live in the app rather than here. No
-  app does it yet.
+- **Stack traces arrive minified.** No app uploads source maps yet.
+- **The first page load's server trace stands alone**: a document navigation carries no
+  `traceparent`. Everything fetched afterwards joins up.
 
-## 🛰️ Where the data goes
+## Known gaps
 
-Two endpoints, one backend. The browser posts Faro's own payload to the Faro collector; the server
-posts OTLP to the Grafana Cloud OTLP gateway, authenticating with `instanceId:token` as basic
-credentials. Both land in Tempo, which is why a browser span and the server span it caused end up
-on the same trace.
-
-The exception is the first page load: an SSR document request is a navigation, not a `fetch`, so it
-carries no `traceparent` and its server trace stands alone. Everything the page fetches afterwards
-joins up.
-
-## 🧭 Deliberately deferred
-
-| Later need | What changes |
+| Gap | Note |
 | --- | --- |
-| Cross-origin trace propagation | Every browser request today is same-origin — its own Nitro server — which Faro already propagates `traceparent` on. The day the browser calls another origin directly, pass it as Faro's `propagateTraceHeaderCorsUrls`, or the header is dropped and the trace splits in two |
-| Metrics | `service.name` is on every span, so RED metrics can be derived in Grafana without a second signal. Heap and lag graphs mean adding a `MeterProvider` beside the `./node` entry's `NodeTracerProvider`, plus `@opentelemetry/instrumentation-runtime-node` for event-loop and GC |
-| Node telemetry for [`infrastructure/translations`](../../infrastructure/translations) | The `./node` entry fits it as-is, with the same caveat as any ESM service: outbound fetch spans and propagation, but the inbound span is the caller's to open |
+| Cross-origin propagation | Today every browser request is same-origin. Calling another origin needs Faro's `propagateTraceHeaderCorsUrls` |
+| No metrics | RED metrics can be derived from spans in Grafana; runtime metrics need a `MeterProvider` |

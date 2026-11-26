@@ -1,5 +1,5 @@
-import type { Entry } from "@monorepo/content";
-import { fakeAuthor, fakeEntry } from "@monorepo/content/testing";
+import type { Entry } from "@joinery/content";
+import { fakeAuthor, fakeEntry } from "@joinery/content/testing";
 import { describe, expect, it } from "vitest";
 import { toArticleSummary } from "./articleSummary";
 import { toCitations } from "./citation";
@@ -41,7 +41,6 @@ describe("toCitations", () => {
         expect(citations["APA 7"]).not.toContain("02/2024");
     });
 
-    // 23:30 UTC on the 11th is already the 12th in Madrid, which is the day the journal published it
     it("dates the citation in the journal's time zone, not the server's", () => {
         expect(cite({ publishedAt: "2024-03-11T23:30:00Z" })["APA 7"]).toContain(
             "(2024, 12 de marzo)",

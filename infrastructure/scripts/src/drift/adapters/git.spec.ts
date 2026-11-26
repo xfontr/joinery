@@ -33,9 +33,8 @@ describe("drift git adapter", () => {
         expect(diffNameStatus("master", "HEAD", "packages/demo")).toEqual(["M\tfile"]);
         expect(diffText("master", "HEAD", "packages/demo")).toBe("diff text");
         expect(lastMdCommitEpochSeconds("packages/demo")).toBe("123");
-        expect(gitApi.git).toHaveBeenNthCalledWith(2, "diff", "--name-only", "master..HEAD");
-        expect(gitApi.git).toHaveBeenNthCalledWith(
-            3,
+        expect(gitApi.git).toHaveBeenCalledWith("diff", "--name-only", "master..HEAD");
+        expect(gitApi.git).toHaveBeenCalledWith(
             "diff",
             "--numstat",
             "master..HEAD",

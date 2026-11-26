@@ -43,6 +43,18 @@
                         "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/guard-live.sh",
                         "timeout": 5,
                         "statusMessage": "Guarding live systems"
+                    },
+                    {
+                        "type": "command",
+                        "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/workflow-close.sh",
+                        "timeout": 10,
+                        "statusMessage": "Checking the PR closes its workflow block"
+                    },
+                    {
+                        "type": "command",
+                        "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/lab-checklist.sh",
+                        "timeout": 20,
+                        "statusMessage": "Checking the lab checklist is ticked"
                     }
                 ]
             }
@@ -62,6 +74,17 @@
                         "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/check-invariants.sh",
                         "timeout": 15,
                         "statusMessage": "Checking repo invariants"
+                    }
+                ]
+            }
+        ],
+        "SessionEnd": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/reap-processes.sh",
+                        "timeout": 5
                     }
                 ]
             }

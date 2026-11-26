@@ -23,10 +23,12 @@ interface Props {
 
 const { days, usage, busiest } = defineProps<Props>();
 
+const { t } = useI18n();
+
 const cells = computed(() =>
     days.map((day, index) => {
         const { runs = 0, failures = 0 } = usage[index] ?? {};
-        const failed = failures > 0 ? ` · ${failures} failed` : "";
+        const named = { day: calendarDay(day), runs: t("telemetryDayStrip.runs", runs), failures };
 
         return {
             day,
@@ -34,7 +36,10 @@ const cells = computed(() =>
                 background: heatColor("--usage-runs", runs, busiest),
                 boxShadow: failures > 0 ? FAILED_MARK : undefined,
             },
-            label: `${calendarDay(day)} · ${runs} ${runs === 1 ? "run" : "runs"}${failed}`,
+            label:
+                failures > 0
+                    ? t("telemetryDayStrip.cellFailed", named)
+                    : t("telemetryDayStrip.cell", named),
         };
     }),
 );

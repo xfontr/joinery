@@ -20,7 +20,7 @@ decouple.
 ## Result
 
 **The pattern already exists here, unnamed, in two places**, which is the first finding: OpenTelemetry's
-`traceparent` propagation in [`@monorepo/observability`](../../packages/observability/README.md) lets
+`traceparent` propagation in [`@joinery/observability`](../../packages/observability/README.md) lets
 a browser span and a server span agree on one trace with no call between them, and
 [`apps/developer-portal`](../../apps/developer-portal/README.md)'s `.report/` snapshot lets `tools/collect` write
 once and every page, composable and `server/api/` route read a slice, with neither side calling the
@@ -48,7 +48,7 @@ consumer to decouple it for. And splitting the dashboard's `.report/` snapshot i
 per-feature facts would not remove any coupling either, because `tools/collect` is already the
 single producer for all of it.
 
-`@monorepo/content` and `@monorepo/i18n` were also checked, on the original hunch that Nuxt
+`@joinery/content` and `@joinery/i18n` were also checked, on the original hunch that Nuxt
 assumptions leak into their domain logic — they don't: both already enforce a framework-agnostic
 `core/` behind ports and adapters, with the Nuxt module as a separate entry point `core/` cannot
 see, checked by module resolution rather than discipline. `apps/huella-legal` has no

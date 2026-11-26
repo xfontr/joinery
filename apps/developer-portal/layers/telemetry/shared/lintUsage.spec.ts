@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { neverFired, parseDisables, summarizeLint } from "./lintUsage.ts";
+import { neverFired, parseDisables, ruleCounts, summarizeLint } from "./lintUsage.ts";
 import type { LintRuleUsage } from "#layers/snapshot/shared/types/LintRuleUsage.ts";
 import type { LintUsage } from "#layers/snapshot/shared/types/LintUsage.ts";
 import type { UsageRecord } from "./usage.ts";
@@ -110,5 +110,24 @@ describe("neverFired", () => {
 
     it("lists a rule whose only hits fell out of the window", () => {
         expect(neverFired(lint({ old: rule({ hits: 9, recent: 0 }) }))).toEqual(["old"]);
+    });
+});
+
+describe("ruleCounts", () => {
+    it("counts only switched-on rules, and the in-house ones among them", () => {
+        const counts = ruleCounts(
+            lint({
+                "no-console": rule(),
+                "joinery/no-build-step": rule(),
+                "joinery/retired": rule({ enabled: false }),
+            }),
+        );
+
+        expect(counts).toEqual({ enabled: 2, inHouse: 1 });
+    });
+
+    it("has no counts to state when nothing was collected or nothing is on", () => {
+        expect(ruleCounts(undefined)).toBeNull();
+        expect(ruleCounts(lint({ off: rule({ enabled: false }) }))).toBeNull();
     });
 });

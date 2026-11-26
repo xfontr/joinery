@@ -8,13 +8,15 @@ const files = vi.hoisted(() => ({
     exists: vi.fn(() => true),
     projectDirs: vi.fn(() => ["apps/huella-legal", "infrastructure/scripts"]),
 }));
-const io = vi.hoisted(() => ({ out: { info: vi.fn() } }));
 vi.mock("./adapters/gh.ts", () => gh);
 vi.mock("./adapters/git.ts", () => git);
 vi.mock("./adapters/files.ts", () => files);
-vi.mock("../shared/adapters/io.ts", () => io);
+vi.mock("../shared/adapters/io.ts");
 
 import { brief } from "./brief.ts";
+import * as ioModule from "../shared/adapters/io.ts";
+
+const io = vi.mocked(ioModule, true);
 
 const thread = (number: number): IssueThread => ({
     number,

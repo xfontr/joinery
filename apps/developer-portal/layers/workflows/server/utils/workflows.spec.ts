@@ -2,6 +2,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { diaryHeader } from "../../shared/workflows.ts";
 import { applyEdit, loadWorkflows } from "./workflows.ts";
 
 const TEMPLATE = `id: site
@@ -241,6 +242,33 @@ describe("applyEdit create", () => {
 
         expect(problems).toEqual([]);
         expect(shop?.extras).toMatchObject([{ id: "services-page", complexity: 5 }]);
+    });
+
+    it("opens a diary beside the new project, so its run is written down from the start", async () => {
+        const create = { action: "create", project: "shop", title: "Shop", template: "site" };
+
+        await expect(applyEdit({ ...create, milestone: "Shop" })).resolves.toBeNull();
+
+        const diary = await readFile(join(dir, "projects", "shop.diary.md"), "utf8");
+        expect(diary).toBe(diaryHeader("Shop"));
+    });
+
+    it("keeps the diary a dropped project of the same id left, instead of erasing it", async () => {
+        const kept = "- 2026-01-01 10:00 · stop · Dropped\n";
+        await writeFile(join(dir, "projects", "shop.diary.md"), kept);
+
+        await expect(
+            applyEdit({
+                action: "create",
+                project: "shop",
+                title: "Shop",
+                template: "site",
+                milestone: "Shop",
+            }),
+        ).resolves.toBeNull();
+
+        const diary = await readFile(join(dir, "projects", "shop.diary.md"), "utf8");
+        expect(diary).toBe(kept);
     });
 
     it.each([

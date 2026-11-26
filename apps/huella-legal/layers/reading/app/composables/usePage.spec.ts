@@ -1,7 +1,6 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { serveEndpoint, withSetup } from "@joinery/configs/vitest/utils/nuxt";
+import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { NuxtError } from "#app";
-import { defineComponent, ref, type Ref } from "vue";
 import { usePage } from "./usePage";
 
 const PAGE: Page = {
@@ -13,20 +12,9 @@ const PAGE: Page = {
 };
 
 const nuxt = vi.hoisted(() => ({
-    url: "",
-    page: undefined as unknown as Ref<Page | undefined>,
-    error: undefined as unknown as Ref<NuxtError | undefined>,
     seo: {} as Record<string, unknown>,
     signedTitle: undefined as unknown as () => string | undefined,
 }));
-
-mockNuxtImport("useCachedFetch", () => (url: string) => {
-    nuxt.url = url;
-
-    const result = { data: nuxt.page, error: nuxt.error };
-
-    return Object.assign(Promise.resolve(result), result);
-});
 
 mockNuxtImport("useSeoMeta", () => (input: Record<string, unknown>) => {
     nuxt.seo = input;
@@ -36,58 +24,40 @@ mockNuxtImport("useSeoTitleTemplate", () => (seoTitle: () => string | undefined)
     nuxt.signedTitle = seoTitle;
 });
 
-const setUp = async (route = "/aviso-legal/") => {
-    let failure: unknown;
-
-    await mountSuspended(
-        defineComponent({
-            setup: async () => {
-                try {
-                    await usePage();
-                } catch (error) {
-                    failure = error;
-                }
-
-                return () => null;
-            },
-        }),
-        { route },
+const setUp = (route = "/aviso-legal/") =>
+    withSetup(() => usePage(), { route }).then(
+        () => ({ failure: undefined }),
+        (failure: unknown) => ({ failure }),
     );
-
-    return { failure };
-};
 
 const seo = (field: string) => (nuxt.seo[field] as () => unknown)();
 
+const serve = (answer: () => unknown, slug = "aviso-legal") => {
+    serveEndpoint(`/api/pages/${slug}`, answer);
+};
+
+// useCachedFetch serves a payload it already holds, which would outlive the test that fetched it
 beforeEach(() => {
-    nuxt.url = "";
-    nuxt.page = ref(PAGE);
-    nuxt.error = ref();
     nuxt.seo = {};
+    clearNuxtData();
 });
 
 describe("usePage", () => {
     it("reads the page named by the route", async () => {
-        await setUp();
+        serve(() => PAGE);
 
-        expect(nuxt.url).toBe("/api/pages/aviso-legal");
+        expect((await setUp()).failure).toBeUndefined();
+        expect(seo("title")).toBe("Aviso legal");
     });
 
-    // Thrown during setup, so server rendering answers with the route's own status
     it("throws a fatal 404 when WordPress has no page by the slug", async () => {
-        nuxt.error.value = createError(
-            Object.assign(new Error("Not found"), {
-                statusCode: 404,
-                statusMessage: "Not found",
-                response: { status: 404 },
-            }),
-        );
+        serve(() => new Response("Not found", { status: 404 }));
 
         expect((await setUp()).failure).toMatchObject({ status: 404, fatal: true });
     });
 
     it("prefers the CMS's SEO title and description over the page's own", async () => {
-        nuxt.page.value = { ...PAGE, seo: { title: "Aviso | Huella", description: "Resumen" } };
+        serve(() => ({ ...PAGE, seo: { title: "Aviso | Huella", description: "Resumen" } }));
 
         await setUp();
 
@@ -95,19 +65,23 @@ describe("usePage", () => {
     });
 
     it("tells the title template which title the CMS wrote", async () => {
-        nuxt.page.value = { ...PAGE, seo: { title: "Aviso | Huella" } };
+        serve(() => ({ ...PAGE, seo: { title: "Aviso | Huella" } }));
 
         await setUp();
 
         expect(nuxt.signedTitle()).toBe("Aviso | Huella");
     });
 
-    it("falls back to the title, and indexes the page unless the CMS says noindex", async () => {
+    it("falls back to the page's title and indexes the page", async () => {
+        serve(() => PAGE);
         await setUp();
 
         expect([seo("title"), seo("robots")]).toEqual(["Aviso legal", undefined]);
+    });
 
-        nuxt.page.value = { ...PAGE, seo: { noindex: true } };
+    it("keeps a page the CMS marks noindex out of the index", async () => {
+        serve(() => ({ ...PAGE, seo: { noindex: true } }));
+        await setUp();
 
         expect(seo("robots")).toBe("noindex");
     });

@@ -1,24 +1,229 @@
-import { mountSuspended, mockNuxtImport } from "@nuxt/test-utils/runtime";
-import type { VueWrapper } from "@vue/test-utils";
-import { nextTick, ref } from "vue";
+import { serveEndpoint } from "@joinery/configs/vitest/utils/nuxt";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { flushPromises, type VueWrapper } from "@vue/test-utils";
+import { defineComponent, h } from "vue";
 import { parse } from "yaml";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
-import Page from "./new.vue";
+import { NuxtPage } from "#components";
+import { assembleWorkflows, type Workflows } from "#layers/workflows/shared/workflows.ts";
 
-const state = vi.hoisted(() => ({
-    data: null as unknown,
-    editable: true,
-    edit: vi.fn(),
-    navigateTo: vi.fn(),
-    leaveGuard: null as null | ((to: { fullPath: string }) => boolean),
-}));
-mockNuxtImport("useWorkflows", () => () => ({ data: state.data }));
-mockNuxtImport("useWorkflowEdit", () => () => ({ editable: state.editable, edit: state.edit }));
-mockNuxtImport("navigateTo", () => state.navigateTo);
-mockNuxtImport("onBeforeRouteLeave", () => (guard: typeof state.leaveGuard) => {
-    state.leaveGuard = guard;
-});
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
+    },
+    newProject: {
+        errors: {
+            milestone: "Already {project}'s milestone",
+        },
+        none: "None",
+        pageItem: "{title} ({type})",
+        pageProblems: {
+            untitled: "Name the page, or remove it",
+        },
+        review: {
+            area: "Area label",
+            complexity: "Complexity",
+            complexityValue: "{points} SP",
+            featuresOn: "Features on",
+            id: "Id",
+            leftOut: "Left out",
+            milestone: "Milestone",
+            pages: "Pages",
+            summary: "Summary",
+            template: "Template",
+            tickets: "Tickets",
+            ticketsValue: "{size}, {count} for {blocks} blocks",
+            title: "Title",
+        },
+        steps: {
+            details: {
+                hint: "The id, milestone and area label follow the title until you change them.",
+                question: "What is it called?",
+                title: "Details",
+            },
+            features: {
+                hint: "Leaving one out takes its blocks out of the map; the ticket count beside it follows. You can change this later in Settings.",
+                question: "Which features does it need?",
+                title: "Features",
+            },
+            pages: {
+                hint: "Add a layout once, not each page on it: the legal and about pages on one layout are one page template. Each becomes a block with its own estimate.",
+                question: "Which page templates, custom pages and blogs does it have?",
+                title: "Pages",
+            },
+            review: {
+                hint: "Nothing goes to GitHub. The project file is all that gets written.",
+                question: "Ready to create it?",
+                title: "Review",
+            },
+            template: {
+                hint: "The template is the map of blocks the project starts from. It can't be changed later.",
+                question: "What are you building?",
+                title: "Template",
+            },
+        },
+    },
+    pageHeader: {
+        breadcrumb: "Breadcrumb",
+        wordmark: "joinery",
+    },
+    ticketSize: {
+        block: {
+            summary: "One ticket per block, or its suggested ones, each PR reviewed by hand",
+            title: "Reviewed",
+        },
+        fast: {
+            summary: "Tickets of up to {width} SP, and the spikes together; sign-offs stay apart",
+            title: "Fast",
+            warning:
+                "Meant for AI-run projects, putting speed over code quality: for internal tools and experiments.",
+        },
+        supervised: {
+            summary:
+                "A stage's build blocks share tickets of up to {width} SP; spikes and sign-offs stay apart",
+            title: "Supervised",
+        },
+    },
+    wizardDetails: {
+        area: {
+            help: "Where its code lives",
+            label: "Area label",
+        },
+        id: {
+            help: "kebab-case; the file name",
+            label: "Id",
+        },
+        milestone: {
+            help: "Its tickets live here",
+            label: "Milestone",
+        },
+        summary: {
+            help: "One line on what the site is and who reads it",
+            label: "Summary",
+        },
+        title: {
+            label: "Title",
+            placeholder: "Harbour Notes",
+        },
+    },
+    wizardFooter: {
+        back: "Back",
+        create: "Create project",
+        download: "Download YAML",
+        next: "Next",
+        readOnly: {
+            description:
+                "This portal is a read-only snapshot. Download the file and add it to data/workflows/projects/{id}.yaml in a pull request.",
+            title: "You're not authorised to create projects here",
+        },
+    },
+    wizardReview: {
+        graph: "Dependency graph",
+    },
+    wizardSummary: {
+        ticketSize: "Ticket size",
+        units: {
+            blocks: "blocks",
+            points: "SP",
+            tickets: "tickets",
+        },
+        untitled: "Untitled project",
+    },
+    workflow: {
+        fallback: "Workflow",
+    },
+    workflowActions: {
+        never: "Never synced — run {setup} then {sync}",
+    },
+    workflowEstimateReceipt: {
+        core: "Core build",
+        label: "Estimate breakdown",
+        points: "{points} SP",
+        title: "What's in it",
+        total: "Total",
+        unnamed: "Unnamed page",
+    },
+    workflowFeaturePicker: {
+        points: "{points} SP",
+    },
+    workflowGraph: {
+        details: "Details for {title}",
+        fit: "Fit the selected path",
+        full: "Full screen",
+        node: "{title}, {state}",
+        zoomIn: "Zoom in",
+        zoomOut: "Zoom out",
+    },
+    workflowLeaveModal: {
+        stay: "Stay",
+    },
+    workflowNew: {
+        cancel: "Cancel",
+        leave: {
+            action: "Leave without creating",
+            description: "Nothing picked on this page is in a project file yet.",
+            title: "Leave without creating?",
+        },
+        title: "New project",
+    },
+    workflowNewProjectCard: {
+        label: "New project",
+    },
+    workflowPagePicker: {
+        add: "{type} · {points} SP",
+        name: "{type} name",
+        points: "{points} SP",
+        remove: "Remove {page}",
+    },
+    workflowProjects: {
+        empty: "No project under {folder} yet.",
+        title: "Projects",
+    },
+    workflowTemplatePicker: {
+        counts: "{blocks} blocks by default · {fast}–{block} tickets · {points} SP",
+        legend: "Template",
+    },
+    workflowTemplates: {
+        title: "Templates",
+    },
+    workflowTicketSizePicker: {
+        legend: "Ticket size",
+    },
+    workflows: {
+        capabilityState: {
+            "can-file": "Can file now",
+        },
+        crumb: "workflows",
+        guide: "How workflows work",
+        intro: "A workflow is a map of every block a kind of project needs and what each one needs first, learned from the ones already shipped. Each project picks its features, files the blocks as GitHub tickets with their blocked-by links, and from then on GitHub says where it stands.",
+        missing: "No project {id} under {folder}.",
+        title: "Workflows",
+    },
+};
+
+const editing = vi.hoisted(() => ({ editable: true, edit: vi.fn() }));
+mockNuxtImport("useWorkflowEdit", () => () => editing);
 
 const TEMPLATE = {
     id: "new-website",
@@ -29,29 +234,6 @@ const TEMPLATE = {
         { id: "post-page", stage: "build", group: "blog", title: "Post page" },
         { id: "search", stage: "build", title: "Search", optional: true, default: false },
     ],
-};
-
-const global = {
-    stubs: {
-        UDashboardPanel: {
-            template: "<section><slot name='header' /><slot name='body' /></section>",
-        },
-        UDashboardNavbar: { template: "<header><slot name='right' /></header>" },
-        UDashboardSidebarCollapse: true,
-        UStepper: true,
-        UButton: {
-            props: { label: String, disabled: Boolean },
-            emits: ["click"],
-            template: "<button :disabled='disabled' @click=\"$emit('click')\">{{ label }}</button>",
-        },
-        UIcon: true,
-        UTooltip: { template: "<span><slot /></span>" },
-        UModal: {
-            props: { open: Boolean },
-            template:
-                "<dialog v-if='open' open><slot name='body' /><slot name='footer' /></dialog>",
-        },
-    },
 };
 
 const button = (wrapper: VueWrapper, label: string) =>
@@ -68,18 +250,41 @@ const choice = (wrapper: VueWrapper, legend: string, title: string) =>
         .find((option) => option.text().startsWith(title))
         ?.find("input");
 
+const templates = (template: object = TEMPLATE): Workflows =>
+    assembleWorkflows([{ file: "new-website.yaml", ok: true, value: template }], [], {});
+
+const Routed = defineComponent({ render: () => h(NuxtPage) });
+
+const open = async (data: Workflows = templates()) => {
+    serveEndpoint("/api/workflows", () => data);
+    const wrapper = await mountSuspended(Routed, { route: "/workflows/new" });
+    await flushPromises();
+    return wrapper;
+};
+
+const path = () => useRouter().currentRoute.value.path;
+
+const landsOn = (target: string) => vi.waitFor(() => expect(path()).toBe(target));
+
+const press = async (label: string) => {
+    [...document.body.querySelectorAll("[role=dialog] button")]
+        .find((candidate) => candidate.textContent?.trim() === label)!
+        .dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    await flushPromises();
+};
+
 beforeEach(() => {
-    vi.clearAllMocks();
-    state.editable = true;
-    state.edit.mockResolvedValue(true);
-    state.data = ref(
-        assembleWorkflows([{ file: "new-website.yaml", ok: true, value: TEMPLATE }], [], {}),
-    );
+    editing.editable = true;
+    editing.edit.mockReset().mockResolvedValue(true);
+});
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
 });
 
 describe("new project wizard", () => {
     it("writes the features and ticket size picked on the way, and nothing to GitHub", async () => {
-        const wrapper = await mountSuspended(Page, { global });
+        const wrapper = await open();
 
         await button(wrapper, "Next")?.trigger("click");
         await wrapper.find("input").setValue("Harbour Notes");
@@ -92,7 +297,7 @@ describe("new project wizard", () => {
         await button(wrapper, "Next")?.trigger("click");
         await button(wrapper, "Create project")?.trigger("click");
 
-        expect(state.edit).toHaveBeenCalledWith({
+        expect(editing.edit).toHaveBeenCalledWith({
             action: "create",
             project: "harbour-notes",
             template: "new-website",
@@ -104,20 +309,17 @@ describe("new project wizard", () => {
             ticketSize: "fast",
             extras: [],
         });
-        expect(state.navigateTo).toHaveBeenCalledWith("/workflows/harbour-notes");
-        expect(state.leaveGuard?.({ fullPath: "/workflows/harbour-notes" })).toBe(true);
+        await landsOn("/workflows/harbour-notes");
     });
 
     it("asks for pages on a template with page types and writes each as an extra of its type", async () => {
         const types = [{ id: "custom-page", stage: "build", title: "Custom page", complexity: 5 }];
-        state.data = ref(
-            assembleWorkflows(
-                [{ file: "new-website.yaml", ok: true, value: { ...TEMPLATE, types } }],
-                [],
-                {},
-            ),
+        const data = assembleWorkflows(
+            [{ file: "new-website.yaml", ok: true, value: { ...TEMPLATE, types } }],
+            [],
+            {},
         );
-        const wrapper = await mountSuspended(Page, { global });
+        const wrapper = await open(data);
 
         await button(wrapper, "Next")?.trigger("click");
         await wrapper.find("input").setValue("Harbour Notes");
@@ -136,30 +338,38 @@ describe("new project wizard", () => {
         await button(wrapper, "Next")?.trigger("click");
         await button(wrapper, "Create project")?.trigger("click");
 
-        expect(state.edit).toHaveBeenCalledWith(
+        expect(editing.edit).toHaveBeenCalledWith(
             expect.objectContaining({
                 extras: [{ id: "services-page", type: "custom-page", title: "Services" }],
             }),
         );
     });
 
+    it("lets a wizard nobody started be left at once", async () => {
+        await open();
+
+        await useRouter().push("/workflows");
+
+        await vi.waitFor(() => expect(path()).toBe("/workflows"));
+    });
+
     it("holds a navigation away from a started wizard until the user leaves anyway", async () => {
-        const wrapper = await mountSuspended(Page, { global });
-        expect(state.leaveGuard?.({ fullPath: "/workflows" })).toBe(true);
-
+        const wrapper = await open();
         await button(wrapper, "Next")?.trigger("click");
-        expect(state.leaveGuard?.({ fullPath: "/workflows" })).toBe(false);
-        await nextTick();
 
-        await button(wrapper, "Leave without creating")?.trigger("click");
+        await useRouter().push("/workflows");
+        await flushPromises();
 
-        expect(state.navigateTo).toHaveBeenCalledWith("/workflows");
-        expect(state.leaveGuard?.({ fullPath: "/workflows" })).toBe(true);
-        expect(state.edit).not.toHaveBeenCalled();
+        expect(path()).toBe("/workflows/new");
+
+        await press("Leave without creating");
+
+        await landsOn("/workflows");
+        expect(editing.edit).not.toHaveBeenCalled();
     });
 
     it("keeps the ticket size in view on every step, priced for the features picked so far", async () => {
-        const wrapper = await mountSuspended(Page, { global });
+        const wrapper = await open();
         const size = (title: string) =>
             options(wrapper, "Ticket size")
                 .find((option) => option.text().startsWith(title))
@@ -180,7 +390,7 @@ describe("new project wizard", () => {
     });
 
     it("maps only the blocks the picked features switch on, on the review step", async () => {
-        const wrapper = await mountSuspended(Page, { global });
+        const wrapper = await open();
         const mapped = () =>
             wrapper
                 .findAll("button[aria-pressed]")
@@ -197,7 +407,7 @@ describe("new project wizard", () => {
     });
 
     it("follows the title again once the id is cleared, instead of sticking at empty", async () => {
-        const wrapper = await mountSuspended(Page, { global });
+        const wrapper = await open();
 
         await button(wrapper, "Next")?.trigger("click");
         await wrapper.find("input").setValue("Harbour Notes");
@@ -209,25 +419,23 @@ describe("new project wizard", () => {
     });
 
     it("refuses another project's milestone on the details step, not at Create", async () => {
-        state.data = ref(
-            assembleWorkflows(
-                [{ file: "new-website.yaml", ok: true, value: TEMPLATE }],
-                [
-                    {
-                        file: "harbour.yaml",
-                        ok: true,
-                        value: {
-                            id: "harbour",
-                            title: "Harbour",
-                            template: "new-website",
-                            milestone: "Harbour Notes",
-                        },
+        const data = assembleWorkflows(
+            [{ file: "new-website.yaml", ok: true, value: TEMPLATE }],
+            [
+                {
+                    file: "harbour.yaml",
+                    ok: true,
+                    value: {
+                        id: "harbour",
+                        title: "Harbour",
+                        template: "new-website",
+                        milestone: "Harbour Notes",
                     },
-                ],
-                {},
-            ),
+                },
+            ],
+            {},
         );
-        const wrapper = await mountSuspended(Page, { global });
+        const wrapper = await open(data);
 
         await button(wrapper, "Next")?.trigger("click");
         await wrapper.find("input").setValue("Harbour Notes");
@@ -237,25 +445,23 @@ describe("new project wizard", () => {
     });
 
     it("starts on a template with blocks, even when a blank one sorts first", async () => {
-        state.data = ref(
-            assembleWorkflows(
-                [
-                    {
-                        file: "custom.yaml",
-                        ok: true,
-                        value: {
-                            id: "custom",
-                            title: "Custom",
-                            stages: [{ id: "build", title: "Build" }],
-                        },
+        const data = assembleWorkflows(
+            [
+                {
+                    file: "custom.yaml",
+                    ok: true,
+                    value: {
+                        id: "custom",
+                        title: "Custom",
+                        stages: [{ id: "build", title: "Build" }],
                     },
-                    { file: "new-website.yaml", ok: true, value: TEMPLATE },
-                ],
-                [],
-                {},
-            ),
+                },
+                { file: "new-website.yaml", ok: true, value: TEMPLATE },
+            ],
+            [],
+            {},
         );
-        const wrapper = await mountSuspended(Page, { global });
+        const wrapper = await open(data);
 
         expect(
             options(wrapper, "Template")
@@ -265,7 +471,7 @@ describe("new project wizard", () => {
     });
 
     it("won't move past the details until the project has a title", async () => {
-        const wrapper = await mountSuspended(Page, { global });
+        const wrapper = await open();
 
         await button(wrapper, "Next")?.trigger("click");
         await nextTick();
@@ -274,8 +480,8 @@ describe("new project wizard", () => {
     });
 
     it("runs the whole wizard on the static site but locks Create, which has no server to write through", async () => {
-        state.editable = false;
-        const wrapper = await mountSuspended(Page, { global });
+        editing.editable = false;
+        const wrapper = await open();
 
         await button(wrapper, "Next")?.trigger("click");
         await wrapper.find("input").setValue("Harbour Notes");
@@ -285,11 +491,11 @@ describe("new project wizard", () => {
 
         expect(button(wrapper, "Create project")?.attributes("disabled")).toBeDefined();
         expect(button(wrapper, "Download YAML")).toBeDefined();
-        expect(state.edit).not.toHaveBeenCalled();
+        expect(editing.edit).not.toHaveBeenCalled();
     });
 
     it("downloads the project file the dev server would have written", async () => {
-        state.editable = false;
+        editing.editable = false;
         const blobs: Blob[] = [];
         vi.spyOn(URL, "createObjectURL").mockImplementation((blob) => {
             blobs.push(blob as Blob);
@@ -297,7 +503,7 @@ describe("new project wizard", () => {
         });
         vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
         const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
-        const wrapper = await mountSuspended(Page, { global });
+        const wrapper = await open();
 
         await button(wrapper, "Next")?.trigger("click");
         await wrapper.find("input").setValue("Harbour Notes");
@@ -326,8 +532,8 @@ describe("new project wizard", () => {
     });
 
     it("stays on the wizard when the server refuses the project", async () => {
-        state.edit.mockResolvedValue(false);
-        const wrapper = await mountSuspended(Page, { global });
+        editing.edit.mockResolvedValue(false);
+        const wrapper = await open();
 
         await button(wrapper, "Next")?.trigger("click");
         await wrapper.find("input").setValue("Harbour Notes");
@@ -335,7 +541,7 @@ describe("new project wizard", () => {
         await button(wrapper, "Next")?.trigger("click");
         await button(wrapper, "Create project")?.trigger("click");
 
-        expect(state.edit).toHaveBeenCalled();
-        expect(state.navigateTo).not.toHaveBeenCalled();
+        expect(editing.edit).toHaveBeenCalled();
+        expect(path()).toBe("/workflows/new");
     });
 });

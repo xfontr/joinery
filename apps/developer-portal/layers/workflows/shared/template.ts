@@ -1,4 +1,5 @@
-import { cycleProblem, readCapability } from "./capability.ts";
+import { cycleProblem, readCapability, withStageNeeds } from "./capability.ts";
+import { STAGE_NEED_PREFIX } from "./constants.ts";
 import { isRecord, Reader } from "./reader.ts";
 import type { Capability } from "./types/Capability.ts";
 import type { Template } from "./types/Template.ts";
@@ -26,7 +27,12 @@ const referenceProblems = (
         );
     }
 
-    for (const dependency of capability.dependsOn.filter((id) => !known.capabilityIds.has(id))) {
+    const isKnown = (id: string) =>
+        known.capabilityIds.has(id) ||
+        (id.startsWith(STAGE_NEED_PREFIX) &&
+            known.stageIds.has(id.slice(STAGE_NEED_PREFIX.length)));
+
+    for (const dependency of capability.dependsOn.filter((id) => !isKnown(id))) {
         problems.push(
             `capability \`${capability.id}\` depends on \`${dependency}\`, which the template doesn't have`,
         );
@@ -76,7 +82,7 @@ const templateRuleProblems = ({ stages, groups, capabilities, types }: Template)
         ...[...capabilities, ...types].flatMap((capability) =>
             referenceProblems(capability, known),
         ),
-        ...cycleProblem(capabilities),
+        ...cycleProblem(withStageNeeds(capabilities)),
     ];
 };
 
@@ -146,3 +152,14 @@ export const readTemplate = (raw: unknown): { template: Template; problems: stri
 
     return { template, problems: [...reader.problems, ...templateRuleProblems(template)] };
 };
+
+/** Lessons written into the templates, on fixed and repeatable blocks alike. */
+export const lessonCount = (templates: readonly Template[]): number =>
+    templates.reduce(
+        (sum, template) =>
+            [...template.capabilities, ...template.types].reduce(
+                (count, block) => count + block.lessons.length,
+                sum,
+            ),
+        0,
+    );

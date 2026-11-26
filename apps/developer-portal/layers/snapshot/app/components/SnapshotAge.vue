@@ -12,19 +12,25 @@
             :class="failed ? 'tone-bad' : ''"
         />
 
-        <template v-if="!manifest">
-            Never collected — run
-            <code class="font-mono text-default"
-                >pnpm exec nx collect @monorepo/developer-portal</code
-            >
-        </template>
+        <I18nT v-if="!manifest" keypath="snapshotAge.never" scope="global">
+            <template #command>
+                <code class="font-mono text-default">{{ COLLECT }}</code>
+            </template>
+        </I18nT>
 
         <template v-else-if="failed">
-            {{ artifact }} failed to collect: {{ status?.error }}
+            {{ $t("snapshotAge.failed", { artifact, error: status?.error }) }}
         </template>
 
-        <span v-else :title="`At ${manifest.commit} on ${manifest.branch}`">
-            Collected {{ collected }}
+        <span
+            v-else
+            :title="$t('snapshotAge.at', { commit: manifest.commit, branch: manifest.branch })"
+        >
+            {{
+                source
+                    ? $t("snapshotAge.sourceCollected", { source, age: collected })
+                    : $t("snapshotAge.collected", { age: collected })
+            }}
         </span>
     </div>
 </template>
@@ -35,17 +41,20 @@ import type { Manifest } from "#layers/snapshot/shared/types/Manifest.ts";
 interface Props {
     manifest: Manifest | null;
     artifact?: string;
+    /** The command or file the figures come from, printed beside their age. */
+    source?: string;
 }
 
-const { manifest, artifact } = defineProps<Props>();
+const { manifest, artifact, source } = defineProps<Props>();
+
+const COLLECT = "pnpm exec nx collect @joinery/developer-portal";
+
+const { t } = useI18n();
 
 const status = computed(() => (artifact ? manifest?.artifacts[artifact] : undefined));
 
-/**
- * Every page that reads the snapshot shows this. A report whose age is not on the page is a report
- * that quietly starts lying — and `.report/` is gitignored, so on a fresh clone the honest answer
- * is "never collected".
- */
 const failed = computed(() => status.value?.ok === false);
-const collected = computed(() => relativeTime(status.value?.generatedAt ?? manifest?.generatedAt));
+const collected = computed(() =>
+    relativeTime(status.value?.generatedAt ?? manifest?.generatedAt, t),
+);
 </script>

@@ -1,4 +1,4 @@
-import { fakeEntry, fakeTerm } from "@monorepo/content/testing";
+import { fakeEntry, fakeTerm } from "@joinery/content/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { toArticleSummary, toCategory } from "../mappers/articleSummary";
 
@@ -34,7 +34,6 @@ describe("isListed", () => {
         expect(isListed(toArticleSummary(fakeEntry({ terms: [OTHER] })))).toBe(true);
     });
 
-    // An empty list is how the env var switches hiding off
     it("lists everything once the list is emptied", () => {
         nitro.hiddenTerms = [];
 

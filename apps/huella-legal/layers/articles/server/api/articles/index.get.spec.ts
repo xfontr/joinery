@@ -1,6 +1,7 @@
-import { MAX_SEARCH_LENGTH } from "@monorepo/content";
-import { fakeAuthor, fakeEntry, fakeTerm } from "@monorepo/content/testing";
+import { MAX_SEARCH_LENGTH } from "@joinery/content";
+import { fakeAuthor, fakeEntry, fakeTerm } from "@joinery/content/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 import type { ArticleListing } from "../../../shared/types/ArticleListing";
 import type { ArticleSummary } from "../../../shared/types/ArticleSummary";
 import { toArticleSummary } from "../../mappers/articleSummary";
@@ -11,11 +12,8 @@ const nitro = vi.hoisted(() => ({
     index: [] as ArticleSummary[],
 }));
 
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 vi.stubGlobal("getQuery", () => nitro.query);
-vi.stubGlobal("createError", (input: { statusCode?: number }) =>
-    Object.assign(new Error("http"), input),
-);
 vi.stubGlobal("useContent", () => ({ getTerm: nitro.getTerm }));
 vi.stubGlobal("useRuntimeConfig", () => ({ articles: { hiddenTerms: ["oculta"] } }));
 
@@ -88,7 +86,6 @@ describe("GET /api/articles", () => {
         await expect(handler({})).resolves.toMatchObject({ total: 22 });
     });
 
-    // h3 mangles anything else in a status message and logs a warning for every such request
     it("keeps the status message printable ASCII and puts what was wrong in the message", async () => {
         nitro.query = { page: "0", sort: "más" };
 

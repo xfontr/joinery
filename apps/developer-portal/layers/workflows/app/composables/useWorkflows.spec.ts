@@ -1,3 +1,4 @@
+import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
 import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useWorkflowEdit } from "./useWorkflows.ts";
@@ -18,13 +19,16 @@ beforeEach(() => {
 
 afterEach(() => vi.unstubAllGlobals());
 
+const edit = async (body: Record<string, unknown>) =>
+    (await withSetup(() => useWorkflowEdit())).value.edit(body);
+
 describe("useWorkflowEdit", () => {
     it("shows the server's reason when it refuses an edit, so a refusal is never silent", async () => {
         state.fetch.mockRejectedValue({
             statusMessage: "the ticket size is fixed once a ticket is filed",
         });
 
-        await expect(useWorkflowEdit().edit({ action: "settings" })).resolves.toBe(false);
+        await expect(edit({ action: "settings" })).resolves.toBe(false);
         expect(state.toast).toHaveBeenCalledWith(
             expect.objectContaining({ title: "the ticket size is fixed once a ticket is filed" }),
         );
@@ -34,7 +38,7 @@ describe("useWorkflowEdit", () => {
     it("reloads the workflows after a saved edit, so the page shows what was written", async () => {
         state.fetch.mockResolvedValue({ ok: true });
 
-        await expect(useWorkflowEdit().edit({ action: "settings" })).resolves.toBe(true);
+        await expect(edit({ action: "settings" })).resolves.toBe(true);
         expect(state.refresh).toHaveBeenCalledWith("workflows");
         expect(state.toast).not.toHaveBeenCalled();
     });

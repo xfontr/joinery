@@ -1,112 +1,125 @@
-import { mountSuspended, mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { defineComponent, ref } from "vue";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { DecisionOutcome, DecisionStatus } from "#layers/snapshot/shared/decisions.ts";
+import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
+import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
+import type { PageFact } from "~/types/PageFact";
 import Page from "./index.vue";
-import type { DecisionReport } from "#layers/decisions/shared/decisionReports.ts";
 
-const state = vi.hoisted(() => ({ reports: null as unknown }));
-mockNuxtImport("useSnapshot", () => () => ({ data: ref({ manifest: {} }) }));
-mockNuxtImport("useDecisionReports", () => () => state.reports);
+const artifacts = vi.hoisted(() => ({ docs: null as DocsArtifact | null }));
+mockNuxtImport("docsArtifact", () => () => artifacts.docs);
 
-const ControlStub = defineComponent({
-    props: {
-        modelValue: { type: String, default: "" },
-        items: { type: Array, default: () => [] },
-    },
-    emits: ["update:modelValue"],
-    template:
-        "<input v-if='items.length === 0' :value='modelValue' @input='$emit(\"update:modelValue\", $event.target.value)' /><select v-else :value='modelValue' @change='$emit(\"update:modelValue\", $event.target.value)'><option v-for='item in items' :value='item.value'>{{ item.label }}</option></select>",
+beforeEach(() => {
+    artifacts.docs = null;
 });
-const global = {
-    stubs: {
-        UDashboardPanel: {
-            template: "<section><slot name='header' /><slot name='body' /></section>",
-        },
-        UDashboardNavbar: { template: "<header><slot name='right' /></header>" },
-        UDashboardSidebarCollapse: true,
-        UDashboardToolbar: { template: "<div><slot name='left' /><slot name='right' /></div>" },
-        UInput: ControlStub,
-        USelect: ControlStub,
-        SnapshotAge: true,
-        StatTile: {
-            props: { label: String, value: [String, Number] },
-            template: "<div>{{ label }} {{ value }}</div>",
-        },
-        UCard: { template: "<article><slot name='header' /><slot /></article>" },
-        StatusPill: {
-            props: { label: String, hint: String },
-            template: "<span>{{ label }} {{ hint }}</span>",
-        },
-        UIcon: true,
-    },
-};
 
 const report = (
     id: string,
-    status: DecisionReport["status"],
-    decision: DecisionReport["decision"],
+    decisionStatus: DecisionStatus,
+    decisionOutcome: DecisionOutcome,
     title: string,
     updatedAt: string,
-    supersededBy: string | null = null,
-): DecisionReport => ({
+    decisionSupersededBy: string | null = null,
+): DocPage => ({
     path: `docs/decisions/${id}.md`,
-    id,
-    number: id.slice(0, 4),
+    kind: "decision",
     title,
-    status,
-    decision,
-    supersededBy,
-    updatedAt,
     words: 10,
+    updatedAt,
+    decisionStatus,
+    decisionOutcome,
+    decisionSupersededBy,
+    audit: null,
+    brokenLinks: [],
 });
-beforeEach(() => {
-    state.reports = ref([
-        report("0002-new", "implemented", "accepted", "New", "2026-09-20"),
-        report("0001-old", "to-implement", "superseded", "Old", "2026-09-19"),
-    ]);
-});
+
+const NEW = report("0002-new", "implemented", "accepted", "New", "2026-09-20");
+const OLD = report("0001-old", "to-implement", "superseded", "Old", "2026-09-19", "0002-new.md");
+
+type Wrapper = VueWrapper;
+
+const open = async (pages: DocPage[] = [NEW, OLD]) => {
+    artifacts.docs = { generatedAt: "2026-11-01T00:00:00Z", pages, brokenLinkCount: 0 };
+    const wrapper = await mountSuspended(Page);
+    await flushPromises();
+    return wrapper;
+};
+
+const listed = (wrapper: Wrapper) =>
+    wrapper.findAll("a[href^='/decisions/']").map((link) => link.attributes("href"));
+
+/** The select offering `value`, found by what it filters rather than where it sits. */
+const selectOffering = (wrapper: Wrapper, value: string) =>
+    wrapper
+        .findAllComponents({ name: "USelect" })
+        .find((select) =>
+            (select.props("items") as { value: string }[]).some((item) => item.value === value),
+        )!;
+
+const facts = (wrapper: Wrapper) =>
+    Object.fromEntries(
+        (wrapper.findComponent({ name: "PageFacts" }).props("facts") as PageFact[]).map((fact) => [
+            fact.label,
+            fact.value,
+        ]),
+    );
 
 describe("decisions index page", () => {
-    it("counts every report even when the visible filter narrows the list", async () => {
-        const wrapper = await mountSuspended(Page, { global });
+    it("counts every report by status, however narrow the visible list", async () => {
+        const wrapper = await open();
+
         await wrapper.find("input").setValue("New");
-        expect(wrapper.text()).toContain("Implemented 1");
-        expect(wrapper.text()).toContain("To implement 1");
-        expect(wrapper.text()).toContain("New");
-        expect(wrapper.find("a[href='/decisions/0001-old']").exists()).toBe(false);
+
+        expect(listed(wrapper)).toEqual(["/decisions/0002-new"]);
+        expect(facts(wrapper)).toMatchObject({
+            "decisions.status.implemented": "1",
+            "decisions.status.to-implement": "1",
+        });
     });
 
-    it("wires status, outcome, text and sort controls to the visible reports", async () => {
-        const wrapper = await mountSuspended(Page, { global });
-        const selects = wrapper.findAll("select");
-        await selects[0]!.setValue("to-implement");
-        expect(wrapper.find("a[href='/decisions/0001-old']").exists()).toBe(true);
-        expect(wrapper.find("a[href='/decisions/0002-new']").exists()).toBe(false);
-        await selects[2]!.setValue("oldest");
-        expect(
-            wrapper.findAll("a[href^='/decisions/']").map((link) => link.attributes("href")),
-        ).toEqual(["/decisions/0001-old"]);
+    it("narrows the list to the status picked", async () => {
+        const wrapper = await open();
+
+        await selectOffering(wrapper, "to-implement").setValue("to-implement");
+
+        expect(listed(wrapper)).toEqual(["/decisions/0001-old"]);
     });
 
-    it("filters by decision outcome and keeps a superseded replacement visible in its pill hint", async () => {
-        state.reports = ref([
-            report("0002-new", "implemented", "accepted", "New", "2026-09-20"),
-            report("0001-old", "to-implement", "superseded", "Old", "2026-09-19", "0002-new.md"),
-        ]);
-        const wrapper = await mountSuspended(Page, { global });
+    it("narrows the list to the decision outcome picked", async () => {
+        const wrapper = await open();
 
-        expect(wrapper.text()).toContain("Superseded by 0002-new.md");
-        const decision = wrapper.findAll("select")[1]!;
-        await decision.setValue("superseded");
-        expect(wrapper.find("a[href='/decisions/0001-old']").exists()).toBe(true);
-        await decision.setValue("accepted");
-        expect(wrapper.find("a[href='/decisions/0002-new']").exists()).toBe(true);
-        expect(wrapper.find("a[href='/decisions/0001-old']").exists()).toBe(false);
+        await selectOffering(wrapper, "superseded").setValue("accepted");
+
+        expect(listed(wrapper)).toEqual(["/decisions/0002-new"]);
     });
 
-    it("shows an honest empty state when no report matches", async () => {
-        const wrapper = await mountSuspended(Page, { global });
+    it.each([
+        ["newest", ["/decisions/0002-new", "/decisions/0001-old"]],
+        ["oldest", ["/decisions/0001-old", "/decisions/0002-new"]],
+    ])("orders the list %s first when asked", async (sort, order) => {
+        const wrapper = await open();
+
+        await selectOffering(wrapper, "oldest").setValue(sort);
+
+        expect(listed(wrapper)).toEqual(order);
+    });
+
+    it("names the replacement of a superseded report beside it", async () => {
+        const wrapper = await open();
+        const hints = wrapper
+            .findAllComponents({ name: "StatusPill" })
+            .map((pill) => pill.props("hint"));
+
+        expect(hints).toContain("decisions.supersededBy");
+    });
+
+    it("says nothing matches instead of showing an empty list", async () => {
+        const wrapper = await open();
+
         await wrapper.find("input").setValue("missing");
-        expect(wrapper.text()).toContain("Nothing matches that filter.");
+
+        expect(listed(wrapper)).toEqual([]);
+        expect(wrapper.text()).toContain("listCard.empty");
     });
 });

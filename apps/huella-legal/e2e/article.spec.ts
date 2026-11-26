@@ -1,8 +1,7 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@monorepo/configs/playwright/test";
+import { axeViolations } from "@joinery/configs/playwright/utils/a11y";
+import { expect, test } from "@joinery/configs/playwright/utils/test";
+import { t } from "./copy.ts";
 import { ARTICLE, POSTS, REFERENCE, SECTIONS } from "./fakes.ts";
-
-const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 
 // The TOC rail replaces the accordion from Tailwind's `lg` up
 const DESKTOP = 1024;
@@ -21,9 +20,13 @@ test("reads the whole article: title, byline, sections, notes, bibliography and 
     for (const section of SECTIONS)
         await expect(page.getByRole("heading", { level: 2, name: section })).toBeVisible();
 
-    await expect(page.getByRole("region", { name: "Notas" }).getByRole("listitem")).toHaveCount(2);
-    await expect(page.getByRole("region", { name: "Bibliografía" })).toContainText(REFERENCE);
-    await expect(page.getByRole("region", { name: "Cómo citar este artículo" })).toContainText(
+    await expect(
+        page.getByRole("region", { name: t("articleNotes.title") }).getByRole("listitem"),
+    ).toHaveCount(2);
+    await expect(page.getByRole("region", { name: t("articleBibliography.title") })).toContainText(
+        REFERENCE,
+    );
+    await expect(page.getByRole("region", { name: t("citeBox.title") })).toContainText(
         new URL(PATH, baseURL).href,
     );
 });
@@ -34,10 +37,10 @@ test("moves the bibliography out of the text, so its heading isn't in the TOC", 
     await page.goto(PATH);
 
     const wide = (page.viewportSize()?.width ?? 0) >= DESKTOP;
-    const toc = page.getByRole("navigation", { name: "En este artículo" });
+    const toc = page.getByRole("navigation", { name: t("articleToc.title") });
 
     if (!wide) {
-        const trigger = toc.getByRole("button", { name: "En este artículo" });
+        const trigger = toc.getByRole("button", { name: t("articleToc.title") });
 
         // CI's runner can click before hydration, which focuses the trigger without opening it
         await expect(async () => {
@@ -90,7 +93,5 @@ test("opens a related post in place, with its own title", async ({ page }) => {
 test("the article page has no WCAG AA violations", async ({ page }) => {
     await page.goto(PATH);
 
-    const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
-    expect(violations).toEqual([]);
+    expect(await axeViolations(page)).toEqual([]);
 });

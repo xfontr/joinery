@@ -6,6 +6,5 @@ export interface ArticleBody {
     html: string;
     toc: TocItem[];
     notes: Note[];
-    // One sanitised HTML fragment per reference
     bibliography: string[];
 }

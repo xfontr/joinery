@@ -8,7 +8,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 const EMPTY_DAY: DayUsage = { runs: 0, agent: 0, failures: 0 };
 
-export interface ScriptRow extends DayUsage {
+interface ScriptRow extends DayUsage {
     name: string;
     /** One entry per `windowDays` day, in the same order. */
     days: DayUsage[];
@@ -17,7 +17,7 @@ export interface ScriptRow extends DayUsage {
     failing: boolean;
 }
 
-export interface RuleRow {
+interface RuleRow {
     rule: string;
     hits: number;
     fixable: number;
@@ -26,7 +26,7 @@ export interface RuleRow {
     projects: number[];
 }
 
-export interface LintTable {
+interface LintTable {
     /** Busiest first. */
     projects: string[];
     rows: RuleRow[];
@@ -144,26 +144,27 @@ export type CallerMix = "agents" | "both" | "people";
 
 export type FixKind = "manual" | "auto";
 
-export interface Tick {
+interface Tick {
     /** Percent along the axis. */
     at: number;
     label: string;
 }
 
-export interface Axis {
+interface Axis {
     ticks: Tick[];
     /** Percent along the axis where the alert's threshold sits. */
     threshold: number;
 }
 
-export interface Point<Kind extends string> {
+interface Point<Kind extends string> {
     name: string;
     /** Percent from the left. */
     x: number;
     /** Percent from the bottom. */
     y: number;
     kind: Kind;
-    title: string;
+    /** The figures a tooltip names, beside the point's `name`. */
+    detail: Record<string, number>;
     labelled: boolean;
 }
 
@@ -225,7 +226,7 @@ export const scriptQuadrants = (rows: ScriptRow[]): Quadrants<CallerMix> => {
                 x: logAt(row.runs, decades),
                 y: (failed / yMax) * 100,
                 kind: callerMix(row),
-                title: `${row.name} · ${row.runs} runs · ${Math.round(failed * 100)}% failed · ${row.agent} by agents`,
+                detail: { runs: row.runs, failed: Math.round(failed * 100), agent: row.agent },
                 labelled: true,
             };
         }),
@@ -245,7 +246,6 @@ export const ruleQuadrants = (lint: LintUsage): Quadrants<FixKind> => {
         .sort(([, a], [, b]) => b.recent - a.recent || b.disabled - a.disabled);
     const decades = decadesFor(Math.max(noisyAt, ...shown.map(([, usage]) => usage.recent)));
     const topDisabled = Math.max(FOUGHT_DISABLES * 2, ...shown.map(([, usage]) => usage.disabled));
-    // Four steps of a whole number each, so every tick is an integer.
     const yMax = Math.ceil(topDisabled / 4) * 4;
 
     return {
@@ -259,7 +259,7 @@ export const ruleQuadrants = (lint: LintUsage): Quadrants<FixKind> => {
             x: logAt(usage.recent, decades),
             y: (usage.disabled / yMax) * 100,
             kind: usage.recent > 0 && usage.fixable === usage.recent ? "auto" : "manual",
-            title: `${name} · ${usage.recent} hits · ${usage.fixable} auto-fixed · disabled ${usage.disabled}×`,
+            detail: { hits: usage.recent, fixed: usage.fixable, disabled: usage.disabled },
             labelled:
                 index < NAMED_BUSIEST ||
                 usage.disabled >= FOUGHT_DISABLES ||

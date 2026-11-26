@@ -32,7 +32,7 @@ git diff --quiet "$from" "$to" -- \
     pnpm-lock.yaml \
     pnpm-workspace.yaml \
     .nvmrc \
-    .github/workflows/netlify-deployment.yml \
+    .github/workflows/deploy-huella-legal.yml \
     ":(exclude,glob)**/*.md" \
     ":(exclude,glob)**/*.spec.ts" \
     ":(exclude,glob)**/*.test.ts" \

@@ -26,7 +26,7 @@ const page = (date: string, findings: AuditFinding[]): DocPage => ({
     decisionStatus: null,
     decisionOutcome: null,
     decisionSupersededBy: null,
-    audit: { scope: "@monorepo/developer-portal", commit: "61b6f7f", findings },
+    audit: { scope: "@joinery/developer-portal", commit: "61b6f7f", findings },
     brokenLinks: [],
 });
 

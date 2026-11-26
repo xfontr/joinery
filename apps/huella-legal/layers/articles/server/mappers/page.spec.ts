@@ -1,4 +1,4 @@
-import { fakeEntry } from "@monorepo/content/testing";
+import { fakeEntry } from "@joinery/content/testing";
 import { describe, expect, it } from "vitest";
 import { toPage } from "./page";
 
@@ -17,7 +17,6 @@ describe("toPage", () => {
         expect(html).toContain("Tres");
     });
 
-    // The footer's legal links target these ids, so rewording a heading in WordPress breaks them
     it("gives each heading the id its slug makes, accents folded, and lists it in the TOC", () => {
         const { html, toc } = page(
             "<p>Uno</p><h2>Política de Privacidad</h2><h2>Cookies</h2>",

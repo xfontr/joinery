@@ -1,95 +1,159 @@
-import { mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { mount } from "@vue/test-utils";
-import { defineComponent, ref } from "vue";
+import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import type { VueWrapper } from "@vue/test-utils";
+import { ref } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Issue, IssuesRead } from "#layers/github/app/utils/issues.ts";
 import Page from "./issues.vue";
 
-const state = vi.hoisted(() => ({ read: null as { value: unknown } | null }));
-const reload = vi.fn().mockResolvedValue(undefined);
-mockNuxtImport("useIssues", () => () => ({ data: state.read, reload }));
-const ControlStub = defineComponent({
-    props: {
-        modelValue: { type: String, default: "" },
-        items: { type: Array, default: () => [] },
+const MESSAGES = {
+    app: {
+        apps: {
+            catalog: "Catalog",
+            docs: "Docs",
+            health: "Health",
+            home: "Home",
+            work: "Work",
+        },
+        nav: {
+            audits: "Audits",
+            benchmarks: "Benchmarks",
+            changelog: "What's new",
+            coverage: "Coverage",
+            decisions: "Decisions",
+            deps: "Dependencies",
+            docs: "Documentation",
+            graph: "Architecture",
+            issues: "Work in progress",
+            overview: "Overview",
+            projects: "Projects",
+            telemetry: "Tooling usage",
+            workflows: "Workflows",
+        },
     },
-    emits: ["update:modelValue"],
-    template:
-        "<input v-if='items.length === 0' :value='modelValue' @input='$emit(\"update:modelValue\", $event.target.value)' /><select v-else :value='modelValue' @change='$emit(\"update:modelValue\", $event.target.value)'><option v-for='item in items' :value='item.value'>{{ item.label }}</option></select>",
-});
-const global = {
-    stubs: {
-        UDashboardPanel: {
-            template: "<section><slot name='header' /><slot name='body' /></section>",
+    healthIssuesRead: {
+        read: "read {age}",
+        refresh: "Re-read the issues from GitHub",
+    },
+    healthIssuesToolbar: {
+        everyLabel: "Every label",
+        search: "Search issues…",
+    },
+    issues: {
+        empty: "No open issues.",
+        error: {
+            description:
+                "{error} — this page reads GitHub from your browser, unauthenticated, which allows 60 requests an hour per address.",
+            title: "GitHub could not be reached",
         },
-        UDashboardNavbar: {
-            props: { title: String },
-            template: "<header>{{ title }}<slot name='right' /></header>",
+        file: "File one with {command}.",
+        intro: "Planned and active repository work appears here as issues from GitHub. The issue read is live in your browser; the rest of this portal remains a collected snapshot.",
+        list: {
+            note: "Read live from GitHub by your own browser. Nothing is stored here — the issue is the record, and this is a window onto it.",
+            title: "Open issues",
         },
-        UDashboardSidebarCollapse: true,
-        UDashboardToolbar: { template: "<div><slot name='left' /><slot name='right' /></div>" },
-        UInput: ControlStub,
-        USelect: ControlStub,
-        UButton: { emits: ["click"], template: "<button @click='$emit(\"click\")' />" },
-        UCard: { template: "<article><slot name='header' /><slot /></article>" },
-        UAlert: {
-            props: { title: String, description: String },
-            template: "<div>{{ title }} {{ description }}</div>",
-        },
-        HealthIssueRow: {
-            props: { issue: Object },
-            template: "<div class='row'>{{ issue.title }}</div>",
-        },
-        UIcon: true,
+        title: "Work in progress",
+    },
+    listCard: {
+        shown: "{shown} of {total}",
+    },
+    pageHeader: {
+        wordmark: "joinery",
     },
 };
 
+const github = vi.hoisted(() => ({ read: null as unknown, reload: vi.fn() }));
+
+mockNuxtImport("useIssues", () => () => ({ data: github.read, reload: github.reload }));
+
+const global = {
+    stubs: {
+        HealthIssueRow: {
+            props: { issue: Object },
+            template: "<div data-row>{{ issue.title }}</div>",
+        },
+    },
+};
+
+const issue = (number: number, title: string, labels: string[], updatedAt: string): Issue => ({
+    number,
+    title,
+    body: "",
+    url: "",
+    labels,
+    assignees: [],
+    createdAt: updatedAt,
+    updatedAt,
+});
+
+const serve = (read: Partial<IssuesRead>) => {
+    github.read = ref<IssuesRead>({ fetchedAt: "2026-09-20", error: null, issues: [], ...read });
+};
+
+const rows = (wrapper: VueWrapper) => wrapper.findAll("[data-row]").map((row) => row.text());
+
 beforeEach(() => {
-    reload.mockClear();
-    state.read = ref({
-        fetchedAt: "2026-09-20",
-        error: null,
+    github.reload.mockReset().mockResolvedValue(undefined);
+    serve({
         issues: [
-            {
-                number: 1,
-                title: "Fix portal",
-                body: "Alpha",
-                labels: ["bug"],
-                updatedAt: "2026-09-20",
-                url: "",
-            },
-            {
-                number: 2,
-                title: "Add docs",
-                body: "Beta",
-                labels: ["docs"],
-                updatedAt: "2026-09-19",
-                url: "",
-            },
+            issue(2, "Add docs", ["docs"], "2026-09-19"),
+            issue(1, "Fix portal", ["bug"], "2026-09-20"),
         ],
     });
 });
 
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
+
 describe("issues page", () => {
-    it("filters by search and label, offers labels from the live data, and sorts newest first", async () => {
-        const wrapper = mount(Page, { global });
-        expect(wrapper.text()).toContain("Work in progress");
-        expect(wrapper.text().indexOf("Fix portal")).toBeLessThan(
-            wrapper.text().indexOf("Add docs"),
-        );
-        expect(wrapper.findAll("select").at(0)?.text()).toContain("bug");
-        await wrapper.find("input").setValue("docs");
-        expect(wrapper.text()).toContain("Add docs");
-        expect(wrapper.text()).not.toContain("Fix portal");
+    it("lists the most recently updated issue first", async () => {
+        const wrapper = await mountSuspended(Page, { global });
+
+        expect(rows(wrapper)).toEqual(["Fix portal", "Add docs"]);
     });
 
-    it("renders live failures and delegates refresh to the composable", async () => {
-        state.read = ref({ fetchedAt: "", error: "rate limited", issues: [] });
-        const wrapper = mount(Page, { global });
+    it("narrows the list to issues matching the search", async () => {
+        const wrapper = await mountSuspended(Page, { global });
+
+        await wrapper.find("input").setValue("docs");
+
+        expect(rows(wrapper)).toEqual(["Add docs"]);
+    });
+
+    it("offers every label found in the live issues, and narrows to the one picked", async () => {
+        const wrapper = await mountSuspended(Page, { global });
+        const select = wrapper.findComponent({ name: "USelect" });
+
+        expect((select.props("items") as { value: string }[]).map(({ value }) => value)).toEqual([
+            "all",
+            "bug",
+            "docs",
+        ]);
+
+        await select.setValue("bug");
+
+        expect(rows(wrapper)).toEqual(["Fix portal"]);
+    });
+
+    it("says GitHub could not be reached when the read failed", async () => {
+        serve({ error: "rate limited" });
+        const wrapper = await mountSuspended(Page, { global });
+
         expect(wrapper.text()).toContain("GitHub could not be reached");
-        state.read!.value = { fetchedAt: "", error: null, issues: [] };
-        await wrapper.vm.$nextTick();
+    });
+
+    it("says there are no open issues when GitHub answered with none", async () => {
+        serve({ issues: [] });
+        const wrapper = await mountSuspended(Page, { global });
+
         expect(wrapper.text()).toContain("No open issues.");
-        await wrapper.find("button").trigger("click");
-        expect(reload).toHaveBeenCalledOnce();
+    });
+
+    it("re-reads GitHub when asked to", async () => {
+        const wrapper = await mountSuspended(Page, { global });
+
+        await wrapper.find("[aria-label='Re-read the issues from GitHub']").trigger("click");
+
+        expect(github.reload).toHaveBeenCalledOnce();
     });
 });

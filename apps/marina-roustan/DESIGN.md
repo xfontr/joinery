@@ -1,12 +1,10 @@
 # 🎨 Marina Roustan design
 
-The tokens for the rebuild of [marinaroustan.com](https://marinaroustan.com/). Every colour, type
-step and radius below came out of `pnpm brand:extract` run against the live home, `/servicios/`,
-`/contacto/` and `/blog/` on 15 Nov 2026, not transcribed by hand; the
-[`brand` script's README](../../infrastructure/scripts/src/brand/README.md) says how each one is
-picked. Tone is the one row a person wrote, from a screenshot of the home page at 1280 px.
+The tokens for the rebuild of [marinaroustan.com](https://marinaroustan.com/), extracted from the
+live site with [`pnpm brand:extract`](../../infrastructure/scripts/src/brand/README.md) on
+15 Nov 2026. Tone is the one row a person wrote.
 
-## 🧩 What stays recognizably Marina
+## What stays recognizably Marina
 
 | Ingredient | Direction |
 | --- | --- |
@@ -17,7 +15,7 @@ picked. Tone is the one row a person wrote, from a screenshot of the home page a
 | Type | Lato throughout: 700 for headings, 300 for body text at 21 px |
 | Tone | A calm clinical practice: flat illustrations on pale blue, one ochre button per section, rounded cards, no photography beyond the portrait |
 
-## 🗂 Structure
+## Structure
 
 | Path | Role |
 | --- | --- |
@@ -25,17 +23,14 @@ picked. Tone is the one row a person wrote, from a screenshot of the home page a
 | [`layers/design/app/app.config.ts`](./layers/design/app/app.config.ts) | Nuxt UI's colour aliases: primary tide, secondary ochre, neutral ink, error danger |
 | [`layers/design/nuxt.config.ts`](./layers/design/nuxt.config.ts) | Loads `main.css`, turns colour mode off and has `@nuxt/fonts` serve Lato at the four weights the site uses |
 
-## 🎨 Tokens
+## Tokens
 
-The palettes are `paper`, `ink`, `tide`, `ochre` and `danger`, none of them a Tailwind palette
-name, so none replaces one. Each runs 50–950 because Nuxt UI generates
-all eleven shades for every alias. Each ramp is the extract's own output, with the live colour
-unchanged at its step; `danger` is the one generated from a chosen red, since the site shows
-no error colour.
+Palettes `paper`, `ink`, `tide`, `ochre` and `danger` run 50–950, with each live colour unchanged at
+its step. `danger` is invented; the site has no error colour.
 
-Every text role on every surface, from `pnpm brand:contrast
-apps/marina-roustan/layers/design/app/assets/main.css`, which exits 1 below 4.5:1. A token change
-re-runs it and replaces this table.
+The table below is the output of `pnpm brand:contrast
+apps/marina-roustan/layers/design/app/assets/main.css`. Re-run it and replace the table after any
+token change.
 
 | Role | Token | Surface | Ratio |
 | --- | --- | --- | --- |
@@ -88,19 +83,11 @@ text, so the roles take their 600 steps; the brand steps stay for fills and deco
 The controls' radius is `rounded-md`, Nuxt UI's control radius, at 7 px, the commonest radius on
 the site's links and buttons; `--ui-radius` is `calc(7px / 1.5)` because `rounded-md` is 1.5 × it.
 
-Colour reaches a component through Nuxt UI's roles (`bg-muted`, `text-primary`,
-`border-accented`…), never a palette step: ESLint's `no-restricted-classes` in
-[`eslint.config.ts`](./eslint.config.ts) rejects every `-50` to `-950` colour utility, Tailwind's
-own palettes included, along with any arbitrary `text-`, `leading-` or `tracking-` value and any
-arbitrary colour. The ban is whole-step from the start rather than per role, as Huella's grew, so no
-raw step is ever there to migrate.
+Colour reaches a component through Nuxt UI's roles (`bg-muted`, `text-primary`…), never a palette
+step: [`eslint.config.ts`](./eslint.config.ts) rejects every `-50`…`-950` colour utility and any
+arbitrary type or colour value. Need a new one? Add a role or token to `main.css`.
 
-## 🧭 Deliberately deferred
+## Not done yet
 
-| Later need | What changes |
-| --- | --- |
-| Dark theme | `ui.colorMode` is off; adding one means a second set of `--ui-*` roles, a dark pairing in `brand:contrast` and a new table |
-| Component theme files | Huella's `app/theme/*.ts`, one per Nuxt UI component, wired into `app.config.ts` once a component needs more than the roles give it |
-| Review gates | The design-lab directions and their gates, as [Huella's `DESIGN.md`](../huella-legal/DESIGN.md#-review-gates) records them, once there are pages to review |
-| Small-screen type | The extract read 1280 px only; the 390 px steps come from the lab, not the live site |
-| A step the ban blocks for a real reason | Add a role or a token to `main.css` rather than loosening the pattern in `eslint.config.ts` |
+Dark theme (`ui.colorMode` is off), small-screen type (only 1280 px was extracted), and per-component
+theme files.

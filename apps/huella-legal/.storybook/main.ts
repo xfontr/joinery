@@ -82,7 +82,6 @@ const config: StorybookConfig = {
                 components: {
                     dirs: componentDirs,
                     directoryAsNamespace: true,
-                    // Nuxt gives every component a lazily loaded `Lazy` twin, which a story loads eagerly
                     resolvers: [
                         (name: string) =>
                             name.startsWith("LazyU")

@@ -4,7 +4,7 @@ import { isVendorName, VENDOR_NAMES } from "#core/registry";
 import { CACHE_DEFAULTS, type ContentConfig } from "./config";
 
 export default defineNuxtModule<ContentConfig>({
-    meta: { name: "@monorepo/content/nuxt", configKey: "content" },
+    meta: { name: "@joinery/content/nuxt", configKey: "content" },
 
     defaults: { cache: CACHE_DEFAULTS },
 

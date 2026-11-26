@@ -1,0 +1,203 @@
+id: developer-portal-front-door
+title: Developer portal front door
+template: custom
+area: app:developer-portal
+milestone: Developer portal front door
+ticketSize: block
+summary: The developer portal turned into the repo's public front door — a visitor view that shows
+  craft, AI-built engineering and the people the shipped apps serve, a developer view one click
+  away with every feature kept, and a visual identity of its own.
+
+settled:
+  scope-signoff:
+    status: done
+    on: 2026-11-17
+    note: The owner approved 0040 as it stands — the toggle, the page table and the front page's sections.
+  design-approval:
+    status: done
+    on: 2026-11-18
+    note: The owner approved direction E — the `idea` front page at `/lab/idea` and the developer view at `/lab/idea/e/developer`, with a collapsible icon rail; every other direction was deleted.
+
+extras:
+  - id: benchmark
+    stage: plan
+    kind: spike
+    title: Benchmark reference sites
+    complexity: 5
+    summary: Developer portfolios, engineering front pages and design-system sites studied for what
+      a non-developer reader takes away in 30 seconds, and what makes each look like nobody else.
+    reuse: { plan: method, from: docs/decisions }
+    doneWhen:
+      - At least eight sites are compared on the same rows, each with a screenshot at 390 and
+        1280 px.
+      - Each row names what this portal should copy, adapt or avoid.
+      - The default Nuxt UI traits the portal shows today are listed, so the lab can avoid them.
+
+  - id: visitor-structure
+    stage: plan
+    kind: spike
+    title: Visitor view structure
+    complexity: 5
+    dependsOn: [benchmark]
+    summary: How a visitor enters and moves through the portal — a door or a toggle, what the front
+      page says, and how each existing page shows to a visitor. The rules
+      are in `docs/decisions/0039-developer-portal-benchmark.md`.
+    reuse: { plan: method, from: docs/decisions }
+    doneWhen:
+      - Door and toggle are both tried as rough lab pages, both read with JavaScript off, and are
+        compared on clicks to first content.
+      - Every page the portal has today is listed as shown, re-presented or developer-only in the
+        visitor view, covering every route under `app/pages` and `layers/*/app/pages`; nothing is
+        removed.
+      - The front page's sections are listed in order, each reading only `layers/snapshot`,
+        passing 0039's W1, W6 and W8 and avoiding N1–N4.
+
+  - id: design-lab
+    stage: plan
+    title: Design lab
+    complexity: 13
+    dependsOn: [benchmark, scope-signoff]
+    summary: Three or four identity directions as dev-only lab pages on real portal content — the
+      front page, one dashboard page and one doc page — reviewed as screenshots. The rules are in
+      `docs/decisions/0039-developer-portal-benchmark.md` and the front page's sections in
+      `docs/decisions/0040-developer-portal-visitor-structure.md`; the door and toggle pages
+      already under `app/pages/lab/` are a measurement mock to replace, not a design.
+    reuse: { plan: method, from: apps/huella-legal/DESIGN.md }
+    doneWhen:
+      - Each direction renders the same three pages on real data under `pnpm dev`, and none is
+        served by the deployed site.
+      - Each has screenshots at 390, 768 and 1280 px, in light and dark.
+      - No direction keeps a trait 0039 lists as stock Nuxt UI, and each follows its "How it
+        lands in the portal" rules and avoids N1–N4.
+      - Each front page has 0040's five sections in order, with the top of the first app's
+        screenshot in the first screen at 390 px.
+      - Each names its one W8 figure, or says it has none.
+
+  - id: design-approval
+    stage: plan
+    kind: owner
+    title: Design approval
+    complexity: 1
+    dependsOn: [design-lab]
+    summary: You pick one direction, or a mix, from the lab screenshots.
+    doneWhen:
+      - One direction is approved at 390, 768 and 1280 px, in light and dark.
+
+  - id: design-system
+    stage: build
+    title: Design system
+    complexity: 8
+    dependsOn: [design-approval]
+    summary: Approved direction E as one design system in the design layer for the visitor pages
+      and the developer view alike, applied to no page yet, with a contrast table and the
+      raw-palette ban. The lab is the design to rebuild on Nuxt UI, never code to copy, and it wins
+      over 0039 and 0040 where they differ.
+    reuse: { plan: method, from: apps/huella-legal/layers/design }
+    doneWhen:
+      - One token set, with its faces, type steps and one accent, is in `layers/design` in light
+        and dark.
+      - No page the portal serves today looks any different.
+      - Every text-on-surface pair has a contrast ratio of at least 4.5:1, in light and dark,
+        written in the README's design-system section.
+      - The app's eslint config bans raw palette classes.
+      - Components stay Nuxt UI, themed through `app.config.ts`.
+
+  - id: developer-view
+    stage: build
+    title: Developer view on E
+    complexity: 13
+    dependsOn: [design-system]
+    summary: The developer view rebuilt as `/lab/idea/e/developer` lays it out, on the design
+      system. A collapsible icon rail groups every page the portal has today into Home, Catalog,
+      Docs, Work and Health; the Overview becomes Home at `/overview`, and every existing route
+      keeps its path. This replaces the current shell; there is no visitor mode over these pages.
+    reuse: { plan: method, from: apps/developer-portal/app/layouts }
+    doneWhen:
+      - Every page the portal has today is reachable from the rail and renders on the design
+        system with no `.report/`.
+      - The rail collapses to icons, as in the lab.
+      - Home, Catalog, a project page and every Health tab pass 0039's developer-view anti-list at
+        390 and 1280 px.
+      - No page keeps a colour, size or radius chosen outside the design layer.
+
+  - id: front-page
+    stage: build
+    title: Visitor front page
+    complexity: 8
+    dependsOn: [developer-view]
+    summary: The `idea` front page at `/`, as `/lab/idea` lays it out on the visitor tokens — the
+      statement, the principles with their proof, the workflow glyph linking to the workflows page,
+      the work, then the way into the craft. It is its own page with its own header, not a skin over
+      a developer page, and its "Developer view →" link goes to `/overview`.
+    reuse: { plan: method, from: apps/developer-portal/app/pages }
+    doneWhen:
+      - Its sections are the lab's, in the lab's order.
+      - A reader who doesn't write code can say what this is within 30 seconds.
+      - Every number on it comes from the snapshot, and the page renders without one.
+      - It reads well at 390 px first, in light and dark.
+      - Its words are written in place as the page is built; the owner reviews them on the page.
+
+  - id: visitor-pages
+    stage: build
+    title: How it's made and The craft
+    complexity: 8
+    dependsOn: [design-system]
+    summary: The two visitor pages behind the front page, `/method` and `/craft`, as
+      `/lab/idea/method` and `/lab/idea/craft` lay them out on the visitor tokens, in the visitor
+      header with its "Developer view →" link. They link into developer pages such as
+      `/decisions/<id>`; they never restyle them.
+    reuse: { plan: method, from: apps/developer-portal/app/pages }
+    doneWhen:
+      - Each page has the lab's sections in the lab's order and reads well at 390 px first.
+      - Every number on them comes from the snapshot, and both render without one.
+      - Their words are written in place as the pages are built; the owner reviews them on the pages.
+
+  - id: visitor-workflows
+    stage: build
+    title: Workflows for visitors
+    complexity: 5
+    dependsOn: [design-system]
+    summary: The portal's centrepiece for visitors, as `/lab/idea/workflows` lays it out on the
+      visitor tokens — how a project is planned and run, with the live projects linking to their
+      developer workflow pages. The developer index keeps `/workflows`, so this page takes its own
+      path in the visitor header.
+    reuse: { plan: method, from: apps/developer-portal/layers/workflows }
+    doneWhen:
+      - The page has the lab's sections in the lab's order and reads well at 390 px first.
+      - Every project it shows comes from `data/workflows/`, and each links to its developer page.
+      - Its words are written in place as the page is built; the owner reviews them on the page.
+
+  - id: project-showcase
+    stage: build
+    title: Work pages
+    complexity: 5
+    dependsOn: [design-system]
+    summary: One visitor page per shipped app at `/work/<app>`, as `/lab/idea/work/huella-legal`
+      lays it out on the visitor tokens — the screenshot, the approved line, the live link and the
+      decisions behind it — kept in a shape that can move to another site later.
+    reuse: { plan: method, from: apps/developer-portal/layers/projects }
+    doneWhen:
+      - Each shipped app has its page with a current screenshot, its line and its live link.
+      - Screenshots and lines live as data, not inside a component.
+      - Its words are written in place as the page is built; the owner reviews them on the page.
+
+  - id: production-readiness
+    stage: build
+    title: Visitor area ready for production
+    complexity: 13
+    dependsOn: [front-page, visitor-pages, visitor-workflows, project-showcase]
+    summary: The visitor pages and their layout brought up to huella-legal's accessibility, SEO and
+      performance standard before the portal goes public on its own domain — skip link, focus ring,
+      reduced motion, per-page meta, robots, sitemap, JSON-LD, lean payloads and fonts, and a
+      Playwright suite with axe scans. The developer view is only kept out of search.
+    reuse: { plan: method, from: apps/huella-legal }
+    doneWhen:
+      - Every visitor page and the 404 page pass an axe WCAG AA scan in e2e.
+      - "The skip link is the first Tab stop and moves focus to `main`; every focusable element
+        shows a ring; no view transition animates under `prefers-reduced-motion: reduce`."
+      - Every visitor page has its own title, description, canonical and OG tags, and the site has a
+        `Person` JSON-LD, a robots.txt and a sitemap listing only visitor URLs.
+      - Every developer page is `noindex, follow`.
+      - Mobile Lighthouse for `/`, `/work` and `/about` is measured before and after, and no
+        visitor page preloads a payload over 50 KB.
+

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex h-2 w-24 gap-px overflow-hidden rounded-full bg-accented/40" :title>
+    <div class="flex h-2 w-24 gap-px overflow-hidden rounded-sm bg-accented/40" :title>
         <span v-for="part in parts" :key="part.color" :style="part.style" />
     </div>
 </template>
@@ -12,7 +12,13 @@ interface Props {
 
 const { runs, agent } = defineProps<Props>();
 
-const title = computed(() => (runs ? `${agent} by agents, ${runs - agent} by people` : "No runs"));
+const { t } = useI18n();
+
+const title = computed(() =>
+    runs
+        ? t("telemetryCallerSplit.split", { agent, people: runs - agent })
+        : t("telemetryCallerSplit.none"),
+);
 
 const parts = computed(() =>
     [

@@ -16,8 +16,8 @@ this skill exists — a scaffold that forgets step 5 lints clean until someone i
 | `apps/` | A user-facing product | No — `"private": true` |
 | `infrastructure/` | A service apps reach **over the network** (`translations`), or repo-local dev tooling nothing imports (`scripts`) — either way, deployable/runnable on its own | No — `"private": true` |
 
-The directory name is the package name: `packages/foo` → `@monorepo/foo`. Infrastructure is not
-separately namespaced (`infrastructure/translations` → `@monorepo/translations`).
+The directory name is the package name: `packages/foo` → `@joinery/foo`. Infrastructure is not
+separately namespaced (`infrastructure/translations` → `@joinery/translations`).
 
 ## 2. `package.json`
 
@@ -28,7 +28,7 @@ with two entry points and optional peers. 2-space indent, because pnpm rewrites 
 
 ```json
 {
-  "name": "@monorepo/<dirname>",
+  "name": "@joinery/<dirname>",
   "version": "0.0.1",
   "description": "<three words, no marketing>",
   "private": true,
@@ -45,7 +45,7 @@ with two entry points and optional peers. 2-space indent, because pnpm rewrites 
   },
   "nx": { "tags": ["type:<kind>", "scope:<area>"] },
   "devDependencies": {
-    "@monorepo/configs": "workspace:*",
+    "@joinery/configs": "workspace:*",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "eslint": "catalog:",
@@ -62,7 +62,7 @@ with two entry points and optional peers. 2-space indent, because pnpm rewrites 
   files and types go inside the project.
 - **Exactly two Nx tags**, `type:<kind>` and `scope:<area>`. They live here, not in a
   `project.json` — there are none in this workspace. Pick `<kind>` from the
-  [root README's tag table](../../../README.md#-architecture--boundaries): a vendor wrapper is
+  [root README's tag table](../../../README.md#architecture--boundaries): a vendor wrapper is
   `type:integration`, like `content` and `i18n`. Every project needs exactly one `scope:*` tag too,
   since the scope rules bind it the moment it is tagged: `scope:shared` for a package any app may
   use, otherwise the app or area it belongs to.
@@ -73,18 +73,18 @@ with two entry points and optional peers. 2-space indent, because pnpm rewrites 
 
 ## 3. The three wrapper configs
 
-Never hand-roll these. Each is a one-liner over a `@monorepo/configs` factory:
+Never hand-roll these. Each is a one-liner over a `@joinery/configs` factory:
 
 ```ts
 // eslint.config.ts
-import { eslint } from "@monorepo/configs";
+import { eslint } from "@joinery/configs";
 
 export default eslint.createNodeConfig();   // or createVueConfig() / createNuxtConfig()
 ```
 
 ```ts
 // vitest.config.ts
-import { vitest } from "@monorepo/configs";
+import { vitest } from "@joinery/configs";
 
 export default vitest.createNodeConfig();   // or createVueConfig(viteConfig)
 ```
@@ -92,7 +92,7 @@ export default vitest.createNodeConfig();   // or createVueConfig(viteConfig)
 ```json
 // tsconfig.json
 {
-    "extends": "@monorepo/configs/tsconfig/node.json",
+    "extends": "@joinery/configs/tsconfig/node.json",
     "include": ["src", "eslint.config.ts"]
 }
 ```
@@ -116,21 +116,21 @@ directory:
 2. Add the new tag to the `onlyDependOnLibsWithTags` of whatever is allowed to consume it — usually
    `type:app` alone. A new scope gets `["scope:<area>", "scope:shared"]` and joins no other list.
 3. Run `pnpm docs:map`. It renders the tag and scope tables in the
-   [root README](../../../README.md#-architecture--boundaries) from `boundaries.ts` and every
+   [root README](../../../README.md#architecture--boundaries) from `boundaries.ts` and every
    project's `nx.tags`; never edit them by hand.
 
 ## 6. The root README
 
 Give `package.json` a `description` — one lower-case line, the same form as its neighbours'. The
-workspace-layout block renders it as `@monorepo/name — description` on the `pnpm docs:map` run
+workspace-layout block renders it as `@joinery/name — description` on the `pnpm docs:map` run
 above.
 
 ## 7. Verify
 
 ```sh
 pnpm install
-pnpm exec nx show project @monorepo/<name>    # targets inferred from the scripts and plugins?
-pnpm exec nx run-many -t lint typecheck test --projects @monorepo/<name>
+pnpm exec nx show project @joinery/<name>    # targets inferred from the scripts and plugins?
+pnpm exec nx run-many -t lint typecheck test --projects @joinery/<name>
 ```
 
 If `lint` passes but the package is unreachable from its consumer, the tag wiring in step 5 is

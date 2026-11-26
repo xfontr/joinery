@@ -15,7 +15,7 @@ import {
 import { displayName, projectRootsFor, recordFingerprint, shouldWarn } from "./domain/detect.ts";
 import { changeSize, lastMdCommitMs } from "./domain/size.ts";
 
-const PROJECT = "Monorepo";
+const PROJECT = "Joinery";
 const CACHE_KEY = "drift-fingerprints";
 
 /** Resolves to whether someone answered, which is what makes the diff safe to stop asking about. */
@@ -23,8 +23,6 @@ const warnFor = async (root: string): Promise<boolean> => {
     const name = displayName(root);
     out.warn(`${root} changed a lot and its docs might be stale.`);
 
-    // A non-interactive push (CI, a GUI git client) has nobody to answer the prompt below — leave
-    // a pointer instead of hanging the push on an unanswerable question.
     if (!isInteractive()) {
         out.info("Run `pnpm docs:drift` to review and file an issue.");
         return false;
@@ -68,7 +66,6 @@ export const main = async (): Promise<void> => {
         const size = changeSize(numstat, diffNameStatus(base, head, root));
         const warn = shouldWarn(size, lastMdCommitMs(lastMdCommitEpochSeconds(root)));
 
-        // Recording only after an answer means Ctrl+C or a non-interactive run asks again next time.
         // eslint-disable-next-line no-await-in-loop -- one prompt at a time, each answer recorded
         if (warn && !(await warnFor(root))) continue;
 

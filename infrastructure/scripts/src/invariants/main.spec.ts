@@ -4,18 +4,20 @@ const files = vi.hoisted(() => ({
     readManifests: vi.fn(),
     readPackages: vi.fn(),
     readTableSources: vi.fn(),
+    readNuxtSources: vi.fn(),
+    readWorkflows: vi.fn(),
     projectRoots: vi.fn(),
 }));
 const git = vi.hoisted(() => ({ assertCommit: vi.fn(), manifestAt: vi.fn() }));
-const io = vi.hoisted(() => ({
-    out: { success: vi.fn(), error: vi.fn(), warn: vi.fn(), json: vi.fn() },
-}));
 
 vi.mock("./adapters/files.ts", () => files);
 vi.mock("./adapters/git.ts", () => git);
-vi.mock("../shared/adapters/io.ts", () => io);
+vi.mock("../shared/adapters/io.ts");
 
 import { main } from "./main.ts";
+import * as ioModule from "../shared/adapters/io.ts";
+
+const io = vi.mocked(ioModule, true);
 
 const args = (...flags: string[]) => ({ flags: new Set(flags), positionals: [] });
 
@@ -26,6 +28,8 @@ beforeEach(() => {
     ]);
     files.readPackages.mockReturnValue([]);
     files.readTableSources.mockReturnValue({ boundaries: "", readme: "" });
+    files.readNuxtSources.mockReturnValue([]);
+    files.readWorkflows.mockReturnValue([]);
     files.projectRoots.mockReturnValue([]);
     git.assertCommit.mockImplementation((ref: string) => ref);
     git.manifestAt.mockReturnValue({ version: "0.0.1" });

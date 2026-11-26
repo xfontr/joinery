@@ -56,11 +56,11 @@ Copy [`docs/decisions/TEMPLATE.md`](../../../docs/decisions/TEMPLATE.md) to
 a decision was made, not that the work is done. Set it to `implemented` only if the change it calls
 for is already in the same PR, and to `wont-implement` only when the finding itself is a decision
 not to act. `decision` is `accepted` unless this report is reversing an earlier one — see
-[docs/decisions/README.md](../../../docs/decisions/README.md#-superseding-a-decision) for what changes on
+[docs/decisions/README.md](../../../docs/decisions/README.md#superseding-a-decision) for what changes on
 the report being superseded.
 
 **`NNNN` is the next free number, not the issue's** — `ls docs/decisions/` and add one to the highest,
-zero-padded to four digits. Two reports may never share it; `nx collect @monorepo/developer-portal`
+zero-padded to four digits. Two reports may never share it; `nx collect @joinery/developer-portal`
 reports a collision as a `decision-shape-mismatch` on the portal's Overview, but nothing blocks it.
 
 `issue` is the issue that **raised the question**, as a plain integer. It is not always labelled
@@ -129,7 +129,7 @@ one of the two frontmatter fields expected to change after the fact — it's how
 [the developer portal](../../../apps/developer-portal/README.md) shows, at a glance, which decisions are still owed
 work. If this report reverses an earlier one, also set that earlier report's `decision:` to
 `superseded` and its `supersededBy:` to this file — see
-[docs/decisions/README.md](../../../docs/decisions/README.md#-superseding-a-decision).
+[docs/decisions/README.md](../../../docs/decisions/README.md#superseding-a-decision).
 
 **Never comment on the issue.** The report is reachable without one: its filename carries the issue
 number, and the PR that lands it references the issue. An issue comment adds a notification and a

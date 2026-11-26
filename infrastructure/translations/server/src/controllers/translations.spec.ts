@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// mocked: a malformed locale file cannot be committed to projects/, the JSON lint rejects it
 const readLocale = vi.hoisted(() => vi.fn());
 
 vi.mock("../utils/readLocale.ts", () => ({ default: readLocale }));

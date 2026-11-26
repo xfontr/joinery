@@ -1,4 +1,4 @@
-import type { Entry, Page } from "@monorepo/content";
+import type { Entry, Page } from "@joinery/content";
 import type { ArticleSearch } from "../../shared/types/ArticleSearch";
 import type { ArticleSummary } from "../../shared/types/ArticleSummary";
 import type { Category } from "../../shared/types/Category";

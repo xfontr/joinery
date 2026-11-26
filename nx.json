@@ -91,7 +91,8 @@
         "test:coverage": {
             "inputs": [
                 "default",
-                "^production"
+                "^production",
+                { "env": "COVERAGE_THRESHOLDS" }
             ],
             "outputs": [
                 "{projectRoot}/coverage"
@@ -187,5 +188,5 @@
             }
         }
     ],
-    "nxCloudId": "6aaae1631f25d36776ec67ed"
+    "neverConnectToCloud": true
 }

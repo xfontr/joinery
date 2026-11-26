@@ -1,30 +1,16 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { defineComponent, h } from "vue";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import HealthIssueRow from "./HealthIssueRow.vue";
-import type { Issue } from "#layers/github/shared/issues.ts";
+import type { Issue } from "#layers/github/app/utils/issues.ts";
 
-const NuxtStub = defineComponent({
-    props: {
-        to: { type: String, default: undefined },
-        label: { type: String, default: undefined },
-        ariaLabel: { type: String, default: undefined },
+const MESSAGES = {
+    healthIssueRow: {
+        noDescription: "No description.",
+        open: "Open #{number} on GitHub",
+        openLabel: "Open issue {number} on GitHub",
+        updated: "updated {age}",
     },
-    setup: (props, { slots }) => {
-        const tag = props.to ? "a" : props.label ? "span" : "button";
-
-        return () =>
-            h(
-                tag,
-                {
-                    href: props.to,
-                    target: props.to ? "_blank" : undefined,
-                    "aria-label": props.ariaLabel,
-                },
-                props.label ?? slots.default?.(),
-            );
-    },
-});
+};
 
 const issue: Issue = {
     number: 42,
@@ -40,8 +26,12 @@ const issue: Issue = {
 const mount = (props: { issue: Issue; compact?: boolean }) =>
     mountSuspended(HealthIssueRow, {
         props,
-        global: { stubs: { UIcon: true, UBadge: NuxtStub, UButton: NuxtStub } },
+        global: { stubs: { UIcon: true } },
     });
+
+beforeEach(() => {
+    useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
+});
 
 describe("HealthIssueRow", () => {
     it("keeps the collapsed row short while retaining the issue identity and labels", async () => {

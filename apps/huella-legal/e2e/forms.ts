@@ -1,8 +1,6 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect } from "@monorepo/configs/playwright/test";
+import { axeViolations } from "@joinery/configs/playwright/utils/a11y";
+import { expect } from "@joinery/configs/playwright/utils/test";
 import type { Page } from "@playwright/test";
-
-const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 
 /** Answers the form's own route in the browser, so the server half and its vendors never run. */
 export const answerWith = (page: Page, endpoint: string, status: number, body?: unknown) =>
@@ -41,7 +39,5 @@ export const expectEmptyFormRefused = async (
     await expect(summary.getByRole("link")).toHaveText(fields);
     expect(sent).toBe(false);
 
-    const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
-    expect(violations).toEqual([]);
+    expect(await axeViolations(page)).toEqual([]);
 };

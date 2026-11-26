@@ -1,8 +1,9 @@
-import { eslint } from "@monorepo/configs";
+import { eslint } from "@joinery/configs";
 
 export default [
     ...eslint.createNuxtConfig(),
     eslint.tailwind("layers/design/app/assets/main.css"),
+    { ignores: [".bench-shots.mjs", ".lab-*.mjs"] },
     {
         files: ["**/*.vue", "**/*.ts"],
         rules: {

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Scripts record a usage row unless this is set; a hook running them is not anyone choosing to.
-export MONOREPO_GIT_HOOK=1
+export JOINERY_GIT_HOOK=1
 
 # =========================
 # Colors
@@ -158,6 +158,19 @@ fi
 
 echo ""
 success "Typecheck passed"
+
+# Whole-workspace, not affected: an export goes unused when its last importer changes, not itself.
+echo ""
+info "Checking for unused exports, files and dependencies..."
+pnpm unused:check
+
+if [ $? -ne 0 ]; then
+  error "Unused code found"
+  exit 1
+fi
+
+echo ""
+success "Nothing unused"
 
 echo ""
 success "All checks passed. Pushing allowed 🚀"

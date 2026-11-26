@@ -1,0 +1,1284 @@
+{
+    "app": {
+        "apps": {
+            "catalog": "Catalog",
+            "docs": "Docs",
+            "health": "Health",
+            "home": "Home",
+            "work": "Work"
+        },
+        "dev": {
+            "colorMode": "Theme",
+            "navLabel": "Developer view",
+            "search": "Search pages, projects and docs…",
+            "source": "Source",
+            "sourceLabel": "View source on GitHub",
+            "visitorSwitch": "Switch to the visitor view",
+            "visitorSwitchTitle": "Visitor view",
+            "wordmark": "joinery"
+        },
+        "menu": {
+            "allProjects": "All projects",
+            "kinds": {
+                "apps": "Apps",
+                "infrastructure": "Infrastructure",
+                "packages": "Packages"
+            },
+            "newProject": "New project"
+        },
+        "nav": {
+            "audits": "Audits",
+            "benchmarks": "Benchmarks",
+            "changelog": "What's new",
+            "coverage": "Coverage",
+            "decisions": "Decisions",
+            "deps": "Dependencies",
+            "docs": "Documentation",
+            "graph": "Architecture",
+            "issues": "Work in progress",
+            "overview": "Overview",
+            "projects": "Projects",
+            "telemetry": "Tooling usage",
+            "workflows": "Workflows"
+        },
+        "search": {
+            "pages": "Pages",
+            "projects": "Projects",
+            "wiki": "Wiki"
+        },
+        "skipLink": "Skip to content"
+    },
+    "appTabs": {
+        "label": "{app} sections"
+    },
+    "audit": {
+        "crumb": "audits",
+        "missing": {
+            "description": "Nothing under docs/audits/ matches {id}.",
+            "title": "No such audit"
+        },
+        "notFound": "Not found",
+        "provenance": "{source} · read at {commit}"
+    },
+    "audits": {
+        "empty": {
+            "each": "them, one dated file per audit"
+        },
+        "findingStatus": {
+            "fixed": "Fixed",
+            "open": "Open",
+            "wont-fix": "Won't fix"
+        },
+        "guide": "How an audit is written",
+        "intro": "Audits record what a static read of one project found wrong at one commit. Each finding keeps its own status, so an audit is worked down over time rather than fixed in one go.",
+        "list": {
+            "note": "Progress counts fixed and won't-fix findings, read from each audit's own Status column.",
+            "title": "Every audit, and how much of it is left"
+        },
+        "state": {
+            "closed": "Closed",
+            "in-progress": "In progress",
+            "open": "Open"
+        },
+        "title": "Audits"
+    },
+    "auditsFacts": {
+        "audits": "Audits",
+        "provenance": "Read from docs/audits/ · {closed} of {total} closed"
+    },
+    "auditsToolbar": {
+        "everyScope": "Every scope",
+        "everyState": "Every state",
+        "search": "Search title or scope…",
+        "sorts": {
+            "most-open": "Most open",
+            "newest": "Newest first",
+            "oldest": "Oldest first"
+        }
+    },
+    "benchmark": {
+        "crumb": "benchmarks",
+        "missing": {
+            "description": "Nothing under docs/benchmarks/ matches {id}.",
+            "title": "No such benchmark"
+        },
+        "next": "Next",
+        "notFound": "Not found",
+        "previous": "Previous"
+    },
+    "benchmarks": {
+        "empty": {
+            "each": "one file per site"
+        },
+        "guide": "How an entry is written",
+        "intro": "Sites reviewed as design references, kept so the next redesign starts from what has already been studied. Each entry is a verdict, a screenshot and a short critique; what a project takes from them lives in its own decision report.",
+        "noMatch": "Nothing matches that filter.",
+        "title": "Benchmarks",
+        "verdict": {
+            "avoid": "Avoid",
+            "partial": "Take one thing",
+            "strong": "Strong reference"
+        }
+    },
+    "benchmarksCard": {
+        "screenshot": "{title}, first screen"
+    },
+    "benchmarksFacts": {
+        "provenance": "Read from docs/benchmarks/",
+        "sites": "Sites"
+    },
+    "benchmarksMeta": {
+        "open": "Open site"
+    },
+    "benchmarksToolbar": {
+        "everyKind": "Every kind",
+        "everyVerdict": "Every verdict",
+        "search": "Search site or verdict…"
+    },
+    "changelog": {
+        "empty": {
+            "hint": "They are written by {command}, never by hand.",
+            "title": "No CHANGELOG.md in the workspace yet."
+        },
+        "intro": "This page brings together generated release histories and unreleased activity across the workspace.",
+        "sinceRelease": "{count} commits since the last release",
+        "title": "What's new"
+    },
+    "changelogList": {
+        "unreleased": "+{count} unreleased",
+        "version": "v{version}"
+    },
+    "changelogNotes": {
+        "conventional": {
+            "description": "{percent}% of the last 100 commits parse as a version bump.",
+            "title": "Conventional subjects"
+        },
+        "unreleased": {
+            "description": "{projects} — commits waiting on a first release, so no changelog yet.",
+            "title": "Never released"
+        }
+    },
+    "collectionEmpty": {
+        "collect": "; {command} is what reads them in",
+        "nothing": "Nothing under {folder} yet.",
+        "nothingCollected": "Nothing collected under {folder} yet.",
+        "writes": "The {skill} skill writes {each}{collect}."
+    },
+    "common": {
+        "metrics": {
+            "branches": "branches",
+            "functions": "functions",
+            "lines": "lines",
+            "statements": "statements"
+        },
+        "never": "never",
+        "now": "now",
+        "severity": {
+            "critical": "critical",
+            "high": "high",
+            "info": "info",
+            "low": "low",
+            "moderate": "moderate"
+        },
+        "shortAge": {
+            "days": "{count} d",
+            "hours": "{count} h",
+            "minutes": "{count} min",
+            "months": "{count} mo",
+            "years": "{count} y"
+        }
+    },
+    "coverage": {
+        "provenance": "Vitest coverage · {collected} of {total} projects · collected {age}",
+        "title": "Coverage"
+    },
+    "dashboardGrid": {
+        "add": "Add widget",
+        "done": "Done",
+        "drag": "Drag {widget}",
+        "earlier": "Move {widget} earlier",
+        "hint": "Drag, resize or remove widgets",
+        "later": "Move {widget} later",
+        "remove": "Remove {widget}",
+        "reset": "Reset",
+        "resize": "Resize {widget}, now {size}",
+        "sizes": {
+            "medium": "medium",
+            "small": "small",
+            "wide": "wide"
+        },
+        "unsaved": "This browser can't keep the dashboard layout, so changes last this visit only"
+    },
+    "decision": {
+        "after": "Decided after",
+        "before": "Decided before",
+        "crumb": "decisions",
+        "missing": {
+            "description": "Nothing under docs/decisions/ matches {id}. Reports are numbered consecutively, so a gap is a report that was never filed.",
+            "title": "No such report"
+        },
+        "notFound": "Not found"
+    },
+    "decisions": {
+        "empty": {
+            "each": "them, one numbered file per decision"
+        },
+        "guide": "How a report is written",
+        "intro": "Decisions record why the repository works the way it does. Each report preserves an architectural or product choice after its originating issue is finished, and its status shows whether an accepted result has been implemented.",
+        "list": {
+            "note": "The number is consecutive, not the issue's — a listing reads in the order the decisions were made. Status and decision come from each report's own frontmatter.",
+            "title": "Every decision, as it was recorded"
+        },
+        "outcome": {
+            "accepted": "Accepted",
+            "superseded": "Superseded"
+        },
+        "status": {
+            "implemented": "Implemented",
+            "to-implement": "To implement",
+            "wont-implement": "Won't implement"
+        },
+        "supersededBy": "Superseded by {by}",
+        "title": "Decisions"
+    },
+    "decisionsFacts": {
+        "provenance": "Read from docs/decisions/",
+        "reports": "Reports"
+    },
+    "decisionsToolbar": {
+        "everyDecision": "Every decision",
+        "everyStatus": "Every status",
+        "search": "Search number or title…",
+        "sorts": {
+            "newest": "Newest first",
+            "oldest": "Oldest first",
+            "status": "By status",
+            "updated": "Recently updated"
+        }
+    },
+    "deps": {
+        "facts": {
+            "dependencies": "Dependencies",
+            "outdated": "Outdated"
+        },
+        "provenance": "pnpm audit and pnpm outdated · collected {age}",
+        "title": "Dependencies"
+    },
+    "docSource": {
+        "meta": "{words} words · updated {updated}"
+    },
+    "error": {
+        "head": "Error {status}",
+        "kicker": "Error {status}",
+        "notFound": {
+            "title": "There's no page at this address",
+            "lead": "The link may be mistyped. Everything the portal has is reachable from the overview.",
+            "home": "Overview"
+        },
+        "server": {
+            "title": "This page failed to load",
+            "lead": "Something broke while it was loading. Trying again usually works.",
+            "retry": "Try again",
+            "home": "Overview"
+        }
+    },
+    "graph": {
+        "title": "Project graph"
+    },
+    "graphEdges": {
+        "lead": "What the picture does not answer: which tags a project carries, and what breaks if it changes.",
+        "leaf": "leaf",
+        "title": "Tags and edges",
+        "usedBy": "used by {list}",
+        "uses": "uses {list}"
+    },
+    "graphGroups": {
+        "groups": {
+            "apps": "Applications",
+            "packages": "Shared building blocks",
+            "tooling": "Repository tooling"
+        },
+        "lead": "The repository groups applications, shared building blocks, and the tooling that supports them.",
+        "noRelations": "No project relationships recorded.",
+        "none": "No projects in this group.",
+        "title": "How the pieces fit",
+        "usedBy": "Used by: {list}",
+        "uses": "Uses: {list}"
+    },
+    "graphMap": {
+        "empty": "No projects collected yet.",
+        "lead": "Each arrow points from a project to one it depends on. Select a project to open it.",
+        "title": "Project map"
+    },
+    "healthAdvisories": {
+        "columns": {
+            "advisory": "Advisory",
+            "package": "Package",
+            "patched": "Patched",
+            "severity": "Severity",
+            "via": "Pulled in via"
+        },
+        "meta": "Every finding pnpm audit reports, over the whole workspace lockfile",
+        "none": "No known vulnerabilities.",
+        "notCollected": "Not collected.",
+        "title": "Advisories"
+    },
+    "healthCoverageReport": {
+        "empty": "No HTML report copied in. Run {test} from the workspace root, then {collect}.",
+        "frame": "Coverage report",
+        "meta": "The merged report pnpm test:coverage renders, copied in by the collector",
+        "open": "Open full",
+        "title": "Line-by-line report"
+    },
+    "healthCoverageTable": {
+        "columns": {
+            "files": "Files",
+            "project": "Project"
+        },
+        "empty": "Not collected. Run {command}, then collect.",
+        "meta": "Sorted by line coverage, lowest first",
+        "notCollected": "not collected",
+        "note": "The workspace figure is weighted by size, not averaged across projects — an average lets one large well-tested package hide a small untested one.",
+        "title": "Coverage by project",
+        "workspace": "Workspace"
+    },
+    "healthIssueRow": {
+        "noDescription": "No description.",
+        "open": "Open #{number} on GitHub",
+        "openLabel": "Open issue {number} on GitHub",
+        "updated": "updated {age}"
+    },
+    "healthIssuesRead": {
+        "notRead": "not read yet",
+        "read": "read {age}",
+        "refresh": "Re-read the issues from GitHub"
+    },
+    "healthIssuesToolbar": {
+        "everyLabel": "Every label",
+        "search": "Search issues…"
+    },
+    "healthLines": {
+        "brokenLinks": "No broken links | {count} broken link | {count} broken links",
+        "lines": {
+            "advisories": "Advisories",
+            "audits": "Audit findings open",
+            "coverage": "Line coverage",
+            "decisions": "Decisions implemented",
+            "docs": "Doc pages",
+            "tooling": "Tooling runs failed"
+        },
+        "meta": "Snapshot collected {age}",
+        "parts": {
+            "covered": "covered",
+            "critical": "critical",
+            "failed": "failed",
+            "fixed": "fixed",
+            "high": "high",
+            "implemented": "implemented",
+            "low": "low",
+            "moderate": "moderate",
+            "open": "open",
+            "passed": "passed",
+            "toImplement": "to implement",
+            "uncovered": "uncovered"
+        },
+        "title": "Health"
+    },
+    "healthOutdated": {
+        "columns": {
+            "current": "Current",
+            "latest": "Latest",
+            "package": "Package",
+            "projects": "Projects",
+            "usedBy": "Used by",
+            "wanted": "Wanted"
+        },
+        "deprecated": "deprecated",
+        "meta": "pnpm outdated -r · wanted is what the range in package.json already allows",
+        "notCollected": "Not collected.",
+        "title": "Outdated",
+        "upToDate": "Everything is on its wanted version."
+    },
+    "issues": {
+        "empty": "No open issues.",
+        "error": {
+            "description": "{error} — this page reads GitHub from your browser, unauthenticated, which allows 60 requests an hour per address.",
+            "title": "GitHub could not be reached"
+        },
+        "file": "File one with {command}.",
+        "intro": "Planned and active repository work appears here as issues from GitHub. The issue read is live in your browser; the rest of this portal remains a collected snapshot.",
+        "list": {
+            "note": "Read live from GitHub by your own browser. Nothing is stored here — the issue is the record, and this is a window onto it.",
+            "title": "Open issues"
+        },
+        "noMatch": "Nothing matches that filter.",
+        "title": "Work in progress"
+    },
+    "issuesRead": {
+        "failed": "GitHub could not be read",
+        "noRepo": "NUXT_PUBLIC_REPO_URL is unset, so there is no repo to read."
+    },
+    "listCard": {
+        "empty": "Nothing matches that filter.",
+        "shown": "{shown} of {total}"
+    },
+    "newProject": {
+        "errors": {
+            "id": "Lower case, digits and dashes",
+            "idEmpty": "Type one: the title has no letters to make it from",
+            "milestone": "Already {project}'s milestone"
+        },
+        "none": "None",
+        "pageItem": "{title} ({type})",
+        "pageProblems": {
+            "duplicate": "Another page has this name",
+            "noId": "The title has no letters to make an id from",
+            "taken": "`{id}` is already a block of the template",
+            "untitled": "Name the page, or remove it"
+        },
+        "review": {
+            "area": "Area label",
+            "complexity": "Complexity",
+            "complexityValue": "{points} SP",
+            "featuresOn": "Features on",
+            "id": "Id",
+            "leftOut": "Left out",
+            "milestone": "Milestone",
+            "pages": "Pages",
+            "summary": "Summary",
+            "template": "Template",
+            "tickets": "Tickets",
+            "ticketsValue": "{size}, {count} for {blocks} blocks",
+            "title": "Title"
+        },
+        "steps": {
+            "details": {
+                "hint": "The id, milestone and area label follow the title until you change them.",
+                "question": "What is it called?",
+                "title": "Details"
+            },
+            "features": {
+                "hint": "Leaving one out takes its blocks out of the map; the ticket count beside it follows. You can change this later in Settings.",
+                "question": "Which features does it need?",
+                "title": "Features"
+            },
+            "pages": {
+                "hint": "Add a layout once, not each page on it: the legal and about pages on one layout are one page template. Each becomes a block with its own estimate.",
+                "question": "Which page templates, custom pages and blogs does it have?",
+                "title": "Pages"
+            },
+            "review": {
+                "hint": "Nothing goes to GitHub. The project file is all that gets written.",
+                "question": "Ready to create it?",
+                "title": "Review"
+            },
+            "template": {
+                "hint": "The template is the map of blocks the project starts from. It can't be changed later.",
+                "question": "What are you building?",
+                "title": "Template"
+            }
+        }
+    },
+    "overview": {
+        "head": "Overview",
+        "description": "The front door to one developer's monorepo: its docs, projects, architecture, decisions and engineering health.",
+        "customize": "Customize",
+        "done": "Done",
+        "title": "Home",
+        "widgets": {
+            "activity": "Tooling runs",
+            "featured": "Featured projects",
+            "health": "Health",
+            "projects": "Projects",
+            "queue": "Work queue",
+            "tooling": "Tooling usage",
+            "welcome": "Welcome",
+            "workflows": "Workflows"
+        }
+    },
+    "pageHeader": {
+        "breadcrumb": "Breadcrumb",
+        "wordmark": "joinery"
+    },
+    "project": {
+        "missing": {
+            "description": "No collected project lives in a folder called {name}.",
+            "title": "No such project"
+        },
+        "noReadme": "This project has no README.",
+        "tabs": {
+            "coverage": "Coverage",
+            "deps": "Dependencies",
+            "issues": "Issues",
+            "readme": "README"
+        }
+    },
+    "projectAbout": {
+        "facts": {
+            "changelog": "Changelog",
+            "lines": "Lines covered",
+            "recent": "Commits, 2 wk",
+            "specs": "Specs",
+            "unreleased": "Unreleased",
+            "version": "Version"
+        },
+        "no": "no",
+        "none": "None",
+        "relations": {
+            "dependsOn": "Depends on",
+            "usedBy": "Used by"
+        },
+        "tags": "Tags",
+        "title": "About",
+        "yes": "yes"
+    },
+    "projectCoverageTab": {
+        "empty": "No usable coverage report for this project.",
+        "meta": "Vitest · {files} files · collected {age}",
+        "notCollected": "Not collected",
+        "parts": {
+            "covered": "covered",
+            "uncovered": "not covered"
+        },
+        "title": "Coverage"
+    },
+    "projectDepsTab": {
+        "columns": {
+            "current": "Current",
+            "latest": "Latest",
+            "package": "Package",
+            "wanted": "Wanted"
+        },
+        "current": "Everything is current.",
+        "deprecated": "deprecated",
+        "meta": "pnpm outdated · collected {age} · advisories are workspace-wide",
+        "title": "Outdated dependencies"
+    },
+    "projectExtraTab": {
+        "meta": "Running in {name}",
+        "parts": {
+            "done": "done",
+            "left": "to go"
+        }
+    },
+    "projectIssuesTab": {
+        "meta": "GitHub · labelled {area}",
+        "none": "No open issue is labelled {area}.",
+        "reading": "Reading GitHub…",
+        "readingIssues": "Reading open issues…",
+        "title": "Open issues"
+    },
+    "projectTabs": {
+        "workflows": {
+            "empty": "No workflow runs in this project.",
+            "label": "Workflows"
+        }
+    },
+    "projects": {
+        "crumb": "projects",
+        "kinds": {
+            "all": "All projects",
+            "apps": "Apps",
+            "infrastructure": "Infrastructure",
+            "packages": "Packages"
+        },
+        "row": {
+            "unreleased": "+{count} unreleased",
+            "usedBy": "used by {count}"
+        }
+    },
+    "projectsFeatured": {
+        "all": "All projects",
+        "kind": "app",
+        "lead": "Applications that show what this repository produces.",
+        "noDescription": "No project description is available yet.",
+        "readMore": "Read more",
+        "title": "Featured projects"
+    },
+    "projectsList": {
+        "empty": "No projects collected yet.",
+        "filter": "Filter projects",
+        "noMatch": "No project matches “{search}”."
+    },
+    "projectsTable": {
+        "columns": {
+            "lines": "Lines covered",
+            "project": "Project",
+            "recent": "Commits, 2 wk",
+            "specs": "Specs",
+            "unreleased": "Unreleased",
+            "usedBy": "Used by",
+            "version": "Version"
+        }
+    },
+    "projectsTile": {
+        "findings": "No invariant findings | {count} invariant finding | {count} invariant findings",
+        "label": "Projects"
+    },
+    "projectsWelcome": {
+        "noSummary": "The repository summary is not available yet.",
+        "routes": {
+            "contribute": {
+                "line": "Get a working checkout and find your first useful step.",
+                "title": "Run or contribute"
+            },
+            "explore": {
+                "line": "Browse the applications, building blocks, and tooling.",
+                "title": "Explore what exists"
+            },
+            "understand": {
+                "line": "See how projects fit together and share responsibilities.",
+                "title": "Understand how it works"
+            }
+        },
+        "title": "Joinery"
+    },
+    "settingsFeatures": {
+        "hint": "Leaving one out takes its blocks out of the map; whatever needed them waits on what they needed.",
+        "title": "Features"
+    },
+    "settingsGeneral": {
+        "area": "Area label",
+        "hint": "What the project is called and where its tickets live.",
+        "milestone": {
+            "help": "Rename it on GitHub too, or its tickets drop out of view",
+            "label": "Milestone"
+        },
+        "summary": "Summary",
+        "template": "Template: {template}. It can't change, since the switches and settled blocks belong to it.",
+        "title": "General",
+        "titleField": "Title"
+    },
+    "settingsReadOnly": {
+        "description": "Settings write the project file, so they change only under pnpm dev developer-portal.",
+        "title": "Read-only here"
+    },
+    "settingsRemove": {
+        "cancel": "Cancel",
+        "confirm": "Type {project} to confirm",
+        "delete": "Delete project",
+        "deleteOpen": "Delete project…",
+        "drop": "As of the last sync, {close} tickets are untouched and {keep} already started or closed. Close the untouched ones first with {command}, since it reads the milestone from this project file.",
+        "lead": "Removes the project file and its snapshot. Run {command} first to close the tickets nobody started; the rest stay on GitHub.",
+        "modal": {
+            "description": "The project file and its snapshot go. Deleting closes nothing on GitHub.",
+            "title": "Delete {title}?"
+        },
+        "rarely": "Rarely needed.",
+        "title": "Remove"
+    },
+    "settingsSave": {
+        "discard": "Discard",
+        "save": "Save",
+        "unsaved": "Unsaved changes"
+    },
+    "settingsTicketSize": {
+        "hint": "How many blocks share a ticket when filed. It can't change once one is.",
+        "title": "Ticket size"
+    },
+    "snapshotAge": {
+        "at": "At {commit} on {branch}",
+        "collected": "Collected {age}",
+        "failed": "{artifact} failed to collect: {error}",
+        "never": "Never collected — run {command}",
+        "sourceCollected": "{source} · collected {age}"
+    },
+    "statusBar": {
+        "collected": "{'@'}{commit} · collected {age}",
+        "items": {
+            "advisories": "advisories",
+            "advisoriesBadge": "{count} adv.",
+            "brokenLinks": "no broken links | {count} broken link | {count} broken links",
+            "coverage": "coverage",
+            "docs": "docs",
+            "failed": "failed",
+            "issues": "issues",
+            "lines": "lines",
+            "none": "none",
+            "open": "open",
+            "tooling": "tooling",
+            "toolingBadge": "{count} fail",
+            "worst": "worst {severity}"
+        },
+        "label": "Status",
+        "neverCollected": "never collected",
+        "title": "{label}: {value} {detail}"
+    },
+    "telemetry": {
+        "empty": {
+            "body": "Scripts record each run into {git}, and the next commit carries the rows into {folder}. Commit, then run {command}.",
+            "title": "No runs committed yet"
+        },
+        "facts": {
+            "agent": "By agents",
+            "failed": "Failed",
+            "neverRun": "Never run",
+            "runs": "Runs",
+            "scripts": "Scripts"
+        },
+        "provenance": "Usage log · last {days} days · collected {age}",
+        "title": "Tooling usage"
+    },
+    "telemetryCallerSplit": {
+        "none": "No runs",
+        "split": "{agent} by agents, {people} by people"
+    },
+    "telemetryDaily": {
+        "columns": {
+            "agent": "By agents",
+            "day": "Day",
+            "failed": "Failed",
+            "runs": "Runs"
+        },
+        "endLabel": "last day",
+        "reading": "{average} {unit} a day on average; the busiest day was {day}, with {peak}.",
+        "readingNone": "No {unit} in the window.",
+        "series": {
+            "agent": {
+                "title": "Agent runs per day",
+                "unit": "agent runs"
+            },
+            "failures": {
+                "title": "Failed runs per day",
+                "unit": "failed runs"
+            },
+            "runs": {
+                "title": "Runs per day",
+                "unit": "runs"
+            }
+        },
+        "views": {
+            "chart": "Chart",
+            "table": "Table"
+        }
+    },
+    "telemetryDayStrip": {
+        "cell": "{day} · {runs}",
+        "cellFailed": "{day} · {runs} · {failures} failed",
+        "runs": "{count} runs | {count} run | {count} runs"
+    },
+    "telemetryLintUsage": {
+        "columns": {
+            "disabled": "Disabled inline",
+            "fixed": "Auto-fixed",
+            "rule": "Rule",
+            "total": "Total"
+        },
+        "hide": "Hide the list",
+        "meta": "Hits per project in the last 90 days, darker for more; the last two columns say what a rule costs",
+        "neverFired": "Never fired: {quiet} of {enabled} enabled rules",
+        "nothingYet": "Nothing recorded yet, so every rule is listed.",
+        "quiet": "{watching} Quiet can also mean the rule works: agents follow what the docs say, or it guards something rare.",
+        "scope": "Agent edits only: the counts come from the hook that lints every file an agent edits. Your own edits are fixed by the editor on save and never counted, so a rule that only catches people reads as quiet here.",
+        "show": "Show the list",
+        "since": "Watching since {since}: nothing here means much until that's weeks ago.",
+        "title": "Lint rules × projects"
+    },
+    "telemetryRunsPanel": {
+        "endLabel": "last day",
+        "meta": "Usage log · collected {age}",
+        "title": "Tooling runs per day",
+        "unit": "runs"
+    },
+    "telemetryScriptActivity": {
+        "all": "All scripts",
+        "columns": {
+            "agent": "By agents",
+            "failed": "Failed",
+            "last": "Last run",
+            "runs": "Runs",
+            "script": "Script"
+        },
+        "legend": {
+            "agent": "Agent",
+            "failed": "A run failed",
+            "person": "Person",
+            "runs": "Runs that day"
+        },
+        "meta": "Most run first · failing from {runs} runs at {percent}% failed",
+        "title": "Repo scripts"
+    },
+    "telemetryUsagePanel": {
+        "failed": "{percent}% failed",
+        "figures": {
+            "agent": "By agents",
+            "failed": "Failed",
+            "runs": "Runs"
+        },
+        "idle": "No script never run in the window. | {count} script never run in the window. | {count} scripts never run in the window.",
+        "meta": "Repo scripts over the last {days} days",
+        "noneFailing": "No script is failing.",
+        "notCollected": "Not collected.",
+        "title": "Tooling usage"
+    },
+    "telemetryUsageTriage": {
+        "callers": {
+            "agents": "Agents only",
+            "both": "Both",
+            "people": "People only"
+        },
+        "fixes": {
+            "auto": "Always auto-fixed",
+            "manual": "Needs a manual fix"
+        },
+        "idle": "Not plotted, no run in the window: {list}",
+        "idleLast": "{name} (last run {day})",
+        "idleNever": "{name} (never run)",
+        "ruleCorners": {
+            "fought": "Fires and fought",
+            "noisy": "Noisy · tell agents, or narrow it",
+            "wrong": "Switched off, never fires · rule or code wrong"
+        },
+        "rules": {
+            "meta": "Agent-edit hits against eslint-disable · dashed at {disables} disables and {percent}% of hits",
+            "point": "{name} · {hits} hits · {fixed} auto-fixed · disabled {disabled}×",
+            "title": "Lint rules: how often it fires vs how often it's switched off",
+            "x": "Hits in the window, log scale",
+            "y": "Disabled inline"
+        },
+        "scriptCorners": {
+            "fixFirst": "Used and failing · fix first",
+            "rare": "Rare and failing",
+            "rarelyRun": "Rarely run · still needed?",
+            "workhorses": "Workhorses"
+        },
+        "scripts": {
+            "meta": "One dot per script · dashed at {runs} runs and {percent}% failing",
+            "point": "{name} · {runs} runs · {failed}% failed · {agent} by agents",
+            "title": "Scripts: how often vs how often it fails",
+            "x": "Runs in the window, log scale",
+            "y": "Runs that failed"
+        }
+    },
+    "ticketSize": {
+        "block": {
+            "summary": "One ticket per block, or its suggested ones, each PR reviewed by hand",
+            "title": "Reviewed"
+        },
+        "fast": {
+            "summary": "Tickets of up to {width} SP, and the spikes together; sign-offs stay apart",
+            "title": "Fast",
+            "warning": "Meant for AI-run projects, putting speed over code quality: for internal tools and experiments."
+        },
+        "supervised": {
+            "summary": "A stage's build blocks share tickets of up to {width} SP; spikes and sign-offs stay apart",
+            "title": "Supervised",
+            "warning": "Meant for AI-run projects: a ticket bundles several blocks, so no one reviews each block's code by hand."
+        }
+    },
+    "personalSiteLink": "Visitor site",
+    "wiki": {
+        "count": "{count} pages, read in place",
+        "groups": {
+            "agents": "Subagents",
+            "audits": "Audits",
+            "benchmarks": "Benchmarks",
+            "concepts": "Concepts",
+            "decisions": "Decisions",
+            "guides": "Guides",
+            "root": "The root",
+            "skills": "Skills",
+            "start": "Start here",
+            "workflows": "Workflows"
+        },
+        "heading": "The workspace, as it is written",
+        "lead": "Every markdown file in the repo, rendered from where it lives. The README you edit for GitHub is the page you read here, so the two cannot drift. Press {keys} to search all of it.",
+        "overview": "Overview",
+        "sections": {
+            "agents": {
+                "blurb": "The skills and subagents an agent working in this repo loads.",
+                "label": "Agent setup"
+            },
+            "apps": {
+                "blurb": "Each app's own reference, colocated with its code so it changes in the same diff.",
+                "label": "Apps"
+            },
+            "docs": {
+                "blurb": "Subjects no single project owns — the models, the procedures, the answered decisions.",
+                "label": "Docs"
+            },
+            "infrastructure": {
+                "blurb": "Each service's own reference, colocated with its code so it changes in the same diff.",
+                "label": "Infrastructure"
+            },
+            "packages": {
+                "blurb": "Each package's own reference, colocated with its code so it changes in the same diff.",
+                "label": "Packages"
+            },
+            "workspace": {
+                "blurb": "The two files at the root, and the generated index of everything the repo can do.",
+                "label": "Workspace"
+            }
+        },
+        "title": "Wiki"
+    },
+    "wikiBroken": {
+        "title": "Broken relative links"
+    },
+    "wikiPage": {
+        "after": "Next in {group}",
+        "before": "Previous in {group}",
+        "broken": "This page links to something that is not there",
+        "crumb": "wiki",
+        "missing": {
+            "description": "Nothing in the workspace matches {path}. The wiki links only to files that exist, so this is a hand-typed or stale URL.",
+            "title": "No such page"
+        },
+        "notFound": "Not found"
+    },
+    "wikiRecent": {
+        "empty": "Nothing collected yet — run {command}.",
+        "note": "From the last commit that touched each file, not from a page view.",
+        "title": "Recently changed"
+    },
+    "wikiStart": {
+        "groups": {
+            "contribute": "Contribute",
+            "explore": "Explore",
+            "understand": "Understand"
+        },
+        "items": {
+            "boundaries": {
+                "hint": "How projects are allowed to depend",
+                "label": "Architecture and boundaries"
+            },
+            "catalog": {
+                "hint": "Applications, packages, and tooling",
+                "label": "Project catalog"
+            },
+            "firstHour": {
+                "hint": "An ordered way into the repository",
+                "label": "First hour"
+            },
+            "graph": {
+                "hint": "How the collected projects fit together",
+                "label": "Architecture view"
+            },
+            "overview": {
+                "hint": "What this monorepo contains",
+                "label": "Repository overview"
+            }
+        }
+    },
+    "wizardDetails": {
+        "area": {
+            "help": "Where its code lives",
+            "label": "Area label"
+        },
+        "id": {
+            "help": "kebab-case; the file name",
+            "label": "Id"
+        },
+        "milestone": {
+            "help": "Its tickets live here",
+            "label": "Milestone"
+        },
+        "summary": {
+            "help": "One line on what the site is and who reads it",
+            "label": "Summary"
+        },
+        "title": {
+            "label": "Title",
+            "placeholder": "Harbour Notes"
+        }
+    },
+    "wizardFooter": {
+        "back": "Back",
+        "create": "Create project",
+        "download": "Download YAML",
+        "next": "Next",
+        "readOnly": {
+            "description": "This portal is a read-only snapshot. Download the file and add it to data/workflows/projects/{id}.yaml in a pull request.",
+            "title": "You're not authorised to create projects here"
+        }
+    },
+    "wizardReview": {
+        "graph": "Dependency graph"
+    },
+    "wizardSummary": {
+        "noTemplate": "No template",
+        "ticketSize": "Ticket size",
+        "units": {
+            "blocks": "blocks",
+            "points": "SP",
+            "tickets": "tickets"
+        },
+        "untitled": "Untitled project"
+    },
+    "workQueue": {
+        "all": "All {count}",
+        "empty": "Nothing open here.",
+        "filters": {
+            "attention": "Attention",
+            "audits": "Audits",
+            "decisions": "Decisions",
+            "issues": "Issues",
+            "releases": "Releases"
+        },
+        "githubError": "GitHub could not be read from this browser.",
+        "meta": "What's open across issues, decisions, audits, releases and docs",
+        "reading": "Reading open issues…",
+        "rows": {
+            "auditOpen": "{open} of {total} open",
+            "brokenLinks": "{count} broken",
+            "invariant": "invariant",
+            "link": "link",
+            "release": "{version} · unreleased",
+            "toImplement": "to implement",
+            "unversioned": "unversioned"
+        },
+        "title": "Work queue"
+    },
+    "workflow": {
+        "fallback": "Workflow"
+    },
+    "workflowActions": {
+        "never": "Never synced — run {setup} then {sync}",
+        "settings": "Settings",
+        "synced": "Snapshot updated {age}"
+    },
+    "workflowActivityStrip": {
+        "lastCommit": "Last commit {day}",
+        "moved": "{count} capabilities | {count} capability | {count} capabilities",
+        "noCommits": "No commits yet",
+        "segment": "{stage} · {day} · {moved}",
+        "title": "Activity",
+        "tooltip": "Capabilities moved per day, from commits tagged with a ticket number"
+    },
+    "workflowAlerts": {
+        "blank": {
+            "description": "Ask Claude to draft its map: it asks what the project is, writes the blocks under {extras} in {file}, and they show here for you to check before anything is filed.",
+            "title": "This project has no blocks yet"
+        },
+        "problems": "This project's files have problems",
+        "reasons": {
+            "group": "{detail} is a group; label one of its capabilities instead",
+            "noLabel": "no {detail} label",
+            "noMilestone": "not in the milestone",
+            "off": "its capability is switched off",
+            "unknown": "unknown capability {detail}"
+        },
+        "unsorted": {
+            "lead": "Not placed yet. Give each one the milestone and a {label} label on GitHub, then sync again.",
+            "title": "{count} to organise"
+        }
+    },
+    "workflowCapabilityDetail": {
+        "activity": {
+            "commits": "{count} commits | {count} commit | {count} commits",
+            "days": "{count} days | {count} day | {count} days",
+            "none": "No commit names its tickets yet.",
+            "summary": "{commits} on {days} across {tickets}, last on {day}.",
+            "tickets": "{count} tickets | {count} ticket | {count} tickets"
+        },
+        "blockedBy": "Blocked by {blockers}",
+        "extra": "This project only",
+        "headings": {
+            "activity": "Activity",
+            "doneWhen": "Done when",
+            "lessons": "Lessons",
+            "needs": "Needs",
+            "settle": "Settle",
+            "startFrom": "Start from",
+            "tickets": "Tickets",
+            "unblocks": "Unblocks"
+        },
+        "offWith": "Off with {group}",
+        "optional": "Optional",
+        "settle": {
+            "done": "Mark done",
+            "noteLabel": "Why it is settled",
+            "notePlaceholder": "Why, in one line",
+            "settled": "Settled in the project file, with no ticket.",
+            "skip": "Skip",
+            "undo": "Undo"
+        },
+        "switch": {
+            "off": "Off for this project",
+            "on": "On for this project"
+        },
+        "why": {
+            "blocked": "Blocked: it waits on {waiting}.",
+            "blockedOpen": "Blocked by an open ticket on GitHub.",
+            "canFile": "Nothing it needs is undecided, so its tickets can be filed now.",
+            "ready": "Nothing open blocks it, so an agent can take it.",
+            "waits": "Not fileable yet: it waits on {waiting}, which can still change what its tickets say.",
+            "yours": "Only you can close this, and everything after it waits.",
+            "yoursSettle": "Only you can approve this: mark it done below, or file its ticket and close it. Everything after it waits.",
+            "yoursUnfiled": "Only you can approve this: file its ticket and close it, or settle it in the project file. Everything after it waits."
+        }
+    },
+    "workflowEdit": {
+        "failed": "The edit failed"
+    },
+    "workflowEstimateReceipt": {
+        "core": "Core build",
+        "label": "Estimate breakdown",
+        "points": "{points} SP",
+        "title": "What's in it",
+        "total": "Total",
+        "unnamed": "Unnamed page",
+        "with": "with {block}"
+    },
+    "workflowFeaturePicker": {
+        "block": "{title} · {points} SP",
+        "needs": "Needs {feature}",
+        "points": "{points} SP"
+    },
+    "workflowGraph": {
+        "details": "Details for {title}",
+        "exitFull": "Exit full screen",
+        "fit": "Fit the selected path",
+        "full": "Full screen",
+        "label": "Dependency graph",
+        "node": "{title}, {state}",
+        "relation": {
+            "needed": "needed",
+            "waits": "waits on it"
+        },
+        "zoomIn": "Zoom in",
+        "zoomOut": "Zoom out"
+    },
+    "workflowGraphSection": {
+        "chain": "{status} Longest chain left: {chain}.",
+        "status": "{state}. Its path stays lit; click an empty spot for the whole map.",
+        "title": "Dependency graph",
+        "titleSelected": "Dependency graph · {title}"
+    },
+    "workflowHomePanel": {
+        "meta": "Projects working through their map",
+        "new": "New workflow",
+        "none": "No workflow is running.",
+        "parts": {
+            "done": "done",
+            "left": "to go"
+        },
+        "title": "Workflows"
+    },
+    "workflowLeaveModal": {
+        "stay": "Stay"
+    },
+    "workflowLeft": {
+        "blocks": "{state} blocks",
+        "done": "Everything switched on is done.",
+        "none": "No blocks yet.",
+        "unblocks": "unblocks {count}"
+    },
+    "workflowNew": {
+        "cancel": "Cancel",
+        "leave": {
+            "action": "Leave without creating",
+            "description": "Nothing picked on this page is in a project file yet.",
+            "title": "Leave without creating?"
+        },
+        "title": "New project"
+    },
+    "workflowNewProjectCard": {
+        "label": "New project"
+    },
+    "workflowPagePicker": {
+        "add": "{type} · {points} SP",
+        "counted": "{block} already counted",
+        "includes": "Includes {block}, {points} SP",
+        "name": "{type} name",
+        "points": "{points} SP",
+        "remove": "Remove {page}",
+        "rename": "Rename {page}"
+    },
+    "workflowProblems": {
+        "title": "{count} workflow file problems"
+    },
+    "workflowProjects": {
+        "empty": "No project under {folder} yet.",
+        "title": "Projects"
+    },
+    "workflowReplay": {
+        "label": "Day to replay",
+        "title": "Replay",
+        "today": "Today"
+    },
+    "workflowSettings": {
+        "back": "Back to the project",
+        "leave": {
+            "action": "Leave without saving",
+            "description": "The changes on this page aren't in the project file yet.",
+            "title": "Leave without saving?"
+        },
+        "title": "Settings",
+        "titleOf": "{project} · Settings"
+    },
+    "workflowSkyline": {
+        "label": "{title}, {state}",
+        "title": "{title} · {state}"
+    },
+    "workflowStageCards": {
+        "activity": "Active on {days} days, last on {day}",
+        "details": "Details for {title}",
+        "dot": "#{number} {title} · {status}",
+        "points": "{points} SP",
+        "progress": "{done} of {total} · {points}",
+        "stagePoints": "{done}/{total} SP",
+        "summary": "{count} {status}"
+    },
+    "workflowSummary": {
+        "done": "{done} of {total} done",
+        "estimated": "{points} still template estimates",
+        "milestone": "Milestone {milestone}",
+        "points": "{done} of {total} SP done",
+        "tickets": "{blocks} blocks · {filed} tickets filed · {toFile} to file",
+        "unestimated": "{count} unestimated"
+    },
+    "workflowTemplateCard": {
+        "estimate": "{blocks} blocks by default · {points} SP · {block} tickets one per block, {fast} fast",
+        "optional": "Optional: each project switches it on or off."
+    },
+    "workflowTemplatePicker": {
+        "counts": "{blocks} blocks by default · {fast}–{block} tickets · {points} SP",
+        "legend": "Template"
+    },
+    "workflowTemplates": {
+        "title": "Templates"
+    },
+    "workflowTicketSizePicker": {
+        "legend": "Ticket size",
+        "tickets": "tickets | ticket | tickets"
+    },
+    "workflows": {
+        "blockKind": {
+            "build": "Build",
+            "owner": "Yours — only you can close it",
+            "spike": "Spike — answers a question"
+        },
+        "capabilityState": {
+            "blocked": "Blocked",
+            "can-file": "Can file now",
+            "done": "Done",
+            "in-flight": "In flight",
+            "off": "Off",
+            "ready": "Ready",
+            "skipped": "Skipped",
+            "waiting-on-you": "Waiting on you",
+            "waits": "Waits on a decision"
+        },
+        "crumb": "workflows",
+        "guide": "How workflows work",
+        "intro": "A workflow is a map of every block a kind of project needs and what each one needs first, learned from the ones already shipped. Each project picks its features, files the blocks as GitHub tickets with their blocked-by links, and from then on GitHub says where it stands.",
+        "missing": "No project {id} under {folder}.",
+        "reusePlan": {
+            "copy": "Copy and adapt",
+            "extract": "Extract to a package",
+            "method": "Follow the method",
+            "new": "Build new",
+            "package": "Import the package"
+        },
+        "ticketStatus": {
+            "blocked": "Blocked",
+            "done": "Done",
+            "dropped": "Dropped",
+            "in-flight": "In flight",
+            "ready": "Ready",
+            "waiting-on-you": "Waiting on you"
+        },
+        "title": "Workflows"
+    }
+}

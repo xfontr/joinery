@@ -2,7 +2,7 @@ import { CAPABILITY_LABEL_PREFIX, OWNER_LABEL, type SnapshotIssue } from "./snap
 
 type Kind = "build" | "spike" | "owner";
 
-export const TICKET_SIZES = ["block", "supervised", "fast"] as const;
+const TICKET_SIZES = ["block", "supervised", "fast"] as const;
 export type TicketSize = (typeof TICKET_SIZES)[number];
 
 /** The part of a template or extra capability filing reads; the portal's invariants validate the rest. */
@@ -96,6 +96,27 @@ const withType = (extra: unknown, types: Raw[]): unknown => {
     };
 };
 
+/** A `dependsOn` entry with this prefix needs every other block in the named stage, as the portal reads it. */
+const STAGE_NEED_PREFIX = "stage:";
+
+const withStageNeeds = (blocks: Block[]): Block[] => {
+    const inStage = (stage: string, except: string): string[] =>
+        blocks.filter((other) => other.stage === stage && other.id !== except).map(({ id }) => id);
+
+    return blocks.map((block) => ({
+        ...block,
+        dependsOn: [
+            ...new Set(
+                block.dependsOn.flatMap((need) =>
+                    need.startsWith(STAGE_NEED_PREFIX)
+                        ? inStage(need.slice(STAGE_NEED_PREFIX.length), block.id)
+                        : [need],
+                ),
+            ),
+        ],
+    }));
+};
+
 /** A parsed template and project file as one map of blocks, with the project's switches applied. */
 export const readMap = (template: unknown, project: unknown): WorkflowMap => {
     const source = record(project);
@@ -116,12 +137,13 @@ export const readMap = (template: unknown, project: unknown): WorkflowMap => {
             : true;
     };
 
-    const blocks = [
+    const raw = [
         ...list(record(template).capabilities),
         ...list(source.extras).map((extra) =>
             withType(extra, list(record(template).types).map(record)),
         ),
     ].map(toBlock);
+    const blocks = withStageNeeds(raw);
     const demanded = new Set(
         blocks
             .filter((block) => extras.has(block.id) && groupOn(block.group))
@@ -145,7 +167,7 @@ export const readMap = (template: unknown, project: unknown): WorkflowMap => {
     };
 };
 
-export interface PlannedTicket {
+interface PlannedTicket {
     title: string;
     body: string;
     labels: string[];
@@ -153,7 +175,7 @@ export interface PlannedTicket {
     complexity: number | null;
 }
 
-export type Filing = { ok: true; tickets: PlannedTicket[] } | { ok: false; reason: string };
+type Filing = { ok: true; tickets: PlannedTicket[] } | { ok: false; reason: string };
 
 export const KIND_LABELS = { build: "enhancement", spike: "spike", owner: OWNER_LABEL } as const;
 
@@ -285,8 +307,6 @@ export const planFiling = (map: WorkflowMap, issues: SnapshotIssue[], ids: strin
     const blocks = map.blocks.filter(({ id }) => inside.has(id));
     const kinds = new Set(blocks.map(({ kind }) => kind));
 
-    // A spike's answer reshapes later tickets and an owner block is closed by the owner, so
-    // neither shares a ticket with build work.
     if (ids.length > 1 && (kinds.size > 1 || kinds.has("owner"))) {
         return {
             ok: false,
@@ -324,7 +344,6 @@ export const planFiling = (map: WorkflowMap, issues: SnapshotIssue[], ids: strin
                 body: bodyOf(only, draft.criteria),
                 labels: labels(blocks),
                 blockedBy: links,
-                // Each suggested ticket would otherwise carry the whole block's estimate.
                 complexity: drafts.length === 1 ? only.complexity : null,
             })),
         };
@@ -347,7 +366,7 @@ export const planFiling = (map: WorkflowMap, issues: SnapshotIssue[], ids: strin
 };
 
 /** The points a shared ticket holds before the next block wraps onto a new one. */
-export const TICKET_WIDTH = { supervised: 13, fast: 21 } as const;
+const TICKET_WIDTH = { supervised: 13, fast: 21 } as const;
 
 /** Puts each block after the ones it needs from the same group, keeping template order otherwise. */
 const inDependencyOrder = (group: Block[], needs: Map<string, string[]>): Block[] => {
@@ -516,4 +535,19 @@ export const bundleFor = (map: WorkflowMap, issues: SnapshotIssue[], id: string)
     const bundle = bundlesOf(pool, map.ticketSize, needs).find((ids) => ids.includes(id)) ?? [id];
 
     return bundle.filter((member) => member === id || unfiled.has(member));
+};
+
+/** Every unfiled bundle that `planFiling` would file right now, each as the ids filed together. */
+export const fileableNow = (map: WorkflowMap, issues: SnapshotIssue[]): string[][] => {
+    const seen = new Set<string>();
+    const groups: string[][] = [];
+
+    for (const block of toFile(map, issues)) {
+        if (seen.has(block.id)) continue;
+        const ids = bundleFor(map, issues, block.id);
+        for (const id of ids) seen.add(id);
+        if (planFiling(map, issues, ids).ok) groups.push(ids);
+    }
+
+    return groups;
 };

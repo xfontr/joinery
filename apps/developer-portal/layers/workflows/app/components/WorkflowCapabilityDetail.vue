@@ -8,23 +8,29 @@
             </span>
             <UBadge
                 v-if="capability.extra"
-                label="This project only"
+                :label="$t('workflowCapabilityDetail.extra')"
                 color="neutral"
                 variant="subtle"
                 size="sm"
             />
-            <span v-if="groupOff" class="ml-auto text-xs text-dimmed">Off with {{ groupOff }}</span>
+            <span v-if="groupOff" class="ml-auto text-xs text-dimmed">
+                {{ $t("workflowCapabilityDetail.offWith", { group: groupOff }) }}
+            </span>
             <USwitch
                 v-else-if="editable && capability.optional"
                 :model-value="capability.enabled"
                 size="sm"
-                :label="capability.enabled ? 'On for this project' : 'Off for this project'"
+                :label="
+                    capability.enabled
+                        ? $t('workflowCapabilityDetail.switch.on')
+                        : $t('workflowCapabilityDetail.switch.off')
+                "
                 class="ml-auto"
                 @update:model-value="(on) => emit('toggle', on)"
             />
-            <span v-else-if="capability.optional" class="ml-auto text-xs text-dimmed"
-                >Optional</span
-            >
+            <span v-else-if="capability.optional" class="ml-auto text-xs text-dimmed">
+                {{ $t("workflowCapabilityDetail.optional") }}
+            </span>
         </div>
 
         <p v-if="capability.summary" class="text-muted">{{ capability.summary }}</p>
@@ -33,11 +39,15 @@
             {{ why }}
         </p>
         <section v-if="settleable" class="flex flex-col gap-2">
-            <h3 class="text-xs font-semibold tracking-wide text-dimmed uppercase">Settle</h3>
+            <h3 class="text-xs font-semibold tracking-wide text-dimmed uppercase">
+                {{ $t("workflowCapabilityDetail.headings.settle") }}
+            </h3>
             <div v-if="settled" class="flex items-center gap-2">
-                <span class="flex-1 text-muted">Settled in the project file, with no ticket.</span>
+                <span class="flex-1 text-muted">{{
+                    $t("workflowCapabilityDetail.settle.settled")
+                }}</span>
                 <UButton
-                    label="Undo"
+                    :label="$t('workflowCapabilityDetail.settle.undo')"
                     icon="i-lucide-undo-2"
                     color="neutral"
                     variant="outline"
@@ -48,20 +58,20 @@
             <template v-else>
                 <UInput
                     v-model="settleNote"
-                    placeholder="Why, in one line"
-                    aria-label="Why it is settled"
+                    :placeholder="$t('workflowCapabilityDetail.settle.notePlaceholder')"
+                    :aria-label="$t('workflowCapabilityDetail.settle.noteLabel')"
                     class="w-full"
                 />
                 <div class="flex gap-2">
                     <UButton
-                        label="Mark done"
+                        :label="$t('workflowCapabilityDetail.settle.done')"
                         icon="i-lucide-check"
                         size="xs"
                         :disabled="noteMissing"
                         @click="settle('done')"
                     />
                     <UButton
-                        label="Skip"
+                        :label="$t('workflowCapabilityDetail.settle.skip')"
                         icon="i-lucide-circle-slash"
                         color="neutral"
                         variant="outline"
@@ -97,7 +107,9 @@
         </section>
 
         <section v-if="capability.issues.length > 0" class="flex flex-col gap-1.5">
-            <h3 class="text-xs font-semibold tracking-wide text-dimmed uppercase">Tickets</h3>
+            <h3 class="text-xs font-semibold tracking-wide text-dimmed uppercase">
+                {{ $t("workflowCapabilityDetail.headings.tickets") }}
+            </h3>
             <ul class="flex flex-col gap-1">
                 <li v-for="issue in capability.issues" :key="issue.number">
                     <a
@@ -121,12 +133,16 @@
         </section>
 
         <section v-if="activitySummary" class="flex flex-col gap-1.5">
-            <h3 class="text-xs font-semibold tracking-wide text-dimmed uppercase">Activity</h3>
+            <h3 class="text-xs font-semibold tracking-wide text-dimmed uppercase">
+                {{ $t("workflowCapabilityDetail.headings.activity") }}
+            </h3>
             <p class="text-muted">{{ activitySummary }}</p>
         </section>
 
         <section v-if="capability.reuse" class="flex flex-col gap-1.5">
-            <h3 class="text-xs font-semibold tracking-wide text-dimmed uppercase">Start from</h3>
+            <h3 class="text-xs font-semibold tracking-wide text-dimmed uppercase">
+                {{ $t("workflowCapabilityDetail.headings.startFrom") }}
+            </h3>
             <p v-if="capability.reuse" class="text-muted">
                 {{ reuseLabel }}
                 <code v-if="capability.reuse.from" class="font-mono text-xs break-all">{{
@@ -136,14 +152,18 @@
         </section>
 
         <section v-if="capability.doneWhen.length > 0" class="flex flex-col gap-1.5">
-            <h3 class="text-xs font-semibold tracking-wide text-dimmed uppercase">Done when</h3>
+            <h3 class="text-xs font-semibold tracking-wide text-dimmed uppercase">
+                {{ $t("workflowCapabilityDetail.headings.doneWhen") }}
+            </h3>
             <ul class="list-disc pl-4 text-muted">
                 <li v-for="line in capability.doneWhen" :key="line">{{ line }}</li>
             </ul>
         </section>
 
         <section v-if="capability.lessons.length > 0" class="flex flex-col gap-1.5">
-            <h3 class="text-xs font-semibold tracking-wide text-dimmed uppercase">Lessons</h3>
+            <h3 class="text-xs font-semibold tracking-wide text-dimmed uppercase">
+                {{ $t("workflowCapabilityDetail.headings.lessons") }}
+            </h3>
             <ul class="flex flex-col gap-1.5 text-muted">
                 <li v-for="lesson in capability.lessons" :key="lesson.text">
                     {{ lesson.text }}
@@ -157,7 +177,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CapabilityActivity } from "#layers/workflows/shared/workflowActivity.ts";
+import type { CapabilityActivity } from "#layers/workflows/app/utils/workflowActivity.ts";
 import {
     ticketStatus,
     type CapabilityView,
@@ -194,10 +214,12 @@ const emit = defineEmits<{
     settle: [settlement: { status: SettledState; note: string } | null];
 }>();
 
-const label = computed(() => capabilityStateLabel(capability.state));
+const { t } = useI18n();
+
+const label = computed(() => t(`workflows.capabilityState.${capability.state}`));
 const tone = computed(() => capabilityStateTone(capability.state));
 const kindText = computed(() =>
-    capability.kind === "build" ? null : blockKindLabel(capability.kind),
+    capability.kind === "build" ? null : t(`workflows.blockKind.${capability.kind}`),
 );
 const kindIconName = computed(() => blockKindIcon(capability.kind) ?? undefined);
 const unfiled = computed(() => capability.issues.every(({ reason }) => reason === "not_planned"));
@@ -222,21 +244,20 @@ const why = computed(() => {
 
     switch (capability.state) {
         case "waits":
-            return `Not fileable yet: it waits on ${waiting}, which can still change what its tickets say.`;
+            return t("workflowCapabilityDetail.why.waits", { waiting });
         case "blocked":
             return waiting
-                ? `Blocked: it waits on ${waiting}.`
-                : "Blocked by an open ticket on GitHub.";
+                ? t("workflowCapabilityDetail.why.blocked", { waiting })
+                : t("workflowCapabilityDetail.why.blockedOpen");
         case "can-file":
-            return "Nothing it needs is undecided, so its tickets can be filed now.";
+            return t("workflowCapabilityDetail.why.canFile");
         case "waiting-on-you":
-            if (!unfiled.value) return "Only you can close this, and everything after it waits.";
-            if (canSettle) {
-                return "Only you can approve this: mark it done below, or file its ticket and close it. Everything after it waits.";
-            }
-            return "Only you can approve this: file its ticket and close it, or settle it in the project file. Everything after it waits.";
+            if (!unfiled.value) return t("workflowCapabilityDetail.why.yours");
+            return canSettle
+                ? t("workflowCapabilityDetail.why.yoursSettle")
+                : t("workflowCapabilityDetail.why.yoursUnfiled");
         case "ready":
-            return "Nothing open blocks it, so an agent can take it.";
+            return t("workflowCapabilityDetail.why.ready");
         default:
             return null;
     }
@@ -255,8 +276,8 @@ const statusOf = computed(() =>
                 return [
                     issue.number,
                     status === "blocked"
-                        ? `Blocked by ${blockers.join(" ")}`
-                        : ticketStatusLabel(status),
+                        ? t("workflowCapabilityDetail.blockedBy", { blockers: blockers.join(" ") })
+                        : t(`workflows.ticketStatus.${status}`),
                 ];
             }),
     ),
@@ -264,20 +285,25 @@ const statusOf = computed(() =>
 
 const links = computed(() =>
     [
-        { title: "Needs", ids: capability.needs },
-        { title: "Unblocks", ids: capability.unblocks },
+        { title: t("workflowCapabilityDetail.headings.needs"), ids: capability.needs },
+        { title: t("workflowCapabilityDetail.headings.unblocks"), ids: capability.unblocks },
     ].filter(({ ids }) => ids.length > 0),
 );
-const plural = (count: number, word: string): string => `${count} ${word}${count === 1 ? "" : "s"}`;
-
 const activitySummary = computed(() => {
     if (!activity || capability.issues.length === 0) return null;
-    if (activity.commits === 0) return "No commit names its tickets yet.";
+    if (activity.commits === 0) return t("workflowCapabilityDetail.activity.none");
 
-    return `${plural(activity.commits, "commit")} on ${plural(activity.days, "day")} across ${plural(activity.tickets, "ticket")}, last on ${calendarDay(activity.lastDay!)}.`;
+    return t("workflowCapabilityDetail.activity.summary", {
+        commits: t("workflowCapabilityDetail.activity.commits", activity.commits),
+        days: t("workflowCapabilityDetail.activity.days", activity.days),
+        tickets: t("workflowCapabilityDetail.activity.tickets", activity.tickets),
+        day: calendarDay(activity.lastDay!),
+    });
 });
 
-const reuseLabel = computed(() => (capability.reuse ? reusePlanLabel(capability.reuse.plan) : ""));
+const reuseLabel = computed(() =>
+    capability.reuse ? t(`workflows.reusePlan.${capability.reuse.plan}`) : "",
+);
 
 const delivered = (issue: SnapshotIssue): boolean =>
     issue.state === "closed" && issue.reason !== "not_planned";

@@ -8,7 +8,7 @@ decision: accepted
 
 ## Context
 
-`@monorepo/content/nuxt` mounted two public cached routes, `GET /api/content/:resource` and
+`@joinery/content/nuxt` mounted two public cached routes, `GET /api/content/:resource` and
 `/:resource/:slug`, and auto-imported a client `useContent` that read them. It assumed pages render
 `Entry` directly. Huella's rule is the opposite: a layer's `server/` maps vendor shapes into view
 models "so an `Entry` never reaches the browser" ([`AGENTS.md`](../../apps/huella-legal/CLAUDE.md)).
@@ -90,10 +90,10 @@ package one. Revisit also if Nitro starts escaping function keys or changes wher
 
 | Claim | Check |
 | --- | --- |
-| No public content route, and no client `useContent` | `grep -rl "api/content" apps/huella-legal/.output` after `pnpm exec nx build @monorepo/huella-legal` prints nothing |
-| Bounds run before a key exists, and typed input survives normalising | `pnpm exec nx test @monorepo/content`: `useContent.spec.ts` "refuses … without keying it", `query.spec.ts` "keeps the page that was asked for" and "keeps the term and the author" |
+| No public content route, and no client `useContent` | `grep -rl "api/content" apps/huella-legal/.output` after `pnpm exec nx build @joinery/huella-legal` prints nothing |
+| Bounds run before a key exists, and typed input survives normalising | `pnpm exec nx test @joinery/content`: `useContent.spec.ts` "refuses … without keying it", `query.spec.ts` "keeps the page that was asked for" and "keeps the term and the author" |
 | Defaults collapse to one entry | `useContent.spec.ts` "gives %o the same entry as the first page" |
 | The module registers a server import and no route | `module.spec.ts` "auto-imports useContent into server code" |
-| Article routes read decoded slugs and cache nothing themselves | `pnpm exec nx test @monorepo/huella-legal`: `[slug].get.spec.ts` "its slug decoded". `git grep defineCachedEventHandler apps/huella-legal/layers` prints nothing |
+| Article routes read decoded slugs and cache nothing themselves | `pnpm exec nx test @joinery/huella-legal`: `[slug].get.spec.ts` "its slug decoded". `git grep defineCachedEventHandler apps/huella-legal/layers` prints nothing |
 | The listing, the article and its 404 still work end to end | `pnpm exec playwright test` in `apps/huella-legal` after a build |
 | The browser never fetches `/api/translations` | `grep -rl "api/translations" apps/huella-legal/.output/public` prints nothing |

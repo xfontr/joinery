@@ -1,18 +1,17 @@
 <template>
     <UDashboardPanel id="audit">
         <template #header>
-            <UDashboardNavbar :title="report?.title ?? page?.title ?? 'Not found'">
-                <template #leading>
-                    <UDashboardSidebarCollapse />
-                </template>
-                <template #right>
+            <PageHeader
+                :crumbs="[{ label: $t('audit.crumb'), to: '/audits' }]"
+                :title="report?.title ?? page?.title ?? $t('audit.notFound')"
+            >
+                <template #actions>
                     <StatusPill v-if="state" :label="state.label" :tone="state.tone" />
-                    <span v-if="report?.commit" class="text-xs text-muted"
-                        >read at <code class="font-mono">{{ report.commit }}</code></span
-                    >
-                    <code class="font-mono text-xs text-dimmed">{{ source }}</code>
                 </template>
-            </UDashboardNavbar>
+                <template v-if="report" #intro>
+                    <PageFacts :provenance :facts />
+                </template>
+            </PageHeader>
         </template>
 
         <template #body>
@@ -25,21 +24,11 @@
                         color="neutral"
                         variant="subtle"
                         icon="i-lucide-file-question"
-                        title="No such audit"
-                        :description="`Nothing under docs/audits/ matches ${id}.`"
+                        :title="$t('audit.missing.title')"
+                        :description="$t('audit.missing.description', { id })"
                     />
 
                     <template v-else>
-                        <div v-if="report" class="grid grid-cols-3 gap-3">
-                            <StatTile
-                                v-for="status in FINDING_STATUSES"
-                                :key="status"
-                                :label="findingStatusLabel(status)"
-                                :value="report.counts[status]"
-                                :tone="findingStatusTone(status)"
-                            />
-                        </div>
-
                         <UPageBody class="mt-0">
                             <ContentRenderer :value="page" />
                         </UPageBody>
@@ -60,8 +49,10 @@
 <script setup lang="ts">
 import type { BreadcrumbItem } from "@nuxt/ui";
 import { FINDING_STATUSES } from "#layers/snapshot/shared/audits.ts";
+import type { PageFact } from "~/types/PageFact";
 
 const route = useRoute();
+const { t } = useI18n();
 
 const reports = useAuditReports();
 
@@ -79,15 +70,32 @@ const report = computed(() => reports.value.find((candidate) => candidate.id ===
 const state = computed(
     () =>
         report.value && {
-            label: auditStateLabel(report.value.state),
+            label: t(`audits.state.${report.value.state}`),
             tone: auditStateTone(report.value.state),
         },
 );
 
 const source = computed(() => report.value?.path ?? `${path.value.slice(1)}.md`);
 
+const provenance = computed(() =>
+    report.value?.commit
+        ? t("audit.provenance", { source: source.value, commit: report.value.commit })
+        : source.value,
+);
+
+const facts = computed((): PageFact[] =>
+    FINDING_STATUSES.map((status) => {
+        const count = report.value?.counts[status] ?? 0;
+        return {
+            label: t(`audits.findingStatus.${status}`),
+            value: String(count),
+            class: count ? toneClass(findingStatusTone(status)) : "",
+        };
+    }),
+);
+
 const crumbs = computed<BreadcrumbItem[]>(() => [
-    { label: "Audits", to: "/audits", icon: "i-lucide-scan-search" },
+    { label: t("audits.title"), to: "/audits", icon: "i-lucide-scan-search" },
     { label: report.value?.date ?? id.value, class: "font-mono" },
 ]);
 </script>

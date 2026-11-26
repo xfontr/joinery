@@ -1,4 +1,4 @@
-# 🤖 @monorepo/developer-portal
+# 🤖 @joinery/developer-portal
 
 See [README.md](./README.md) for what each page reads, the snapshot and the deploy.
 
@@ -6,26 +6,32 @@ See [README.md](./README.md) for what each page reads, the snapshot and the depl
   `@nuxt/content` at the workspace root. Never copy a doc into this app; a link that breaks here is
   fixed in [`layers/docs/shared/docLinks.ts`](./layers/docs/shared/docLinks.ts), not by rewriting the doc.
 - **Every page renders with no `.report/`.** It is gitignored, so "never collected" is a fresh
-  clone's state. [`layers/snapshot/server/utils/store.ts`](./layers/snapshot/server/utils/store.ts) returns `null` for a missing
-  artifact; keep that rather than throwing.
+  clone's state. The [`<name>Artifact()`](./layers/snapshot/app/utils/) utils and
+  [`store.ts`](./layers/snapshot/server/utils/store.ts) return `null` for a missing artifact; keep
+  that rather than throwing.
 - **A capability is a Nuxt layer under `layers/`**, and `app/` is only the shell. The
-  [README](./README.md#-layers) has the table: `design`, `snapshot`, `docs` and `github` are the
+  [README](./README.md#layers) has the table: `design`, `snapshot`, `docs` and `github` are the
   cores, and a feature uses those and the shell's parts, never another feature. A new page joins
   the layer whose task it serves; a new layer needs its own logic, its own config, or to be
   something you'd switch off whole, plus a `nuxt.config.ts` or Nuxt won't register it.
-- **A layer's `shared/` is pure and imported by `app/`, `server/` and `tools/` alike.** Anything
-  node-only — `yaml`, `node:fs`, `git` — lives in `tools/` or a layer's `server/`, so it never
-  reaches the browser bundle. `tools/` may import a `server/utils/` file that uses no Nitro
+- **A layer's `shared/` is pure and holds only what `app/` and the Node side (`server/`, `tools/`,
+  a `nuxt.config.ts`) both import**; `pnpm invariants:check` fails a file only one side reaches.
+  Anything node-only — `yaml`, `node:fs`, `git` — lives in `tools/` or a layer's `server/`, so it
+  never reaches the browser bundle. `tools/` may import a `server/utils/` file that uses no Nitro
   auto-import, as it does `workflowFiles.ts`; the reverse is a lint error. Never add a root
-  `shared/`: a relative import into it breaks the prerendered build. A type goes in the layer's
-  `shared/types/<Name>.ts`, one per file, never exported from a route, and a component at a layer's
+  `shared/`: a relative import into it breaks the prerendered build. A type goes in
+  `<Name>.ts` under the layer's `shared/types/`, or its `app/types/` when only `app/` uses it, one
+  per file, never exported from a route, and a component at a layer's
   root carries the layer's name (`TelemetryDayStrip`), per
   [`conventions.md`](../../docs/concepts/conventions.md).
-- **No value is chosen outside the `design` layer.** The [README](./README.md#-design-system) lists
+- **No value is chosen outside the `design` layer.** The [README](./README.md#design-system) lists
   the tokens and classes; a new size or colour is a token there, not a bracketed class.
-- **`tools/lib/invariants.ts` mirrors [`check-invariants.sh`](../../.claude/hooks/check-invariants.sh).**
-  Changing a rule in one means changing the other, and
-  [`invariants.spec.ts`](./tools/lib/invariants.spec.ts) is what keeps the two honest.
+- **`tools/lib/invariants.ts` reads `pnpm invariants:check --json`** and adds the audit, decision
+  and workflow shape checks. A repo rule belongs in the
+  [invariants gate](../../infrastructure/scripts/src/invariants/README.md), not here.
+- **Visitor pages and their copy live in [`apps/portfolio`](../portfolio/README.md).** This app
+  is the developer view only; a figure the visitor side needs goes in the
+  [`/embed/data.json`](./README.md#the-payload) payload, never in a page here or an import there.
 - **`build` delegates to `build-static`.** CI builds the prerendered artifact that deploys; don't
   point `build` back at the SSR build, which verifies a mode nothing runs.
-- Tagged `type:app`. It depends on `@monorepo/configs` only today, and nothing may depend on it.
+- Tagged `type:app`. It depends on `@joinery/configs` only today, and nothing may depend on it.

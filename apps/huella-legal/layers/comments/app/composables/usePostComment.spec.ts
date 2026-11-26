@@ -1,6 +1,7 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import type { Challenge } from "#layers/forms/app/types/Challenge";
+import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
+import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent } from "vue";
 import { usePostComment } from "./usePostComment";
 
 const FIELDS = {
@@ -24,28 +25,13 @@ mockNuxtImport(
 
 const challenge = vi.fn((send: (token: string) => Promise<unknown>) => send("tok")) as Challenge;
 
-// The shape `$fetch` rejects with: the route's `createError` arrives as the body, under `data`
 const rejected = (statusCode: number, data?: unknown) =>
     Object.assign(new Error("fetch failed"), {
         statusCode,
         data: { error: true, statusCode, statusMessage: "Refused", data },
     });
 
-const setUp = async () => {
-    let controller: ReturnType<typeof usePostComment> | undefined;
-
-    await mountSuspended(
-        defineComponent({
-            setup: () => {
-                controller = usePostComment();
-
-                return () => null;
-            },
-        }),
-    );
-
-    return controller!;
-};
+const setUp = async () => (await withSetup(() => usePostComment())).value;
 
 beforeEach(() => {
     vi.clearAllMocks();

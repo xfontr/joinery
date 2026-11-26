@@ -10,7 +10,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const INTERRUPTED = "130";
 const HUMAN = "human";
 
-/** One CSV row keyed by the header line of its file, which `@monorepo/scripts` writes. */
+/** One CSV row keyed by the header line of its file, which `@joinery/scripts` writes. */
 export type UsageRecord = Record<string, string>;
 
 /** Cells never hold a comma or a quote, so a plain split is the whole CSV grammar needed. */

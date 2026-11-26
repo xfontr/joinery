@@ -1,4 +1,4 @@
-import type { Entry } from "@monorepo/content";
+import type { Entry } from "@joinery/content";
 import type { Article } from "../../shared/types/Article";
 import type { Journal } from "../../shared/types/Journal";
 import type { Origins } from "./articleBody";
@@ -6,7 +6,7 @@ import { toArticleSummary } from "./articleSummary";
 import { toCitations } from "./citation";
 import { toPage } from "./page";
 
-export interface Publication extends Origins {
+interface Publication extends Origins {
     journal: Journal;
 }
 

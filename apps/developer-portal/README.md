@@ -1,456 +1,232 @@
-# 📦 @monorepo/developer-portal
+# 📦 @joinery/developer-portal
 
-A portal for exploring the monorepo's projects, documentation, architecture and engineering
-health, read-only once deployed; under `pnpm dev` the Workflows pages also write their own project files. It gives newcomers a clear starting point while keeping deeper developer views close by.
+The repo's developer view: every markdown file rendered as a wiki, plus what isn't written down —
+coverage, the project graph, open issues, decisions, audits, workflows and tooling usage. Visitors
+arrive through [`apps/portfolio`](../portfolio/README.md), which links in here.
 
-It renders every markdown file in the workspace as a wiki — READMEs, `CLAUDE.md`s, the
-[`docs/`](../../docs/README.md) tree and changelogs — beside the things that are not written
-down anywhere: coverage, the project graph, open GitHub issues and which two files have stopped agreeing.
+Under `pnpm dev developer-portal` it reads the working tree live. The deployed site is a prerendered
+[snapshot of `master`](#the-deployed-site-is-a-snapshot) on GitHub Pages.
 
-It runs two ways. `pnpm dev developer-portal`, from the workspace root, reads the working tree and shells out to `git`, so it shows
-the branch you are on; the deployed site is a prerendered snapshot of `master`, published by
-[`developer-portal-deploy.yml`](../../.github/workflows/developer-portal-deploy.yml) — see
-[🚢 The deployed site is a snapshot](#-the-deployed-site-is-a-snapshot).
-
-## 🚪 The public entry points
-
-The interface starts with three public intents, using ordinary language before repository-specific
-terms.
-
-| Intent | Starts with |
-| --- | --- |
-| Explore what exists | Overview, Projects and What's new |
-| Understand how it works | Documentation, Architecture, Decisions and Audits |
-| Run or contribute | The first-hour guide and the repository documentation |
-
-Engineering health remains available after that introduction: the homepage is a grid of widgets,
-each health signal its own, which **Edit layout** lets a reader drag, resize, remove and add back.
-The layout is kept in that browser's `localStorage`, and the sidebar keeps health as the final group. Coverage, dependencies and
-work in progress remain directly addressable without creating a second application or navigation tree.
-
-## 🗂 Structure
-
-| Path | What lives there |
-| --- | --- |
-| `app/` | The shell: the layout and its sidebar, the Overview page, and the parts every layer draws with — `StatTile`, `StatusPill`, `DashboardGrid`, `toneClass` and the date helpers |
-| `layers/` | One Nuxt layer per capability — see [🧱 Layers](#-layers) |
-| `tools/collect/` | Builds the derived snapshot: graph, coverage, metrics, docs, usage |
-| `tools/lib/` | Node-only helpers — paths, the `git` allowlist, the invariant checks, and the remark plugin that rewrites a doc's links as it is parsed |
-
-## 🧱 Layers
-
-Nuxt registers every directory under `layers/` by itself, and each one repeats the app's own
-layout: `app/`, `server/`, `shared/` and a `nuxt.config.ts`, which a layer needs even when it is
-empty. The split follows [`apps/huella-legal`](../huella-legal/CLAUDE.md): a layer has its own
-domain logic, its own config, or is something you'd switch off whole.
-
-| Layer | Kind | What it owns |
-| --- | --- | --- |
-| `snapshot` | Core | The `.report/` store, the snapshot and badge routes, the artifact types, `useSnapshot` and `SnapshotAge` |
-| `design` | Core | Every token and shared class, and the Nuxt UI theme — see [🎨 Design system](#-design-system) |
-| `docs` | Core | The link rewriting every rendered markdown page gets, `ProseA`, and the title and path helpers in `shared/docPages.ts` |
-| `github` | Core | The two reads the browser makes of GitHub, issues and deployments, and their rules |
-| `decisions`, `audits` | Feature | Each record's pages, its list logic and its labels |
-| `projects` | Feature | Projects, Architecture and What's new |
-| `health` | Feature | Work in progress and its row, Coverage and Dependencies |
-| `telemetry` | Feature | The Tooling usage page and the usage rules the collector shares |
-| `workflows` | Feature | The Workflows pages, their components, routes, config and colours |
-| `wiki` | Feature | The Documentation pages, `WikiNav` and the tree `shared/wiki.ts` builds |
-
-The rules are [`apps/huella-legal`](../huella-legal/README.md#-structure)'s. The kit is
-`app/components/` and `app/utils/`, and uses only itself. Each core uses itself and the kit. A
-feature also uses the cores, never another feature,
-so each one comes out alone. Only the shell uses everything: the Overview and the sidebar's badges
-read issues, the snapshot and the active workflows. `eslint.layerBoundaries` in
-[`eslint.config.ts`](./eslint.config.ts) enforces this, auto-imports included.
-
-Any import into another layer, from `app/`, `shared/`, `server/` or `tools/`, reads
-`#layers/<name>/…`. Nuxt resolves it as its own alias; the collector and the `node` test project run
-outside Nuxt and resolve the same string through the `imports` field in
-[`package.json`](./package.json). Inside one layer, `app/` reaches its own `shared/` through the
-same alias, while `server/`, `shared/` and `tools/` import within themselves relatively.
-A root-level `shared/` is gone on purpose:
-a relative import into it is what broke the prerendered build in
-[`0014`](../../docs/decisions/0014-developer-portal-deployment.md).
-
-Each layer lists its sidebar links under `nav` in its `app/app.config.ts`, and
-[`default.vue`](./app/layouts/default.vue) only arranges those keys, skipping one no layer declares.
-An entry with a `menu` names the layer's own route that answers its submenu — the decisions still
-to implement, the audits with open findings, the recent workflow projects — so every page's payload
-carries those few rows rather than the feature's data.
-
-### Removing a feature
-
-Deleting the folder removes the pages, the routes and the sidebar entry. What is left is whatever
-the collector holds for it, since `tools/` is one program outside Nuxt:
-
-| Feature | Besides `layers/<name>/` |
-| --- | --- |
-| `workflows` | [`tools/lib/workflows.ts`](./tools/lib/workflows.ts) and its call in [`invariants.ts`](./tools/lib/invariants.ts), the `data/workflows` line under `namedInputs` in [`package.json`](./package.json), `@dagrejs/dagre`, and the Overview's Active workflows section |
-| `projects` | [`tools/collect/retired.ts`](./tools/collect/retired.ts) and its step in [`tools/collect/index.ts`](./tools/collect/index.ts), and `RetiredProject` in `snapshot` |
-| `telemetry` | [`tools/collect/usage.ts`](./tools/collect/usage.ts), [`tools/lib/lintRules.ts`](./tools/lib/lintRules.ts), the `usage` step in [`tools/collect/index.ts`](./tools/collect/index.ts), and the `usage` reader and types in `snapshot` |
-| `decisions`, `audits` | Nothing to delete, but the collector still parses both into `docs.json` and checks their shape |
-| `health` | The Overview tiles and the sidebar badge that read them |
-
-## 🚀 Development
+## Development
 
 | Command | What it does |
 | --- | --- |
 | `pnpm dev developer-portal` | Start the portal, from the workspace root |
-| `pnpm exec nx collect @monorepo/developer-portal` | Rebuild the snapshot — graph, coverage, metrics, docs |
-| `pnpm exec nx nuxt-prepare @monorepo/developer-portal` | Regenerates `.nuxt` (`nuxi prepare`) — [`nx.json`](../../nx.json) already runs it before `lint`/`typecheck`/`test`/`build`, so this is only for calling it by hand |
-| `pnpm exec nx build-static @monorepo/developer-portal` | `nuxt build --prerender` — the build the deploy publishes, and the only one that renders every route |
+| `pnpm exec nx collect @joinery/developer-portal` | Rebuild the snapshot in `.report/`: graph, coverage, metrics, docs, usage |
+| `pnpm exec nx build-static @joinery/developer-portal` | `nuxt build --prerender`, the build that deploys |
+| `pnpm exec nx nuxt-prepare @joinery/developer-portal` | Regenerate `.nuxt` by hand; Nx already runs it before lint, typecheck, test and build |
+| `pnpm exec nx test:e2e @joinery/developer-portal` | Playwright over the build: skip link, SEO tags, the published payload, axe on the 404 page |
 
-The collector reads each project's `coverage/coverage-summary.json` and copies in the merged report
-`pnpm test:coverage` renders at the workspace root, so both are only as fresh as the last run of it.
+- Coverage is only as fresh as the last root `pnpm test:coverage`.
+- `build` delegates to `build-static`, so CI builds what deploys.
+- `.report/` is gitignored and every page must render without it.
 
-`build` delegates to `build-static`, because `nx affected -t build` only ever looks for a target
-called `build` — the same indirection [`apps/huella-legal`](../huella-legal/README.md) uses, pointed
-at a different target. **CI therefore builds the artifact that deploys**, which is the point: this
-app was broken under `--prerender` while the SSR build went green, so an SSR build here would verify
-a mode nothing runs. It survives as the plugin's inferred `nuxt:build` and is never invoked —
-`@nx/nuxt` infers it from `nuxt.config.ts` for every Nuxt project, and `huella-legal` genuinely
-serves that way. Prerendering costs about what the SSR build does, and it succeeds with no
-`.report/` at all, rendering fewer routes.
+## Structure
 
-## 📄 The markdown is read in place
+| Path | What lives there |
+| --- | --- |
+| `app/` | The shell: the layout, Home at `/`, and `app/composables/`, which assemble Home's queue and Health, the rail, the status bar and search from several layers |
+| `app/components/`, `app/types/`, `app/utils/` | The kit: shared parts such as `PageFacts`, `PageHeader` and `EmptyState`, one type per file, pure helpers |
+| `i18n/locales/en.json` | The interface's copy — see [🔤 Copy](#copy) |
+| `server/routes/embed/data.json.ts` | The figures [`apps/portfolio`](../portfolio/README.md) shows, prerendered — see [📤 The payload](#the-payload) |
+| `layers/` | One Nuxt layer per capability — see [🧱 Layers](#layers) |
+| `tools/collect/` | The collector that builds the snapshot |
+| `tools/lib/` | Node-only helpers: paths, `git`, the shape checks, the doc-link rewriter |
 
-[`content.config.ts`](./content.config.ts) points `@nuxt/content` at the **workspace root**, not at a
-copy inside this app. That is what makes the docs half free: the README you edit for GitHub is the
-same file this renders, and a page's URL mirrors its path in the repo.
+## Layers
 
-Under `pnpm dev developer-portal` (run from the root) that file is read where it lives, so the two cannot drift. A build bakes
-the whole corpus into the bundle instead, which is why the deployed site is only ever as fresh as its
-last deploy — [🚢 The deployed site is a snapshot](#-the-deployed-site-is-a-snapshot) is the rest of
-that.
+| Layer | Kind | What it owns |
+| --- | --- | --- |
+| `snapshot` | Core | The `.report/` artifacts, bundled at build time by one `<name>Artifact()` util each, and their types |
+| `design` | Core | Tokens, shared classes and the Nuxt UI theme |
+| `docs` | Core | Link rewriting and `ProseA` for rendered markdown |
+| `github` | Core | Browser-side reads of GitHub issues |
+| `decisions`, `audits`, `benchmarks` | Feature | Each record type's list and pages |
+| `projects` | Feature | Projects, Architecture and What's new |
+| `health` | Feature | Work in progress, Coverage, Dependencies |
+| `telemetry` | Feature | Tooling usage |
+| `workflows` | Feature | The Workflows pages |
+| `wiki` | Feature | Documentation pages and the nav tree |
+
+The rules match [huella-legal's](../huella-legal/README.md#structure): the kit (`app/components/`,
+`app/types/`, `app/utils/`) uses only itself, cores use themselves and the kit, features also use
+cores but never another feature. `eslint.layerBoundaries` in [`eslint.config.ts`](./eslint.config.ts) enforces it.
+
+- Cross-layer imports read `#layers/<name>/…`, resolved by Nuxt and, outside it, by the `imports`
+  field in [`package.json`](./package.json).
+- No root `shared/`: a relative import into it broke the prerendered build
+  ([0014](../../docs/decisions/0014-developer-portal-deployment.md)).
+- Each layer declares its rail links under `nav` in its `app/app.config.ts`; [`apps.ts`](./app/utils/apps.ts)
+  groups them into Home, Catalog, Docs, Work and Health.
+- A page reads its data through a `use<Page>` composable in its layer and lists its sections, each a
+  component in `components/<page>/` or named for the layer (`wizard/Step.vue` → `WizardStep`).
+
+## Copy
+
+The interface's copy is in [`en.json`](./i18n/locales/en.json) through `$t()`, keyed the
+way [huella-legal's are](../huella-legal/README.md#copy-keys). Specs see keys, not copy:
+[`vitest.setup.ts`](./vitest.setup.ts) empties the messages.
+
+## The payload
+
+The personal site, [`apps/portfolio`](../portfolio/README.md), shows figures only this app can compute. It
+imports none of its code: [`data.json.ts`](./server/routes/embed/data.json.ts) prerenders
+`/embed/data.json` and that site fetches it at build, after this one deploys.
+
+| Key | From |
+| --- | --- |
+| `benchmarks` | `docs/benchmarks/` through the `docs` collection: id, title, screenshot path |
+| `decisions` | The collected docs artifact: id, number, title, status |
+| `workflows` | `data/workflows/`: each project's map at full and glyph scale, the templates, the lesson count |
+| `rules` | Enabled and in-house lint rules from the usage artifact |
+| `specs` | Spec files across every project, from the metrics artifact |
+
+Its spec pins the keys, since renaming one blanks that site's figures without failing its build.
+
+## What each page reads
 
 | Page | Reads |
 | --- | --- |
-| Documentation | Every non-ignored `*.md`, arranged as a tree — see [🧭 Documentation is a wiki](#-documentation-is-a-wiki) |
-| Architecture | The collected Nx graph, its plain-language relationships and the detailed graph `collect` writes to the gitignored `public/embed/graph/` |
-| Projects | The collected Nx graph joined to collect-time project metrics, with deployment state read live, plus every deleted project read back from `git log` |
-| Decisions | `docs/decisions/NNNN-<slug>.md` — the files the `decision-report` skill writes, see [🔬 Decisions are their own section](#-decisions-are-their-own-section) |
-| Audits | `docs/audits/YYYY-MM-DD-<scope>.md` — the files the `audit-report` skill writes, see [🔎 Audits count findings, not files](#-audits-count-findings-not-files) |
-| Workflows | `data/workflows/` templates, projects and their synced snapshots, read in place on every request rather than collected — see [`docs/workflows/README.md`](../../docs/workflows/README.md). Under `pnpm dev` the new-project wizard, behind a plus card after the projects, creates them; the deployed site runs the same wizard but only offers its file as a download. Under `pnpm dev` each project's Settings page switches features, sets the ticket size, edits its details and deletes it, all in the project file only. The edit route refuses anything but a same-origin JSON request, so another site's form can't post to it. The page's graph is laid out with `@dagrejs/dagre` and never opens zoomed out past readable |
-| Work in progress | Open issues read from GitHub in the browser |
-| What's new | Every `CHANGELOG.md`, beside its unreleased-commit count, plus any project in `nx.json`'s `release.projects` that has commits and no release yet |
-| Engineering health | Coverage, dependencies and collected repository findings |
-| Tooling usage | Every CSV under `data/telemetry/`, beside the list of script folders, the rules each project's ESLint config enables and the `eslint-disable` comments in tracked files — see [📊 Tooling usage](#-tooling-usage) |
+| Documentation | Every tracked `*.md`, read in place from the workspace root by [`content.config.ts`](./content.config.ts) |
+| Architecture, Projects | The collected Nx graph, project metrics, and deleted projects from `git log` |
+| Decisions | `docs/decisions/NNNN-<slug>.md` frontmatter |
+| Audits | Every table in `docs/audits/` with an `ID` and a `Status` column |
+| Benchmarks | `docs/benchmarks/*.md` frontmatter and body, and the screenshots beside them in `images/` |
+| Workflows | `data/workflows/`, read on every request. Under `pnpm dev` the wizard and Settings page write it |
+| Work in progress | Open issues, fetched from GitHub in the reader's browser |
+| What's new | Every `CHANGELOG.md` plus unreleased commit counts |
+| Engineering health | Coverage, `pnpm audit`, outdated deps and the invariant findings |
+| Tooling usage | `data/telemetry/` CSVs, enabled lint rules and `eslint-disable` comments |
 
-`@nuxt/content` lower-cases every route, so `packages/ui/README.md` is served at
-`/packages/ui/readme` while the collector keys the same file as `packages/ui/README.md`. Anything
-joining the two — a broken-link warning, an "updated 3 days ago" — goes through
-[`toCollectionPath`](./layers/docs/shared/docPages.ts) first. A hand-written `/docs/…/README` link matches nothing
-and fails silently, which is exactly how it went unnoticed the first time.
+### Doc links
 
-The links *inside* a doc are written for GitHub and point at files, not routes — `./.husky/pre-push`,
-`../packages/ui/README.md`, a directory, a line range. Rendering them verbatim
-put 32 links on a hard 404 and another 33 on the wiki's own "No such page" at HTTP 200 —
-[`0014`](../../docs/decisions/0014-developer-portal-deployment.md) has the measurement. They cannot be fixed in
-the markdown, because on GitHub they are already correct.
+Docs link to files the GitHub way. [`remarkDocLinks`](./tools/lib/remarkDocLinks.ts) rewrites each
+link at parse time: a markdown target becomes a route, anything else a link to the repo. A broken
+link is counted on Home, never a build failure. Fix a link that breaks here in
+[`docLinks.ts`](./layers/docs/shared/docLinks.ts), not in the doc.
 
-[`remarkDocLinks`](./tools/lib/remarkDocLinks.ts) rewrites each one **while the file is parsed**,
-which is the only moment both things it needs are in reach: the source file's own path, and a
-filesystem to ask. A target that is markdown on disk becomes a route; everything else becomes
-`repo:`, which [`ProseA`](./layers/docs/app/components/content/ProseA.vue) turns into a link to the forge once
-`NUXT_PUBLIC_REPO_URL` — runtime config, and so unknowable at parse time — is in hand.
+`@nuxt/content` lower-cases every route, so anything joining a route to a repo path goes through
+[`toCollectionPath`](./layers/docs/shared/docPages.ts).
 
-| The link says | It renders as | Because |
-| --- | --- | --- |
-| `../packages/ui/README.md` | `/docs/packages/ui/readme` | The collection lower-cases every route |
-| `./.husky/pre-push` | A link to the repo | A shell script is never a page here |
-| `./src/drift` | A link to the repo | Nothing answers to `src/drift.md`, so it is a directory |
-| `./SKILL.md:91-94` | The page, without the range | A line range narrows a file rather than naming another |
-| `./<file>.md` in a template | Plain text | A placeholder names no target, and a link onto "No such page" is the failure this whole pass removes |
+### The wiki tree
 
-The third row is the one that needs the filesystem: a link may omit `.md` when a renderer routes it
-and [`checkLink`](./tools/collect/docs.ts) accepts that, so an extension-less target is a page or a
-directory and nothing in the href says which.
+Derived from paths alone, so a new doc appears on its own. Changelogs, dated audits, numbered
+decisions and benchmark entries are left out of the tree since each has its own page; CLAUDE.md
+files are left out of the collection and link to GitHub. ⌘K search fetches the docs' sections on first
+open rather than with the layout, which kept them out of every page's payload.
 
-Parse time retires the route-table check: a route is only ever emitted for a file the parser has
-just confirmed, so a link that resolves on disk and routes nowhere can no longer be built. A link
-to a *missing* file is still a real defect, and
-[`checkLink`](./tools/collect/docs.ts) still counts it, on the Overview and the Documentation page.
-It never fails a build. Link syntax inside a code span or a fenced sample is skipped, because the
-parser never turns it into a link either.
+### GitHub reads
 
-## 📚 Documentation is a wiki
+Issues are fetched unauthenticated from the browser, so the site needs no server or
+secret. The limit is 60 requests an hour per IP. Board placement (`projectItems`) is GraphQL-only and
+needs a token, so it isn't shown.
 
-The docs half is a wiki, not a file listing: a tree on the left that stays put while you read, a
-breadcrumb, and prev/next within the group you are in. [`layers/wiki/shared/wiki.ts`](./layers/wiki/shared/wiki.ts) derives
-that shape from nothing but the paths the collection found, which is the whole point — a
-hand-written table of contents would be a fifth copy of the workspace layout to keep in step, and a
-doc added anywhere appears in the nav on the next reload instead.
+## The deployed site is a snapshot
 
-| Section | What lands in it |
+[`deploy-developer-portal.yml`](../../.github/workflows/deploy-developer-portal.yml) runs on every
+push to `master` or by hand: `pnpm test:coverage`, then `collect`, then `build-static`, then it
+uploads the build as the `developer-portal-site` artifact. The
+[portfolio's deploy](../portfolio/README.md#deploy) publishes that artifact at
+[xifre.dev/portal/](https://xifre.dev/portal/), so the portal goes live only when
+that run succeeds. Cloudflare only hosts: the build runs in Actions, and the site has no Functions.
+huella-legal's Storybook is built into the same output under `/huella-legal-storybook/`.
+
+- The old `xfontr-monorepo` Pages project gets only a `_redirects` file, sending every path to the
+  same path under `/portal/`.
+
+- Every page is as old as the last deploy, except issues (live) and workflows (as
+  old as the last committed `pnpm workflow:sync`).
+- The site is served from `/portal/` under `SITE_URL` in [`nuxt.config.ts`](./nuxt.config.ts),
+  the personal site's origin, so the view switch can animate between the two. Canonical URLs are
+  built on both.
+- `NUXT_PUBLIC_REPO_URL` is baked in at build time, derived by the workflow.
+- Cloudflare Pages rejects any file over 25 MiB, which is why the Architecture map is drawn from
+  `projects.json` rather than Nx's exported graph viewer.
+- The project overrides its `production` Nx input in [`package.json`](./package.json) so any `*.md`
+  or `data/workflows/` change makes it affected, and a `runtime` input over
+  [`snapshotStamp.ts`](./tools/lib/snapshotStamp.ts) hashes the gitignored `.report/`.
+
+## Search and speed
+
+| Concern | Where |
 | --- | --- |
-| Workspace | The two files at the root, plus the generated `docs/FEATURES.md` |
-| Docs | `docs/`, grouped by subdirectory: concepts, guides, the decision and audit rubrics |
-| Projects | One group per project, holding its README, its `CLAUDE.md` and its nested READMEs |
-| Agent setup | `.claude/skills/` and `.claude/agents/` |
+| Title, description, canonical | `useSeoMeta` on the dashboard; `nuxt-seo-utils` signs the title with the site name |
+| Indexing | None: one `/**` route rule in [`nuxt.config.ts`](./nuxt.config.ts) sets `noindex, follow` on every page, so links out are still followed |
+| First paint | Styles inlined; no script preload or chunk prefetch; links prefetch on interaction |
 
-Three things are deliberately **not** in the tree: `CHANGELOG.md`s, the dated audits and the
-numbered decision reports. Each already has a page of its own here, and a wiki that also lists them is a
-second route to the same file that ages differently. The `README.md` beside each of those — the
-audit rubric, the decision template's rules — stays, because a doc about how a record is written is
-not one of the records.
+## Checks it surfaces
 
-Labels are the one thing not taken verbatim: under a group already called `packages/ui`, a README
-titled `📦 @monorepo/ui` says the name three times and the subject none, so it reads `Overview`. The
-real title is still the page's own heading.
-
-⌘K searches every README, `CLAUDE.md`, changelog, skill and doc, fed straight from the content
-collection so there is no second index to keep in step. It is fetched **on the first open**, not by
-the layout: the layout wraps every page, so an index built there rode in every prerendered payload
-and made each one about ten times larger —
-[`0014`](../../docs/decisions/0014-developer-portal-deployment.md) has the measurement. The cost
-lands where it is asked for — roughly a megabyte of chunk and SQLite WASM, once per reader, with a
-spinner while it arrives.
-
-## 🔬 Decisions are their own section
-
-The wiki nav is derived from paths alone, so the one question a reader brings to a list of decisions —
-which of these decisions have actually landed — is the one thing it cannot answer, and it gets worse
-with every report filed. [`/decisions`](./layers/decisions/app/pages/decisions/index.vue) answers it instead: the counts per
-`status:`, filters over both frontmatter axes, and a sort by number, by last commit or by status.
-
-| Fact | Where it comes from |
-| --- | --- |
-| The `status:` and `decision:` values | Each report's own frontmatter, parsed by the collector into `docs.json` — never re-derived here |
-| The counts, the filters, the ordering | [`layers/decisions/shared/decisionReports.ts`](./layers/decisions/shared/decisionReports.ts), pure and specced beside itself |
-| Newest first | A string compare on the number, which the four-digit padding in [`docs/decisions/README.md`](../../docs/decisions/README.md#-numbering) makes a numeric one |
-| Prev/next on a report | The number again, so one report reads on to the next decision made rather than the next row of whatever sort was left on |
-
-`status` shows as a pill on a report and as a tone beside it in the list — good for `implemented`,
-warn for `to-implement`, neutral for `wont-implement`. A second, independent pill shows only when
-`decision: superseded`, linking to the report that replaced it. Both come from the collected
-snapshot, so a report filed since the last `collect` renders at its own URL but is missing from the
-list — which is the same staleness every other page here has, shown by the same timestamp.
-
-## 🔎 Audits count findings, not files
-
-An audit is worked down one finding at a time, so the question a reader brings to
-[`/audits`](./layers/audits/app/pages/audits/index.vue) is how much of each one is still owed. The collector
-parses every table carrying both an `ID` and a `Status` header into `docs.json`; everything on the
-page is derived from those rows.
-
-| Fact | Where it comes from |
-| --- | --- |
-| Each finding's status | Its `Status` cell, parsed by [`parseFindings`](./layers/snapshot/shared/audits.ts) — a value outside the vocabulary counts as open |
-| The audit's state | Derived by `auditStateOf`: open, in progress, or closed once nothing is open. Never written in the file |
-| Progress, counts, filters, ordering | [`layers/audits/shared/auditReports.ts`](./layers/audits/shared/auditReports.ts), pure and specced beside itself |
-| A malformed audit | [`tools/lib/audits.ts`](./tools/lib/audits.ts), surfaced as an `audit-shape-mismatch` invariant on the Overview |
-
-## 📊 Tooling usage
-
-[`/telemetry`](./layers/telemetry/app/pages/telemetry.vue) shows how the repo's own tooling is used. `collect` reads
-the raw rows every commit carries into `data/telemetry/` (what a row holds and why is in
-[`usage/`](../../infrastructure/scripts/src/usage/README.md)) and sums them in
-[`layers/telemetry/shared/usage.ts`](./layers/telemetry/shared/usage.ts) and [`layers/telemetry/shared/lintUsage.ts`](./layers/telemetry/shared/lintUsage.ts). The rows
-stay raw on purpose: a new question is a new function over the same files, not a migration of a
-tally.
-
-**Scripts.** Runs, how many came from an agent, failures, and the projects and flags each is called
-with, beside every script folder so one nobody has run is visible as such. Runs, agent runs and
-failures are also kept per day inside the 90-day window.
-
-**Lint rules.** Hits on files an agent edited, the `eslint-disable` comments naming each rule, and
-every rule some project's config switches on, read through ESLint's own `calculateConfigForFile`
-in [`tools/lib/lintRules.ts`](./tools/lib/lintRules.ts). **Only agent edits are linted there:** your
-own are fixed by the editor on save and never recorded, so a rule that only ever catches people
-reads as never fired. The page says so above the numbers.
-
-[`layers/telemetry/shared/usageView.ts`](./layers/telemetry/shared/usageView.ts) shapes what the
-page draws, all of it over the 90-day window, the snapshot's own day included. The day strips start
-at the first recorded run, two weeks at least, so a young log isn't drawn as months of nothing. On a
-phone the tables drop the strips and project columns and keep the numbers.
-
-| View | Shows |
-| --- | --- |
-| Script activity | One row of day cells per script, shaded slate by runs, a red base on a day with a failed run, and idle scripts kept as empty rows |
-| Scripts quadrant | Runs against failure rate, split at 5 runs and 25% failing; idle scripts listed under it |
-| Lint rules quadrant | Hits against inline disables, split at 3 disables and 30% of all hits |
-| Lint rules × projects | Hits per project for every rule that fired in the window or is disabled inline, plus the never-fired list |
-
-The thresholds are constants in the layer's two `shared/` files. Ctrl+C never counts as a failure.
-`eslint-disable` comments are counted outside specs, whose fixtures quote them, and include Vue's
-`<!-- eslint-disable -->`.
-
-## 🐙 Work in progress comes from GitHub, not from here
-
-The Work in progress page reads the repo host's REST API from the reader's own browser and renders what comes back.
-There is no local copy, no `log/`, no schema: an issue's state lives on GitHub, and a second record
-of it in this repo would be a second answer to a question that already has one. This replaced a local
-todo list that was exactly that mistake.
-
-| Decision | Why |
-| --- | --- |
-| `fetch` in the browser, never `gh` on a server | The repo is public, so unauthenticated REST needs no credential — and a page that reads GitHub itself is a page that can be served as static files. A server existed only to hold the CLI's token |
-| The endpoint is derived from `NUXT_PUBLIC_REPO_URL` | GitHub's REST host is the repo's own with `api.` in front, so [`issuesApiUrl`](./layers/github/shared/issues.ts) computes it and no vendor endpoint is written into this repo |
-| A failure is rendered, not thrown | No network and a spent rate limit are facts about the reader, not about the repo. The page shows GitHub's own message, which explains itself better than anything written here |
-| Pull requests are dropped | The REST issues endpoint returns both, so [`toIssues`](./layers/github/shared/issues.ts) filters on the `pull_request` key that only a PR carries |
-| Label names without their colours | GitHub's label palette is arbitrary and this app's is [three validated status roles](#-design-system). Rendering one beside the other is how a page stops meaning anything |
-
-**The board a card sits on is gone, and is not coming back without a token.** `projectItems` is a
-GraphQL field, and GraphQL answers `403` unauthenticated — REST carries nothing about GitHub
-Projects. So the board badge, the board filter and the Overview's "filed and never placed" count were
-deleted rather than left to read `null`, which would have reported every open issue as unplaced. The
-rate limit is **60 requests an hour per address**, shared by everyone behind it, and the read is once
-per viewer per session rather than once a minute per server.
-
-## 🪪 Projects are the catalog
-
-The Projects page is a card per node in the collected Nx graph. Each project's title and description
-come from its existing README through the Nuxt Content `docs` collection, so there is no second
-hand-written project catalog. Each card also joins the graph to collect-time commit history, spec count
-and coverage. `git rev-list` counts the project's history; `git log --since=2 weeks ago` adds the recent
-commit count, so the browser never spends one GitHub request per project for data already present in the
-checkout.
-
-A deleted project stays on the page as a dimmed **Retired** card, always after the live ones. `git log --diff-filter=D -p`
-finds every deleted `package.json` under `apps/`, `packages/` and `infrastructure/`, and the patch
-carries its name and tags. The call pins rename detection and the patch format, so a user's git
-config can't change the list, and a git failure leaves the list empty without failing `projects`. A name that is live again is skipped, since a moved project reads as a
-delete plus an add. Its README went with it, so the card shows the deleting commit instead.
-
-Deployments are the exception because they can change after the static site ships. The browser reads
-GitHub's unauthenticated `deployments` endpoint once, then the newest status for each environment;
-the production URL travels in that status. Today those deployments belong to `huella-legal`, so its
-card carries an **Open site** link and a **Deploys** link to its GitHub Actions workflow, plus an
-**API** link to the `/_scalar` reference on that same URL, so it disappears with the site link. This
-portal gets the same pair: its Pages URL is derived from the repository name, and its deploy link opens
-the Pages workflow. Neither is an in-app write action.
-
-`@monorepo/huella-legal`'s Storybook is built into the same Pages artifact under
-`/huella-legal-storybook/`. A second Pages deploy would replace this dashboard, so the deploy
-workflow builds the static Storybook beneath the Nuxt app and configures its Vite base from Pages'
-derived path. The card links to it without a stored public URL.
-
-## 💾 One store, and it is disposable
-
-`.report/` holds the collected snapshot — coverage, metrics, docs, the graph — is
-gitignored, and is rebuilt by `pnpm exec nx collect @monorepo/developer-portal` in seconds. A snapshot that
-gets committed is a report that goes stale silently. Nothing else here is stored at all: the docs
-and the changelogs are files in the tree read where they live, and the issues are read
-live off GitHub. If you delete every derived file in this project, one command puts it back.
-
-The one committed snapshot is `data/workflows/projects/*.snapshot.json`, and it is the exception on
-purpose: a project's progress has to render on the deployed site, which has no token to ask GitHub
-for closed issues and blocked-by links, and no history to read commit activity from. `pnpm workflow:sync` rewrites it, the page prints when it last
-changed, and a malformed one shows as a file problem rather than blanking the page.
-
-## 🚢 The deployed site is a snapshot
-
-[`developer-portal-deploy.yml`](../../.github/workflows/developer-portal-deploy.yml) prerenders this app and publishes it to
-GitHub Pages on every push to `master`, plus by hand from `workflow_dispatch`. Static files, no host
-and no secret: the repo is public, and the one thing here that needed a credential went away when
-the issues read moved into the browser. Pages has to be set to build from GitHub Actions in the
-repo's settings — the workflow reads that configuration, it does not create it.
-
-| Step | What it is there for |
-| --- | --- |
-| `pnpm test:coverage` | The collector reads every project's `coverage-summary.json` plus the merged report, and neither exists until this has run over the whole workspace |
-| `pnpm exec nx collect @monorepo/developer-portal` | Nuxt copies `public/embed/**` into the output, so the snapshot is a build input rather than something the deploy hands over afterwards |
-| `pnpm exec nx build-static @monorepo/developer-portal` | `nuxt build --prerender`. Plain `build` is SSR and would leave a server to host |
-
-It is a job of its own rather than three steps on `checks`, which is `affected` by design: this is a
-full coverage run and a collection of the cross-file invariant findings, producing an artifact no
-pull-request check reads.
-
-**This project overrides its own `production` Nx input**, in [`package.json`](./package.json), and
-the deploy is wrong without it. The workspace default excludes `!{projectRoot}/**/*.md` and scopes
-everything to the project, so nothing this app renders was a build input: editing any doc left the
-task hash unchanged and `nx affected` reported no project at all for a file under `docs/`. The
-override adds three entries.
-
-| Addition | What it buys |
-| --- | --- |
-| `{workspaceRoot}/**/*.md` | A doc anywhere is a build input, **and** it is what makes `nx affected` name this project for a file that belongs to none — no `implicitDependencies` entry needed |
-| `{workspaceRoot}/data/workflows/**/*` | The same for the workflow YAML and snapshots, which aren't markdown and so slipped past the line above |
-| A `runtime` input running [`snapshotStamp.ts`](./tools/lib/snapshotStamp.ts) | `.report/` is gitignored, so it is absent from Nx's file map and a file input over it hashes *nothing* — a re-collected snapshot still replayed a cached `.output`. Stdout is hashed instead |
-
-Two values are baked in at build time, because a static site keeps no server to read runtime config
-from: `NUXT_APP_BASE_URL`, which a project page needs since it serves from `/<repo>/` rather than the
-root, and `NUXT_PUBLIC_REPO_URL`. The workflow derives both from the run — the first from
-`actions/configure-pages`, the second from the repo it is running in — so neither is written down
-here. A `public/` path that Nuxt does not rewrite goes through
-[`embedUrl`](./app/utils/embed.ts) for the same reason.
-
-**Every page is as old as the last deploy**, which is the price of the snapshot and worth reading off
-the Overview's own `manifest.commit`: the docs travel with the build rather than being read in place,
-and the advisory count was true when `pnpm audit` ran. Issues are the exception, because the browser
-fetches them. Workflows are older still: as old as the last committed `pnpm workflow:sync`.
-
-## 🔍 What it checks that nothing else does
-
-`tools/lib/invariants.ts` re-runs the cross-file rules
-[`check-invariants.sh`](../../.claude/hooks/check-invariants.sh) enforces on edit: the tag table
-written twice and the workspace-layout block. The hook only
-fires while an agent is editing a file; these run over the whole tree on every collect and show up
-as findings on the Overview. Nothing in CI runs them, so drift introduced by hand is reported here
-and blocks nothing — [`0025`](../../docs/decisions/0025-check-docs-removal.md) records why.
-The two copies are kept honest by [`invariants.spec.ts`](./tools/lib/invariants.spec.ts) — which is
-the entire reason they exist as pure functions rather than more shell.
-
-The rules parse with `yaml` rather than a regex, because `@nuxt/content` reads these same bytes as
-YAML to render the page — a checker that disagreed with it about what parses would fail reports the
-dashboard shows correctly. The split is deliberate: the vocabulary is
-[`layers/snapshot/shared/decisions.ts`](./layers/snapshot/shared/decisions.ts), which `DecisionStatus` and
-`DecisionOutcome` derive from and which client code can import; the parsing lives in `tools/` so a node-only
-dependency never reaches the browser bundle.
-
-Three checks here have no shell-hook twin, and each guards a shape a page's parser depends on:
+[`tools/lib/invariants.ts`](./tools/lib/invariants.ts) runs on every collect and shows findings on
+Home. It blocks nothing.
 
 | Check | Flags |
 | --- | --- |
+| `pnpm invariants:check --json` | Everything the [invariants gate](../../infrastructure/scripts/src/invariants/README.md) reports |
 | `compareAuditShape` | An audit with a bad filename, missing frontmatter, a reused ID or an unknown status |
-| `compareDecisionShape` | A decision report with a bad filename, a reused number, an unknown `status:`/`decision:`, no `issue:` or a dangling `supersededBy:` |
-| `compareWorkflowShape` | A workflow template, project or snapshot that breaks a rule in [`docs/workflows/README.md`](../../docs/workflows/README.md), or a `reuse.from` path that doesn't exist |
+| `compareDecisionShape` | A decision with a bad filename, reused number, unknown `status:`/`decision:`, no `issue:` or a dangling `supersededBy:` |
+| `compareWorkflowShape` | A workflow file that breaks [the workflow rules](../../docs/workflows/README.md) |
 
-## 🎨 Design system
+## Design system
 
 The [`design`](./layers/design) layer is the only place a value is chosen. Components use Nuxt UI's
-semantic roles (`text-muted`, `border-default`, `bg-elevated`) and Tailwind's scale, and ESLint
-rejects a bracketed value such as `text-[11px]` and any class Tailwind doesn't know.
+semantic roles and Tailwind's scale; ESLint rejects bracketed values.
 
 | Piece | Where | What it is |
 | --- | --- | --- |
-| `--tone-good`, `-warn`, `-bad` | [`main.css`](./layers/design/app/assets/main.css) | The three status colours, with a `.tone-*` class each. [`toneClass`](./app/utils/format.ts) maps a `Tone` to its class, so no class name is built from a string |
-| `text-2xs` | `main.css` | The one type step under `text-xs`, for timestamps and tags |
-| `.data-table`, `.numeric` | `main.css` | Every table: header, row rule, hover and cell padding, with `numeric` for a right-aligned figure |
-| `.embedded-report` | `main.css` | The white frame the vendored coverage report and Nx graph render in |
-| `variant="flush"` on `UCard` | [`app.config.ts`](./layers/design/app/app.config.ts) | A card with no body padding, for a table or a list of rows |
-| `--state-*`, `--stage-*` | [`workflows.css`](./layers/workflows/app/assets/workflows.css) | One colour per block state and per stage, read through `stateColor` and `stageColor`. They live with the feature so they leave with it |
-| `--usage-*` | [`telemetry.css`](./layers/telemetry/app/assets/telemetry.css) | One hue per caller (agent, person, both), the rules' violet, and the run and hit scales; with the feature for the same reason |
+| `--tone-good`, `-warn`, `-bad` | [`main.css`](./layers/design/app/assets/main.css) | The three status colours; [`toneClass`](./app/utils/format.ts) maps a `Tone` to its class |
+| `.data-table`, `.numeric` | `main.css` | Every table |
+| `.embedded-report` | `main.css` | The frame around the coverage report |
+| `variant="flush"` on `UCard` | [`app.config.ts`](./layers/design/app/app.config.ts) | A card with no body padding |
+| `--state-*`, `--stage-*` | [`workflows.css`](./layers/workflows/app/assets/workflows.css) | Workflow colours, kept with that feature |
+| `--usage-*` | [`telemetry.css`](./layers/telemetry/app/assets/telemetry.css) | Tooling-usage colours, kept with that feature |
 
-A hover or resting tint is `bg-elevated/50` and a selected row is `bg-elevated`. A colour that
-depends on data reaches the template as a CSS variable, as in `text-(--state)`, never as a literal.
-Layout that only one component needs, such as the skyline's grid, stays in that component's scoped
-style, and the classes it hangs off are listed in [`eslint.config.ts`](./eslint.config.ts).
+The three status colours were validated as a set for contrast and colour-blind separation. Re-run
+the `dataviz` skill's validator before changing one.
 
-The three status colours were validated as a set against both the light and the dark surface —
-lightness band, chroma floor, colourblind separation, normal-vision separation, contrast. Five bands
-were tried first and failed: an orange and a red land 7.1 apart on the normal-vision scale, which no
-amount of good intent fixes. Three pass, and every one of them sits beside the number it describes.
-Nothing here is ever a colour alone. Re-run the validator in the `dataviz` skill before changing one.
+ESLint also rejects raw palette classes (`bg-slate-500`, `text-white`) everywhere.
 
-## 📐 Boundaries
+### The identity
 
-`type:app`, `scope:internal`. It imports no workspace package except `@monorepo/configs`, and
-nothing imports it — a leaf that happens to read the whole repo from the outside, which is the only
-position from which it could describe it. [`docs/README.md`](../../docs/README.md) deferred exactly
-this app once, on the grounds that rendering the docs tree needed a boundary decision first; the
-answer turned out to need no new tag, because an app that only *reads* the workspace composes
-nothing and so violates nothing.
+Direction E, approved in [`0039`](../../docs/decisions/0039-developer-portal-benchmark.md), is one
+system in [`main.css`](./layers/design/app/assets/main.css), whose tokens [`apps/portfolio`](../portfolio/README.md) copies, set on `:root` so Nuxt UI's overlays take it too. Nothing is set under 12 px.
 
-## 🧭 Deliberately deferred
-
-| Later need | What changes |
+| Piece | What it is |
 | --- | --- |
-| Writing to GitHub from here — closing an issue, moving a card | Every write needs a credential, which the browser-side read deliberately removed, plus an undo story, an optimistic-update story and a permission story. Reading is the whole value; `pnpm issue:add` and `pnpm issue:pick` already cover filing and starting |
-| A decision's `issue:` shown beside it, or filtered on | The collector parses that field already and keeps only `status`, `decision` and `supersededBy`; carrying it would be one more field on `DocPage` and a link out to GitHub. Every report states its issue in its own Context section, and two reports may share one — so it sorts and groups worse than the number the list already uses |
-| Closed issues, or issues from another repo | `state=open` on the repo `NUXT_PUBLIC_REPO_URL` names. Both are one parameter; neither has a question this page is asked yet, and each doubles the requests against a 60-an-hour limit |
-| Ordering "What's next" by board column, or showing the board at all | Needs `projectItems`, which is GraphQL-only and so needs a token — the thing reading from the browser exists to avoid. Sorted by last touched instead |
-| Collecting on demand from the UI | `pnpm exec nx collect @monorepo/developer-portal` shells out to `nx graph` and `eslint` and takes tens of seconds. A button means a run state to poll and a way to cancel — the terminal already has both |
-| An `nx` run panel | A command can run in local development, but its result would be frozen into the deployed static site. GitHub Actions remains the deployed action runner until a server-backed execution model exists |
-| A feature-flag toggle | No flag vendor is configured yet; when one is, its card may link to that vendor's own authenticated UI, but this app still does not hold a credential or make the write |
+| `paper-*`, `terracotta-*` | The palette: warm neutrals and the one accent. Read through the roles, never as classes |
+| `--font-display`, `--font-sans`, `--font-mono` | Fraunces, IBM Plex Sans, IBM Plex Mono |
+| `text-statement`, `title`, `section`, `heading` | The display steps; with `text-2xl`, `base`, `sm` and `xs` they make the scale's eight |
+| `--ui-primary` | Terracotta 600 in light, 300 in dark |
+| `--tone-*` | The status colours, re-picked for these surfaces with the `dataviz` validator |
+| `surface-ink` | A fill that stays dark in both modes, such as the developer rail, with its own tones |
+| `<mark>` | A marked word takes the accent in italic |
+| `data-figure` | A count or percentage that leads a panel: tabular, semibold |
+| `data-scroll-x` | A row or table that scrolls sideways fades at its right edge |
+| View transitions | Every page change crossfades in 0.15 s |
+| `data-prose`, `data-readme` | Rendered markdown keeps a 72-character measure; a README drops its own `#` title |
+
+Every text role clears 4.5:1 on every surface. Each cell is light / dark:
+
+| Text | `bg` | `bg-muted` | `bg-elevated` | `bg-accented` |
+| --- | ---: | ---: | ---: | ---: |
+| `dimmed`, `muted` | 5.9 / 6.7 | 5.3 / 7.3 | 6.4 / 6.3 | 4.8 / 5.8 |
+| `toned` | 12.9 / 12.0 | 11.7 / 13.0 | 14.0 / 11.3 | 10.5 / 10.5 |
+| default | 14.0 / 13.5 | 12.6 / 14.6 | 15.1 / 12.6 | 11.3 / 11.7 |
+| `highlighted` | 14.9 / 16.1 | 13.5 / 17.4 | 16.1 / 15.1 | 12.0 / 14.0 |
+| `primary` | 5.7 / 7.1 | 5.2 / 7.7 | 6.2 / 6.6 | 4.6 / 6.2 |
+| `--tone-good` | 6.0 / 5.5 | 5.4 / 6.0 | 6.5 / 5.2 | 4.8 / 4.8 |
+| `--tone-warn` | 6.9 / 5.5 | 6.3 / 5.9 | 7.5 / 5.1 | 5.6 / 4.7 |
+| `--tone-bad` | 5.9 / 5.4 | 5.3 / 5.8 | 6.4 / 5.0 | 4.7 / 4.7 |
+| `inverted` on `bg-inverted` | 16.1 / 14.9 | | | |
+
+| Text on `surface-ink` | Fill | `bg-elevated` |
+| --- | ---: | ---: |
+| `muted` | 7.3 | 6.7 |
+| default | 16.1 | 14.9 |
+| `highlighted` | 17.4 | 16.1 |
+| `primary` | 7.7 | 7.1 |
+| `inverted` on `bg-primary` | 7.7 | |
+| `--tone-good`, `-warn`, `-bad`, lowest | 5.0 | 4.6 |
+
+## Boundaries
+
+`type:app`, `scope:internal`. Depends only on `@joinery/configs`; nothing depends on it.

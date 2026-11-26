@@ -1,4 +1,4 @@
-import { fakeEntry, fakeTerm } from "@monorepo/content/testing";
+import { fakeEntry, fakeTerm } from "@joinery/content/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ArticleSummary } from "../../shared/types/ArticleSummary";
 
@@ -40,7 +40,6 @@ beforeEach(() => {
 });
 
 describe("getArticleIndex", () => {
-    // Saved whole, so emptying the hidden tags shows the posts again without a cache bust
     it("leaves a post with a hidden tag out of the index it answers, but not out of the saved copy", async () => {
         const hidden = fakeEntry({
             terms: [fakeTerm({ resource: "tags", slug: "consultas-legales-gratuitas" })],

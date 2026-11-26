@@ -1,9 +1,8 @@
 import * as v from "valibot";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 
-vi.stubGlobal("createError", (input: Record<string, unknown>) =>
-    Object.assign(new Error("http"), input),
-);
+stubNitro();
 
 const { assertForm } = await import("./assertForm");
 

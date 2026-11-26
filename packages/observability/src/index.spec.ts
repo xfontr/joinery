@@ -18,7 +18,7 @@ vi.mock("@grafana/faro-web-tracing", () => ({
 }));
 
 const url = "https://faro-collector.grafana.net/collect/abc123";
-const app = { name: "@monorepo/external", version: "1.0.0", environment: "production" };
+const app = { name: "@joinery/external", version: "1.0.0", environment: "production" };
 
 const start = () => startWebTelemetry({ url, app });
 

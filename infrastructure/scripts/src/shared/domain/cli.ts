@@ -6,7 +6,7 @@ export interface Args {
     positionals: string[];
 }
 
-export interface ErrorReport {
+interface ErrorReport {
     cancelled: boolean;
     message: string;
 }
@@ -25,7 +25,7 @@ interface UnmatchedDispatch {
     usage: string;
 }
 
-export type Dispatch<T> = MatchedDispatch<T> | UnmatchedDispatch;
+type Dispatch<T> = MatchedDispatch<T> | UnmatchedDispatch;
 
 export const parse = (argv: string[]): Args => ({
     flags: new Set(argv.filter((arg) => arg.startsWith("--")).map((arg) => arg.slice(2))),

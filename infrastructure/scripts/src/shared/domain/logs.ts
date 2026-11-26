@@ -64,7 +64,6 @@ export const excerpt = (text: string, cap = DEFAULT_CAP): Excerpt => {
     if (lines.length <= cap) return { lines, omitted: 0 };
 
     const windows = signalWindows(lines);
-    // A log with no recognisable error line usually ends with the one that matters.
     const picked = windows.length > 0 ? windows : lines.map((_, index) => index).slice(-cap);
 
     const shown: string[] = [];

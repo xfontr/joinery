@@ -28,7 +28,9 @@
                         :label
                     />
 
-                    <span v-if="!compact" class="text-2xs text-dimmed">updated {{ updated }}</span>
+                    <span v-if="!compact" class="text-xs text-dimmed">
+                        {{ $t("healthIssueRow.updated", { age: updated }) }}
+                    </span>
                 </div>
 
                 <div v-if="expanded" class="mt-3 flex flex-col gap-3">
@@ -36,14 +38,16 @@
                         {{ issue.body }}
                     </p>
 
-                    <p v-else class="text-sm text-dimmed italic">No description.</p>
+                    <p v-else class="text-sm text-dimmed italic">
+                        {{ $t("healthIssueRow.noDescription") }}
+                    </p>
 
                     <div class="flex items-center gap-3">
                         <UButton
                             :to="issue.url"
                             target="_blank"
                             external
-                            :label="`Open #${issue.number} on GitHub`"
+                            :label="$t('healthIssueRow.open', { number: issue.number })"
                             icon="i-lucide-external-link"
                             color="neutral"
                             variant="subtle"
@@ -65,15 +69,15 @@
                 color="neutral"
                 variant="ghost"
                 size="xs"
-                :aria-label="`Open issue ${issue.number} on GitHub`"
+                :aria-label="$t('healthIssueRow.openLabel', { number: issue.number })"
             />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { summarize } from "#layers/github/shared/issues.ts";
-import type { Issue } from "#layers/github/shared/issues.ts";
+import { summarize } from "#layers/github/app/utils/issues.ts";
+import type { Issue } from "#layers/github/app/utils/issues.ts";
 
 interface Props {
     issue: Issue;
@@ -90,6 +94,8 @@ const expanded = ref(false);
  * one click from the place it was written for.
  */
 const summary = computed(() => summarize(issue.body, compact ? 100 : 160));
-const updated = computed(() => relativeTime(issue.updatedAt));
+const { t } = useI18n();
+
+const updated = computed(() => relativeTime(issue.updatedAt, t));
 const assignees = computed(() => issue.assignees.join(", "));
 </script>

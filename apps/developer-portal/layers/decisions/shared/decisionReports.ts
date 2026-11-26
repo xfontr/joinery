@@ -37,7 +37,7 @@ export const toDecisionReports = (pages: DocPage[]): DecisionReport[] =>
             };
         });
 
-export interface DecisionReportFilter {
+interface DecisionReportFilter {
     status?: DecisionStatus | "all";
     decision?: DecisionOutcome | "all";
     search?: string;
@@ -68,8 +68,6 @@ export type DecisionSort = (typeof DECISION_SORTS)[number];
 const statusRank = (status: DecisionStatus | null): number =>
     status === null ? DECISION_STATUSES.length : DECISION_STATUSES.indexOf(status);
 
-// The number is zero-padded to four digits by the naming rule in `docs/decisions/README.md`, so
-// comparing it as a string is comparing it as a number.
 const byNumberDescending = (a: DecisionReport, b: DecisionReport): number =>
     b.number.localeCompare(a.number);
 
@@ -84,7 +82,7 @@ export const sortDecisions = (reports: DecisionReport[], sort: DecisionSort): De
         return byNumberDescending(a, b);
     });
 
-/** Seeded from the vocabulary rather than from the reports, so a status nothing carries yet still shows its zero. */
+/** Seeded from the vocabulary, so a status nothing carries yet still shows its zero. */
 export const countByStatus = (reports: DecisionReport[]): Record<DecisionStatus, number> => {
     const counts = Object.fromEntries(DECISION_STATUSES.map((status) => [status, 0])) as Record<
         DecisionStatus,
@@ -97,3 +95,9 @@ export const countByStatus = (reports: DecisionReport[]): Record<DecisionStatus,
 
     return counts;
 };
+
+/** Accepted decisions still waiting to land, newest first; a superseded one never lands. */
+export const toImplement = (reports: DecisionReport[]): DecisionReport[] =>
+    sortDecisions(reports, "newest").filter(
+        (report) => report.status === "to-implement" && report.decision !== "superseded",
+    );

@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 
 const nitro = vi.hoisted(() => ({
     wordpress: "https://cms.revista.test",
     redirect: vi.fn((_event: unknown, location: string, status: number) => ({ location, status })),
 }));
 
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 vi.stubGlobal("getRequestURL", (event: { url: string }) => new URL(event.url));
 vi.stubGlobal("sendRedirect", nitro.redirect);
 vi.stubGlobal("useRuntimeConfig", () => ({ content: { vendor: { baseURL: nitro.wordpress } } }));
@@ -39,7 +40,6 @@ describe("legacy middleware", () => {
         expect(request(path)).toEqual({ location: `https://cms.revista.test${path}`, status: 301 });
     });
 
-    // Before cutover WordPress still answers on `www`, so forwarding there would loop
     it("keeps the path of a WordPress installed below the root", () => {
         nitro.wordpress = "https://cms.revista.test/wordpress/";
 

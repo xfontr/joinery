@@ -1,4 +1,4 @@
-import { fakeEntry } from "@monorepo/content/testing";
+import { fakeEntry } from "@joinery/content/testing";
 import { describe, expect, it } from "vitest";
 import { toArticle } from "./article";
 import { toArticleBody } from "./articleBody";
@@ -24,7 +24,6 @@ describe("toArticle", () => {
         });
     });
 
-    // The canonical address keeps WordPress's trailing slash, so a citation never costs a redirect
     it.each(["https://revista.test", "https://revista.test/"])(
         "cites the post at its permalink on %s",
         (url) => {

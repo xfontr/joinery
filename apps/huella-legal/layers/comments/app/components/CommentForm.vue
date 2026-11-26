@@ -54,7 +54,7 @@
                     :hint="$t('commentForm.name.hint')"
                     required
                 >
-                    <UInput v-model="state.name" type="text" autocomplete="name" class="w-full" />
+                    <UInput v-model="state.name" autocomplete="name" class="w-full" />
                 </UFormField>
                 <UFormField
                     name="email"
@@ -102,6 +102,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Challenge } from "#layers/forms/app/types/Challenge";
 import { useFormSubmission } from "#layers/forms/app/composables/useFormSubmission";
 import type { ButtonProps, Form } from "@nuxt/ui";
 import {

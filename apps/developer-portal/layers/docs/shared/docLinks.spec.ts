@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveDocLink } from "./docLinks.ts";
+import { resolveDocImage, resolveDocLink } from "./docLinks.ts";
 
 /**
  * Stands in for what the remark plugin asks the filesystem: the target as the link writes it, so an
@@ -24,24 +24,24 @@ const DECISION = "docs/decisions/0014-developer-portal-deployment.md";
 
 describe("resolveDocLink", () => {
     it("routes a markdown sibling to its lower-cased collection path, not the name on disk", () => {
-        expect(resolveDocLink("./README.md", ROOT, isPage)).toBe("/docs/readme");
+        expect(resolveDocLink("./README.md", ROOT, isPage)).toBe("/wiki/readme");
     });
 
     it("resolves a markdown link against the linking file's directory rather than the route", () => {
         expect(resolveDocLink("./0011-docs-system-enforcement.md", DECISION, isPage)).toBe(
-            "/docs/docs/decisions/0011-docs-system-enforcement",
+            "/wiki/docs/decisions/0011-docs-system-enforcement",
         );
     });
 
     it("walks out of the directory on `..` so a cross-tree link lands in the right place", () => {
         expect(resolveDocLink("../../apps/developer-portal/README.md", DECISION, isPage)).toBe(
-            "/docs/apps/developer-portal/readme",
+            "/wiki/apps/developer-portal/readme",
         );
     });
 
     it("keeps an anchor, which names a heading on the page it just resolved", () => {
-        expect(resolveDocLink("./README.md#-numbering", DECISION, isPage)).toBe(
-            "/docs/docs/decisions/readme#-numbering",
+        expect(resolveDocLink("./README.md#numbering", DECISION, isPage)).toBe(
+            "/wiki/docs/decisions/readme#numbering",
         );
     });
 
@@ -58,12 +58,12 @@ describe("resolveDocLink", () => {
 
     it("drops a line range, which narrows a file rather than naming another one", () => {
         expect(resolveDocLink("./.claude/skills/writing-tests/SKILL.md:91-94", ROOT, isPage)).toBe(
-            "/docs/.claude/skills/writing-tests/skill",
+            "/wiki/.claude/skills/writing-tests/skill",
         );
     });
 
     it("treats a leading slash as repo-root-relative, not directory-relative", () => {
-        expect(resolveDocLink("/docs/README.md", DECISION, isPage)).toBe("/docs/docs/readme");
+        expect(resolveDocLink("/docs/README.md", DECISION, isPage)).toBe("/wiki/docs/readme");
     });
 
     it("leaves a link nothing here owns to the renderer's own handling", () => {
@@ -79,7 +79,7 @@ describe("resolveDocLink", () => {
 
     it("routes an extension-less target the collection knows, since these docs may omit `.md`", () => {
         expect(resolveDocLink("./.claude/skills/house-docs/SKILL", ROOT, isPage)).toBe(
-            "/docs/.claude/skills/house-docs/skill",
+            "/wiki/.claude/skills/house-docs/skill",
         );
     });
 
@@ -88,6 +88,25 @@ describe("resolveDocLink", () => {
     });
 
     it("sends a markdown target the collection does not have to the repo, so no link renders a soft 404", () => {
-        expect(resolveDocLink("./docs/GONE.md", ROOT, isPage)).toBe("repo:docs/GONE.md");
+        expect(resolveDocLink("./docs/GONE.md", ROOT, isPage)).toBe("repo:docs/GONE%2Emd");
     });
+
+    it("escapes a markdown repo target's extension so the content parser leaves the href alone", () => {
+        expect(resolveDocLink("./apps/web/CLAUDE.md", ROOT, isPage)).not.toMatch(/\.md$/);
+    });
+});
+
+describe("resolveDocImage", () => {
+    it("points a relative image at where the build serves its folder, which the page's own URL is not", () => {
+        expect(resolveDocImage("./images/rauno-me.webp", "docs/benchmarks/rauno-me.md")).toBe(
+            "/doc-assets/docs/benchmarks/images/rauno-me.webp",
+        );
+    });
+
+    it.each(["https://example.com/a.png", "/already/served.png", ""])(
+        "leaves %j alone, since it is not a file beside the doc",
+        (src) => {
+            expect(resolveDocImage(src, "docs/benchmarks/rauno-me.md")).toBeNull();
+        },
+    );
 });

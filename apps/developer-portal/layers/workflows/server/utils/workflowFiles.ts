@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { parse } from "yaml";
 import type { ParsedFile } from "../../shared/workflows.ts";
 
-export interface WorkflowFiles {
+interface WorkflowFiles {
     templates: ParsedFile[];
     projects: ParsedFile[];
     /** Keyed by project id; a project that was never synced has no entry. */

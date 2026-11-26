@@ -1,11 +1,11 @@
-name: PR metadata
+name: PR / Metadata
 
 # Fills in what GitHub's own PR defaults leave crappy: title, assignees and
 # project are copied from the issue the branch is linked to (see
 # infrastructure/scripts/src/issue, pnpm issue:pick), so a PR opened from
 # `<type>/<project>/<issue number>-<slug>` always carries the same metadata
-# as its issue, no matter how the PR itself got opened. The title is also
-# tagged with that branch type and issue number, e.g. `feature: [48] <issue title>`.
+# as its issue, no matter how the PR itself got opened. The title ends in the
+# issue number, which GitHub links: `<issue title> (#48)`.
 on:
     pull_request:
         types: [opened, reopened]
@@ -25,7 +25,7 @@ jobs:
         env:
             GH_TOKEN: ${{ secrets.PROJECTS_TOKEN }}
         steps:
-            - name: Extract issue type and number from branch name
+            - name: Extract the issue number from the branch name
               id: issue
               env:
                   HEAD_REF: ${{ github.head_ref }}
@@ -43,7 +43,6 @@ jobs:
 
                   {
                       echo "found=true"
-                      echo "type=${match%%/*}"
                       echo "number=${match##*/}"
                   } >> "$GITHUB_OUTPUT"
 
@@ -68,13 +67,12 @@ jobs:
               if: steps.issue.outputs.found == 'true'
               env:
                   PR_NUMBER: ${{ github.event.pull_request.number }}
-                  ISSUE_TYPE: ${{ steps.issue.outputs.type }}
                   ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
                   ISSUE_TITLE: ${{ steps.linked.outputs.title }}
                   ISSUE_ASSIGNEES: ${{ steps.linked.outputs.assignees }}
                   ISSUE_PROJECTS: ${{ steps.linked.outputs.projects }}
               run: |
-                  args=(--title "$ISSUE_TYPE: [$ISSUE_NUMBER] $ISSUE_TITLE")
+                  args=(--title "$ISSUE_TITLE (#$ISSUE_NUMBER)")
 
                   IFS=',' read -ra logins <<< "$ISSUE_ASSIGNEES"
                   for login in "${logins[@]}"; do

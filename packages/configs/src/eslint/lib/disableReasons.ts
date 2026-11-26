@@ -1,19 +1,19 @@
-import monorepo from "../rules/index.ts";
+import joinery from "../rules/index.ts";
 
 const linterOptions = { reportUnusedDisableDirectives: "error" };
 
-const rules = { "monorepo/disable-needs-reason": "error" };
+const rules = { "joinery/disable-needs-reason": "error" };
 
 const disableReasons: object = {
     files: ["**/*.ts", "**/*.mts", "**/*.cts", "**/*.js", "**/*.mjs", "**/*.cjs"],
-    plugins: { monorepo },
+    plugins: { joinery },
     linterOptions,
     rules,
 };
 
 const disableReasonsVue: object = {
     files: ["**/*.vue"],
-    plugins: { monorepo },
+    plugins: { joinery },
     linterOptions,
     rules,
 };

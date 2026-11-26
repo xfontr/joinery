@@ -33,7 +33,6 @@ const journalStyle = ({ authors, title, number, date, journal, permalink }: Sour
     return `${authors.join("; ").toLocaleUpperCase(JOURNAL_LOCALE)}, «${title}», ${journal.name}${numbered}${published}. ISSN ${journal.issn}. Disponible en: ${permalink}`;
 };
 
-// WordPress keeps one display name, so the first word is read as the given name and the rest as surnames
 const invertName = (name: string): string => {
     const [given = "", ...surnames] = name.trim().split(/\s+/);
 

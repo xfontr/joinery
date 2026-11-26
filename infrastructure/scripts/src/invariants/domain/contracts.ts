@@ -8,7 +8,7 @@ export interface PackageSource {
     readError?: string;
 }
 
-export interface PackageReport {
+interface PackageReport {
     packageName: string;
     errors: string[];
     skipped: string[];
@@ -24,7 +24,7 @@ const valueText = (value: unknown): string => {
     return rendered ?? String(value);
 };
 
-const packageNameFor = (directory: string): string => `@monorepo/${directory}`;
+const packageNameFor = (directory: string): string => `@joinery/${directory}`;
 
 const errorFor = (packageName: string, field: string, message: string): string =>
     `${packageName}: ${field} ${message}`;
@@ -399,6 +399,6 @@ export const contractFindings = ({ packageName, errors }: PackageReport): Findin
         id: "package-contract",
         title: "A package breaks its manifest contract",
         detail: error,
-        evidence: [`packages/${packageName.replace("@monorepo/", "")}/package.json`],
+        evidence: [`packages/${packageName.replace("@joinery/", "")}/package.json`],
         blocks: true,
     }));

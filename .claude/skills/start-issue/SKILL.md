@@ -29,6 +29,11 @@ the wrong issue is expensive to notice later. Don't guess past one weak match.
 
 Skip this if step 1 already found you standing on the issue's branch.
 
+**Pick it in the checkout you're in.** A single ticket never gets its own worktree, least of all
+when the current checkout is on `master` with no branch picked. A worktree is only for asking for
+more than one ticket at once, and even then one of them stays in the current checkout. In doubt,
+ask before creating one.
+
 Otherwise run `pnpm issue:pick` with the number. It asks nothing, and does what the interactive
 pick does: builds `<type>/<area>/<number>-<slug>`, the area being the issue's area label, runs `gh issue develop --checkout` so the
 branch is linked on the issue, self-assigns, and moves the issue to *In Progress*.
@@ -68,7 +73,33 @@ comment — then four sections, each a lookup you'd otherwise run by hand:
 | Projects | The folders the issue touches, each with its `CLAUDE.md`. Read those, since Claude only loads a nested one once it reads a file there |
 | Docs mentioned | Plans and guides the thread links. Read the ones the acceptance criteria lean on |
 
-## 4. Confirm before diving in
+## 4. A ticket built from a lab: list the lab first
+
+When the issue points at a `/lab/...` path, the lab is the spec. Before any code, open every lab
+page the ticket covers, following its links (a list → its detail page, every tab), and post the
+list as an issue comment:
+
+```markdown
+## Lab checklist
+
+### /lab/idea/e/developer/catalog/[name] → /projects/<name>
+- [ ] Header: breadcrumb, mono title, README description
+- [ ] Tabs with counts: README, Coverage, Dependencies, Issues, Workflows
+- [ ] About box: Version, Unreleased, Commits 2 wk, Specs, Lines covered meter, Changelog
+```
+
+One heading per lab page with the real route it becomes, one box per feature: a section, widget,
+tab, filter, menu entry. Not one per pixel; a page is usually five to ten boxes.
+
+- `gh issue comment <number> --body-file <file>` posts it. Tick boxes by editing that comment as
+  each item lands, so any agent that picks the ticket up reads where it stands in `issue:brief`.
+- **At the end of the session, read the list again.** An unticked box gets built now. If the
+  context is spent, say which boxes are open and ask the owner to hand them to another agent.
+  Never mention a gap only in the summary.
+- [`lab-checklist.sh`](../../hooks/lab-checklist.sh) refuses to open the PR while the comment is
+  missing or has an unticked box.
+
+## 5. Confirm before diving in
 
 Summarize back in a few lines: what the issue is asking for, anything a blocking issue or decision
 record changes about the approach, and what you're about to do first. This is the cheap check that

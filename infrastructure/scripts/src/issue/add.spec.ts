@@ -11,24 +11,13 @@ const gh = vi.hoisted(() => ({ listLabels: vi.fn(), listProjects: vi.fn() }));
 const sharedGh = vi.hoisted(() => ({ createIssue: vi.fn() }));
 const git = vi.hoisted(() => ({ currentBranch: vi.fn() }));
 const pickCommand = vi.hoisted(() => ({ pick: vi.fn() }));
-const io = vi.hoisted(() => ({
-    requireTerminal: vi.fn(),
-    out: {
-        begin: vi.fn(),
-        end: vi.fn(),
-        note: vi.fn(),
-        cancelled: vi.fn(),
-        warn: vi.fn(),
-        spinner: vi.fn(() => ({ start: vi.fn(), stop: vi.fn() })),
-    },
-}));
 
 vi.mock("@clack/prompts", () => prompts);
 vi.mock("./adapters/gh.ts", () => gh);
 vi.mock("../shared/adapters/gh.ts", () => sharedGh);
 vi.mock("./adapters/git.ts", () => git);
 vi.mock("./pick.ts", () => pickCommand);
-vi.mock("../shared/adapters/io.ts", () => io);
+vi.mock("../shared/adapters/io.ts");
 vi.mock("../shared/adapters/prompts.ts", () => ({
     orExit: (value: unknown, message: string) => {
         if (typeof value === "symbol") throw new CancelledError(message);
@@ -37,6 +26,9 @@ vi.mock("../shared/adapters/prompts.ts", () => ({
 }));
 
 import { add } from "./add.ts";
+import * as ioModule from "../shared/adapters/io.ts";
+
+const io = vi.mocked(ioModule, true);
 
 beforeEach(() => {
     vi.clearAllMocks();
@@ -192,4 +184,8 @@ describe("issue add", () => {
 
         await expect(add()).rejects.toThrow(new CancelledError("Cancelled — no issue created."));
     });
+});
+
+beforeEach(() => {
+    io.out.spinner.mockReturnValue({ start: vi.fn(), stop: vi.fn(), message: vi.fn() });
 });

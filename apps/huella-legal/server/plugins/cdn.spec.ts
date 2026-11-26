@@ -28,7 +28,6 @@ beforeEach(() => {
 });
 
 describe("the CDN cache plugin", () => {
-    // The route's isr rule would otherwise keep a WordPress outage on the page for a day
     it.each([500, 502, 503])("keeps a %i out of Netlify's cache", (statusCode) => {
         start()(httpError({ statusCode }), { event: EVENT, tags: ["request"] });
 

@@ -1,5 +1,6 @@
-import { fakeAuthor, fakeEntry } from "@monorepo/content/testing";
+import { fakeAuthor, fakeEntry } from "@joinery/content/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 import type { ArticleSummary } from "../../shared/types/ArticleSummary";
 import type { Author } from "../../shared/types/Author";
 import type { Facet } from "../../shared/types/Facet";
@@ -7,7 +8,7 @@ import { toArticleSummary } from "../mappers/articleSummary";
 
 const nitro = vi.hoisted(() => ({ index: [] as ArticleSummary[] }));
 
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 
 vi.mock("../services/articleIndex", () => ({
     getArticleIndex: () => Promise.resolve(nitro.index),

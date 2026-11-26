@@ -1,4 +1,4 @@
-import { fakeAsset } from "@monorepo/content/testing";
+import { fakeAsset } from "@joinery/content/testing";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
 import ArticleProse from "./Prose.vue";
@@ -16,7 +16,6 @@ describe("article prose", () => {
         expect(wrapper.find("h2#la-culpa").exists()).toBe(true);
     });
 
-    // The figure sits after the lead because the lead is the standfirst's continuation in the design
     it("places the image between the lead and the body", async () => {
         const image = fakeAsset();
         const wrapper = await mountSuspended(ArticleProse, { props: { ...PROPS, image } });

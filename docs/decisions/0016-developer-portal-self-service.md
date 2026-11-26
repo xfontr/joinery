@@ -9,7 +9,7 @@ decision: accepted
 ## Context
 
 developer-portal is documented as a pure leaf/reader — `type:app scope:internal`, imports nothing but
-`@monorepo/configs`, nothing imports it, and its only store is a disposable, rebuild-from-scratch
+`@joinery/configs`, nothing imports it, and its only store is a disposable, rebuild-from-scratch
 `.report/` snapshot. #102 asked whether it should grow beyond that, listing an `nx` run panel,
 deploy status, deploy triggers for `huella-legal` and a feature-flag/analytics vendor integration —
 each in tension with the "reads only, holds no credential, never acts" posture its README commits to.
@@ -58,7 +58,7 @@ which is why no portal fits over the top of them:**
 | --- | --- |
 | Docs | `@nuxt/content`, reading every tracked `*.md` in place at its own path |
 | Software catalog | The Nx project graph, collected into `.report/` — derived, so it cannot drift |
-| Component catalog | **Storybook 10 in `@monorepo/ui`**, with a `build-storybook` target writing `storybook-static` |
+| Component catalog | **Storybook 10 in `@joinery/ui`**, with a `build-storybook` target writing `storybook-static` |
 | Scorecards | `SCORECARDS.md` and the scorecards page |
 | Golden paths | `new-package`, `ui:new-component`, `scripts:new-script`, `nuxt-module-route`, `pnpm issue:pick` |
 | Action runner | GitHub Actions |
@@ -74,7 +74,7 @@ a design choice written in prose, not an enforced boundary.
 
 **What blocks it is that the deployed site is frozen at build time.** The mechanism is sharper than
 "there is no server": a prerendered route *is* answered, once, during the build, and then baked into
-the payload — [`[artifact].get.ts`](../../apps/developer-portal/layers/snapshot/server/api/snapshot/[artifact].get.ts) is served exactly
+the payload — [`[artifact].get.ts`](https://github.com/xfontr/joinery/blob/345aca7/apps/developer-portal/layers/snapshot/server/api/snapshot/%5Bartifact%5D.get.ts) is served exactly
 that way. A route whose whole purpose is to compute something when the reader asks has nowhere to
 run. So "does it need a credential" needs a second axis beside it, and the second one reorders the
 original list:
@@ -132,7 +132,7 @@ No dependency is added. What gets built instead, in order, each row naming the o
 | One card per project, off the collected graph | Nothing new | Both |
 | Per-project stats — commits, frequency, coverage, test count | `git rev-list`/`log` at collect time; both already allowlisted | Both |
 | Deploy status per environment, and the production URL with it | One browser read of `deployments` + `statuses` | Both |
-| A link to `@monorepo/ui`'s Storybook | **Publishing `storybook-static` first** — it builds today and no workflow deploys it | Both |
+| A link to `@joinery/ui`'s Storybook | **Publishing `storybook-static` first** — it builds today and no workflow deploys it | Both |
 | `nx` run panel | A deliberate answer for what the deployed site renders in its place | `pnpm dev` only |
 | Deploy trigger, flag toggle | A link out to GitHub's own **Run workflow** button | GitHub's UI |
 

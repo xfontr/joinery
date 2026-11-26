@@ -34,12 +34,22 @@ jobs:
               env:
                   INVARIANTS_BASE: ${{ github.event_name == 'pull_request' && env.NX_BASE || '' }}
 
-            - run: pnpm exec nx affected --base="$NX_BASE" --head="$NX_HEAD" -t lint typecheck test build
+            # Whole-workspace too: an export goes unused when its last importer changes, not itself
+            - run: pnpm unused:check
+
+            # A PR restores only its own entries or master's, so a PR can never poison master's cache
+            - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+              with:
+                  path: .nx/cache
+                  key: nx-${{ github.sha }}
+                  restore-keys: nx-
+
+            # Coverage rather than plain tests, so a project falling below its thresholds fails here
+            - run: pnpm exec nx affected --base="$NX_BASE" --head="$NX_HEAD" -t lint typecheck test:coverage build
               env:
-                  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+                  NX_MAX_CACHE_SIZE: 2GB
 
     e2e:
-        needs: checks
         runs-on: ubuntu-latest
         # Ships the browsers, and its tag must equal @playwright/test's exact version in the catalog
         container:
@@ -57,9 +67,17 @@ jobs:
               with:
                   main-branch-name: master
 
+            - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+              with:
+                  path: .nx/cache
+                  key: nx-${{ github.sha }}-e2e
+                  restore-keys: |
+                      nx-${{ github.sha }}
+                      nx-
+
             - run: pnpm exec nx affected --base="$NX_BASE" --head="$NX_HEAD" -t test:e2e
               env:
-                  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+                  NX_MAX_CACHE_SIZE: 2GB
 
             - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
               if: failure()
@@ -70,6 +88,7 @@ jobs:
                   path: |
                       apps/huella-legal/.playwright
                       apps/marina-roustan/.playwright
+                      apps/portfolio/.playwright
 
     # Needs a base ref to diff against, so it's meaningless on a push to master.
     dependency-review:

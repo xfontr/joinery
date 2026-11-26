@@ -1,11 +1,12 @@
-import { fakeAuthor, fakeEntry } from "@monorepo/content/testing";
+import { fakeAuthor, fakeEntry } from "@joinery/content/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 import type { ArticleSummary } from "../../shared/types/ArticleSummary";
 import { toArticleSummary } from "../mappers/articleSummary";
 
 const nitro = vi.hoisted(() => ({ index: [] as ArticleSummary[], header: vi.fn() }));
 
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 vi.stubGlobal("setResponseHeader", nitro.header);
 vi.stubGlobal("useRuntimeConfig", () => ({ public: { site: { url: "https://revista.test" } } }));
 

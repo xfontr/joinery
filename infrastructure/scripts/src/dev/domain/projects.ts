@@ -1,8 +1,8 @@
 import { titleCase } from "../../shared/domain/layout.ts";
 
-export const SCOPE = "@monorepo/";
+export const SCOPE = "@joinery/";
 
-const SELF = "@monorepo/scripts";
+const SELF = "@joinery/scripts";
 
 const ROOT_ORDER = ["apps", "infrastructure", "packages"];
 
@@ -29,11 +29,7 @@ export const toProjects = (runnables: Runnable[]): DevProject[] =>
         .map((runnable) => ({ ...runnable, label: labelFor(runnable.name) }))
         .sort((a, b) => rank(a.root) - rank(b.root) || a.label.localeCompare(b.label));
 
-export const spellings = ({ name, label }: DevProject): string[] => [
-    name,
-    name.replace(SCOPE, ""),
-    label,
-];
+const spellings = ({ name, label }: DevProject): string[] => [name, name.replace(SCOPE, ""), label];
 
 export const rowFor = (project: DevProject): string => `${project.label} · ${project.root}`;
 

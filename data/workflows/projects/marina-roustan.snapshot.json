@@ -1,11 +1,11 @@
 {
-    "syncedAt": "2026-11-15T16:36:25.675Z",
+    "syncedAt": "2026-11-23T18:16:39.271Z",
     "milestone": "Marina Roustan",
     "issues": [
         {
             "number": 446,
             "title": "Content audit, URL inventory, Feature inventory, Forms, integrations and providers, Hosting prototype",
-            "url": "https://github.com/xfontr/monorepo/issues/446",
+            "url": "https://github.com/xfontr/joinery/issues/446",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -32,7 +32,7 @@
         {
             "number": 447,
             "title": "Brand extraction, Design tokens",
-            "url": "https://github.com/xfontr/monorepo/issues/447",
+            "url": "https://github.com/xfontr/joinery/issues/447",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -59,7 +59,7 @@
         {
             "number": 448,
             "title": "App scaffold, Test harness and fake content, Environment discipline",
-            "url": "https://github.com/xfontr/monorepo/issues/448",
+            "url": "https://github.com/xfontr/joinery/issues/448",
             "state": "closed",
             "reason": "completed",
             "caps": [
@@ -83,7 +83,7 @@
         {
             "number": 459,
             "title": "Content migration",
-            "url": "https://github.com/xfontr/monorepo/issues/459",
+            "url": "https://github.com/xfontr/joinery/issues/459",
             "state": "open",
             "reason": null,
             "caps": [
@@ -101,7 +101,7 @@
         {
             "number": 460,
             "title": "Design lab",
-            "url": "https://github.com/xfontr/monorepo/issues/460",
+            "url": "https://github.com/xfontr/joinery/issues/460",
             "state": "open",
             "reason": null,
             "caps": [
@@ -125,7 +125,7 @@
         {
             "number": 461,
             "title": "Content source, CI build and preview deploys",
-            "url": "https://github.com/xfontr/monorepo/issues/461",
+            "url": "https://github.com/xfontr/joinery/issues/461",
             "state": "open",
             "reason": null,
             "caps": [
@@ -150,7 +150,7 @@
         {
             "number": 462,
             "title": "Rendering and caching",
-            "url": "https://github.com/xfontr/monorepo/issues/462",
+            "url": "https://github.com/xfontr/joinery/issues/462",
             "state": "open",
             "reason": null,
             "caps": [
@@ -174,7 +174,7 @@
         {
             "number": 463,
             "title": "Security hardening, Observability",
-            "url": "https://github.com/xfontr/monorepo/issues/463",
+            "url": "https://github.com/xfontr/joinery/issues/463",
             "state": "open",
             "reason": null,
             "caps": [
@@ -199,7 +199,7 @@
         {
             "number": 464,
             "title": "Images",
-            "url": "https://github.com/xfontr/monorepo/issues/464",
+            "url": "https://github.com/xfontr/joinery/issues/464",
             "state": "open",
             "reason": null,
             "caps": [
@@ -223,7 +223,7 @@
         {
             "number": 465,
             "title": "[OWNER] Approve the design direction",
-            "url": "https://github.com/xfontr/monorepo/issues/465",
+            "url": "https://github.com/xfontr/joinery/issues/465",
             "state": "closed",
             "reason": "not_planned",
             "caps": [

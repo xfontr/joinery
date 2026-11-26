@@ -1,0 +1,12 @@
+at,script,command,target,flags,area,caller,tty,exit,ms
+2026-11-22,dev,,developer-portal,,repo,human,1,1,3099
+2026-11-22,dev,,developer-portal,,repo,human,1,1,977
+2026-11-22,dev,,developer-portal,,repo,human,1,0,7794
+2026-11-21,dev,,developer-portal,,repo,human,1,0,83987522
+2026-11-22,map,,,check,repo,claude-code,0,0,137
+2026-11-22,map,,,check,repo,claude-code,0,0,157
+2026-11-22,map,,,check,repo,claude-code,0,0,136
+2026-11-22,invariants,,,,repo,claude-code,0,0,253
+2026-11-22,map,,,check,repo,claude-code,0,0,104
+2026-11-22,map,,,check,repo,claude-code,0,0,101
+2026-11-22,map,,,,repo,claude-code,0,0,95

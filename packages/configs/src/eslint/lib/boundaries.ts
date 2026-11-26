@@ -9,7 +9,7 @@ const boundaries: object = {
             {
                 allow: [],
                 // Browsers lazy-load it while servers import `/node`, which crashes this check
-                checkDynamicDependenciesExceptions: ["@monorepo/observability"],
+                checkDynamicDependenciesExceptions: ["@joinery/observability"],
                 depConstraints: [
                     {
                         sourceTag: "type:app",
@@ -32,6 +32,10 @@ const boundaries: object = {
                     {
                         sourceTag: "scope:marina-roustan",
                         onlyDependOnLibsWithTags: ["scope:marina-roustan", "scope:shared"],
+                    },
+                    {
+                        sourceTag: "scope:portfolio",
+                        onlyDependOnLibsWithTags: ["scope:portfolio", "scope:shared"],
                     },
                     {
                         sourceTag: "scope:internal",

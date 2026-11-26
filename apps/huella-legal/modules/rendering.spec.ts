@@ -1,5 +1,5 @@
 import type { Nuxt } from "@nuxt/schema";
-import { fakeEntry, wordpressHandlers } from "@monorepo/content/testing";
+import { fakeEntry, wordpressHandlers } from "@joinery/content/testing";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -82,7 +82,6 @@ afterAll(() => {
 });
 
 describe("the rendering module", () => {
-    // Every build needs them: Nuxt compiles `isr` into the client's payload rules either way
     it("registers the route rules outside a deploy build too", () => {
         vi.stubEnv("NUXT_SITE_ENV", "");
 
@@ -128,7 +127,6 @@ describe("the rendering module", () => {
         expect(kit.extendRouteRules).not.toHaveBeenCalledWith("/contacto/", expect.anything());
     });
 
-    // CI and e2e serve the built output with the vendors faked, and a file would shadow the fakes
     it("prerenders nothing outside a deploy build", () => {
         vi.stubEnv("NUXT_SITE_ENV", "");
 
@@ -145,7 +143,6 @@ describe("the rendering module", () => {
         },
     );
 
-    // Netlify keeps the previous deploy live when a build fails, so a failed page costs nothing
     it("fails the build on any page that fails, keeping the rest of the prerender options", () => {
         expect(install().nitro.prerender).toEqual({ crawlLinks: false, failOnError: true });
     });
@@ -158,7 +155,6 @@ describe("the rendering module", () => {
         );
     });
 
-    // Otherwise a page the override adds renders from the function, and one it drops fails the build
     it("prerenders the pages NUXT_PUBLIC_PAGE_SLUGS lists in place of the layer's", async () => {
         vi.stubEnv("NUXT_PUBLIC_PAGE_SLUGS", JSON.stringify(["recursos", "empieza-aqui"]));
 
@@ -169,7 +165,6 @@ describe("the rendering module", () => {
         expect(routes).not.toContain("/aviso-legal/");
     });
 
-    // The config declares the root empty, so without the env every deploy build fails here
     it("lists the posts from NUXT_CONTENT_VENDOR_BASE_URL", async () => {
         vi.stubEnv("NUXT_CONTENT_VENDOR_BASE_URL", BASE_URL);
 

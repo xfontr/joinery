@@ -3,7 +3,7 @@ import type { AuditFinding } from "./audits.ts";
 import { auditStateOf, parseFindings } from "./audits.ts";
 
 const AUDIT = `---
-scope: "@monorepo/developer-portal"
+scope: "@joinery/developer-portal"
 commit: 61b6f7f
 ---
 

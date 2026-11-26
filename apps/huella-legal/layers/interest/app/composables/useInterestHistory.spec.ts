@@ -19,7 +19,6 @@ const ENTRY: Omit<InterestEntry, "id"> = {
 
 const stored = () => JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null");
 
-// The composable reads storage on mount, so it runs inside a component
 const mountHistory = async () => {
     let history!: ReturnType<typeof useInterestHistory>;
 

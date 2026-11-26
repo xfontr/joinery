@@ -1,4 +1,4 @@
-import { faker, fakeAuthor } from "@monorepo/content/testing";
+import { faker, fakeAuthor } from "@joinery/content/testing";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -93,7 +93,6 @@ describe("search palette", () => {
         ]);
     });
 
-    // Enter selects the highlighted row, and the palette highlights the first one
     it("puts the full results page first once there is a query, so Enter opens it", async () => {
         preview.search = SEARCH;
 
@@ -103,7 +102,6 @@ describe("search palette", () => {
         expect(options(wrapper)[0]?.text()).toContain("searchPalette.total");
     });
 
-    // The preview's search is debounced; the row Enter takes must not be
     it("searches everything typed so far, even before the preview has caught up", async () => {
         const wrapper = await mountPalette(" culpabilidad ");
 

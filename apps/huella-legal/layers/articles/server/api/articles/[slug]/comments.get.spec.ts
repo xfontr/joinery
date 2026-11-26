@@ -1,5 +1,6 @@
-import { fakeEntry } from "@monorepo/content/testing";
+import { fakeEntry } from "@joinery/content/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 import type { ArticleComments } from "../../../../shared/types/ArticleComments";
 
 const ENTRY = fakeEntry({ slug: "la-culpa" });
@@ -10,7 +11,7 @@ const nitro = vi.hoisted(() => ({
     list: vi.fn(),
 }));
 
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 vi.stubGlobal("getRouterParam", () => "la-culpa");
 vi.stubGlobal("useContent", () => ({ getEntry: nitro.getEntry }));
 

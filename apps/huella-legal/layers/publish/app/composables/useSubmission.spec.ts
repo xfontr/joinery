@@ -1,6 +1,7 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import type { Challenge } from "#layers/forms/app/types/Challenge";
+import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
+import { mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { defineComponent } from "vue";
 import { useSubmission } from "./useSubmission";
 
 const FIELDS = {
@@ -23,24 +24,9 @@ mockNuxtImport(
         url === "/api/submissions" ? fetch(url, options) : globalThis.$fetch(url, options as never),
 );
 
-// A challenge with a token at hand: the waiting and the reset are FormChallenge's own spec
 const challenge = vi.fn((send: (token: string) => Promise<unknown>) => send("tok")) as Challenge;
 
-const setUp = async () => {
-    let controller: ReturnType<typeof useSubmission> | undefined;
-
-    await mountSuspended(
-        defineComponent({
-            setup: () => {
-                controller = useSubmission();
-
-                return () => null;
-            },
-        }),
-    );
-
-    return controller!;
-};
+const setUp = async () => (await withSetup(() => useSubmission())).value;
 
 beforeEach(() => {
     vi.clearAllMocks();

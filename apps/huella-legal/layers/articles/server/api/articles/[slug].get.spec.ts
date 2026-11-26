@@ -1,12 +1,13 @@
-import { fakeEntry, fakeTerm } from "@monorepo/content/testing";
+import { fakeEntry, fakeTerm } from "@joinery/content/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 import type { Article } from "../../../shared/types/Article";
 
 const ENTRY = fakeEntry({ slug: "la-culpa", body: { format: "html", value: "<h2>Uno</h2>" } });
 
 const nitro = vi.hoisted(() => ({ getEntry: vi.fn(), param: vi.fn() }));
 
-vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+stubNitro();
 vi.stubGlobal("getRouterParam", nitro.param);
 vi.stubGlobal("useRuntimeConfig", () => ({
     articles: { hiddenTerms: ["oculta"] },
@@ -26,7 +27,6 @@ beforeEach(() => {
 });
 
 describe("GET /api/articles/:slug", () => {
-    // The post stays readable at its permalink; only the hidden terms are kept off the page
     it("serves a post with a hidden category and tag, leaving both off the page", async () => {
         const visible = fakeTerm({ resource: "tags", slug: "civil" });
         nitro.getEntry.mockResolvedValue({
@@ -44,7 +44,6 @@ describe("GET /api/articles/:slug", () => {
         expect(article.tags.map(({ slug }) => slug)).toEqual(["civil"]);
     });
 
-    // Left encoded, an accented slug would reach WordPress encoded twice and match nothing
     it("reads the post named by the route, its slug decoded", async () => {
         await handler({});
 

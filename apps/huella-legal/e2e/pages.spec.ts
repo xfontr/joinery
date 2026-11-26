@@ -1,13 +1,11 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@monorepo/configs/playwright/test";
+import { axeViolations } from "@joinery/configs/playwright/utils/a11y";
+import { expect, test } from "@joinery/configs/playwright/utils/test";
+import { t } from "./copy.ts";
 import type { Page } from "@playwright/test";
 import { ARTICLE, COOKIES, LEGAL, PAGE, PRIVACY, PUBLISHING_GUIDE, SOURCE } from "./fakes.ts";
 
-const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
-
 const PATH = `/${LEGAL.slug}/`;
 
-// Not the margins, since an article's title sits closer to the kicker a page doesn't have
 const TYPE_STYLES = ["font-family", "font-size", "line-height", "max-width", "color"];
 
 const readStyles = (page: Page, selector: string, properties: readonly string[]) =>
@@ -69,7 +67,7 @@ test("the footer's publishing guide link lands on the guide's WordPress page", a
 
     await page
         .getByRole("contentinfo")
-        .getByRole("link", { name: "Guía de publicaciones" })
+        .getByRole("link", { name: t("app.footer.links.publishGuide") })
         .click();
 
     await expect(page).toHaveURL(new RegExp(`/${PUBLISHING_GUIDE.slug}/$`));
@@ -82,11 +80,14 @@ test("renders any other page on the same template, its notes and sources include
     await page.goto(`/${PAGE.slug}/`);
 
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(PAGE.title);
-    await expect(page.getByRole("region", { name: "Notas" }).getByRole("listitem")).toHaveCount(1);
-    await expect(page.getByRole("region", { name: "Bibliografía" })).toContainText(SOURCE);
+    await expect(
+        page.getByRole("region", { name: t("articleNotes.title") }).getByRole("listitem"),
+    ).toHaveCount(1);
+    await expect(page.getByRole("region", { name: t("articleBibliography.title") })).toContainText(
+        SOURCE,
+    );
 });
 
-// There is no lab design for this template, so the article's prose is the reference
 test("sets its text exactly as an article's prose", async ({ page }) => {
     await page.goto(`/${ARTICLE.slug}/`);
     const article = await proseStyles(page);
@@ -108,9 +109,7 @@ test("titles the page exactly as an article", async ({ page }) => {
 test("the legal notice has no WCAG AA violations", async ({ page }, testInfo) => {
     await page.goto(PATH);
 
-    const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
-    expect(violations).toEqual([]);
+    expect(await axeViolations(page)).toEqual([]);
 
     const path = testInfo.outputPath(`legal-notice-${testInfo.project.name}.png`);
 

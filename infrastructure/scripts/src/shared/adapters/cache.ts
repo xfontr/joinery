@@ -2,8 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { flag } from "../cli.ts";
 
-const CACHE_DIR = "node_modules/.cache/@monorepo/scripts";
-// TTL is one day; `--refresh` remains the explicit invalidation.
+const CACHE_DIR = "node_modules/.cache/@joinery/scripts";
 const TTL_MS = 24 * 60 * 60 * 1000;
 
 const pathFor = (key: string): string => `${CACHE_DIR}/${key}.json`;
@@ -50,7 +49,6 @@ export const readCache = <T>(key: string): T | undefined => {
     try {
         return (JSON.parse(readFileSync(pathFor(key), "utf8")) as { data: T }).data;
     } catch {
-        // Offline cache misses return no issues.
         return undefined;
     }
 };

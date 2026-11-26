@@ -40,7 +40,7 @@ vi.mock("./usage.ts", () => ({ collectUsage: state.collectUsage }));
 
 const projects = {
     generatedAt: "generated",
-    projects: [{ name: "@monorepo/ui", root: "packages/ui" }],
+    projects: [{ name: "@joinery/ui", root: "packages/ui" }],
 };
 const coverage = { generatedAt: "generated", totals: null, report: false, projects: [] };
 
@@ -157,6 +157,7 @@ describe("collector entrypoint", () => {
             "deps.json",
             "docs.json",
             "usage.json",
+            "badges.json",
             "manifest.json",
         ]);
         expect(state.writes.find(({ path }) => path.endsWith("coverage.json"))).toBeUndefined();
@@ -180,6 +181,7 @@ describe("collector entrypoint", () => {
         expect(state.writes.map(({ path }) => path.split("/").at(-1))).toEqual([
             "projects.json",
             "coverage.json",
+            "badges.json",
             "manifest.json",
         ]);
         const manifest = state.writes[state.writes.length - 1]!.value as {

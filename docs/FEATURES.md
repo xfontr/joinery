@@ -7,11 +7,11 @@ one. Start here when you don't yet know what to go and read.
 in the doc each row points at, so there is no prose here that can drift from its source. A row
 with no doc is a real gap rather than a rendering artifact.
 
-## ⌨️ Commands
+## Commands
 
 Root commands run against affected projects only. The per-project rows below them are the
 ones the root doesn't expose — `lint`, `typecheck`, `test` and `build` exist on every project
-and are documented once in the [root README](../README.md#-getting-started).
+and are documented once in the [root README](../README.md#getting-started).
 
 | Capability | Declared in | Explained in |
 | --- | --- | --- |
@@ -33,42 +33,47 @@ and are documented once in the [root README](../README.md#-getting-started).
 | `pnpm docs:drift` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm docs:map` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm invariants:check` | [`package.json`](../package.json) | [`README.md`](../README.md) |
+| `pnpm unused:check` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm usage:flush` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm env:sync` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm workflow:setup` | [`package.json`](../package.json) | [`docs/workflows/README.md`](../docs/workflows/README.md) |
 | `pnpm workflow:sync` | [`package.json`](../package.json) | [`README.md`](../README.md) |
-| `pnpm workflow:next` | [`package.json`](../package.json) | [`README.md`](../README.md) |
-| `pnpm workflow:file` | [`package.json`](../package.json) | [`README.md`](../README.md) |
+| `pnpm workflow:next` | [`package.json`](../package.json) | [`docs/workflows/README.md`](../docs/workflows/README.md) |
+| `pnpm workflow:file` | [`package.json`](../package.json) | [`docs/workflows/README.md`](../docs/workflows/README.md) |
 | `pnpm workflow:drop` | [`package.json`](../package.json) | [`docs/workflows/README.md`](../docs/workflows/README.md) |
 | `pnpm brand:extract` | [`package.json`](../package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
 | `pnpm brand:contrast` | [`package.json`](../package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
 | `pnpm release` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm release:dry` | [`package.json`](../package.json) | [`README.md`](../README.md) |
-| `pnpm exec nx nuxt-prepare @monorepo/developer-portal` | [`apps/developer-portal/package.json`](../apps/developer-portal/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
-| `pnpm exec nx collect @monorepo/developer-portal` | [`apps/developer-portal/package.json`](../apps/developer-portal/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
-| `pnpm exec nx build:storybook @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
-| `pnpm exec nx storybook @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
-| `pnpm exec nx dev:api @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
-| `pnpm exec nx cache:clear @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
-| `pnpm exec nx preview @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
-| `pnpm exec nx nuxt-prepare @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
-| `pnpm exec nx test:e2e @monorepo/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
-| `pnpm exec nx preview @monorepo/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
-| `pnpm exec nx nuxt-prepare @monorepo/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
-| `pnpm exec nx test:e2e @monorepo/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
-| `pnpm exec nx dev:api @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
-| `pnpm exec nx mocks:reset @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
-| `pnpm exec nx nuxt-prepare @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
-| `pnpm exec nx editor @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
-| `pnpm exec nx editor:dev @monorepo/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
-| `pnpm exec nx coverage @monorepo/scripts` | [`infrastructure/scripts/package.json`](../infrastructure/scripts/package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
-| `pnpm exec nx cli @monorepo/scripts` | [`infrastructure/scripts/package.json`](../infrastructure/scripts/package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
-| `pnpm exec nx serve @monorepo/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
-| `pnpm exec nx docker:up @monorepo/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
-| `pnpm exec nx docker:down @monorepo/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
-| `pnpm exec nx docker:logs @monorepo/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
+| `pnpm exec nx test:e2e @joinery/configs` | [`packages/configs/package.json`](../packages/configs/package.json) | [`packages/configs/README.md`](../packages/configs/README.md) |
+| `pnpm exec nx nuxt-prepare @joinery/developer-portal` | [`apps/developer-portal/package.json`](../apps/developer-portal/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
+| `pnpm exec nx test:e2e @joinery/developer-portal` | [`apps/developer-portal/package.json`](../apps/developer-portal/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
+| `pnpm exec nx collect @joinery/developer-portal` | [`apps/developer-portal/package.json`](../apps/developer-portal/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
+| `pnpm exec nx build:storybook @joinery/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
+| `pnpm exec nx storybook @joinery/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
+| `pnpm exec nx dev:api @joinery/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
+| `pnpm exec nx cache:clear @joinery/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
+| `pnpm exec nx preview @joinery/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
+| `pnpm exec nx nuxt-prepare @joinery/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
+| `pnpm exec nx test:e2e @joinery/huella-legal` | [`apps/huella-legal/package.json`](../apps/huella-legal/package.json) | [`apps/huella-legal/README.md`](../apps/huella-legal/README.md) |
+| `pnpm exec nx preview @joinery/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
+| `pnpm exec nx nuxt-prepare @joinery/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
+| `pnpm exec nx test:e2e @joinery/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
+| `pnpm exec nx nuxt-prepare @joinery/portfolio` | [`apps/portfolio/package.json`](../apps/portfolio/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
+| `pnpm exec nx test:e2e @joinery/portfolio` | [`apps/portfolio/package.json`](../apps/portfolio/package.json) | [`apps/portfolio/README.md`](../apps/portfolio/README.md) |
+| `pnpm exec nx dev:api @joinery/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
+| `pnpm exec nx mocks:reset @joinery/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
+| `pnpm exec nx nuxt-prepare @joinery/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
+| `pnpm exec nx editor @joinery/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
+| `pnpm exec nx editor:dev @joinery/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
+| `pnpm exec nx coverage @joinery/scripts` | [`infrastructure/scripts/package.json`](../infrastructure/scripts/package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
+| `pnpm exec nx cli @joinery/scripts` | [`infrastructure/scripts/package.json`](../infrastructure/scripts/package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
+| `pnpm exec nx serve @joinery/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
+| `pnpm exec nx docker:up @joinery/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
+| `pnpm exec nx docker:down @joinery/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
+| `pnpm exec nx docker:logs @joinery/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
 
-## 🪝 Git hooks
+## Git hooks
 
 These run themselves, but only after `pnpm quick-start` — a fresh clone has no hooks at all until
 that per-clone setup runs.
@@ -81,22 +86,24 @@ that per-clone setup runs.
 | `pre-commit` | [`.husky/pre-commit`](../.husky/pre-commit) | [`README.md`](../README.md) |
 | `pre-push` | [`.husky/pre-push`](../.husky/pre-push) | [`README.md`](../README.md) |
 
-## ⚙️ Workflows
+## Workflows
 
 GitHub Actions, named as the Actions tab shows them rather than by filename.
 
 | Capability | Declared in | Explained in |
 | --- | --- | --- |
 | `CI` | [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) | [`README.md`](../README.md) |
-| `Developer Portal deploy` | [`.github/workflows/developer-portal-deploy.yml`](../.github/workflows/developer-portal-deploy.yml) | [`README.md`](../README.md) |
-| `Focused documentation review` | [`.github/workflows/docs-review.yml`](../.github/workflows/docs-review.yml) | [`README.md`](../README.md) |
-| `Netlify deployment` | [`.github/workflows/netlify-deployment.yml`](../.github/workflows/netlify-deployment.yml) | [`README.md`](../README.md) |
-| `PR labeler` | [`.github/workflows/pr-labeler.yml`](../.github/workflows/pr-labeler.yml) | [`README.md`](../README.md) |
-| `PR metadata` | [`.github/workflows/pr-metadata.yml`](../.github/workflows/pr-metadata.yml) | [`README.md`](../README.md) |
+| `Deploy / Developer portal` | [`.github/workflows/deploy-developer-portal.yml`](../.github/workflows/deploy-developer-portal.yml) | [`README.md`](../README.md) |
+| `Deploy / Huella Legal` | [`.github/workflows/deploy-huella-legal.yml`](../.github/workflows/deploy-huella-legal.yml) | [`README.md`](../README.md) |
+| `Deploy / Portfolio` | [`.github/workflows/deploy-portfolio.yml`](../.github/workflows/deploy-portfolio.yml) | [`apps/portfolio/README.md`](../apps/portfolio/README.md) |
+| `PR / Cache cleanup` | [`.github/workflows/pr-cache-cleanup.yml`](../.github/workflows/pr-cache-cleanup.yml) | [`README.md`](../README.md) |
+| `PR / Docs review` | [`.github/workflows/pr-docs-review.yml`](../.github/workflows/pr-docs-review.yml) | [`README.md`](../README.md) |
+| `PR / Labeler` | [`.github/workflows/pr-labeler.yml`](../.github/workflows/pr-labeler.yml) | [`README.md`](../README.md) |
+| `PR / Metadata` | [`.github/workflows/pr-metadata.yml`](../.github/workflows/pr-metadata.yml) | [`README.md`](../README.md) |
 | `Release` | [`.github/workflows/release.yml`](../.github/workflows/release.yml) | [`README.md`](../README.md) |
 | `Security` | [`.github/workflows/security.yml`](../.github/workflows/security.yml) | — |
 
-## 🛠 Agent skills
+## Agent skills
 
 Instructions an agent loads for one kind of task. Worth reading as a human too: a skill is the
 shortest statement of how a task is meant to go here.
@@ -104,6 +111,7 @@ shortest statement of how a task is meant to go here.
 | Capability | Declared in | Explained in |
 | --- | --- | --- |
 | `/audit-report` | [`.claude/skills/audit-report/SKILL.md`](../.claude/skills/audit-report/SKILL.md) | [`CLAUDE.md`](../CLAUDE.md) |
+| `/benchmark` | [`.claude/skills/benchmark/SKILL.md`](../.claude/skills/benchmark/SKILL.md) | [`CLAUDE.md`](../CLAUDE.md) |
 | `/comment-cleanup` | [`.claude/skills/comment-cleanup/SKILL.md`](../.claude/skills/comment-cleanup/SKILL.md) | [`CLAUDE.md`](../CLAUDE.md) |
 | `/configs-new-rule` | [`.claude/skills/configs-new-rule/SKILL.md`](../.claude/skills/configs-new-rule/SKILL.md) | [`CLAUDE.md`](../CLAUDE.md) |
 | `/content-new-vendor` | [`.claude/skills/content-new-vendor/SKILL.md`](../.claude/skills/content-new-vendor/SKILL.md) | [`CLAUDE.md`](../CLAUDE.md) |

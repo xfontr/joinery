@@ -8,10 +8,7 @@ import {
 } from "#layers/workflows/shared/workflows.ts";
 
 /** Paths a capability's `reuse.from` points at that don't exist, relative to the workspace root. */
-export const missingReusePaths = (
-    templates: Template[],
-    workspaceRoot: string,
-): WorkflowProblem[] =>
+const missingReusePaths = (templates: Template[], workspaceRoot: string): WorkflowProblem[] =>
     templates.flatMap((template) =>
         [...template.capabilities, ...template.types].flatMap((capability) => {
             const from = capability.reuse?.from;
@@ -27,7 +24,17 @@ export const missingReusePaths = (
         }),
     );
 
-/** Every rule `docs/workflows/README.md` states, plus the one only a filesystem can check. */
+/** Every project file with no `<id>.diary.md` beside it. */
+export const missingDiaries = (projectFiles: string[], dir: string): WorkflowProblem[] =>
+    projectFiles
+        .map((file) => file.replace(/\.yaml$/, ""))
+        .filter((id) => !existsSync(resolve(dir, "projects", `${id}.diary.md`)))
+        .map((id) => ({
+            file: `projects/${id}.yaml`,
+            message: `${id} has no \`${id}.diary.md\` beside it`,
+        }));
+
+/** Every rule `docs/workflows/README.md` states, plus the ones only a filesystem can check. */
 export const workflowProblems = async (
     dir: string,
     workspaceRoot: string,
@@ -39,5 +46,12 @@ export const workflowProblems = async (
         files.snapshots,
     );
 
-    return [...problems, ...missingReusePaths(templates, workspaceRoot)];
+    return [
+        ...problems,
+        ...missingReusePaths(templates, workspaceRoot),
+        ...missingDiaries(
+            files.projects.map(({ file }) => file),
+            dir,
+        ),
+    ];
 };

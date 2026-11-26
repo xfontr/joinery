@@ -82,29 +82,27 @@ const summaryFromCoverage = (raw: RawCoverage): RawSummary | null => {
     };
 };
 
-/** Reads one project's summary, or derives one from its final coverage map. */
-export const readSummary: SummaryReader = async (root) => {
+const readJson = async <T>(path: string): Promise<T | null> => {
     try {
-        const path = resolve(WORKSPACE_ROOT, root, "coverage/coverage-summary.json");
-
-        return JSON.parse(await readFile(path, "utf8")) as RawSummary;
-    } catch {
-        try {
-            const path = resolve(WORKSPACE_ROOT, root, "coverage/coverage-final.json");
-
-            return summaryFromCoverage(JSON.parse(await readFile(path, "utf8")) as RawCoverage);
-        } catch {
-            return null;
-        }
+        return JSON.parse(await readFile(path, "utf8")) as T;
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+        throw error;
     }
 };
 
-/**
- * Copies in the report `pnpm test:coverage` already merges rather than re-rendering the numbers or
- * iframing seven per-project reports. Istanbul's output is the best per-line coverage view there is,
- * and a table of percentages cannot tell you *which* branch went uncovered — so the app embeds the
- * real thing and only summarises on top of it.
- */
+/** Reads one project's summary, or derives one from its final coverage map. */
+export const readSummary: SummaryReader = async (root) => {
+    const coverage = resolve(WORKSPACE_ROOT, root, "coverage");
+    const summary = await readJson<RawSummary>(resolve(coverage, "coverage-summary.json"));
+    if (summary) return summary;
+
+    const final = await readJson<RawCoverage>(resolve(coverage, "coverage-final.json"));
+
+    return final ? summaryFromCoverage(final) : null;
+};
+
+/** Copies in the report `pnpm test:coverage` already merges, which the app embeds as-is. */
 const copyMergedReport = async (): Promise<boolean> => {
     try {
         await access(resolve(MERGED_COVERAGE_DIR, "index.html"));
@@ -112,8 +110,6 @@ const copyMergedReport = async (): Promise<boolean> => {
         return false;
     }
 
-    // Replaced wholesale: a stale file from a run when a project had more sources would otherwise
-    // linger in the served report and look current.
     await rm(COVERAGE_DIR, { recursive: true, force: true });
     await mkdir(COVERAGE_DIR, { recursive: true });
     await cp(MERGED_COVERAGE_DIR, COVERAGE_DIR, { recursive: true });
@@ -139,8 +135,6 @@ export const collectCoverage = async (
         projects.map(async (project): Promise<ProjectCoverage> => {
             const summary = await read(project.root);
 
-            // Absent is its own state. Reporting it as 0% would drag the workspace number down for
-            // a package that simply has no test target; reporting 100% would be a lie.
             if (!summary)
                 return { name: project.name, root: project.root, collected: false, files: 0 };
 

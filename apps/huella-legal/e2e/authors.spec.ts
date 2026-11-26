@@ -1,9 +1,8 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@monorepo/configs/playwright/test";
+import { axeViolations } from "@joinery/configs/playwright/utils/a11y";
+import { expect, test } from "@joinery/configs/playwright/utils/test";
+import { t } from "./copy.ts";
 import type { Page } from "@playwright/test";
 import { AUTHOR, POSTS } from "./fakes.ts";
-
-const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 
 const postsBy = (id: string) =>
     POSTS.filter(({ authors }) => authors.some((author) => author.id === id));
@@ -22,10 +21,8 @@ const directory = (page: Page) => page.getByRole("region", { name: "Colaboradore
 
 const cards = (page: Page) => directory(page).getByRole("heading", { level: 3 });
 
-const field = (page: Page) => directory(page).getByRole("searchbox", { name: "Buscar por nombre" });
-
-const scan = async (page: Page) =>
-    (await new AxeBuilder({ page }).withTags(WCAG_AA).analyze()).violations;
+const field = (page: Page) =>
+    directory(page).getByRole("searchbox", { name: t("directoryListing.filter.label") });
 
 // The runner can type or click before hydration, when nothing is listening yet, so it retries
 const untilHydrated = (act: () => Promise<void>, settled: () => Promise<void>) =>
@@ -46,7 +43,7 @@ test("the page opens on the journal's about, then its principles", async ({ page
     );
     await expect(page.getByRole("main")).toContainText(`Hoy reúne a ${AUTHOR_COUNT} colaboradores`);
     await expect(
-        page.getByRole("region", { name: "Principios editoriales" }).getByRole("heading"),
+        page.getByRole("region", { name: t("directoryPrinciples.label") }).getByRole("heading"),
     ).toHaveText(["Rigor", "Accesibilidad", "Acceso libre"]);
 });
 
@@ -68,7 +65,7 @@ test("the directory shows the twelve most published first and reveals the rest o
         () => expect(cards(page)).toHaveCount(AUTHOR_COUNT, { timeout: 500 }),
     );
     await expect(directory(page).getByRole("link", { name: RANKED[12]!.name })).toBeFocused();
-    expect(await scan(page)).toEqual([]);
+    expect(await axeViolations(page)).toEqual([]);
 });
 
 test("the filter narrows the directory by name, accents and case aside", async ({ page }) => {
@@ -90,13 +87,15 @@ test("a name nobody has shows the no-match state, and its reset brings everyone 
             }),
     );
     await expect(cards(page)).toHaveCount(0);
-    expect(await scan(page)).toEqual([]);
+    expect(await axeViolations(page)).toEqual([]);
     await testInfo.attach(`colaboradores-sin-resultados-${testInfo.project.name}`, {
         body: await page.screenshot({ fullPage: true }),
         contentType: "image/png",
     });
 
-    await directory(page).getByRole("button", { name: "Ver todos" }).click();
+    await directory(page)
+        .getByRole("button", { name: t("directoryListing.noMatch.reset") })
+        .click();
 
     await expect(cards(page)).toHaveCount(12);
     await expect(field(page)).toBeFocused();
@@ -113,11 +112,9 @@ test("an article's author card counts that author's publications", async ({ page
 });
 
 test("the authors page has no WCAG AA violations", async ({ page }, testInfo) => {
-    const violations = await scan(page);
-
     await testInfo.attach(`colaboradores-${testInfo.project.name}`, {
         body: await page.screenshot({ fullPage: true }),
         contentType: "image/png",
     });
-    expect(violations).toEqual([]);
+    expect(await axeViolations(page)).toEqual([]);
 });

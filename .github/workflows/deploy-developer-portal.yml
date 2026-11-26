@@ -1,0 +1,80 @@
+name: Deploy / Developer portal
+
+on:
+    push:
+        branches: [master]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+# Queued rather than cancelled, so a run that is already publishing is allowed to finish.
+concurrency:
+    group: deploy-developer-portal
+    cancel-in-progress: false
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        environment:
+            name: developer-portal
+            url: https://xifre.dev/portal/
+        steps:
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+                  # The collector dates every doc from `git log` and counts unreleased commits since
+                  # the last tag; a shallow clone carries neither.
+                  fetch-depth: 0
+
+            - uses: ./.github/actions/install
+
+            # The collector reads coverage that only a whole-workspace run writes. Thresholds gate PRs,
+            # so one project's dip never stops the portal from deploying.
+            # Restore only: CI saves master's cache for the same commit
+            - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+              with:
+                  path: .nx/cache
+                  key: nx-${{ github.sha }}
+                  restore-keys: nx-
+
+            - run: pnpm test:coverage
+              env:
+                  COVERAGE_THRESHOLDS: "off"
+
+            - run: pnpm exec nx collect @joinery/developer-portal
+
+            # Built beneath developer-portal so one deploy carries both. The script, not a bare
+            # `storybook build`, because it runs `nuxi prepare` first.
+            - name: Build Huella Legal Storybook
+              run: pnpm --filter @joinery/huella-legal run build:storybook --output-dir ../developer-portal/public/huella-legal-storybook
+              env:
+                  STORYBOOK_BASE_URL: /huella-legal-storybook/
+
+            # An Nx cache restore would never hit: the step above re-stamps the snapshot, which this
+            # project's `production` input hashes, so every run is a new task hash by construction.
+            - name: Prerender the site
+              run: pnpm exec nx build-static @joinery/developer-portal
+              env:
+                  NUXT_PUBLIC_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+
+            # Published by the portfolio's deploy beneath `/portal/`, since the view switch's
+            # transition only runs within one origin.
+            - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+              with:
+                  name: developer-portal-site
+                  path: apps/developer-portal/.output/public
+                  retention-days: 30
+
+            - name: Point the old address at the new one
+              run: |
+                  mkdir -p "$RUNNER_TEMP/redirect"
+                  echo '/* https://xifre.dev/portal/:splat 301' > "$RUNNER_TEMP/redirect/_redirects"
+
+            - uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3
+              with:
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: fb3cf13b48ae51ed991e8f95c68d173b
+                  # The action `pnpm add`s a missing wrangler at the workspace root, which pnpm refuses.
+                  workingDirectory: apps/developer-portal
+                  command: pages deploy ${{ runner.temp }}/redirect --project-name=xfontr-monorepo --branch=master

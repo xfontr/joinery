@@ -2,9 +2,10 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { parse } from "yaml";
 import { at } from "../../shared/adapters/git.ts";
 import { ExpectedError } from "../../shared/errors.ts";
+import { readMap, type WorkflowMap } from "../domain/filing.ts";
 import type { Snapshot } from "../domain/snapshot.ts";
 
-export const PROJECTS_DIR = "data/workflows/projects";
+const PROJECTS_DIR = "data/workflows/projects";
 
 export const projectIds = (): string[] =>
     existsSync(at(PROJECTS_DIR))
@@ -33,12 +34,23 @@ export const readSnapshot = (id: string): Snapshot | null => {
 export const writeSnapshot = (id: string, snapshot: Snapshot): void =>
     writeFileSync(at(snapshotPath(id)), `${JSON.stringify(snapshot, null, 4)}\n`, "utf8");
 
-export const TEMPLATES_DIR = "data/workflows/templates";
+const TEMPLATES_DIR = "data/workflows/templates";
 
 /** The parsed template file, null when it doesn't exist. */
 export const readTemplate = (id: string): unknown => {
     const path = at(TEMPLATES_DIR, `${id}.yaml`);
     return existsSync(path) ? (parse(readFileSync(path, "utf8")) as unknown) : null;
+};
+
+/** The project's map, from its file and the template it names. */
+export const projectMap = (id: string): WorkflowMap => {
+    const project = readProject(id);
+    const templateId = (project as { template?: unknown } | null)?.template;
+    const template = typeof templateId === "string" ? readTemplate(templateId) : null;
+
+    if (!template) throw new ExpectedError(`${id}.yaml names no template that exists.`);
+
+    return readMap(template, project);
 };
 
 /** The one project id a command was given, checked against the project files. */

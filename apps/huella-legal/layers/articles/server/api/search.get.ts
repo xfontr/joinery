@@ -1,4 +1,4 @@
-import { MAX_SEARCH_LENGTH } from "@monorepo/content";
+import { MAX_SEARCH_LENGTH } from "@joinery/content";
 import type { H3Event } from "h3";
 import * as v from "valibot";
 import type { ArticleSearch } from "../../shared/types/ArticleSearch";
@@ -60,7 +60,7 @@ defineRouteMeta({
                 name: "query",
                 in: "query",
                 required: true,
-                // `MAX_SEARCH_LENGTH` from `@monorepo/content`, since route meta only takes literals
+                // `MAX_SEARCH_LENGTH` from `@joinery/content`, since route meta only takes literals
                 description: "1 to 100 characters, trimmed",
                 schema: { type: "string" },
             },

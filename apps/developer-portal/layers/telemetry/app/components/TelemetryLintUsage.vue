@@ -1,94 +1,81 @@
 <template>
-    <div class="flex flex-col gap-4">
-        <UAlert
-            color="neutral"
-            variant="subtle"
-            icon="i-lucide-bot"
-            title="Lint rules: agent edits only"
-            description="These counts come from the hook that lints every file an agent edits. Your own edits are fixed by the editor on save and never counted, so a rule that only catches people reads as quiet here."
-        />
+    <WidgetPanel :title="$t('telemetryLintUsage.title')" :meta="$t('telemetryLintUsage.meta')">
+        <p class="border-b border-default px-4 py-2 text-xs text-muted">
+            {{ $t("telemetryLintUsage.scope") }}
+        </p>
 
-        <UCard variant="flush">
-            <template #header>
-                <div>
-                    <h2 class="font-semibold">Lint rules × projects</h2>
-                    <p class="text-xs text-muted">
-                        Hits per project in the last 90 days, darker for more; the last two columns
-                        say whether the rule costs anything.
-                    </p>
-                </div>
-            </template>
+        <div data-scroll-x class="overflow-x-auto">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>{{ $t("telemetryLintUsage.columns.rule") }}</th>
+                        <th
+                            v-for="project in table.projects"
+                            :key="project"
+                            class="hidden w-32 min-w-32 text-center whitespace-nowrap md:table-cell"
+                        >
+                            {{ project }}
+                        </th>
+                        <th class="numeric">{{ $t("telemetryLintUsage.columns.total") }}</th>
+                        <th class="numeric whitespace-nowrap">
+                            {{ $t("telemetryLintUsage.columns.fixed") }}
+                        </th>
+                        <th class="numeric whitespace-nowrap">
+                            {{ $t("telemetryLintUsage.columns.disabled") }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="row in rows" :key="row.rule">
+                        <td class="font-mono text-xs whitespace-nowrap">{{ row.rule }}</td>
+                        <td
+                            v-for="cell in row.cells"
+                            :key="cell.project"
+                            class="hidden w-32 min-w-32 p-0.5 md:table-cell"
+                        >
+                            <div
+                                class="flex h-8 items-center justify-center rounded-xs text-xs tabular-nums"
+                                :style="cell.style"
+                            >
+                                {{ cell.count }}
+                            </div>
+                        </td>
+                        <td class="numeric font-semibold">{{ row.hits }}</td>
+                        <td class="numeric text-xs text-muted">{{ row.fixed }}</td>
+                        <td class="numeric text-xs" :class="row.fought && 'tone-bad font-semibold'">
+                            {{ row.disabled }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-            <div class="overflow-x-auto">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Rule</th>
-                            <th
-                                v-for="project in table.projects"
-                                :key="project"
-                                class="hidden w-32 min-w-32 text-center whitespace-nowrap md:table-cell"
-                            >
-                                {{ project }}
-                            </th>
-                            <th class="numeric">Total</th>
-                            <th class="numeric whitespace-nowrap">Auto-fixed</th>
-                            <th class="numeric whitespace-nowrap">Disabled inline</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="row in rows" :key="row.rule">
-                            <td class="font-mono text-xs whitespace-nowrap">{{ row.rule }}</td>
-                            <td
-                                v-for="cell in row.cells"
-                                :key="cell.project"
-                                class="hidden w-32 min-w-32 p-0.5 md:table-cell"
-                            >
-                                <div
-                                    class="flex h-8 items-center justify-center rounded-xs text-xs tabular-nums"
-                                    :style="cell.style"
-                                >
-                                    {{ cell.count }}
-                                </div>
-                            </td>
-                            <td class="numeric font-semibold">{{ row.hits }}</td>
-                            <td class="numeric text-xs text-muted">{{ row.fixed }}</td>
-                            <td
-                                class="numeric text-xs"
-                                :class="row.fought && 'tone-bad font-semibold'"
-                            >
-                                {{ row.disabled }}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+        <div class="flex flex-col gap-2 border-t border-default px-4 py-3">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h2 class="text-sm font-semibold">
+                    {{
+                        $t("telemetryLintUsage.neverFired", {
+                            quiet: quiet.length,
+                            enabled: enabledCount,
+                        })
+                    }}
+                </h2>
+                <UButton
+                    v-if="quiet.length > 0"
+                    variant="link"
+                    size="xs"
+                    :label="
+                        showQuiet ? $t('telemetryLintUsage.hide') : $t('telemetryLintUsage.show')
+                    "
+                    @click="showQuiet = !showQuiet"
+                />
             </div>
-
-            <template #footer>
-                <div class="flex flex-col gap-2">
-                    <div class="flex flex-wrap items-baseline justify-between gap-2">
-                        <h2 class="text-sm font-semibold">
-                            Never fired: {{ quiet.length }} of {{ enabledCount }} enabled rules
-                        </h2>
-                        <UButton
-                            v-if="quiet.length > 0"
-                            variant="link"
-                            size="xs"
-                            :label="showQuiet ? 'Hide the list' : 'Show the list'"
-                            @click="showQuiet = !showQuiet"
-                        />
-                    </div>
-                    <p class="text-xs text-muted">
-                        {{ watching }} Quiet can also mean the rule works: agents follow what the
-                        docs say, or it guards something rare.
-                    </p>
-                    <p v-if="showQuiet" class="font-mono text-xs/relaxed text-muted">
-                        {{ quietList }}
-                    </p>
-                </div>
-            </template>
-        </UCard>
-    </div>
+            <p class="text-xs text-muted">{{ $t("telemetryLintUsage.quiet", { watching }) }}</p>
+            <p v-if="showQuiet" class="font-mono text-xs/relaxed text-muted">
+                {{ quietList }}
+            </p>
+        </div>
+    </WidgetPanel>
 </template>
 
 <script setup lang="ts">
@@ -101,6 +88,8 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const { t } = useI18n();
 
 const showQuiet = ref(false);
 
@@ -134,7 +123,7 @@ const rows = computed(() => {
 
 const watching = computed(() =>
     props.lint.since
-        ? `Watching since ${props.lint.since}: nothing here means much until that's weeks ago.`
-        : "Nothing recorded yet, so every rule is listed.",
+        ? t("telemetryLintUsage.since", { since: props.lint.since })
+        : t("telemetryLintUsage.nothingYet"),
 );
 </script>

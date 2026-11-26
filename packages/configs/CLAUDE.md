@@ -1,4 +1,4 @@
-# 🤖 @monorepo/configs
+# 🤖 @joinery/configs
 
 See [README.md](./README.md) for what the factories bundle.
 
@@ -11,23 +11,24 @@ affected set that `pnpm lint` and CI run is already the whole workspace. Don't r
 - A rule for everyone goes in [`src/eslint/lib`](./src/eslint/lib). A rule for one flavour goes in
   the factory that composes it (`node.ts`, `vue.ts`, or the nuxt config). Putting a flavour rule in
   `lib` is the mistake that's hard to undo later.
-- **One `monorepo` plugin object, ever.** A `lib` file switches on an in-house rule with
-  `plugins: { monorepo }` imported from [`rules/index.ts`](./src/eslint/rules/index.ts); an inline
+- **One `joinery` plugin object, ever.** A `lib` file switches on an in-house rule with
+  `plugins: { joinery }` imported from [`rules/index.ts`](./src/eslint/rules/index.ts); an inline
   plugin object under that name crashes ESLint on any file both reach.
 - This package's own `eslint.config.ts`, `vitest.config.ts` and `tsconfig.json` reference
-  `./src/...` **relatively**, not through `@monorepo/configs`. That is deliberate — a
+  `./src/...` **relatively**, not through `@joinery/configs`. That is deliberate — a
   self-reference would be a dependency cycle.
 - [`lib/boundaries.ts`](./src/eslint/lib/boundaries.ts) is the enforced copy of the Nx tag table. The
-  readable copy in the [root README](../../README.md#-architecture--boundaries) is rendered from
+  readable copy in the [root README](../../README.md#architecture--boundaries) is rendered from
   it, so run `pnpm docs:map` after changing it.
 - Shipped as raw TypeScript and tagged `type:config`, so it may depend on nothing in the workspace.
-  Nothing here may import another `@monorepo/*` package.
+  Nothing here may import another `@joinery/*` package.
 - The nuxt ESLint config is deliberately **not** type-checked — Nuxt's generated files make a
   type-aware pass more trouble than it's worth. Don't "fix" that by turning it on.
-- **`vitest/nuxt.ts` must never import `@nuxt/test-utils` at runtime from here.** It's resolved
-  from the app, so the app's own copy is the one that runs, which is why it's an optional peer.
-- **`@playwright/test` stays a `catalog:` entry everywhere.** `playwright/test.ts` imports it at
-  runtime, and a second resolved copy fails every spec with "Requiring @playwright/test second
+- **The `vitest/nuxt.ts` preset must never import `@nuxt/test-utils` at runtime from here.** It's
+  resolved from the app, so the app's own copy is the one that runs, which is why it's an optional
+  peer.
+- **`@playwright/test` stays a `catalog:` entry everywhere.** `playwright/utils/test.ts` imports it
+  at runtime, and a second resolved copy fails every spec with "Requiring @playwright/test second
   time". `createConfig` itself imports only the types.
 - Don't remove the `JITI_MODULE_CACHE=0` window in `vitest/nuxt.ts`: without it, one Nuxt app's
   config kills Nx's plugin worker and every `nx` command in the workspace with it.

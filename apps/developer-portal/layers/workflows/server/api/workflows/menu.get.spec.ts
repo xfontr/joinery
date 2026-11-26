@@ -14,7 +14,7 @@ const view = (id: string, percent: number, syncedAt: string | null) => ({
     syncedAt,
 });
 
-const NEW = { label: "New project", icon: "i-lucide-plus", to: "/workflows/new" };
+const NEW = { labelKey: "app.menu.newProject", icon: "i-lucide-plus", to: "/workflows/new" };
 
 beforeEach(() => {
     vi.clearAllMocks();

@@ -3,7 +3,7 @@
         :is="to ? NuxtLink : 'span'"
         :to
         :title="hint"
-        class="shrink-0 rounded-full border border-current px-1.5 py-0.5 text-xs font-medium"
+        class="shrink-0 rounded-sm border border-current px-1.5 py-0.5 text-xs font-medium"
         :class="colorClass"
     >
         {{ label }}
@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import { NuxtLink } from "#components";
-import type { Tone } from "../utils/format.ts";
+import type { Tone } from "../types/Tone.ts";
 
 interface Props {
     label: string;

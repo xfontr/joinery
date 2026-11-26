@@ -1,4 +1,4 @@
-import { MAX_PER_PAGE } from "@monorepo/content";
+import { MAX_PER_PAGE } from "@joinery/content";
 import type { H3Event } from "h3";
 import type { ArticleSummary } from "../../shared/types/ArticleSummary";
 import { readSaved, save } from "../adapters/netlify";
@@ -41,6 +41,5 @@ const readArticleIndex = defineCachedFunction(
     },
 );
 
-// Filtered after the cache, so a change to the hidden tags needs no cache bust
 export const getArticleIndex = async (event: H3Event): Promise<ArticleSummary[]> =>
     (await readArticleIndex(event)).filter(isListed);

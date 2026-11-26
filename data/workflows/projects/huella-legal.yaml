@@ -29,6 +29,12 @@ settled:
     status: done
     on: 2026-11-04
     note: Approved for the cutover on 2026-11-04.
+  lab-review:
+    status: skipped
+    note: Added to the template after the site went live.
+  ai-review:
+    status: skipped
+    note: Added to the template after the site went live.
   feature-inventory:
     status: skipped
     note: Never done; comments, the about page and the confirmation page were found
@@ -56,6 +62,10 @@ settled:
     on: 2026-11-04
     note: Axe runs in every e2e page spec; the fixes came through the component
       review.
+  error-pages:
+    status: done
+    on: 2026-08-06
+    note: "`app/error.vue` landed with the first translations, before the map existed."
   legacy-redirects:
     status: done
     on: 2026-11-04

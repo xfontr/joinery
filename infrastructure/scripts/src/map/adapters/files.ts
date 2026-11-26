@@ -7,7 +7,6 @@ import { BOUNDARIES_PATH, README_PATH, type ProjectManifest } from "../domain/re
 
 const read = (path: string): string => readFileSync(path, "utf8");
 
-// Assert the parsed package shape once because `JSON.parse` returns `any`.
 const readJson = (path: string): Record<string, unknown> =>
     JSON.parse(read(path)) as Record<string, unknown>;
 
@@ -64,7 +63,6 @@ export const workflowFiles = (): { file: string; name: string }[] =>
         .filter((file) => file.endsWith(".yml") || file.endsWith(".yaml"))
         .map((file) => ({
             file,
-            // Use the workflow's displayed name rather than its filename.
             name: nameField(read(at(".github", "workflows", file))) ?? file,
         }));
 
@@ -112,7 +110,7 @@ const walkMarkdown = (dir: string, found: string[] = []): string[] => {
 
 export const MAP_PATH = "docs/FEATURES.md";
 
-/** Two deliberate exclusions from the markdown scan — see ./README.md#-picking-the-doc. */
+/** Two deliberate exclusions from the markdown scan — see ./README.md#picking-the-doc. */
 export const docs = (): Doc[] =>
     walkMarkdown(repoRoot())
         .filter((path) => !path.endsWith("CHANGELOG.md") && path !== MAP_PATH)
@@ -122,7 +120,7 @@ export const readMap = (): string => {
     try {
         return read(at(MAP_PATH));
     } catch {
-        return ""; // never rendered before; the diff against "" is the whole file
+        return "";
     }
 };
 

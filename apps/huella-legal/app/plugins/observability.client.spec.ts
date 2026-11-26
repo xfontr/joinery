@@ -8,11 +8,11 @@ const telemetry = vi.hoisted(() => ({
     ready: undefined as (() => void) | undefined,
     config: {
         url: "",
-        app: { name: "@monorepo/huella-legal", version: "1.4.0", environment: "production" },
+        app: { name: "@joinery/huella-legal", version: "1.4.0", environment: "production" },
     },
 }));
 
-vi.mock("@monorepo/observability", () => ({ startWebTelemetry: telemetry.startWebTelemetry }));
+vi.mock("@joinery/observability", () => ({ startWebTelemetry: telemetry.startWebTelemetry }));
 
 // Wraps the real config rather than replacing it, because Nuxt's own plugins read it while booting
 mockNuxtImport("useRuntimeConfig", (original) => () => {
@@ -54,7 +54,11 @@ beforeEach(() => {
     telemetry.startWebTelemetry.mockReturnValue(telemetry.faro);
 });
 
-afterEach(() => {
+// A plugin left listening starts beside the next test's, and two concurrent imports of the mocked
+// module can hand one of them the real Faro
+afterEach(async () => {
+    window.dispatchEvent(new PointerEvent("pointerdown"));
+    await vi.dynamicImportSettled();
     vi.useRealTimers();
 });
 

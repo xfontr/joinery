@@ -1,4 +1,4 @@
-import { faker, fakeAsset, fakeAuthor } from "@monorepo/content/testing";
+import { faker, fakeAsset, fakeAuthor } from "@joinery/content/testing";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
 import HomeFeatured from "./Featured.vue";
@@ -44,7 +44,6 @@ describe("home featured", () => {
         expect(title.attributes("href")).toBe("/la-teoria-juridica-del-delito/");
     });
 
-    // The lead image is the page's largest paint, so it must not wait for the lazy loader
     it("asks for the lead image first", async () => {
         const wrapper = await mount({ lead: LEAD, latest: LATEST });
 

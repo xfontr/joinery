@@ -7,7 +7,7 @@ export interface ProjectTarget {
     outputs: string[];
 }
 
-export interface ProjectReport {
+interface ProjectReport {
     name: string;
     coverageFinal: string;
 }

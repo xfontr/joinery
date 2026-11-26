@@ -1,5 +1,5 @@
 import type { VueWrapper } from "@vue/test-utils";
-import { fakeAuthor } from "@monorepo/content/testing";
+import { fakeAuthor } from "@joinery/content/testing";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
 import ArchiveAuthor from "./Author.vue";

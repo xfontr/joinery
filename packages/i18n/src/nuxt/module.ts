@@ -21,7 +21,7 @@ const getLocaleCodes = ({ options }: Nuxt): string[] => {
     ];
 };
 
-const logger = useLogger("@monorepo/i18n");
+const logger = useLogger("@joinery/i18n");
 
 const warnAboutLocales = (locales: string[], { options }: Nuxt): void => {
     if (!locales.length) {
@@ -42,13 +42,12 @@ const warnAboutLocales = (locales: string[], { options }: Nuxt): void => {
 };
 
 export default defineNuxtModule<TranslationsConfig>({
-    meta: { name: "@monorepo/i18n/nuxt", configKey: "translations" },
+    meta: { name: "@joinery/i18n/nuxt", configKey: "translations" },
 
     setup: async (resolvedOptions, nuxt) => {
         const resolver = createResolver(import.meta.url);
         const name = resolvedOptions.vendor?.name;
 
-        // Fails at build time rather than deferring to the first translation request
         if (!isVendorName(name)) throw new UndefinedVendorError(name, VENDOR_NAMES);
 
         const locales = getLocaleCodes(nuxt);

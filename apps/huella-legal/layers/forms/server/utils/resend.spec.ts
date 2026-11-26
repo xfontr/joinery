@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { stubNitro } from "@joinery/configs/vitest/utils/nitro";
 
 const nitro = vi.hoisted(() => ({
     fetch: vi.fn(),
@@ -11,9 +12,7 @@ const nitro = vi.hoisted(() => ({
 
 vi.stubGlobal("useRuntimeConfig", () => ({ mail: nitro.mail }));
 vi.stubGlobal("$fetch", nitro.fetch);
-vi.stubGlobal("createError", (input: Record<string, unknown>) =>
-    Object.assign(new Error("http"), input),
-);
+stubNitro();
 
 const { sendMail } = await import("./resend");
 

@@ -1,6 +1,5 @@
-import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
 import { describe, expect, it, vi } from "vitest";
-import { defineComponent } from "vue";
 import type { AnalyticsEvent } from "~/types/AnalyticsEvent";
 
 describe("useTrack", () => {
@@ -8,15 +7,7 @@ describe("useTrack", () => {
         const heard = vi.fn<(event: AnalyticsEvent) => void>();
         const unhook = useNuxtApp().hook("analytics:event", heard);
 
-        await mountSuspended(
-            defineComponent({
-                setup: () => {
-                    useTrack()("share", { method: "print" });
-
-                    return () => null;
-                },
-            }),
-        );
+        await withSetup(() => useTrack()("share", { method: "print" }));
         unhook();
 
         expect(heard).toHaveBeenCalledWith({

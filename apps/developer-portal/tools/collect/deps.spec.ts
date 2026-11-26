@@ -47,7 +47,7 @@ const outdated = {
         latest: "2.0.0",
         isDeprecated: false,
         dependentPackages: [
-            { name: "@monorepo/ui", location: resolve(WORKSPACE_ROOT, "packages/ui") },
+            { name: "@joinery/ui", location: resolve(WORKSPACE_ROOT, "packages/ui") },
         ],
     },
 };

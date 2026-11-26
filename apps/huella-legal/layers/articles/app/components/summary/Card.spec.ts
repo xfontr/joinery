@@ -1,4 +1,4 @@
-import { faker, fakeAsset, fakeAuthor } from "@monorepo/content/testing";
+import { faker, fakeAsset, fakeAuthor } from "@joinery/content/testing";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
 import type { ArticleSummary } from "../../../shared/types/ArticleSummary";

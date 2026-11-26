@@ -21,7 +21,7 @@ describe("pathRelation", () => {
         expect(pathRelation(capabilities, "page")).toEqual({
             kit: "needed",
             page: "",
-            share: "waits on it",
+            share: "waits",
         });
     });
 });

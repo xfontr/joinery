@@ -1,4 +1,4 @@
-import { fakeAuthor } from "@monorepo/content/testing";
+import { fakeAuthor } from "@joinery/content/testing";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
 import DirectoryListing from "./Listing.vue";
@@ -8,7 +8,6 @@ const global = { mocks: { $t: (key: string) => `t(${key})` } };
 const ALVARO = { value: fakeAuthor({ name: "Álvaro Núñez" }), count: 9 };
 const MARTA = { value: fakeAuthor({ name: "Marta Gil" }), count: 4 };
 
-// Past the first twelve, so the rest wait behind the button
 const OTHERS = Array.from({ length: 12 }, (_, index) => ({
     value: fakeAuthor({ name: `Autora ${index}` }),
     count: 1,

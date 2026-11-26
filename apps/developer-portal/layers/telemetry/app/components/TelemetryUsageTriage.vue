@@ -1,47 +1,54 @@
 <template>
     <div class="grid gap-4 lg:grid-cols-2">
-        <UCard>
-            <template #header>
-                <h2 class="font-semibold">Scripts: how often vs how often it fails</h2>
-                <p class="text-xs text-muted">
-                    One dot per script run in the window. Dashed lines are the alert thresholds:
-                    {{ MIN_RUNS }} runs, {{ failingPercent }}% failing.
-                </p>
-            </template>
+        <WidgetPanel
+            :title="$t('telemetryUsageTriage.scripts.title')"
+            :meta="
+                $t('telemetryUsageTriage.scripts.meta', { runs: MIN_RUNS, percent: failingPercent })
+            "
+        >
+            <div class="p-4">
+                <TelemetryQuadrantChart
+                    :chart="scripts"
+                    :kinds="callerKinds"
+                    :quadrants="scriptCorners"
+                    :x-label="$t('telemetryUsageTriage.scripts.x')"
+                    :y-label="$t('telemetryUsageTriage.scripts.y')"
+                    point-key="telemetryUsageTriage.scripts.point"
+                />
+                <I18nT
+                    v-if="idle.length > 0"
+                    keypath="telemetryUsageTriage.idle"
+                    tag="p"
+                    scope="global"
+                    class="mt-4 text-xs text-muted"
+                >
+                    <template #list>
+                        <span class="font-mono">{{ idleList }}</span>
+                    </template>
+                </I18nT>
+            </div>
+        </WidgetPanel>
 
-            <TelemetryQuadrantChart
-                :chart="scripts"
-                :kinds="CALLER_KINDS"
-                :quadrants="scriptCorners"
-                x-label="Runs in the window, log scale"
-                y-label="Runs that failed"
-            />
-
-            <p v-if="idle.length > 0" class="mt-4 text-xs text-muted">
-                Not plotted, no run in the window:
-                <span class="font-mono">{{ idleList }}</span>
-            </p>
-        </UCard>
-
-        <UCard>
-            <template #header>
-                <h2 class="font-semibold">
-                    Lint rules: how often it fires vs how often it's switched off
-                </h2>
-                <p class="text-xs text-muted">
-                    Hits on agent edits against <code>eslint-disable</code> comments. Dashed lines:
-                    {{ FOUGHT_DISABLES }} disables, {{ noisyPercent }}% of all hits.
-                </p>
-            </template>
-
-            <TelemetryQuadrantChart
-                :chart="rules"
-                :kinds="FIX_KINDS"
-                :quadrants="ruleCorners"
-                x-label="Hits in the window, log scale"
-                y-label="Disabled inline"
-            />
-        </UCard>
+        <WidgetPanel
+            :title="$t('telemetryUsageTriage.rules.title')"
+            :meta="
+                $t('telemetryUsageTriage.rules.meta', {
+                    disables: FOUGHT_DISABLES,
+                    percent: noisyPercent,
+                })
+            "
+        >
+            <div class="p-4">
+                <TelemetryQuadrantChart
+                    :chart="rules"
+                    :kinds="fixKinds"
+                    :quadrants="ruleCorners"
+                    :x-label="$t('telemetryUsageTriage.rules.x')"
+                    :y-label="$t('telemetryUsageTriage.rules.y')"
+                    point-key="telemetryUsageTriage.rules.point"
+                />
+            </div>
+        </WidgetPanel>
     </div>
 </template>
 
@@ -66,28 +73,42 @@ const { usage } = defineProps<Props>();
 const failingPercent = Math.round(FAILING_RATE * 100);
 const noisyPercent = Math.round(NOISY_SHARE * 100);
 
-const CALLER_KINDS = {
-    agents: { label: "Agents only", color: "var(--usage-agent)" },
-    both: { label: "Both", color: "var(--usage-both)" },
-    people: { label: "People only", color: "var(--usage-person)" },
-} as const satisfies Record<CallerMix, { label: string; color: string }>;
+const { t } = useI18n();
 
-const FIX_KINDS = {
-    manual: { label: "Needs a manual fix", color: "var(--usage-rule)" },
-    auto: { label: "Always auto-fixed", color: "var(--usage-rule)", hollow: true },
-} as const satisfies Record<FixKind, { label: string; color: string; hollow?: boolean }>;
+const CALLER_COLORS = {
+    agents: "var(--usage-agent)",
+    both: "var(--usage-both)",
+    people: "var(--usage-person)",
+} as const satisfies Record<CallerMix, string>;
+
+const callerKinds = computed((): Record<CallerMix, { label: string; color: string }> => ({
+    agents: { label: t("telemetryUsageTriage.callers.agents"), color: CALLER_COLORS.agents },
+    both: { label: t("telemetryUsageTriage.callers.both"), color: CALLER_COLORS.both },
+    people: { label: t("telemetryUsageTriage.callers.people"), color: CALLER_COLORS.people },
+}));
+
+const fixKinds = computed(
+    (): Record<FixKind, { label: string; color: string; hollow?: boolean }> => ({
+        manual: { label: t("telemetryUsageTriage.fixes.manual"), color: "var(--usage-rule)" },
+        auto: {
+            label: t("telemetryUsageTriage.fixes.auto"),
+            color: "var(--usage-rule)",
+            hollow: true,
+        },
+    }),
+);
 
 const scriptCorners = [
-    { corner: "top-right", label: "Used and failing · fix first", bad: true },
-    { corner: "top-left", label: "Rare and failing" },
-    { corner: "bottom-left", label: "Rarely run · still needed?" },
-    { corner: "bottom-right", label: "Workhorses" },
+    { corner: "top-right", label: t("telemetryUsageTriage.scriptCorners.fixFirst"), bad: true },
+    { corner: "top-left", label: t("telemetryUsageTriage.scriptCorners.rare") },
+    { corner: "bottom-left", label: t("telemetryUsageTriage.scriptCorners.rarelyRun") },
+    { corner: "bottom-right", label: t("telemetryUsageTriage.scriptCorners.workhorses") },
 ] as const;
 
 const ruleCorners = [
-    { corner: "top-left", label: "Switched off, never fires · rule or code wrong", bad: true },
-    { corner: "top-right", label: "Fires and fought" },
-    { corner: "bottom-right", label: "Noisy · tell agents, or narrow it" },
+    { corner: "top-left", label: t("telemetryUsageTriage.ruleCorners.wrong"), bad: true },
+    { corner: "top-right", label: t("telemetryUsageTriage.ruleCorners.fought") },
+    { corner: "bottom-right", label: t("telemetryUsageTriage.ruleCorners.noisy") },
 ] as const;
 
 const rows = computed(() => scriptRows(usage));
@@ -97,9 +118,9 @@ const idle = computed(() => rows.value.filter((row) => row.runs === 0));
 const idleList = computed(() =>
     idle.value
         .map((row) => {
-            const when = row.last ? `last run ${row.last.slice(0, 10)}` : "never run";
-
-            return `${row.name} (${when})`;
+            return row.last
+                ? t("telemetryUsageTriage.idleLast", { name: row.name, day: row.last.slice(0, 10) })
+                : t("telemetryUsageTriage.idleNever", { name: row.name });
         })
         .join(" · "),
 );

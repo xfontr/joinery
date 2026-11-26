@@ -1,5 +1,6 @@
 export default defineAppConfig({
+    personalSite: "https://xifre.dev",
     nav: {
-        overview: { label: "Overview", icon: "i-lucide-layout-dashboard", to: "/" },
+        overview: { icon: "i-lucide-layout-dashboard", to: "/" },
     },
 });

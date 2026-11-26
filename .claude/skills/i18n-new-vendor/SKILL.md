@@ -1,11 +1,11 @@
 ---
 name: i18n-new-vendor
-description: Add a TMS vendor to @monorepo/i18n — a TranslationProvider subclass, its options type, configProblems() and one registry line. Use when adding or changing a translations vendor such as Phrase, Crowdin, Lokalise or another Tolgee-like API.
+description: Add a TMS vendor to @joinery/i18n — a TranslationProvider subclass, its options type, configProblems() and one registry line. Use when adding or changing a translations vendor such as Phrase, Crowdin, Lokalise or another Tolgee-like API.
 ---
 
 # Adding a translations vendor
 
-The steps are in the [Vendors section](../../../packages/i18n/README.md#-vendors) of the package README. Follow
+The steps are in the [Vendors section](../../../packages/i18n/README.md#vendors) of the package README. Follow
 them; this file is what the prose can't enforce.
 [`TolgeeProvider.ts`](../../../packages/i18n/src/core/adapters/providers/TolgeeProvider.ts) is the example with
 options, [`InternalProvider.ts`](../../../packages/i18n/src/core/adapters/providers/InternalProvider.ts) the one
@@ -37,7 +37,7 @@ without.
    `baseURL` and `project` are on the base class for every vendor, and only `options` is per-vendor.
    Don't re-declare them. **`options` is credentials only**, because it is left out of the cache key:
    anything that picks the document (a branch, an export profile) belongs on `Vendor`. The shape is
-   `@monorepo/content`'s too, so change both packages or neither. Overrides carry the `override`
+   `@joinery/content`'s too, so change both packages or neither. Overrides carry the `override`
    keyword.
 
 3. **`configProblems()` covers `options` only, and is optional.** `project` non-empty and `baseURL`
@@ -59,7 +59,7 @@ has bound itself to a transport.
 A failed request arrives as an `UpstreamError` already, reporting 502 whatever the vendor answered —
 the locale was checked against the declared list before the request, so nothing upstream reports is
 the caller's fault. Read its `upstreamStatus` if a vendor needs to tell one failure from another, but
-do not relay it as a status. (`@monorepo/content` does relay 400 and 404; its slug is caller input.)
+do not relay it as a status. (`@joinery/content` does relay 400 and 404; its slug is caller input.)
 
 The URLs are **relative**: the consumer builds the client with `ofetch.create({ baseURL })`, so a
 provider passes a path. `http.get` resolves `{ data, headers }`; read the body off `data`.
@@ -74,7 +74,7 @@ A `<Name>Provider.spec.ts` beside it, covering the URL contract, the mapping, an
 construction. Then:
 
 ```sh
-pnpm exec nx run-many -t lint typecheck test --projects @monorepo/i18n
+pnpm exec nx run-many -t lint typecheck test --projects @joinery/i18n
 ```
 
 Nothing else. Config typing, lazy loading and the Nuxt route follow from the registry line.

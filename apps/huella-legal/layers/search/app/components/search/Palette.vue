@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { MAX_SEARCH_LENGTH } from "@monorepo/content";
+import { MAX_SEARCH_LENGTH } from "@joinery/content";
 import type { CommandPaletteGroup, CommandPaletteItem } from "@nuxt/ui";
 
 const emit = defineEmits<{ close: [] }>();

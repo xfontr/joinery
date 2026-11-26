@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col gap-3">
         <fieldset :class="compact ? 'flex flex-col gap-1' : 'grid gap-3 sm:grid-cols-3'">
-            <legend class="sr-only">Ticket size</legend>
+            <legend class="sr-only">{{ $t("workflowTicketSizePicker.legend") }}</legend>
             <label
                 v-for="option in options"
                 :key="option.size"
@@ -45,9 +45,9 @@
                 <template v-else>
                     <span v-if="option.count !== null" class="flex items-baseline gap-1.5">
                         <span class="text-3xl font-semibold tabular-nums">{{ option.count }}</span>
-                        <span class="text-sm text-muted">{{
-                            option.count === 1 ? "ticket" : "tickets"
-                        }}</span>
+                        <span class="text-sm text-muted">
+                            {{ $t("workflowTicketSizePicker.tickets", option.count) }}
+                        </span>
                     </span>
                     <span class="font-semibold">{{ option.title }}</span>
                     <span class="text-sm text-muted">{{ option.summary }}</span>
@@ -65,11 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-    TICKET_SIZE_LABELS,
-    TICKET_SIZES,
-    type TicketSize,
-} from "#layers/workflows/shared/workflows.ts";
+import { TICKET_SIZES, TICKET_WIDTH, type TicketSize } from "#layers/workflows/shared/workflows.ts";
 
 interface Props {
     modelValue: TicketSize;
@@ -84,13 +80,22 @@ const { modelValue, counts = null, editable = false, compact = false } = defineP
 const emit = defineEmits<{ "update:modelValue": [size: TicketSize] }>();
 const name = useId();
 
-const warning = computed(() => TICKET_SIZE_LABELS[modelValue].warning);
+const { t } = useI18n();
+
+const WARNED = new Set<TicketSize>(["supervised", "fast"]);
+
+const warning = computed(() =>
+    WARNED.has(modelValue) ? t(`ticketSize.${modelValue}.warning`) : null,
+);
 
 const options = computed(() =>
     TICKET_SIZES.map((size) => ({
         size,
         count: counts?.[size] ?? null,
-        ...TICKET_SIZE_LABELS[size],
+        title: t(`ticketSize.${size}.title`),
+        summary: t(`ticketSize.${size}.summary`, {
+            width: size === "block" ? null : TICKET_WIDTH[size],
+        }),
     })),
 );
 </script>

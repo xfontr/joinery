@@ -47,8 +47,8 @@ A deployed instance is as fresh as its last build.
 | Change | `nx show projects --affected` | Why |
 | --- | --- | --- |
 | `docs/decisions/README.md` | `[]` | The `docs/` tree belongs to no project, so no target anywhere depends on it |
-| `packages/ui/README.md` | `@monorepo/ui`, `@monorepo/huella-legal` | Never `developer-portal`, though `developer-portal` is what renders it |
-| `apps/developer-portal/README.md` | `@monorepo/developer-portal` | Affected, but `build`'s `production` input carries `!{projectRoot}/**/*.md`, so the task hash is unchanged |
+| `packages/ui/README.md` | `@joinery/ui`, `@joinery/huella-legal` | Never `developer-portal`, though `developer-portal` is what renders it |
+| `apps/developer-portal/README.md` | `@joinery/developer-portal` | Affected, but `build`'s `production` input carries `!{projectRoot}/**/*.md`, so the task hash is unchanged |
 
 Two independent mechanisms produce the same result, and the second survives the first: `production`
 resolves to `{projectRoot}/**/*` minus markdown, so no markdown anywhere — inside the project or
@@ -113,7 +113,7 @@ renders the site and then exits on **32 distinct links that resolve to no route*
 | A line range on a file | `/.agents/skills/writing-tests/SKILL.md:91-94` | Strip the suffix, then as above |
 | A directory, or a sibling resolved from the wrong base | `/.claude/agents/`, `/2026-09-10-bfd6da2` | Link out to GitHub |
 
-`pnpm exec nx check-docs @monorepo/developer-portal` passes on the same tree with `brokenLinkCount: 0`,
+`pnpm exec nx check-docs @joinery/developer-portal` passes on the same tree with `brokenLinkCount: 0`,
 and both are right. `checkLink` resolves against the filesystem on purpose — these files are read on
 GitHub first — while a deployed site resolves against a route table that lower-cases every path and
 has no entry for a file that is not markdown. `.husky/pre-push` is a shell script: it is a correct
@@ -197,7 +197,7 @@ them, and 3–6 are what a static deploy costs:
 
    | Question | Answer |
    | --- | --- |
-   | Does `{workspaceRoot}/**/*.md` also make `nx affected` see a file belonging to no project? | **Yes** — `nx show projects --affected --files=docs/decisions/README.md` prints `["@monorepo/developer-portal"]`, where it printed `[]`. No `implicitDependencies` entry is needed; the input does both jobs |
+   | Does `{workspaceRoot}/**/*.md` also make `nx affected` see a file belonging to no project? | **Yes** — `nx show projects --affected --files=docs/decisions/README.md` prints `["@joinery/developer-portal"]`, where it printed `[]`. No `implicitDependencies` entry is needed; the input does both jobs |
    | Can the collected snapshot be a file input? | **No.** `.report/` is gitignored, so it is absent from Nx's file map and `{projectRoot}/.report/**/*` hashes nothing — added it, re-stamped the manifest, still a 1/1 cache hit. A `runtime` input whose stdout is the manifest is the mechanism that works |
 
    The target the deploy actually runs is `build-static`, not `build`; both take `production`, so the
@@ -254,12 +254,12 @@ otherwise.
 
 Each is false today and true when the work lands:
 
-1. `pnpm exec nx build @monorepo/developer-portal` exits 0. It currently fails to resolve
+1. `pnpm exec nx build @joinery/developer-portal` exits 0. It currently fails to resolve
    `shared/spikeReports.ts`.
 2. Two consecutive builds with a markdown edit between them report a cache **miss** on the second.
    Measured at 1/1 hit today — this is the half change 7 is known to fix.
 3. `pnpm exec nx show projects --affected --files=docs/decisions/README.md` lists
-   `@monorepo/developer-portal`. It currently prints `[]`, and which mechanism gets it there is the open
+   `@joinery/developer-portal`. It currently prints `[]`, and which mechanism gets it there is the open
    question in change 7.
 4. A prerendered build contains no page carrying the wiki's "No such page" copy, and the prerenderer
    reports no unresolved route — the 32 and the 33 it found while `check-docs` reported

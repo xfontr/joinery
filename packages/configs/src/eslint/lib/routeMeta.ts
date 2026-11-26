@@ -1,11 +1,11 @@
-import monorepo from "../rules/index.ts";
+import joinery from "../rules/index.ts";
 
 const routeMeta: object = {
     files: ["**/server/api/**/*.ts", "**/server/routes/**/*.ts"],
     ignores: ["**/*.spec.ts"],
-    plugins: { monorepo },
+    plugins: { joinery },
     rules: {
-        "monorepo/require-route-meta": "error",
+        "joinery/require-route-meta": "error",
     },
 };
 

@@ -11,7 +11,10 @@ export interface SnapshotIssue {
     closedAt: string | null;
     /** The author date of every commit tagged `[#N]` for this issue, ascending. */
     activity: string[];
-    /** GitHub's blocked-by links with each blocker's state and close date, since a blocker can sit outside the milestone. */
+    /**
+     * GitHub's blocked-by links with each blocker's state and close date, since a blocker can sit
+     * outside the milestone.
+     */
     blockedBy: { number: number; open: boolean; closedAt: string | null }[];
     /** A branch is linked on the issue, which is how `pnpm issue:pick` marks it as taken. */
     branch: boolean;

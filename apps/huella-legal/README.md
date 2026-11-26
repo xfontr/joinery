@@ -1,692 +1,271 @@
-# 📦 @monorepo/huella-legal
+# 📦 @joinery/huella-legal
 
-A Nuxt 4 redesign of the Huella Legal law blog, composed from the workspace's shared UI, content
-and observability packages.
+A Nuxt 4 redesign of the Huella Legal law blog. Content comes from an external WordPress through
+[`@joinery/content`](../../packages/content/README.md); the site is Spanish-only.
 
-## 🚀 Development
-
-```sh
-pnpm exec nx serve @monorepo/huella-legal   # from anywhere in the workspace
-pnpm dev                                    # or from this directory
-```
+## Development
 
 | Command | What it does |
 | --- | --- |
-| `pnpm dev` | Start the dev server against the [fake WordPress](#-dev-mocks), never huellalegal.com |
-| `pnpm dev:api` | Start the dev server against the live WordPress. Only when the fakes can't show what you need |
-| `pnpm build` | Production build (output in `.output/`) |
-| `pnpm preview` | Preview the production build |
-| `pnpm lint` | ESLint — the nuxt flavour, deliberately not type-checked |
-| `pnpm typecheck` | `nuxt typecheck`. Redundant before a build: `typescript.typeCheck: "build"` makes `pnpm build` do the same pass, which is why the build is slow |
-| `pnpm test` | Vitest in two projects, without coverage. `pnpm test:coverage` adds it and enforces the thresholds — see [Testing](#-testing) |
-| `pnpm test:e2e` | Playwright against the built `.output/`, with the vendors faked by MSW. Run `pnpm build` first; `nx test:e2e` does it for you |
-| `pnpm storybook` | Storybook on port 6007 — see [Storybook](#-storybook) |
-| `pnpm build:storybook` | Static Storybook build (output in `storybook-static/`) |
-| `pnpm cache:clear` | Deletes the `articles` and `content` caches under `.nuxt/cache/`, so the next request rereads WordPress. Safe with the dev server running, and only touches local dev — see [Content](#-content) |
-| `pnpm exec nx nuxt-prepare @monorepo/huella-legal` | Regenerates `.nuxt` (`nuxi prepare`) — [`nx.json`](../../nx.json) already runs it before `lint`/`typecheck`/`test`/`build`, so this is only for calling it by hand |
+| `pnpm dev` | Dev server against the [fake WordPress](#dev-mocks), never huellalegal.com |
+| `pnpm dev:api` | Dev server against the live WordPress. Only when the fakes can't show it |
+| `pnpm build` | Production build into `.output/`. Also typechecks, which is why it's slow |
+| `pnpm preview` | Serve the production build |
+| `pnpm test` | Vitest. `pnpm test:coverage` enforces the thresholds |
+| `pnpm test:e2e` | Playwright against `.output/`. Build first, or run `nx test:e2e` |
+| `pnpm storybook` | Storybook on port 6007; `pnpm build:storybook` for a static build |
+| `pnpm cache:clear` | Empty the local `articles` and `content` caches so the next request rereads WordPress |
+| `pnpm exec nx nuxt-prepare @joinery/huella-legal` | Regenerate `.nuxt` by hand; Nx already runs it before lint, typecheck, test and build |
 
-Two modules beyond the shared ones are installed here, `@nuxt/fonts` and `@nuxt/image`, and the
-`forms` layer installs `@nuxtjs/turnstile`.
+### Dev mocks
 
-### 🧪 Dev mocks
+`pnpm dev` preloads [`mocks/server.ts`](./mocks/server.ts), an MSW fake of WordPress serving
+[`mocks/content.json`](./mocks/content.json). The live host blacklists machines that read it too
+often. An unknown slug is a `404`; any other request to huellalegal.com is an error in the dev log.
+Kit, Turnstile and Resend stay inert without their keys.
 
-The `serve` target preloads [`mocks/server.ts`](./mocks/server.ts) into `nuxt dev` and points
-`NUXT_CONTENT_VENDOR_BASE_URL` at a `localhost` path nothing listens on. The live host blacklists a
-machine that reads it too often, and every cold cache reads the whole archive.
+### API reference
 
-| Request | Dev answers with |
+Every `/api` route is documented at `/_openapi.json` and browsable at `/_scalar`, in dev and on
+every deploy. A route adds itself with `defineRouteMeta({ openAPI })` — literals only, since Nitro
+reads it from source and silently drops an imported constant.
+
+## Deployment
+
+GitHub Actions builds, Netlify hosts
+([`deploy-huella-legal.yml`](../../.github/workflows/deploy-huella-legal.yml)). Netlify's own git
+builds stay off.
+
+| Trigger | Deploys |
 | --- | --- |
-| A known post, page, category or tag | [`mocks/content.json`](./mocks/content.json): ten posts over five categories, three of them theses, three authors, `aviso-legal`, the calculator's guide, `calculo-intereses`, and the publishing guide, `guia-de-publicaciones`, edited by hand |
-| Any other slug | A `404`, as WordPress would |
-| A search | The posts whose title, excerpt or body hold every word |
-| Comments | None, and a posted one is accepted |
-| Anything else on a huellalegal.com host | An MSW error in the dev log, never the network |
+| Push to `master` | Production, then warms the listing caches |
+| Pull request | A preview, linked in one PR comment |
+| Monday 05:00 UTC, or by hand | Production. Also the way to purge the CDN after an urgent fix |
 
-Kit, Turnstile and Resend stay as they are, inert without their keys. Both `dev` scripts clear the content caches first, so a switch
-between them never serves the other's data. Images are the factories' inline pixel, so nothing loads
-from the live media library either.
+- The `huella-legal` job is a required check, so it always reports and passes when
+  [`netlify-ignore.sh`](./netlify-ignore.sh) finds nothing relevant changed. That list is kept by
+  hand: a new runtime `@joinery/*` import needs a line there.
+- Never split the deploy into `netlify build` + `deploy --no-build`: the upload drops the image CDN
+  config and every WordPress image breaks.
+- `NETLIFY_SITE_ID` is a repo variable and `NETLIFY_AUTH_TOKEN` a secret. Fork and Dependabot PRs
+  get neither and pass without a preview.
 
-### 📖 API reference
+### Staging login
 
-Nitro's experimental OpenAPI support documents every `/api` route, in dev and on every deploy, and
-the developer portal's Projects page links to it from the live deployment.
+`staging.huellalegal.com` and every `*.netlify.app` URL ask for Basic Auth; the public host doesn't.
+[`modules/stagingGate.ts`](./modules/stagingGate.ts) writes a Netlify edge function on production
+builds only. With `STAGING_USERNAME` or `STAGING_PASSWORD` unset, gated hosts answer `401`. A new
+alias outside those two patterns stays open until it's added to `GATED_HOSTS`.
 
-| Route | What it serves |
-| --- | --- |
-| `/_openapi.json` | The OpenAPI 3.1 spec, with the requesting origin as its server, so a deploy preview documents itself |
-| `/_scalar` | Scalar's reference UI over that spec. Swagger UI is turned off |
+### Rendering
 
-A route documents itself with `defineRouteMeta({ openAPI: { … } })` below its handler. Nitro reads
-that call from the source rather than running it, so its argument must be literals only: an imported
-constant or a template string is dropped without a warning, which is why `search` and `articles`
-repeat `MAX_SEARCH_LENGTH` and `FORMATS` by hand. The `node` test project stubs `defineRouteMeta`
-for every spec. The spec also lists the handlers Nuxt and its modules register, such as `/_ipx` and
-`/_i18n/{hash}/{locale}/messages.json`, with no meta, under Nitro's own `Internal` and `API Routes` tags.
-
-## 🚢 Deployment
-
-The app builds on a GitHub runner and Netlify only hosts it, because Netlify's build minutes are
-billed and a runner's aren't. [`netlify-deployment.yml`](../../.github/workflows/netlify-deployment.yml)
-runs one `netlify deploy` with the Netlify CLI, which builds and then uploads. It's never split into
-`netlify build` and `deploy --no-build`, because that upload drops the config the build writes, so
-the image CDN rejects every WordPress image. The build command,
-the publish directory and the env vars all come from the Netlify project, so the repo holds no copy
-of them. A production deploy then records a GitHub Deployment, so the URL shows on the repo's
-Deployments page alongside `developer-portal`. A PR deploy instead posts the preview link as one
-comment on the PR, edited in place on every later deploy. Netlify's own git builds stay stopped (**Project configuration →
-Build & deploy → Stop builds**). A CLI deploy goes through either way, but a running git
-integration would build every commit a second time.
-
-| Trigger | Deploys | Reported as |
-| --- | --- | --- |
-| Push to `master` | Production, then warms the cache ([Rendering](#-rendering)) | The `huella-legal` Deployment |
-| Pull request | A draft at `pr-<number>--<project>.netlify.app` | A comment on the PR |
-| Monday 05:00 UTC, or run by hand | Production, whatever changed | The `huella-legal` Deployment |
-
-The job is called `huella-legal`, and it is the PR check `master`'s ruleset requires. It always runs
-and passes when there's nothing to deploy, because a required check that never reports blocks the
-merge. [`netlify-ignore.sh`](./netlify-ignore.sh) decides whether to build. It exits 0, meaning
-skip, unless the diff touches this app, `content`, `observability`, the pnpm and Node pins, or the
-workflow itself. Docs, specs, stories, e2e and lint config don't count. A push diffs from its
-`before` and a PR from its merge base with `master`. The list is kept by hand, so a new runtime
-`@monorepo/*` import needs a line there. Any `pnpm-lock.yaml` change still builds, even one that
-only touches another project. A push the script skips deploys nothing, so after a failed deploy the
-site stays on the previous build until a change to the app lands, the Monday run or a manual run.
-
-Fork and Dependabot PRs get no repo secrets, so they pass without a preview. The site ID and auth
-token never enter this repo: `NETLIFY_SITE_ID` is a GitHub Actions repo variable and
-`NETLIFY_AUTH_TOKEN` a secret, both read at workflow runtime with no default. The build runs with
-`NX_SKIP_NX_CACHE`, because the prerender reads live WordPress and no task hash covers that. It also
-pins `NITRO_PRESET` and `NUXT_IMAGE_PROVIDER`: on a runner, auto-detection sees GitHub Actions rather
-than Netlify, and would build a Node server with no Netlify function.
-Netlify gives a CLI build no secret values, so the [Nitro telemetry plugin](./server/plugins/observability.ts) starts
-no exporter while prerendering: a 401 from the OTLP gateway on shutdown would otherwise fail the
-build.
-
-### 🔒 Staging login
-
-The production deploy answers on more hosts than the site's own: `staging.huellalegal.com` is a
-Netlify domain alias, and every deploy has `*.netlify.app` URLs that can't be switched off. Those
-ask for a username and password through the browser's own Basic Auth prompt, while the site's host
-from `public.site.url` and its bare apex stay open. PR previews ask for nothing.
-
-Netlify's password protection is a paid feature, so
-[`modules/stagingGate.ts`](./modules/stagingGate.ts) writes an edge function into
-`.netlify/edge-functions/` on a `NUXT_SITE_ENV=production` build, and nowhere else. It has to be an
-edge function because those run before the CDN, and most pages are prerendered files that Nitro
-never sees. Any other build deletes a gate a previous production build left in the same checkout.
-
-| Case | What the visitor gets |
-| --- | --- |
-| The site's host or its apex | The page, with no check |
-| Another host, with no credentials or wrong ones | `401` and the browser's login prompt |
-| `STAGING_USERNAME` or `STAGING_PASSWORD` unset | `401` on every other host, so a missing variable can't leave staging open |
-| Both match | The page, and every page after it, since the browser resends the header |
-
-Netlify only invokes the function when the `host` header matches `staging.*` or `*.netlify.app`.
-The function used to run on every request, and on a cold edge it spent 200–470 ms before a reader in
-Latin America got a prerendered article. That made the site's public host pay for a check that
-always let it through. Inside the function, the public hosts are still an allowlist. The routing
-regex is a denylist, though, so a new alias that matches neither pattern stays open until it's added
-to `GATED_HOSTS`. `/_nuxt/*`, `/_fonts/*` and `/.netlify/*` are left out on every host, since those
-files are public anyway. The function reads both variables at request time through `Netlify.env`,
-so they need the **Functions** scope in Netlify and a redeploy after any change.
-
-### 🗄 Rendering
-
-A deploy build prerenders every page that reads nothing from the query string, and Netlify's CDN
-caches the rest for a day through `isr` route rules.
-[0033](../../docs/decisions/0033-huella-legal-hybrid-prerender.md) has the reasoning and the
-tripwires.
+Pages that read no query string are prerendered; the rest are cached by Netlify's CDN through `isr`
+route rules. [0033](../../docs/decisions/0033-huella-legal-hybrid-prerender.md) has the reasoning.
 
 | Route | Served as |
 | --- | --- |
-| `/:slug/` for every post and every slug in `pageSlugs`, `/`, `/areas/`, `/colaboradores/`, `/calculo-intereses/`, `/contacto/`, `/publicar/`, `/sobre/`, `/robots.txt`, `/llms.txt` | A prerendered file. A slug added since the last build falls through to the function, which renders it once under `/**`'s `isr` |
-| `/feed/` and the `GET /api/*` routes | `isr` 86400 |
-| `/publicaciones/`, `/areas/:slug/`, `/etiquetas/:slug/`, `/colaboradores/:slug/`, `/buscar/`, their `_payload.json`, `/api/articles`, `/api/search` | `isr` 86400, with a `Netlify-Vary` naming the query keys each one reads |
-| `/api/articles/:slug/comments` | `isr` 600. New comments are held for moderation, so the window only delays an approval |
-| `/api/newsletter`, `/api/contact`, `/api/comments`, `/sitemap.xml` | The function, uncached. `@nuxtjs/sitemap` caches the sitemap itself for ten minutes |
+| Articles, WordPress pages, `/`, `/areas/`, `/colaboradores/`, `/contacto/`, `/publicar/`, `/sobre/`, `/calculo-intereses/` | Prerendered |
+| Listings, `/buscar/`, `/feed/`, `GET /api/*` | `isr` for a day, varying on their query keys |
+| `/api/articles/:slug/comments` | `isr` for ten minutes |
+| Form routes, `/sitemap.xml` | Uncached function |
 
-Nuxt turns every `isr` rule into a client-side payload rule, so client navigation and link prefetch
-read `<route>/_payload.json` rather than the API. `experimental.payloadExtraction` is `"client"`, so
-a first view still gets its payload inlined instead of fetching it as a second request. A link
-prefetches on hover or touch rather than when it scrolls into view, so a page's own links don't fetch
-payloads while it hydrates. The footer's calculator link never prefetches at all, so the
-[`interest`](./layers/interest/README.md) layer stays off every other page's network.
+- Each layer declares its own rules under `rendering` in its `nuxt.config.ts`;
+  [`modules/rendering.ts`](./modules/rendering.ts) turns them into route rules. Prerendering only
+  happens when `NUXT_SITE_ENV` is set, so CI and e2e builds don't shadow the fakes.
+- A WordPress outage fails the build and the previous deploy stays live. A runtime `5xx` is never
+  cached ([`server/plugins/cdn.ts`](./server/plugins/cdn.ts)).
+- Hydration is deferred to `load` or the first interaction
+  ([`deferHydration.ts`](./server/plugins/deferHydration.ts)), and a click made before then is
+  replayed. [0034](../../docs/decisions/0034-huella-legal-header-navigation.md) has the numbers.
+- An icon rendered client-side first (inside `ClientOnly`, a lazy component, a client navigation)
+  must be listed in the design layer's `icon.clientBundle.icons`. A miss shows in Netlify's log as
+  `/api/_nuxt_icon/…`.
 
-The JS that hydrates a page starts loading on the window's `load` event or the reader's first
-`pointerdown`, `keydown` or `touchstart`, whichever comes first. A background tab hydrates on `load`
-like any other, so an article opened in a new tab is ready by the time the reader switches to it.
-A `build:manifest` hook in `nuxt.config.ts` drops the
-module preload and the prefetch hint Nuxt writes for every chunk, and
-[`server/plugins/deferHydration.ts`](./server/plugins/deferHydration.ts) swaps the entry `<script>`
-for an inline loader that injects it on those triggers. Lighthouse's mobile LCP counts every request
-that starts before the LCP, whatever its priority, so 255 kB of hydration JS in `<head>` was what
-kept it above 3 s. The page is server-rendered and readable without it, links and the search form
-work as plain HTML, and the menu, the search dialog and the forms wake up once it lands. The loader
-keeps the first button pressed before then, and
-[`replayClick.client.ts`](./app/plugins/replayClick.client.ts) clicks it again once hydration
-resolves, so a tap on the menu isn't lost. Below the fold, the
-home page's sections and the footer hydrate only when they scroll into view (`hydrate-on-visible`).
-The header's inline menu hydrates only where `(min-width: 64rem)` matches
-(`hydrate-on-media-query`), so its chunk and the floating-ui one behind it load after `load` on
-desktop and never below `lg`, where it is hidden. [0034](../../docs/decisions/0034-huella-legal-header-navigation.md)
-has the measurements.
-
-Nothing in `<head>` blocks the first paint either. `features.inlineStyles` writes the global
-stylesheet into each page as a `<style>` and emits no `entry.css`, which trades ~27 kB gzip on every
-HTML response for the round trip a linked stylesheet costs before anything renders. That makes the
-global CSS a cost on every page, so code only some visitors need loads its own: the cookie banner's
-stylesheet and script come with [`consent.client.ts`](./layers/tracking/app/plugins/consent.client.ts)
-once a tracker is configured, and the search modal's chunk on its first open. `@nuxt/fonts` inlines
-`@font-face` rules for the `latin` and `latin-ext` subsets only. Each `NuxtImg` in a fixed-ratio frame
-asks for that ratio with `fit="cover"`, through [`coverHeight`](./app/utils/coverHeight.ts), so
-Netlify crops at the CDN instead of sending the pixels `object-cover` would hide.
-
-`@iconify-json/lucide` is a dependency so `@nuxt/icon` can bundle icons at all: without it the
-server asked Iconify's API for every icon it rendered, and the browser fetched `/api/_nuxt_icon`
-for each one that first renders client-side. The design layer's `icon.clientBundle.icons` lists
-exactly those: the share bar, the calculator history, the comment reply button, and the `sobre` and
-`publicar` icons that a client-side navigation renders first. A new icon inside a `ClientOnly`, a
-lazily opened component or a page reached by client navigation belongs there too. Netlify's
-request log shows any icon that was missed as a `/api/_nuxt_icon/lucide.json?icons=…` call. Bundling every icon with `scan` instead tripled the
-article's blocking time on hydration. `/_i18n/*/messages.json` is browser-cached for a year,
-which is safe because its path carries a hash of the locale file.
-
-Each layer declares the rules for its own routes under `rendering` in its `nuxt.config.ts`: `cache`
-maps a route to its `isr` and the query keys it varies on, and `prerender` lists the routes to
-prerender. [`modules/rendering.ts`](./modules/rendering.ts) turns them into route rules, adds each
-listing's `_payload.json` twin with the same `Netlify-Vary`, and only switches prerendering on when
-`NUXT_SITE_ENV` is set, which every deploy does. CI and e2e build without it, since a prerendered
-file would shadow e2e's fakes. `NUXT_SITE_ENV` is a cache input of `build` and `nuxt:build`, so Nx
-never restores one kind of build for the other. To reproduce a deploy build locally:
+Reproduce a deploy build locally (it reads the live WordPress):
 
 ```sh
-NUXT_SITE_ENV=preview pnpm exec nx build @monorepo/huella-legal --skip-nx-cache
+NUXT_SITE_ENV=preview pnpm exec nx build @joinery/huella-legal --skip-nx-cache
 ```
 
-That build reads the live WordPress. It fails on any page that fails, so a WordPress outage fails
-the build, and the previous deploy stays live.
-A 5xx answers `netlify-cdn-cache-control: no-store` from
-[`server/plugins/cdn.ts`](./server/plugins/cdn.ts), so an outage never sits in the CDN for a day.
+### Abuse and hardening
 
-A prerendered page only changes on a build, so
-[`netlify-deployment.yml`](../../.github/workflows/netlify-deployment.yml) also rebuilds production
-every Monday at 05:00 UTC, which refreshes author counts, related posts and corrections to old
-posts. Running the workflow by hand is also the purge after an urgent correction, because every
-deploy empties the CDN cache.
+Every BFF route is public, so input is capped and checked first: each free-text field has a maximum
+length in the browser and the route, forms carry a honeypot and a Turnstile token, and
+[`nuxt.config.ts`](./nuxt.config.ts) sets the security headers and the `robots.txt` that turns away
+AI crawlers. The Turnstile site key's hostname list in Cloudflare is what ties tokens to our
+domains. Abusive IPs are blocked by hand in Netlify's firewall, never in the repo.
 
-A cold listing render pages through every WordPress post from the function's region, which took
-11 s on `/publicaciones/` once measured. So after each production deploy,
-[`netlify-deployment.yml`](../../.github/workflows/netlify-deployment.yml) requests `/publicaciones/`,
-`/buscar/` and every listing in the sitemap, each with its `_payload.json`, and the durable cache
-serves every edge from then on, the Monday rebuild included. A failed request is a warning, never a
-red run. A preview isn't warmed.
+## Environment
 
-Nitro's cache lives in one function instance's memory, which a cold instance doesn't have, so
-[`articleIndex.ts`](./layers/articles/server/services/articleIndex.ts) also saves the index to a
-Netlify Blobs deploy store through [`adapters/netlify.ts`](./layers/articles/server/adapters/netlify.ts).
-A cold instance reads that copy instead of WordPress while it is younger than the cache's `maxAge`.
-The store belongs to its deploy and is deleted with it, so a copy saved by older code never reaches
-newer code. The save is awaited, because the preset hands Nitro no `waitUntil`, and a failed read
-or save only logs a warning and falls back to WordPress. Off Netlify there is no Blobs context, so
-dev, CI and e2e read WordPress or its fakes as before.
-
-### 🔐 Abuse and hardening
-
-Every BFF route is public, because the browser calls it, so what reaches one is capped and checked
-before it costs anything.
-
-| Layer | What it does | Where |
-| --- | --- | --- |
-| Input caps | Every free-text form field has a maximum length, checked in the browser and again by the route | the layers' `shared/schemas/` |
-| Headers | HSTS, `nosniff`, `X-Frame-Options: DENY`, a referrer and permissions policy, and an enforced CSP of `frame-ancestors`, `object-src`, `base-uri` and `form-action`, on every route and, through the preset's `_headers`, every prerendered file | `routeRules` in [`nuxt.config.ts`](./nuxt.config.ts) |
-| Crawlers | `robots.txt` turns away the crawlers that train models and keeps search engines and `llms.txt` | `robots` in [`nuxt.config.ts`](./nuxt.config.ts) |
-
-A Turnstile token only proves a human if it was minted on our pages, and siteverify doesn't check
-that here: the site key's hostname list in Cloudflare's dashboard does, so it names only our
-domains. An abusive address is blocked by hand under **Project configuration → Security → Firewall
-traffic rules**, by a Team Owner, and never listed in the repo. WordPress sits outside all of this
-on its own hostname, so its REST API needs its own protection there.
-
-## 🔑 Environment
-
-A variable a feature can't work without is listed under `requiredEnv` in the `nuxt.config.ts` of
-the layer that uses it. [`modules/requiredEnv.ts`](./modules/requiredEnv.ts) checks the merged list
-once, so no route re-checks its config per request:
-
-| Where | An unset required variable |
-| --- | --- |
-| Production build (`NUXT_SITE_ENV=production`) | Fails the build naming each one, so the live deploy keeps serving. The host has to expose them to builds as well as functions |
-| `nuxt dev` | One warning at startup naming each one |
-| Any other build, CI's included | Nothing: CI builds with none of them set |
-
-A wrong value is the vendor's to refuse, and the adapter maps the refusal: anything Cloudflare
-refuses is a `403` and anything Kit or Resend refuses is a `502`, each carrying the vendor's answer as
-`cause`. Optional variables (telemetry, social profiles) stay out of the list, since unset only
-turns their feature off.
+A variable a feature can't work without goes under `requiredEnv` in its layer's `nuxt.config.ts`.
+A production build fails naming each unset one; `nuxt dev` warns; other builds ignore them. Every
+variable is read at startup, except that prerendered pages bake in what the build had — so Netlify
+must expose them to builds too.
 
 | Variable | What it is |
 | --- | --- |
-| `NUXT_CONTENT_VENDOR_BASE_URL` | The WordPress site root, with scheme and **without** `/wp-json` — the provider owns that path. The build reads it too, to allow its host in `image.domains` |
-| `NUXT_PUBLIC_SITE_URL` | Optional. Overrides the public origin set in `nuxt.config.ts`, with scheme. Article permalinks, the share link, both citations, canonicals and the SEO modules' absolute URLs are built on it rather than on the request's host |
-| `NUXT_SITE_ENV` | `production` on the production deploy and `preview` on every other deploy, for builds as well as functions, and unset in dev, CI and e2e builds. A build prerenders only when it is set, and only `production` fails on an unset required variable. Unset or `preview`, robots.txt disallows everything and every page says `noindex`. Prerendered pages bake the value in, which is why builds need it |
-| `STAGING_USERNAME`, `STAGING_PASSWORD` | The [staging login](#-staging-login). Read by the edge function rather than Nuxt, so they have no `NUXT_` prefix and need the Functions scope. Unset, every host but the site's own answers `401` |
-| `NUXT_PUBLIC_PAGE_SLUGS` | A JSON array of the WordPress page slugs served at `/:slug/`, such as `["aviso-legal"]`. Every other slug there is read as a post. The `articles` layer defaults it to `["aviso-legal", "calculo-intereses", "guia-de-publicaciones"]`, the second read only as the calculator's guide; set but empty, it replaces the list with `""`, so leave it unset instead |
-| `NUXT_ARTICLES_HIDDEN_TERMS` | Optional. A JSON array of category and tag slugs, replacing the `articles` layer's `["consultas-legales-gratuitas"]`; `[]` hides nothing. A post filed under one is left out of every listing, the search, the related band, the feed and the sitemap, and the term's own `/areas/:slug/` or `/etiquetas/:slug/` answers `404`, but the post still opens at `/:slug/` with the term off its page. Prerendered pages bake the value in, so builds need it too |
-| `NUXT_NEWSLETTER_API_KEY` | The Kit v4 API key, sent as `X-Kit-Api-Key` |
-| `NUXT_NEWSLETTER_FORM_ID` | The Kit form new readers join. Its incentive email must be on, since that is the confirmation Kit sends |
-| `NUXT_NEWSLETTER_BASE_URL` | Optional. Overrides the Kit API origin set in the `newsletter` layer, **without** `/v4` — the adapter owns that path |
-| `NUXT_MAIL_API_KEY` | The Resend API key Contacto and Publicar send with, as a `Bearer` token. Resend sends only from a domain verified in that account, so the `from` literal has to be on it |
-| `NUXT_MAIL_BASE_URL`, `_FROM` | Optional. Override Resend's API origin and the sender set in the `forms` layer |
-| `NUXT_MAIL_TO` | Optional. Overrides Contacto's inbox, set in the `contact` layer |
-| `NUXT_FORMS_SLOW_REPLIES_UNTIL` | Optional. A `YYYY-MM-DD` date: through that day in Madrid, a notice above Contacto's and Publicar's forms says replies will be slower than usual, then it disappears by itself. A value in any other shape makes `GET /api/replies` answer `500`, and the notice stays hidden. Only the Worker needs it: the forms read it through that route in the browser, so a change applies without a rebuild |
-| `NUXT_COMMENTS_USERNAME`, `NUXT_COMMENTS_APPLICATION_PASSWORD` | The WordPress user new comments are posted as, and an application password of theirs. It must hold `moderate_comments` (Editor), the only capability that lets the request file the comment as the reader with their IP and hold it, so it is an editor-grade secret |
-| `NUXT_PUBLIC_SUBMISSION_EMAIL` | Optional. Overrides the editorial inbox set in the `publish` layer, which Publicar's form sends to and its `mailto:` writes to |
-| `NUXT_TURNSTILE_SECRET_KEY` | The Turnstile widget's secret key. Rejected by Cloudflare, every form route answers `403`, with `invalid-input-secret` in the `cause` |
-| `NUXT_PUBLIC_TURNSTILE_SITE_KEY` | The Turnstile widget's site key. Unset, the form shows its error state on submit |
-| `NUXT_PUBLIC_OBSERVABILITY_URL` | Faro collector URL. Leave unset and browser telemetry stays off |
-| `NUXT_PUBLIC_OBSERVABILITY_APP_ENVIRONMENT` | Stamped the same way. Defaults to `development` |
-| `NUXT_OBSERVABILITY_URL` | Grafana OTLP gateway URL. Leave unset and server telemetry stays off |
-| `NUXT_OBSERVABILITY_INSTANCE_ID` | Grafana Cloud instance ID, the user half of the OTLP credentials |
-| `NUXT_OBSERVABILITY_TOKEN` | Grafana Cloud access token, the password half |
-| `NUXT_PUBLIC_TRACKERS_GOOGLE_ANALYTICS_ID` | The GA4 measurement ID. Unset, GA never loads; with no tracker set at all there is no cookie banner either |
-| `NUXT_PUBLIC_SOCIAL_INSTAGRAM`, `_LINKEDIN`, `_X` | Profile URLs for the footer's icons. Each one left unset drops its icon, and with none set the list is gone |
+| `NUXT_CONTENT_VENDOR_BASE_URL` | WordPress site root, with scheme, **without** `/wp-json` |
+| `NUXT_SITE_ENV` | `production` or `preview` on deploys, unset elsewhere. Unset or `preview` means `noindex` |
+| `NUXT_PUBLIC_SITE_URL` | Optional. Overrides the public origin used for permalinks and canonicals |
+| `NUXT_PUBLIC_PAGE_SLUGS` | JSON array of WordPress page slugs served at `/:slug/`. Leave unset for the default |
+| `NUXT_ARTICLES_HIDDEN_TERMS` | Optional. JSON array of category/tag slugs whose posts stay out of every listing |
+| `STAGING_USERNAME`, `STAGING_PASSWORD` | The [staging login](#staging-login). Needs Netlify's Functions scope |
+| `NUXT_NEWSLETTER_API_KEY`, `_FORM_ID` | Kit API key and the form new readers join |
+| `NUXT_NEWSLETTER_BASE_URL` | Optional. Kit API origin, **without** `/v4` |
+| `NUXT_MAIL_API_KEY` | Resend API key for Contacto and Publicar |
+| `NUXT_MAIL_BASE_URL`, `_FROM`, `_TO` | Optional. Resend origin, sender and Contacto's inbox |
+| `NUXT_PUBLIC_SUBMISSION_EMAIL` | Optional. Publicar's editorial inbox |
+| `NUXT_FORMS_SLOW_REPLIES_UNTIL` | Optional `YYYY-MM-DD`. Shows a "replies will be slow" notice on the forms until that day |
+| `NUXT_COMMENTS_USERNAME`, `_APPLICATION_PASSWORD` | WordPress user that files comments. Needs Editor (`moderate_comments`) |
+| `NUXT_TURNSTILE_SECRET_KEY`, `NUXT_PUBLIC_TURNSTILE_SITE_KEY` | Turnstile keys |
+| `NUXT_PUBLIC_OBSERVABILITY_URL`, `_APP_ENVIRONMENT` | Faro collector. Unset, browser telemetry is off |
+| `NUXT_OBSERVABILITY_URL`, `_INSTANCE_ID`, `_TOKEN` | Grafana OTLP gateway and credentials. Unset, server telemetry is off |
+| `NUXT_PUBLIC_TRACKERS_GOOGLE_ANALYTICS_ID` | GA4 ID. Unset, no GA and no cookie banner |
+| `NUXT_PUBLIC_SOCIAL_INSTAGRAM`, `_LINKEDIN`, `_X` | Footer profile links. Each unset one is hidden |
 
-Only secrets and values that change per environment are env vars. A public value that is the same
-everywhere is a literal in [`nuxt.config.ts`](./nuxt.config.ts), so changing it is a one-line PR:
+Public values that are the same everywhere (site URL, sender, inboxes) are literals in the
+`nuxt.config.ts` of the layer that owns them; the matching `NUXT_` variable still overrides them.
 
-| Literal | Value |
-| --- | --- |
-| `public.site.url` | The site's public origin, `www` included, with no trailing slash |
-| `mail.baseURL`, `.from` | Resend's API origin and the sender every form's email comes from, set in [`layers/forms/nuxt.config.ts`](./layers/forms/nuxt.config.ts) |
-| `mail.to` | The inbox Contacto sends to, set in [`layers/contact/nuxt.config.ts`](./layers/contact/nuxt.config.ts) |
-| `public.submissionEmail` | The editorial inbox Publicar's form sends to and its `mailto:` writes to, set in [`layers/publish/nuxt.config.ts`](./layers/publish/nuxt.config.ts) |
-| `content.vendor.name` | Selects the vendor's config type |
+## i18n
 
-A matching `NUXT_`-prefixed variable still overrides any literal, which is how the e2e suite points
-the vendors at its fakes. Every variable is read at **startup**, not at build time, so one build
-artifact runs in any environment, which is why nothing here reads `process.env`. The exception is a [prerendered page](#-rendering): the build renders it, so
-it keeps the `NUXT_PUBLIC_*` values and the vendor URLs the build had, and Netlify has to expose
-them to builds.
+Copy lives in [`i18n/locales/es-ES.json`](./i18n/locales/es-ES.json), handed straight to
+`@nuxtjs/i18n` with no TMS (Tolgee's 500-key cap was outgrown). One locale, `no_prefix`, no browser
+detection. Specs see keys, not copy: [`vitest.setup.ts`](./vitest.setup.ts) empties the messages.
 
-## 🌍 i18n
-
-The site is Spanish-only, and its copy lives in the app:
-[`i18n/locales/es-ES.json`](./i18n/locales/es-ES.json). The `i18n` block in
-[`nuxt.config.ts`](./nuxt.config.ts) hands that file to `@nuxtjs/i18n` directly, with no vendor and
-no TMS, so a copy change is a reviewed edit that ships with the next build.
-[`i18n/i18n.config.ts`](./i18n/i18n.config.ts) adds the date formats.
-
-| Setting | Value | Why |
-| --- | --- | --- |
-| `locales` | `es-ES`, `language: "es"`, `file: "es-ES.json"` | `language` is what `<html lang>` gets, so it reads `es`, not the locale code |
-| `strategy` | `no_prefix` | Pages live at `/…`. `/es-ES/…` is a 404, not a redirect |
-| `detectBrowserLanguage` | `false` | With one locale there is nothing to detect, and detection makes the server set an `i18n_redirected` cookie on pages the CDN caches |
-
-Tolgee caps a project at 500 keys, which the app outgrew, so it left the shared
-[`@monorepo/i18n`](../../packages/i18n) module and the
-[translations server](../../infrastructure/translations) behind. Both still exist for anything else
-that wants a TMS.
-
-Specs never see the copy: [`vitest.setup.ts`](./vitest.setup.ts) empties the locale's messages
-before each one, so `t()` returns the key and specs assert on keys.
-
-### 🔤 Copy keys
-
-UI copy is never hard-coded. It goes in `es-ES.json` under a key:
+### Copy keys
 
 | Rule | Example |
 | --- | --- |
-| The first segment is who owns the copy: `app` for the shell (head, layout, header, footer), a page by name, singular for a detail page, or a component in camelCase | `app.title`, `publications.title`, `article.back`, `articleCard.readingTime` |
-| Then the element, then its role, all camelCase and nested as objects, never a dotted literal key | `app.footer.links.publishThesis` |
-| Name the role, never the wording, so a copy edit never renames a key | `article.back`, not `article.backToArticles` |
-| Parameters are named, and plurals use vue-i18n's `\|` form with the count as the second argument | `"{page} de {total}"`, `t("articleCard.minutes", n)` |
-| `common` holds only copy whose meaning is the same wherever it appears | `common.loading` |
-| Keys are sorted alphabetically at every level | — |
+| First segment is the owner: `app` for the shell, a page, or a component in camelCase | `app.title`, `article.back`, `articleCard.readingTime` |
+| Then element and role, camelCase, nested objects | `app.footer.links.publishThesis` |
+| Name the role, never the wording | `article.back`, not `article.backToArticles` |
+| Named params; plurals use vue-i18n's `\|` form | `"{page} de {total}"`, `t("articleCard.minutes", n)` |
+| `common` only for copy that means the same everywhere | `common.loading` |
+| Keys sorted alphabetically at every level | — |
 
-A key used in two places with two meanings is two keys, even while the Spanish happens to match.
+## Content
 
-## 📄 Content
+Only the `articles` layer's server routes call `useContent`; every page reads those routes. The
+routes map WordPress entries into view models, so neither the CMS URL nor raw HTML reaches the
+browser. Listings, search suggestions and counts slice one cached index of every post (an hour in
+production, five minutes in dev), so a new post can take a couple of hours plus the CDN's day to
+list. The [module README](../../packages/content/src/nuxt/README.md) has the cache options.
 
-One block in [`nuxt.config.ts`](./nuxt.config.ts) drives it: `content.vendor` picks the CMS, and the
-`@monorepo/content/nuxt` module gives server code a cached `useContent(event)`. Nothing reads content
-from the browser: the `articles` core's routes call `useContent`, map each `Entry` into a view model
-and serve that, so the CMS base URL and its unsanitised HTML stay on the server. Content is cached
-once, inside `useContent`; the routes map on every request, since mapping a post takes a few
-milliseconds and a second cache would add its own window of staleness.
+### The body pipeline
 
-The vendor is `wordpress`, pointed at an external WordPress install — the CMS is not in this repo, so
-`infrastructure/` has nothing to do with it. Only the `articles` core's server routes consume it, and
-the feature layers' pages read those routes:
-
-| Page | Reads | Notes |
-| --- | --- | --- |
-| [`index`](./layers/archive/app/pages/index.vue) | `GET /api/home` through `useHome` | The newest post leads, the next five are "Lo último" and the three after those the recent cards, so none repeats. The thesis band takes the three newest theses from the whole index. The subject and format counts come from the same cached index. `ArticleSummary` carries no sticky flag, so the lead is the newest post |
-| The four listings: [`publicaciones`](./layers/archive/app/pages/articles/index.vue), [`areas/:slug`](./layers/archive/app/pages/categories/%5Bslug%5D.vue), [`etiquetas/:slug`](./layers/archive/app/pages/tags/%5Bslug%5D.vue) and [`colaboradores/:slug`](./layers/archive/app/pages/authors/%5Bslug%5D.vue) | `GET /api/articles` through `useArticleListing` | `?page`, `?sort=oldest` and `?format=` live in the URL, each left out at its default. The pages don't re-validate them: the route answers anything a reader can type out of bounds with a `404`. [`listingScroll.client.ts`](./layers/archive/app/plugins/listingScroll.client.ts) scrolls to the top when only `?page` changes, wrapping Nuxt's scroll behaviour rather than replacing it |
-| [`buscar`](./layers/search/app/pages/search.vue) | `GET /api/search` through `useArticleSearch` | `?query` and `?page` live in the URL, and a blank `query` is the empty state, which never asks the route. The route hands `query` to `useContent`'s `search`, where WordPress matches every word against the title, excerpt and body, so neither authors nor subjects are searched. A blank or overlong `query`, or a page past the end, is a `404`, WordPress's own `400` for the latter included. Only when nothing matches does it read the cached index, to suggest the four subjects with the most publications. The form is a real GET form, so a search works before hydration, and the page is `noindex` |
-| [`areas`](./layers/archive/app/pages/categories/index.vue) | `GET /api/subjects` through `useSubjectIndex` | The subject grid, the three formats with the thesis band, and the topics A to Z, each counted from the cached index. The thesis tag marks a format, so it is not listed as a topic. Subject descriptions come from [`getCategories`](./layers/articles/server/services/categories.ts), cached like the index, since the index's embedded terms carry none |
-| [`colaboradores`](./layers/archive/app/pages/authors/index.vue) | `GET /api/authors` through `useAuthorDirectory` | Every author of the index with their post count, most published first, since WordPress users carry no count ([0027](../../docs/decisions/0027-huella-legal-content-model.md)). The name filter and the reveal past the first twelve run in the browser over that one list. The article page reads the same route lazily, under its own key, for `ArticleAuthorCard`'s count |
-| [`layers/reading/app/pages/articles/[slug].vue`](./layers/reading/app/pages/articles/%5Bslug%5D.vue) | `GET /api/articles/:slug`, through `useArticle` | Served at `/:slug/`, the root permalink WordPress had, so indexed URLs still resolve. The route returns the sanitised `Article` view model with its citations. `GET /api/articles/:slug/related` serves up to three posts from its first category, server-rendered without blocking client navigation; when it fails, that band is hidden and the article is unaffected. `GET /api/articles/:slug/comments` serves its approved comments as `ArticleComments`, read in the browser only, since a prerendered article would otherwise keep a week-old thread; it fills the header's count and `ArticleView`'s `comments` slot, where the page places `CommentsSection`. No `locale` is passed: the content locale is the vendor's axis and WordPress refuses one outright. A slug listed in `pageSlugs` is a WordPress page instead: the route renders `PageView` in place of `ArticleView`, which reads `GET /api/pages/:slug` through `usePage` and never asks for a post. `GET /api/pages/:slug` answers a slug the list doesn't name with a `404`, so a page published in WordPress stays off the site until it is listed |
-
-`GET /api/articles` filters, sorts and pages a cached index of every post as `ArticleSummary`,
-because WordPress can filter on neither format nor author slug, and has no counts for them. One fill
-reads every page of posts through `useContent` at its ceiling of 50, about 5.7 MB upstream for the
-current archive, and is kept for an hour. That index is the one view model cached on top of
-`useContent`, since remapping every body per request would cost far more than one post's few
-milliseconds, so a new post can take up to two hours to list, plus the CDN's day on a listing
-[rendered by Netlify](#-rendering). In dev, both caches keep five minutes
-and refetch an expired entry before answering, set by the `$development` blocks in
-[`nuxt.config.ts`](./nuxt.config.ts) and the [`articles` layer's](./layers/articles/nuxt.config.ts),
-and `pnpm cache:clear` empties them at once. A subject or tag is read whole through
-`useContent(event).getTerm`, since embedded terms carry no description. Nothing a listing renders is
-HTML: titles and excerpts are decoded to plain text on the server.
-
-See the [module README](../../packages/content/src/nuxt/README.md) for the options, the cache windows
-and the gotchas.
-
-## 🧩 Structure
-
-[`app/`](./app) is the front-end shell and stays thin: a layout, an error page and its dev-only debug
-panel, its client plugins (Faro telemetry, a dev-only console filter for a known Nuxt/Vue
-warning, the replay of a click made before hydration, and `navDirection`, which tells the page
-transition whether the reader went back), and one page — the entry page. Its own server code is four Nitro plugins (telemetry, a log line for every
-handled `5xx`, the header that keeps a `5xx` out of the CDN, and the hydration loader). Beside it,
-[`modules/requiredEnv.ts`](./modules/requiredEnv.ts) checks the
-[required variables](#-environment) once per build, and
-[`modules/rendering.ts`](./modules/rendering.ts) turns each layer's `rendering` entries into route
-rules and lists the [prerendered routes](#-rendering) on a deploy build, and
-[`modules/stagingGate.ts`](./modules/stagingGate.ts) puts the [staging login](#-staging-login) on a
-production build.
-
-| Piece | What it holds |
-| --- | --- |
-| [`layouts/default.vue`](./app/layouts/default.vue) | The skip link, `SiteHeader`, the one `<main id="contenido">` and `SiteFooter`, fed by `useSiteNav`. A page never renders its own `<main>`. A client-side page change is a native View Transition, Nuxt's `experimental.viewTransition`: a short fade and slide in the [`design`](./layers/design) layer's `main.css`, CSS only, skipped under reduced motion and on a query-only change, with `SiteHeader` held still by its own `view-transition-name` |
-| [`composables/useSiteNav.ts`](./app/composables/useSiteNav.ts) | The shell's arrangement of links: which `nav` keys the header, its *Revista* group and each footer column show and in what order, with `aria-current`, plus the configured social profiles. It sits in the kit, so the layout passes it the `tracking` feature's `useCookiePreferences`, and prints the core's ISSN itself. Each layer declares where its own keys go under `nav` in its `app/app.config.ts`, so the shell never names a route. The layout calls it and hands the results to the shell |
-| [`components/shell/`](./app/components/shell) | `SiteHeader` (`UHeader` with a slideover menu below `lg`, and dropdowns above it whose *Publicaciones* and *Áreas* panels are the archive layer's `NavPublicationsPanel` and `NavSubjectsPanel`) and `SiteFooter` (`UFooter` + `UFooterColumns`), both props-in. Every link is a [route name](#-links). WordPress pages such as `aviso-legal` are `article` slugs, and the privacy and cookies links are anchors on `aviso-legal`, per [0028](../../docs/decisions/0028-huella-legal-urls-and-cutover.md) |
-| [`types/`](./app/types) | The vocabulary kits share across layers: `LinkAction`, the `{ label, to }` every link and action prop takes, and `Tone`, the `paper` or `slate` surface a component renders on. [`AnalyticsEvent.ts`](./app/types/AnalyticsEvent.ts) is the one map of analytics event names to their params, which carry names, counts and buckets, never what a reader typed |
-| [`composables/useTrack.ts`](./app/composables/useTrack.ts) | `useTrack()` returns a `track(name, params)` typed by that map. It only raises the `analytics:event` Nuxt hook, so `forms` and the core can report without depending on the `tracking` feature, and with no tracker configured nothing listens. Call it in `setup`, since the hook is taken from the Nuxt app there |
-| [`error.vue`](./app/error.vue) | The 404 design for a 404 and the server design for anything else, inside the same layout. It wraps itself in `UApp`, since Nuxt renders it in place of `app.vue` |
-| [`utils/createPageError.ts`](./app/utils/createPageError.ts) | A failed page fetch as the fatal error `error.vue` renders: the status the route answered with, or `502` when no response came back, with data and stack kept. Every page controller raises through it, and client code reads and writes `status`/`statusText`, since Nuxt deprecates `statusCode`/`statusMessage` |
-| [`app.config.ts`](./app/app.config.ts) | The journal's name and ISSN under `journal`, read by the citation mapper on the server too. The source repository's URL under `repository`, which the footer links. The Nuxt UI theme is the [`design`](./layers/design) layer's |
-
-Domain logic lives in Nuxt layers under [`layers/`](./layers): one directory per task a reader
-comes for, such as reading, browsing the archive or searching, a **feature**, plus one per concern that several features share, a **capability**, today
-`forms` and `design`, and the **core**, `articles`, which owns the content. The core's routes are the only
-code that calls `useContent`, and every feature reads them through `useCachedFetch`. A feature is
-therefore app-side only: it never sees an `Entry`, and what two features share is the core's view
-models, never each other's code. Nuxt auto-registers `<rootDir>/layers/*` by their presence, so
-there is no `extends` array to add, and adding one is the mistake. A layer reaches another layer's
-server code and shared types through Nitro's and Nuxt's auto-imports, never by a relative path.
-
-Auto-imports make every layer's exports global, so which way they may be used is a rule rather than
-something the tree enforces:
-
-| Owner | Paths | May use |
-| --- | --- | --- |
-| Shell | Everything else outside `layers/`: the rest of `app/` and `server/`, and `modules/` | Anything |
-| Kit | `app/components/base/`, `app/components/listing/`, `app/types/`, `app/utils/`, `app/composables/`, `i18n/` | The kit |
-| Core | `layers/articles/` | Itself and the kit |
-| Capability | `layers/forms/`, `layers/design/` | Itself and the kit |
-| Feature | Every other `layers/<name>/` | Itself, the kit, the core and the capabilities. Its `app/pages/` may also render another feature's auto-registered components, which is how the article pages place `NewsletterBand` |
-
-A path import of another feature's component breaks the rule even from a page, so a component a
-layer keeps out of auto-registration, like `NewsletterForm`, stays private. `eslint.layerBoundaries`
-in [`eslint.config.ts`](./eslint.config.ts) enforces the table on `layers/` and the kit, placing each
-auto-imported component, composable and util through the maps `nuxi prepare` writes into `.nuxt/`.
-Specs and stories get no allowance: they follow the rules of the layer they sit in, since they use
-only what their subject does. `checkUnknownComponents` in `nuxt.config.ts` covers the one breakage
-that would otherwise pass every check, making typecheck fail on a tag that resolves to nothing, so
-deleting a layer can't leave its components named on another layer's pages.
-
-| Layer | `shared/` | `app/components/` | `server/` |
-| --- | --- | --- | --- |
-| [`archive`](./layers/archive) | — | `archive/` is an `ArticleListing` on the four listing pages, under `BasePageIntro` (the breadcrumb, from home) holding `BasePageHeading` or, on a profile, `ArchiveAuthor`, then `ArchiveResults` and the `ArchiveSubjects` aside. A file inside a folder drops the folder's prefix (`archive/Results.vue`): Nuxt collapses a repeated prefix and Storybook doesn't, so `archive/ArchiveResults.vue` would register under two different names; every layer follows this. `useArticleListing` in `app/composables/` is every listing page's controller: the fetch, the query in the URL, the sort and the format pills. [`listingScroll.client.ts`](./layers/archive/app/plugins/listingScroll.client.ts) is its scroll fix. `home/` is the `Home` on the home page, `index.vue`: `HomeFeatured` (the lead and "Lo último"), `HomeSubjects` and `HomeTheses`. `useHome` is its controller. `subjects/` is the `SubjectIndex` on the subjects page: `SubjectsGrid`, `SubjectsFormats` and `SubjectsTopics`, which files topics under their initial with `groupByLetter`. `useSubjectIndex` is the page's controller. `directory/` is the authors page's `DirectoryListing`, which owns the name filter and the no-match state, over `DirectoryCard`s, and `DirectoryReveal` hands its slot the first `limit` items and shows the rest behind one button, moving focus to the first link revealed. `useAuthorDirectory` is the page's controller. `about.vue` is the about page: it counts the archive's articles and authors through `useSubjectIndex` and `useAuthorDirectory` for `AboutIntro`, and holds the static sections itself, between the intro and `AboutCallToAction`. `AboutFingerprint` is the mark that draws itself in, on load or, with `drawOnView`, once it scrolls into view. Its motion is CSS only, in each component's unscoped `<style>`, scroll-driven where the browser supports it, and off under reduced motion | — reads the core's routes: `GET /api/articles`, `GET /api/home`, `GET /api/subjects` and `GET /api/authors` |
-| [`articles`](./layers/articles) | The view models the server returns: `Article`, `ArticleBody`, `ArticleSummary`, `ArticleListing` (with its `Facet` counts and `ListingScope`), `Author`, `Category`, `Citation`, `Note`, `SubjectIndex`, `Home`, `TocItem`, `Page` (a WordPress page's title, `ArticleBody`, SEO and `permalink`), `ArticleComments` (whether the post is open, the count, and its `CommentThread`s of `ReaderComment`s), plus the `ListingQuery` the listing route accepts and `ArticleSearch`, a page of results with its query and the subjects suggested when nothing matched. `Article` carries its absolute `permalink` and `citations` | `summary/` is an `ArticleSummary` wherever articles are listed: `SummaryCard` in five variants (lead, optionally split, standard, compact, media, row), and `SummaryGrid` and `SummaryList` to lay them out. `article/` holds what several features render outside a card too: `ArticleByline` (authors, date, reading time and the comment count, linked to the thread), `ArticleMediaFallback`, and `ArticleProse`, which renders a sanitised `ArticleBody`'s lead, image and HTML, styled by `.hl-prose` in [`app/assets/prose.css`](./layers/articles/app/assets/prose.css), for any feature that shows a post or a WordPress page. `useCachedFetch` in `app/composables/` is how every feature reads a route. `FORMAT_KEYS` in `app/utils/` names each format's copy key, and `bylineAuthors` links each author to their profile. `noteAnchor`/`noteReferenceAnchor` in `shared/utils/` are the note ids the body mapper and `ArticleNotes` share, and `toCitationMeta` beside them builds an `Article`'s Google Scholar tags | `toArticleSummary` maps an `Entry` into them, format rule included. Decoding and reading time parse with the domain-free helpers in `server/utils/hast.ts`, and stay server-side. `toArticleBody` is the WP HTML pipeline, with `extractNotes` and `annotateHeadings` beside the view models they produce, `toCitations` writes APA 7 and the journal's own style, `GET /api/articles/:slug` serves the `Article`, `GET /api/articles/:slug/related` its related `ArticleSummary` list, and `getArticleIndex` in `server/services/` caches every post's summary for `toArticleListing` to slice into `GET /api/articles`, `toSubjectIndex` to count into `GET /api/subjects`, `toHome` to pick from into `GET /api/home` and `toAuthorDirectory` into `GET /api/authors`. `GET /api/search` maps WordPress's results through `toArticleSearch`, with `toSuggestedSubjects` counted from the same index. `toPage` runs the same `toArticleBody` over a page, and `GET /api/pages/:slug` serves it to the slugs in `pageSlugs`. Comments are not content, so `server/adapters/wordpress.ts` reads them from WordPress's comments route directly, unauthenticated, which answers approved ones only: `GET /api/articles/:slug/comments` maps them through `toArticleComments`, which hangs every reply under its top-level comment and turns each paragraph into plain text, and `getCommentCounts` in `server/services/` counts every approved comment once, cached like the index, for `withCommentCounts` to put on the summaries the card routes answer. A failed count leaves the cards without one. `GET /api/__sitemap__/urls` hands `@nuxtjs/sitemap` the posts, `pageSlugs`, áreas and colaboradores, and `server/routes/feed.get.ts` serves the RSS `/feed/` from the same index, both leaving out a post Yoast marks `noindex` |
-| [`contact`](./layers/contact) | `contactSchema`, the Valibot rules a message must pass (name, email, message and consent `true`), worded by the caller so the server reuses them, and `ContactRequest`, the route's body: those fields plus `FormRequest` | `ContactForm` wires the four fields, `FormHoneypot` and `FormChallenge` to `useContact` in `app/composables/`, the same state machine as `useNewsletter`, so a `422` lands on the fields it names. A failed submit renders `FormErrorSummary`, and the notice under the consent checkbox states the purpose and links the privacy policy. Its page, `contact.vue`, places it under `BasePageIntro` at `/contacto/` | `POST /api/contact` answers a filled honeypot like a success and sends nothing, then calls `assertChallenge`, re-validates with the same schema through `assertForm` and calls the `forms` layer's `sendMail`: one plain-text email to `mail.to` with Reply-To set to the reader, so the inbox answers them directly. The rest is `422` with `FormError[]`, `403` on a failed challenge, and `502` for anything Resend refuses or can't answer. The app stores nothing: a message lives only in the inbox and in Resend's log |
-| [`comments`](./layers/comments) | `commentSchema`, the Valibot rules the reader's fields must pass (name, email, comment up to 5,000 characters and consent `true`), `newCommentSchema`, those plus the `post` and the `parent` it replies to, and `CommentRequest`, the route's body | `CommentsSection` is the thread under an article: each top-level `CommentItem` with its replies indented once, however deep WordPress nested them, and the one `CommentForm`. "Responder" hands that comment to the form, which says whom the reply answers and takes focus. A closed article keeps its thread and loses the form and the reply buttons. From five threads up, `ListingSortSelect`, worded through its `copy` prop since "Más antiguos" agrees with comments, flips the threads to newest first; replies always stay oldest first. `usePostComment` is the form's state machine, `useContact`'s plus a `failure` naming why a send failed. The notice states the purpose and links the privacy policy | `POST /api/comments` answers a filled honeypot like a success and files nothing, then calls `assertChallenge`, re-validates through `assertForm` and calls `createComment` in `server/adapters/wordpress.ts`: authenticated with an application password, it files the comment as the reader with `status: "hold"` and their IP and user agent, so Akismet judges them and not the server. The posting user's `unfiltered_html` skips kses, so the content is escaped and `<>` dropped from the name. WordPress's duplicate, flood and closed refusals become `409`, `429` and `410`; anything else is `502` |
-| [`design`](./layers/design) | — | None: the layer is the design system the rest render with. [`main.css`](./layers/design/app/assets/main.css) holds every token and points Nuxt UI's semantic roles at them, and [`app.config.ts`](./layers/design/app/app.config.ts) sets the colour aliases and composes the component theme from `theme/`, one file per component named for its `ui` key (`button.ts`, `footerColumns.ts`), plus `tv.ts` for the tailwind-merge type steps. A `ui` key styles that component everywhere, since Nuxt merges every layer's app config into one, so a look only one layer needs is a `:ui` override where it renders. The layer's `nuxt.config.ts` registers the stylesheet and sets the `ui` and `fonts` options, while `@nuxt/ui` and `@nuxt/fonts` stay in the root `modules` list, because Nuxt installs a layer's modules before the root's | — |
-| [`forms`](./layers/forms) | `Challenge`, the type of `FormChallenge`'s slot prop, and `FormRequest`, the `honeypot` and `token` fields every form posts | The form pieces no single feature owns, for the newsletter, contact and publish controllers to drive. A feature's form lives in its own layer: forms are `UForm`, and fields are `UFormField` with Nuxt UI inputs, themed in the `design` layer. `FormErrorSummary` links each error to its field's `id`, and `FormSuccessPanel` takes focus when it mounts, because a status region mounted with its text is never announced. A failed submit is a plain `UAlert` with `role="alert"`. In `app/composables/`, `useFormSubmission` drives a form that posts: it sends the fields with the honeypot's value through `challenge`, words the server's `422` issues onto their fields with `setErrors`, and validates on input once the form has been submitted; `useErrorSummary` builds `FormErrorSummary`'s rows, and the contact and interest forms use it. The spam defence is two components, kept apart because they do different jobs. `FormHoneypot` is a hidden field bound with `v-model`, placed among the form's own fields so a bot filling the form fills it too. `FormChallenge` wraps the form and holds `@nuxtjs/turnstile`'s `NuxtTurnstile`, which stays invisible unless Cloudflare wants an interaction. The widget mounts on the wrapped form's first `focusin`, so a page nobody signs up from never loads Cloudflare's script. The module's own `trigger` can't do this, since it only listens on the widget's element. Its slot gets `challenge(send)`, which waits up to 30 s for a token, hands it to `send`, and resets the widget once `send` settles, since a token is single-use. The layer's `nuxt.config.ts` installs the module and declares both keys empty, which also keeps out the always-pass keys the module would default to in dev | `assertChallenge` in `server/utils/turnstile.ts` makes one siteverify call through the module's `verifyTurnstileToken` and reads only its `success` flag, never the error codes. A refusal is a `403` carrying Cloudflare's answer as `cause`, even when it arrives as a thrown `400`, and no answer at all is a `502`. `assertForm` in `server/utils/assertForm.ts` re-runs a route's schema, returning its output or throwing a `422` with one `FormError` per issue. `sendMail` in `server/utils/resend.ts` is the one Resend client: a plain-text email from `mail.from` with Reply-To, an optional base64 attachment, a subject whose line breaks are folded so no field can split a header, and a `502` for anything Resend refuses or can't answer. The honeypot is no helper's job: each route returns early on it |
-| [`interest`](./layers/interest) | — | `InterestCalculator` lays out two private parts and owns the arithmetic: `InterestCalculatorForm` emits `submit` with a validated `InterestInput`, the preset already resolved to a percentage, and `edit` on any change, which clears a stale result; `InterestCalculatorResult` formats the cents as euros inside a live region that stays mounted so the first result is announced. Like `NewsletterForm`, the layer's `nuxt.config.ts` keeps both parts out of auto-registration. A failed submit renders `FormErrorSummary`. The form validates with `interestFormSchema` in `app/schemas/`, the Valibot rules worded by the caller, and computes with `calculateInterest` in `app/utils/`, simple interest in cents over actual days and a 365-day year, with `INTEREST_RATES` holding the legal and judicial presets. Its page, `interest-calculator.vue`, replaces the WordPress calculator at `/calculo-intereses/` per [0028](../../docs/decisions/0028-huella-legal-urls-and-cutover.md) | — the arithmetic runs in the browser |
-| [`legacy`](./layers/legacy) | — | None | `routeRules` that 301 WordPress's renamed URLs to the app's, and `server/middleware/legacy.ts` for the two a rule can't match: `/?s=` and the `/wp-*` paths. It holds no app code and reads no content, so it can be deleted whole once the old links stop mattering; [its README](./layers/legacy/README.md) has the map |
-| [`newsletter`](./layers/newsletter) | `subscriptionSchema`, the Valibot rules a subscription must pass, worded by the caller so the server reuses them, and `NewsletterRequest`, the route's body: the address plus `FormRequest` | `NewsletterForm`, the field and button, stacked or inline, in a paper or slate tone, with the privacy notice every variant needs under it. It runs its own `useNewsletter`, so `NewsletterBand` (a landmark; the home page gives it `id="newsletter"`, which the header's newsletter links target) and `NewsletterCard` (the sidebar, naming an optional `subject`) only place it. It is private to the layer: the layer's `nuxt.config.ts` keeps it out of auto-registration. `useNewsletter` in `app/composables/` is the state machine, idle → submitting → success, invalid or error, one per form: a `422` becomes field errors through `UForm`'s `setErrors`, anything else the alert. Success replaces the form with `FormSuccessPanel`, asking the reader to confirm by email. The form sits inside `FormChallenge` with a `FormHoneypot` among its fields, and `subscribe` sends the honeypot's value through `challenge`, so a Turnstile token rides with every post. Its page, `newsletter-confirmed.vue`, is where Kit's form redirects a reader who clicked the confirmation link, at `/suscripcion-confirmada/`; a route rule in the layer's `nuxt.config.ts` keeps it out of search and the sitemap | `POST /api/newsletter` answers a filled honeypot like a success and sends nothing, then calls `assertChallenge`, re-validates with the same schema through `assertForm` and calls `addSubscriber` in `server/adapters/kit.ts`: it creates the subscriber as `inactive`, an upsert that never changes an existing one's state, then adds them to the form, whose incentive email is the confirmation. A subscriber who is `cancelled`, `bounced` or `complained` never reaches the form, so an address that left is never resubscribed and sees the same success. The rest is `422` with `FormError[]`, `403` on a failed challenge, `502` when a vendor fails. A `422` from Kit is a `422` on the field (`rejected`). [0029](../../docs/decisions/0029-huella-legal-forms-and-integrations.md) has the reasoning |
-| [`publish`](./layers/publish) | `submissionSchema`, the Valibot rules a proposal must pass (name, email, kind, summary and consent `true`, with an optional title and an optional draft of at most 4 MB in `.docx .pages .txt .pdf`), and `isManuscript`, which checks a draft's first bytes against its extension. `SubmissionRequest` is the route's body | The Publicar page's sections, each placing its own copy: `PublishReasons`, `PublishSteps`, `PublishProposal`, `PublishFaq`, which closes on a link to the WordPress page `guia-de-publicaciones`, and `PublishThesis`, the card behind the footer's `#tesis` link. `PublishProposal` holds `PublishForm`, which wires the fields, `UFileUpload`, `FormHoneypot` and `FormChallenge` to `useSubmission`. That is `useFormPost` with `multipart`, so the fields and the File go as `FormData`. It keeps `public.submissionEmail` as a `mailto:` line for an author who would rather write. Its page, `publish.vue`, places them under `BasePageIntro` | `POST /api/submissions` reads the multipart body with `readFormData`, answers a filled honeypot like a success, then calls `assertChallenge` and `assertForm`. A draft whose bytes don't match its extension is a `422` on `file`. Then `sendMail` sends one email to `public.submissionEmail` with Reply-To set to the author and the draft attached. Nothing is stored |
-| [`reading`](./layers/reading) | — | `article/` is the article page, one component per section (`ArticleHeader`, `ArticleToc`, `ArticleBackMatter`, `ArticleRelated`, with the core's `ArticleProse` for the body) plus their parts: `ArticleTitle` (the breadcrumb and `h1`, with slots for a kicker above and the rest below), `ArticleShareBar`, `ArticleNotes`, `ArticleBibliography`, `ArticleCiteBox` and `ArticleAuthorCard`. `ArticleView` and `page/View.vue` (`PageView`) are what `[slug].vue` chooses between, each awaiting its own controller. `ArticleView` leaves a `comments` slot below the article, passing it the article and its thread, and `[slug].vue` fills it with the `comments` feature's `CommentsSection`. `PageView` is a WordPress page: `ArticleTitle`, then `ArticleToc`, `ArticleProse`, `ArticleNotes` and `ArticleBibliography` on the article's grid. Aviso legal, with privacy and cookies as sections whose heading ids the footer links target, is one of these pages. `ArticleToc` is a rail or an accordion, lit by Nuxt UI's `useScrollspy`, and takes an optional `title` in place of "En este artículo". `useArticle` in `app/composables/` is the article page's controller: the fetches, the error, the breadcrumb and the SEO meta. `useScholarlyMeta` is what `ArticleView` calls once the article has loaded, for its `citation_*` tags and the `ScholarlyArticle` it hands `nuxt-schema-org`, which renders on the server only. `usePage` is a WordPress page's: the fetch, the error and the SEO meta. | — reads the core's routes: `GET /api/articles/:slug` and its `related` and `comments`, `GET /api/pages/:slug`, and `GET /api/authors` for the author counts |
-| [`search`](./layers/search) | — | `search/` is search: `SearchDialog`, the header's button, which stays a link to `/buscar/` until hydration and then opens `SearchPalette` in place (also on `/` and ⌘K), and the search page's `SearchForm` and `SearchResults`, whose count lives in a status region that stays mounted, so each new result is announced. Before typing, the palette offers the biggest subjects and the latest posts from `/api/home`; once typing pauses, the first five `/api/search` matches. Its first row is the full results page, because Enter takes the highlighted row and the palette highlights the first. `useArticleSearch` is the search page's controller: the query in the URL and the draft in the input, kept in step with it. `useSearchPreview` is the palette's: a debounced query and both fetches, which fail quietly, since Enter still reaches the results page | — reads the core's routes: `GET /api/search`, and `GET /api/home` for the palette |
-| [`tracking`](./layers/tracking) | — | None: `TRACKERS` in `app/trackers.ts` is the one list of third-party scripts: each names its consent category, the cookies to clear on withdrawal and how `@nuxt/scripts` loads it, and its ID comes from `public.trackers.<key>.id`, so a tracker with no ID never loads. Consent is how they load: `vanilla-cookieconsent` draws the banner and the preferences modal, themed onto the Huella tokens by [`consent.css`](./layers/tracking/app/assets/consent.css), and [`consent.client.ts`](./layers/tracking/app/plugins/consent.client.ts) offers only the categories some configured tracker needs and runs nothing when none is. Both plugins decide that from `public.trackers` alone and only then import `trackers.ts`, the banner and `consent.css` (which pulls in the library's stylesheet ahead of the overrides), so a build with no tracker ID ships none of it. [`trackers.client.ts`](./layers/tracking/app/plugins/trackers.client.ts) holds each script behind `useScriptTriggerConsent` until the banner's `cc:onConsent` or `cc:onChange` window event lists its category, so it never imports the banner. Withdrawing a category clears its cookies and reloads the page, since a loaded script can't be unloaded. The same plugin forwards every `analytics:event` to each tracker whose category is accepted, and drops the rest rather than queueing them, so nothing a reader did before accepting is sent later. It seeds the accepted categories from the banner's `cc_cookie`, because the banner reports a returning reader's consent only after the app mounts, which would drop every event raised while the page loads. `useCookiePreferences` is the footer's "Configurar cookies" link | — |
-
-### 🔗 Links
-
-The router is the only owner of a URL. A page names itself and sets its path in `definePageMeta`,
-and components link by that name — `{ name: "article", params: { slug } }` — never by a built
-string, so moving a URL is one edit in one page. Page files and folders are named in English after
-the route, whatever language the path is in. `experimental.typedPages` generates the route map
-from those pages, so a wrong name or a missing param fails typecheck.
-
-| Name | Path | Page |
-| --- | --- | --- |
-| `index` | `/` | [`layers/archive/app/pages/index.vue`](./layers/archive/app/pages/index.vue) |
-| `publications` | `/publicaciones/` | [`layers/archive/app/pages/articles/index.vue`](./layers/archive/app/pages/articles/index.vue) |
-| `article` | `/:slug/` | [`layers/reading/app/pages/articles/[slug].vue`](./layers/reading/app/pages/articles/%5Bslug%5D.vue) |
-| `publish` | `/publicar/` | [`layers/publish/app/pages/publish.vue`](./layers/publish/app/pages/publish.vue) |
-| `contact` | `/contacto/` | [`layers/contact/app/pages/contact.vue`](./layers/contact/app/pages/contact.vue) |
-| `search` | `/buscar/` | [`layers/search/app/pages/search.vue`](./layers/search/app/pages/search.vue) |
-| `about` | `/sobre/` | [`layers/archive/app/pages/about.vue`](./layers/archive/app/pages/about.vue) |
-| `authors` | `/colaboradores/` | [`layers/archive/app/pages/authors/index.vue`](./layers/archive/app/pages/authors/index.vue) |
-| `author` | `/colaboradores/:slug/` | [`layers/archive/app/pages/authors/[slug].vue`](./layers/archive/app/pages/authors/%5Bslug%5D.vue) |
-| `categories` | `/areas/` | [`layers/archive/app/pages/categories/index.vue`](./layers/archive/app/pages/categories/index.vue) |
-| `category` | `/areas/:slug/` | [`layers/archive/app/pages/categories/[slug].vue`](./layers/archive/app/pages/categories/%5Bslug%5D.vue) |
-| `tag` | `/etiquetas/:slug/` | [`layers/archive/app/pages/tags/[slug].vue`](./layers/archive/app/pages/tags/%5Bslug%5D.vue) |
-
-### 🧼 The body pipeline
-
-`toArticleBody` turns a post's HTML into markup that is safe to `v-html`, plus its TOC, notes and
-bibliography. It runs on the rehype stack, server-side only, so the parser never ships to the
-browser. [Decision 0027](../../docs/decisions/0027-huella-legal-content-model.md) has the corpus
-counts behind each rule.
+`toArticleBody` turns a post's HTML into markup safe for `v-html`, server-side.
+[0027](../../docs/decisions/0027-huella-legal-content-model.md) has the corpus behind each rule.
 
 | Step | What it does |
 | --- | --- |
-| Class map | `contenedor` → `hl-note`, `cita-larga` → `hl-quote`, `cita-corta` → `hl-quote-short`, `texto-importante` → `hl-callout`, `texto-destacado` → `hl-highlight`; `wp-block-table` is kept for the scroll shadows. Every other class is dropped, since a Tailwind utility would apply |
-| Sanitise | `rehype-sanitize` on GitHub's schema, with ids left unprefixed (the TOC links to them), `figure`, `figcaption` and `cite` allowed, and `srcset` and `sizes` kept. `script` and `style` go with their text |
-| Notes | One shape only: the text links to `#_ftnN`, and each note is a top-level paragraph opening with a link to `#_ftnrefN`. Those paragraphs become `ArticleBody.notes`, and each reference becomes `<sup><a href="#nota-N" id="ref-N">`, the ids `ArticleNotes` links back to. Any other shape, bare `<sup>` numbers included, renders as written. Runs before the bibliography split, since the notes close the post, after it |
-| Bibliography | Split from the last top-level *Bibliografía*, *Fuentes* or *Referencias (bibliográficas)* heading, one fragment per paragraph or list item, because the design sets it apart below the body |
-| TOC | Every `h2` and `h3` gets an ASCII id unless it has one, never repeated |
-| Images | Every one gets `loading="lazy"` and `decoding="async"`. A `src` or `srcset` candidate under `/wp-content/` on the site's own host (with or without `www`), or relative to it, is pointed at `content.vendor.baseURL`. Posts still name the pre-cutover host, so each image would otherwise cost a server-function call and the [`legacy`](./layers/legacy) 301 |
-| Lead | Everything up to and including the first top-level paragraph goes in `lead`, and the page sets the featured image after it |
+| Class map | WordPress classes → `hl-note`, `hl-quote`, `hl-quote-short`, `hl-callout`, `hl-highlight`. Everything else dropped |
+| Sanitise | `rehype-sanitize`, GitHub schema, ids unprefixed |
+| Notes | `#_ftnN` / `#_ftnrefN` links become `notes`; any other shape renders as written |
+| Bibliography | Split off at the last *Bibliografía*, *Fuentes* or *Referencias* heading |
+| TOC | Every `h2`/`h3` gets a unique ASCII id |
+| Images | Lazy, and `/wp-content/` URLs repointed at `content.vendor.baseURL` |
+| Lead | Up to the first paragraph; the featured image goes after it |
 
-The article routes read posts through the content module's `useContent(event)`, so the provider,
-its cache and its error statuses stay the module's: a failed read reaches the page with the status
-`useContent` settled on, `404` for a missing post and `502` when the vendor failed.
+## Structure
 
-Citations are worded in the style they follow (*s. f.*, *Disponible en*), in the journal's language,
-so that wording lives in `toCitations` rather than in the copy keys. The date shares
-[`i18n/dateFormats.ts`](./i18n/dateFormats.ts) with `i18n.config.ts`, so a citation
-and the page print the same day.
+`app/` is the thin shell: layout, header, footer, error page and client plugins. Domain code lives
+in Nuxt layers under [`layers/`](./layers), auto-registered (never add `extends`).
 
-## 📚 Storybook
-
-Components are worked on in isolation here, with a story beside the component it renders
-(`app/**` or `layers/*/app/**`, as `*.stories.ts`). The setup is
-`@storybook/vue3-vite`, not a Nuxt integration,
-because the Nuxt one (`@storybook-vue/nuxt`) stops at Nuxt 3, Vite 7 and Storybook 9.
-
-So Storybook is a plain Vite app, and [`.storybook/main.ts`](./.storybook/main.ts) gets back what
-Nuxt modules would otherwise give it:
-
-| Piece | Stands in for | Read from |
+| Owner | Paths | May use |
 | --- | --- | --- |
-| `@nuxt/ui/vite` + `@nuxt/ui/vue-plugin` | The `@nuxt/ui` module: components, theme and Vue auto-imports | `ui` in the `design` layer's `nuxt.config.ts` and `app/app.config.ts` |
-| `fontless` | `@nuxt/fonts`, which is built on it | `fonts` in the `design` layer's `nuxt.config.ts` |
-| `main.css` in [`preview.ts`](./.storybook/preview.ts) | `css` in the `design` layer's `nuxt.config.ts` | — |
-| A `<UApp>` decorator | `app.vue`'s root, which overlays portal into | — |
-| `vue-i18n` in [`preview.ts`](./.storybook/preview.ts) | `@nuxtjs/i18n`: `$t` in templates, `useI18n()` in scripts | The `es-ES.json` [dev reads](#-i18n) and `i18n.config.ts`'s date formats, injected by `main.ts` |
-| `autoImport.dirs` | Nuxt's `utils` auto-imports, in scripts and templates | `app/utils/`, `layers/*/app/utils/` |
-| `components.dirs` | Nuxt's component auto-imports, namespaced by directory so `base/Kicker.vue` is `BaseKicker` | `app/components/`, `layers/*/app/components/` |
-| `sb.mock` of `useNewsletter` in [`preview.ts`](./.storybook/preview.ts) | The newsletter controller, with `POST /api/newsletter` behind it. Its [`__mocks__`](./layers/newsletter/app/composables/__mocks__/useNewsletter.ts) copy holds one status and never sends a request. Storybook restores its idle default before every story, and a `NewsletterForm` state story sets its own in `beforeEach` | — |
-| A `NuxtImg` stub in [`preview.ts`](./.storybook/preview.ts) | `@nuxt/image`'s component, as a plain `<img>` with the original URL | — |
-| A `NuxtTurnstile` stub in [`preview.ts`](./.storybook/preview.ts) | The module's widget, which `FormChallenge` mounts when a story's field takes focus, so no story loads Cloudflare's script | — |
+| Shell | The rest of `app/`, `server/`, `modules/` | Anything |
+| Kit | `app/components/{base,listing}`, `app/{types,utils,composables}`, `i18n/` | The kit |
+| Core | `layers/articles/` — owns all content reads | Itself, the kit |
+| Capability | `layers/forms/`, `layers/design/` | Itself, the kit |
+| Feature | Every other layer | Itself, kit, core, capabilities. Its pages may render another feature's components |
 
-Both configs are imported, not copied, so a theme change reaches the stories with no second edit.
-Each script runs `nuxi prepare` first because Vite follows `tsconfig.json` into `.nuxt/`.
+`eslint.layerBoundaries` in [`eslint.config.ts`](./eslint.config.ts) enforces the table, auto-imports
+included.
 
-A story renders a component **without Nuxt**: no `#imports`. Links resolve through a
-memory router in [`preview.ts`](./.storybook/preview.ts) (`router: true` in `main.ts`), whose route
-table repeats the [names and paths](#-links) by hand. `vue-i18n` is auto-imported, with the messages and the
-`datetimeFormats` from [`i18n.config.ts`](./i18n/i18n.config.ts), so `$t`, `useI18n()` and `d()`
-print what the app prints.
-
-The published copy lives in the [developer portal](../developer-portal/README.md)'s Pages artifact
-under `/huella-legal-storybook/`, linked from this app's card. `STORYBOOK_BASE_URL` sets its Vite
-base there and is unset locally.
-
-
-Two halves, one per runtime, each from [`@monorepo/observability`](../../packages/observability) and
-each skipped entirely when its URL is unset — which is why local dev ships nothing.
-
-| Where | Plugin | Off switch |
-| --- | --- | --- |
-| Browser | [`app/plugins/observability.client.ts`](./app/plugins/observability.client.ts) | `NUXT_PUBLIC_OBSERVABILITY_URL` |
-| Nitro | [`server/plugins/observability.ts`](./server/plugins/observability.ts) | `NUXT_OBSERVABILITY_URL`, and always off while prerendering, since a build has no token ([Deployment](#-deployment)) |
-
-The browser half imports Faro on the reader's first `pointerdown` or `keydown` after `onNuxtReady`,
-or ten seconds after it if none comes, and holds any Vue error thrown before then until it starts.
-Faro and its tracing are a 200 kB chunk, and Lighthouse stops tracing soon after the page goes
-quiet, so neither hydration nor a lab run ever loads it. Web vitals still arrive, since they're read
-from buffered performance entries, but a reader who leaves within ten seconds without touching the
-page sends nothing.
-
-The server plugin opens the request span itself, by wrapping `nitroApp.h3App.handler`, because
-`@monorepo/observability` ships no inbound HTTP instrumentation — [its
-Gotchas](../../packages/observability/README.md#️-gotchas) say why. Wrapping the handler also means
-internal `$fetch` calls nest under the request that made them, and an incoming `traceparent`
-continues the browser's trace rather than starting a second one.
-
-Both halves read `app.version` and `app.environment` from the same public runtime config, so one
-value stamps browser and server alike. The version is the commit the build ran on, read from
-`GITHUB_SHA` because the [deploy workflow](#-deployment) builds inside GitHub Actions; a local build
-has none and stamps `0.0.0`. Don't set `NUXT_PUBLIC_OBSERVABILITY_APP_VERSION` on Netlify: as a
-runtime env var it overrides the build's commit on every deploy. Static assets and Nuxt's own dev
-endpoints (`/_nuxt`, `/_fonts`, `/__nuxt`, `/favicon.ico`) are left untraced on purpose; the list
-lives in the plugin.
-
-Netlify freezes a function as soon as it responds, so the batch exporter's timer would never fire.
-Each request span therefore hands `forceFlush()` to the function's `waitUntil`, through
-`@netlify/functions`' `getContext()`, which lets the export finish after the reader already has the
-page. A request span carries the method, path and host, and nothing that identifies the reader:
-no client IP, no user agent, no query string.
-
-The span is named for the **matched route**, not the path — it opens under the concrete URL, because
-nothing has matched a route yet, and is renamed once the response is known. Anything that skips that
-rename gives every slug and every query string a span name of its own, which makes the operation
-impossible to aggregate and the keyspace unbounded. That is the property
-[the spec](./server/plugins/observability.spec.ts) spends most of its assertions on.
-
-A 5xx raised through `createError`, which covers every error `useContent` throws, answers the
-client with a generic status message. The failure behind it rides on `cause`, and Nitro logs only
-*unhandled* errors, so two things keep that cause visible:
-
-| What | Where | Off switch |
-| --- | --- | --- |
-| A `console.error` for every handled request 5xx, cause chain included | [`server/plugins/errorLog.ts`](./server/plugins/errorLog.ts) | none: logs ship whether or not tracing does |
-| A second exception event on the span for the error's `cause` | `recordError` in [`server/plugins/observability.ts`](./server/plugins/observability.ts) | `NUXT_OBSERVABILITY_URL` |
-
-## ✅ Testing
-
-Three layers, each proving something the others can't see.
-
-| Layer | Runs | Where | Command |
-| --- | --- | --- | --- |
-| `node` | Vitest on the [node preset](../../packages/configs/README.md) | `server/`, `shared/`, `tools/`, and the same in each `layers/*` | `pnpm test` |
-| `nuxt` | Vitest in a booted Nuxt app on happy-dom, via `@nuxt/test-utils` | `app/`, and each `layers/*/app/` | `pnpm test` |
-| e2e | Playwright, Chromium only, at 390, 768 and 1280 px | [`e2e/`](./e2e) | `pnpm exec nx e2e @monorepo/huella-legal` |
-
-[`vitest.config.ts`](./vitest.config.ts) and [`playwright.config.ts`](./playwright.config.ts) are
-wrappers over the shared presets in [`@monorepo/configs`](../../packages/configs/README.md), which
-own the project split, where coverage lives and the widths. What stays here is
-what only this app knows: the thresholds (lines and statements 90, functions 85, branches 80), and
-`app/pages/**` kept out of the denominator, because pages are Playwright's. `test` runs without coverage, so the thresholds only bite on `pnpm test:coverage`.
-[Decision 0037](../../docs/decisions/0037-huella-legal-e2e-and-visual-tooling.md) has the numbers.
-
-- **Nitro auto-imports don't exist under the node project.** A spec for anything in `server/` stubs
-  `defineNitroPlugin`, `useRuntimeConfig` and the `getRequest*` helpers as globals, and
-  `defineNitroPlugin` before the import, since it runs at evaluation. See the `writing-tests` skill.
-- **`import.meta.dev` compiles to `false` in the nuxt project**, as in every build a reader can
-  reach. That is why the error page's debug panel is its own component,
-  [`ErrorDebug.vue`](./app/components/ErrorDebug.vue): it can be mounted directly, where
-  `error.vue` can only prove the panel stays hidden.
-
-### 🎭 e2e
-
-Playwright runs the built `.output/` server with [`e2e/server.ts`](./e2e/server.ts) preloaded through
-`node --import`. That file starts MSW inside the server process with the fake WordPress from
-`@monorepo/content/testing`, so there is no second
-server and no upstream port. The vendor base URLs in `playwright.config.ts` point at `localhost`
-paths nothing listens on, and a request no handler matches is logged by MSW and rejected, so none
-reaches the network.
-
-The data lives apart from the server, in [`e2e/fakes.ts`](./e2e/fakes.ts): domain entries built by
-the seeded factories in `@monorepo/content/testing`, two of them pinned to the values the smoke spec
-asserts on. The package turns those into WordPress's wire format, so the app never writes a
-WordPress shape itself. The copy is the app's own, bundled into the build. There are no fixture files. Kit and Turnstile have no package, so their MSW
-handlers live in [`e2e/vendors.ts`](./e2e/vendors.ts), along with the stand-in Turnstile `api.js`
-that a spec serves with `page.route`, since the browser fetches that script itself. Both match Turnstile's
-paths on any host, because `@nuxtjs/turnstile` fixes Cloudflare's URLs rather than reading them from
-config.
-
-Each spec asserts on behaviour and runs an axe scan against WCAG 2.1 AA, once per width. **There
-are no screenshot baselines**: while the pages are still being designed nearly every diff is
-intended, so they failed every page PR and got accepted unread. CI runs the specs inside
-`mcr.microsoft.com/playwright:v1.63.0-noble`, and on failure uploads `.playwright/` as the
-`playwright` artifact.
-
-**Console output fails e2e, in the browser and on the server.** The mechanism lives in the
-[Playwright preset](../../packages/configs/README.md); this app only wires it. Specs import `test`
-from `@monorepo/configs/playwright/test`, never from `@playwright/test`, and the ESLint preset
-enforces it. Its `page` fails a test on any browser console message or uncaught page error, checked
-once the test body returns, so a test that ends on `page.goto` misses whatever the app logs as it
-boots after `load`. A test whose noise is justified allows it with
-`test.use({ allowedConsole: [NOT_FOUND_DOCUMENT] })`, a list of patterns. SSR logs in the server
-process, where no page listener reaches, so [`e2e/server.ts`](./e2e/server.ts) calls `recordServerConsole()`, and the preset's
-teardown fails the run on anything the server logged besides Nitro's `Listening on` line. That run
-fails even when every test passed, reported as "1 error was not a part of any test". The recorder
-also prints until the server listens, because a server that can't start never reaches the teardown.
-
-| Situation | What to do |
+| Layer | Holds |
 | --- | --- |
-| Bumping `@playwright/test` | Bump its catalog entry in [`pnpm-workspace.yaml`](../../pnpm-workspace.yaml) and move the image tag in [`ci.yml`](../../.github/workflows/ci.yml) in the same PR. Dependabot sends it alone for that reason |
-| Running locally | Needs a Chromium that matches `@playwright/test`'s version in Playwright's browser cache. Nothing in the repo downloads one |
-| A page needs new data | Add the `Entry` or `Term` to `e2e/fakes.ts`. A route the fakes don't serve is a change to the package's `testing` entry, with its spec |
+| [`articles`](./layers/articles) | View models, WordPress mappers, every content route, the cached index, comments, sitemap and RSS |
+| [`archive`](./layers/archive) | Home, the four listings, áreas, colaboradores and the about page |
+| [`reading`](./layers/reading) | The article and WordPress-page views |
+| [`search`](./layers/search) | `/buscar/` and the header's ⌘K palette |
+| [`comments`](./layers/comments) | The thread and form under an article; posts to WordPress held for moderation |
+| [`newsletter`](./layers/newsletter) | Kit signup, double opt-in |
+| [`contact`](./layers/contact) | Contacto, sent through Resend |
+| [`publish`](./layers/publish) | Publicar, with an optional draft attachment |
+| [`interest`](./layers/interest) | The interest calculator at `/calculo-intereses/` ([README](./layers/interest/README.md)) |
+| [`tracking`](./layers/tracking) | Consent banner and third-party scripts, loaded only when an ID is set |
+| [`legacy`](./layers/legacy) | 301s from old WordPress URLs ([README](./layers/legacy/README.md)) |
+| [`forms`](./layers/forms) | Honeypot, Turnstile, `assertForm`, `sendMail` |
+| [`design`](./layers/design) | Tokens and the Nuxt UI theme ([DESIGN.md](./DESIGN.md)) |
 
-Pre-push doesn't run e2e, so a green push is not yet a green `e2e` job.
+### Links
 
-## 🧭 Deliberately deferred
+Components link by route name (`{ name: "article", params: { slug } }`), never by a built string.
+A page sets its path in `definePageMeta`; `typedPages` fails typecheck on a wrong name.
 
-| Later need | What changes |
+| Name | Path |
 | --- | --- |
-| Visual regression | Once the pages stop changing, `toHaveScreenshot` on the shell alone, where a change nobody meant shows on every page. Baselines have to come from CI's image, since a Mac can't render Linux ones, and only CI should write them. [0037](../../docs/decisions/0037-huella-legal-e2e-and-visual-tooling.md) has the setup that was removed |
-| Firefox or WebKit | Another project per browser in the configs preset. Linux WebKit is not Safari, so it won't stand in for iOS readers |
-| A per-glob threshold on view models | A3 adds `shared/**` and `layers/*/app/utils/**` at 95 alongside the mappers it creates |
-| Shared client state | `@pinia/nuxt`, with `pinia.storesDirs` widened to `./layers/*/app/stores/**`: without it a layer's store isn't picked up, and the failure looks like a missing composable. Stories then need Pinia in the `setup` in `.storybook/preview.ts` |
-| A submission form on Publicar | #301 decides between it and the `mailto:`. The form variant's route, mail adapter, 4 MB cap and GDPR notice are the *form only* rows of [0029](../../docs/decisions/0029-huella-legal-forms-and-integrations.md) |
-| A role on each contributor | [0027](../../docs/decisions/0027-huella-legal-content-model.md) found no source for it, so the directory cards drop the design's role line until WordPress carries one |
-| Quote and callout styles | `hl-quote`, `hl-quote-short`, `hl-callout` and `hl-highlight` reach the page unstyled. B6 moved `.hl-prose` into the articles layer without rules for them, because no D design covers them |
-| Tag links on the article | The *Temas* line is still plain text, though `/etiquetas/<slug>/` now exists to link it to |
-| The newsletter band on the home page | C3 places it with `id="newsletter"`, the anchor the header's links already target |
-| GA's consent gate in e2e | 0028 asks for a Playwright check that nothing reaches Google before the banner is accepted. It needs its own build with `NUXT_PUBLIC_TRACKERS_GOOGLE_ANALYTICS_ID` set, since prerendered pages bake the public config in and a tracker ID puts the banner over every other spec's page. Until then `trackers.client.spec.ts` pins the gate |
-| The newsletter's failure paths in e2e | A vendor `5xx` makes `errorLog.ts` write to the server console, which fails the run, so the `403` and `502` paths are pinned in the route and controller specs only |
-| The privacy notice's wording | A draft: the owner rewrites the legal text ([0029](../../docs/decisions/0029-huella-legal-forms-and-integrations.md)), and the notice links `aviso-legal#privacidad` until C6 gives privacy a page |
-| *Publicaciones* lit in the header on an article | `useSiteNav` marks sections by route, and `/:slug/` also serves WordPress pages (C6), so it needs to know which one it rendered |
-| The `onServerPrefetch` tree-shake override in `nuxt.config.ts` | Drop it once Nuxt stops stripping that hook from client builds; the article e2e's axe scan fails on `aria-controls` if it goes too early |
-| A check on layer directions | Once there are enough layers that review stops catching a wrong edge. A spec can read `.nuxt/components.d.ts` and `.nuxt/types/*imports.d.ts`, which map every auto-import to its source file, and fail on an edge the table above forbids. Two layers exporting one auto-imported name only warn during `nuxi prepare`, so the same spec would be the place to fail on that too |
-| A rebuild when a post is published | `/` is prerendered, so a new post reaches the home page only on the next build: Monday's, or a manual run of the rebuild workflow. WordPress has no webhooks ([0030](../../docs/decisions/0030-huella-legal-rendering-hosting-and-cost.md)), so either one is added on the WordPress side, posting to the build hook, or a scheduled workflow asks WordPress for its newest post and posts to `NETLIFY_BUILD_HOOK_URL` when it changed |
-| A shared Nitro cache for `isr` misses | Mount Nitro's `cache` storage on unstorage's `netlify-blobs` driver if misses on cold instances turn out slow. It is Netlify-only, which cuts against the move to Google Cloud |
-| Cache windows as constants again | With pages prerendered or held by the CDN, `content.cache` and `articles.cache` only govern the build and `isr` misses. If nothing in production ends up tuning them, they fold back into constants with an `import.meta.dev` switch |
-| Stories for the header's panels | `NavPublicationsPanel` and `NavSubjectsPanel` fetch `/api/home` through `useCachedFetch`, which Storybook doesn't have, so the header's story leaves their items as plain links. An `sb.mock` of `useCachedFetch` in [`preview.ts`](./.storybook/preview.ts) would give them stories |
-| Long browser caching on images | Netlify Image CDN copies the source's `Cache-Control` and a site can't override it for a remote origin, so `/.netlify/images` answers `max-age=0` until WordPress sends one. LiteSpeed Cache's *Browser Cache* setting is the fix on that side, at ≥ 30 days rather than a year `immutable`, since an upload's URL isn't content-hashed |
-| Replaying a form submitted before hydration | The loader keeps only a button's click. A submit button inside a `@submit.prevent` form still submits natively before the app wakes, so a form that must never do that would need the loader to hold the `submit` event too |
-| A shared performance module | The manifest hook, the loader and the click replay are generic. They move into a `packages/` Nuxt module when a second public Nuxt site starts, rather than for one consumer |
-| A `script-src` CSP | `isr` caches the HTML, which rules out a per-request nonce, and Nuxt's inline scripts change per page, so a policy means hashing every response as it leaves. Post bodies already go through `rehype-sanitize`; a script policy comes back if something renders HTML that isn't sanitized |
-| A staging deploy of its own | `staging.huellalegal.com` serves the production deploy today, so the login hides nothing `www` doesn't show. Once it points at its own deploy, that deploy needs the gate too, and the build condition in `stagingGate.ts` widens to match |
-| More than one staging login | The gate compares one shared pair. Per-person access means a list in one variable, or Netlify's team login on a paid plan, whose `context.user` the edge function could read instead |
-| A per-form Turnstile `action` | Set `action` on each `FormChallenge` and assert it in `assertChallenge`, so a newsletter token can't post a comment. Tokens are single-use already, which makes this a small gain |
+| `index` | `/` |
+| `publications` | `/publicaciones/` |
+| `article` | `/:slug/` |
+| `categories`, `category` | `/areas/`, `/areas/:slug/` |
+| `tag` | `/etiquetas/:slug/` |
+| `authors`, `author` | `/colaboradores/`, `/colaboradores/:slug/` |
+| `search` | `/buscar/` |
+| `about` | `/sobre/` |
+| `contact` | `/contacto/` |
+| `publish` | `/publicar/` |
+
+## Storybook
+
+Stories sit beside their component as `*.stories.ts`. It's plain `@storybook/vue3-vite` (the Nuxt
+integration stops at Nuxt 3), so [`.storybook/`](./.storybook) wires Nuxt UI, fonts, i18n,
+auto-imports and stubs for `NuxtImg` and `NuxtTurnstile` by hand. Its router repeats the
+[route table](#links) by hand too. The published copy lives on the developer portal.
+
+## Observability
+
+Both halves come from [`@joinery/observability`](../../packages/observability/README.md) and are
+off when their URL is unset.
+
+- Browser: [`observability.client.ts`](./app/plugins/observability.client.ts) loads Faro on the
+  first interaction or after ten seconds.
+- Server: [`observability.ts`](./server/plugins/observability.ts) wraps the Nitro handler itself and
+  names spans for the matched route, never the raw path. Off while prerendering.
+- [`errorLog.ts`](./server/plugins/errorLog.ts) logs every handled `5xx` with its cause.
+- Don't set `NUXT_PUBLIC_OBSERVABILITY_APP_VERSION` on Netlify; the build stamps the commit.
+
+## Testing
+
+| Project | Covers | Command |
+| --- | --- | --- |
+| `node` | `server/`, `shared/`, `modules/`, `tools/` in the app and each layer | `pnpm test` |
+| `nuxt` | `app/` specs, one shared Nuxt environment | `pnpm test` |
+| `nuxt-isolated` | `app/` specs that mock a module | `pnpm test` |
+| e2e | Playwright, Chromium, at 390, 768 and 1280 px | `pnpm test:e2e` |
+
+Configs wrap the presets in [`@joinery/configs`](../../packages/configs/README.md); thresholds live
+in [`vitest.config.ts`](./vitest.config.ts) and pages are left to Playwright.
+
+### e2e
+
+- The built server runs with [`e2e/server.ts`](./e2e/server.ts) preloaded: MSW fakes WordPress (from
+  `@joinery/content/testing`), Kit and Turnstile in-process. Nothing reaches the network.
+- Data is in [`e2e/fakes.ts`](./e2e/fakes.ts). A route the fakes don't serve is a change to the
+  content package's `testing` entry.
+- Every spec runs an axe scan. **No screenshot baselines** while the design still moves —
+  [0037](../../docs/decisions/0037-huella-legal-e2e-and-visual-tooling.md) says when they return.
+- Any console output, browser or server, fails the run. Import `test` from
+  `@joinery/configs/playwright/utils/test`.
+- Bumping `@playwright/test` means moving the image tag in [`ci.yml`](../../.github/workflows/ci.yml)
+  in the same PR. Pre-push doesn't run e2e.
+
+## Known gaps
+
+| Gap | Note |
+| --- | --- |
+| A new post reaches `/` only on the next build | WordPress has no webhooks ([0030](../../docs/decisions/0030-huella-legal-rendering-hosting-and-cost.md)) |
+| `hl-quote`, `hl-callout` and friends render unstyled | No design covers them yet |
+| Netlify image CDN answers `max-age=0` | Fix is on WordPress's side (LiteSpeed browser cache) |
+| No `script-src` CSP | `isr`-cached HTML rules out nonces |
+| `staging.` serves the production deploy | The login hides nothing `www` doesn't show |

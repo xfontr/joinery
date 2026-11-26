@@ -1,5 +1,5 @@
 {
-  "name": "@monorepo/configs",
+  "name": "@joinery/configs",
   "version": "0.0.18",
   "description": "shared ESLint, Vitest, Playwright and tsconfig presets",
   "private": true,
@@ -10,15 +10,21 @@
     ".": {
       "import": "./src/index.ts"
     },
-    "./playwright/server": "./src/playwright/server.ts",
-    "./playwright/test": "./src/playwright/test.ts",
+    "./playwright/setup/server": "./src/playwright/setup/server.ts",
+    "./playwright/utils/a11y": "./src/playwright/utils/a11y.ts",
+    "./playwright/utils/i18n": "./src/playwright/utils/i18n.ts",
+    "./playwright/utils/test": "./src/playwright/utils/test.ts",
+    "./vitest/utils/nitro": "./src/vitest/utils/nitro.ts",
+    "./vitest/utils/nuxt": "./src/vitest/utils/nuxt.ts",
     "./tsconfig/*": "./src/tsconfig/*"
   },
   "scripts": {
     "lint": "nx eslint:lint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest . --watch=false",
-    "test:dev": "vitest ."
+    "test": "vitest . --project unit --watch=false",
+    "test:coverage": "vitest . --project unit --watch=false --coverage",
+    "test:dev": "vitest . --project unit",
+    "test:e2e": "vitest --project browser --watch=false"
   },
   "nx": {
     "tags": [
@@ -27,9 +33,11 @@
     ]
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^10.0.1",
+    "@intlify/eslint-plugin-vue-i18n": "^4.5.1",
     "@nuxt/test-utils": "^4.3.2",
-    "@nx/eslint-plugin": "24.0.5",
+    "@nx/eslint-plugin": "24.0.6",
     "@playwright/test": "catalog:",
     "@types/node": "catalog:",
     "@vitest/eslint-plugin": "^1.6.18",
@@ -38,20 +46,25 @@
     "eslint-plugin-better-tailwindcss": "^4.10.0",
     "eslint-plugin-format": "^2.0.1",
     "eslint-plugin-jsonc": "^3.2.0",
+    "eslint-plugin-playwright": "^2.12.2",
     "eslint-plugin-prefer-arrow-functions": "^3.10.2",
     "eslint-plugin-regexp": "^3.3.0",
     "eslint-plugin-sonarjs": "^4.2.2",
     "eslint-plugin-vue": "^10.9.1",
     "globals": "^17.6.0",
+    "h3": "^1.15.11",
     "typescript": "catalog:",
     "typescript-eslint": "^8.60.0",
     "vitest": "catalog:",
-    "vue-eslint-parser": "^10.4.0"
+    "vue": "catalog:",
+    "vue-eslint-parser": "^10.4.0",
+    "vue-i18n": "^11.4.18"
   },
   "peerDependencies": {
     "@nuxt/test-utils": "^4.3.2",
     "@playwright/test": "catalog:",
-    "@vue/test-utils": "^2.4.11"
+    "@vue/test-utils": "^2.4.11",
+    "vue": "catalog:"
   },
   "peerDependenciesMeta": {
     "@nuxt/test-utils": {
@@ -61,6 +74,9 @@
       "optional": true
     },
     "@vue/test-utils": {
+      "optional": true
+    },
+    "vue": {
       "optional": true
     }
   }

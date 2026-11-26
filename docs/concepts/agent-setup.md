@@ -1,23 +1,16 @@
 # 🤖 The agent setup as one inspectable system
 
-The repository's agent guidance is Claude Code's native layout: `CLAUDE.md` files for always-on
-guidance, eighteen skills under [`.claude/skills/`](../../.claude/skills/) for task-specific
-procedures, and settings, hooks and subagents beside them under `.claude/`. Every one of them is
-tracked and edited in place.
+Claude Code's native layout: `CLAUDE.md` files for always-on rules, skills under
+[`.claude/skills/`](../../.claude/skills/) for task procedures, and settings, hooks, subagents and
+workflows beside them under `.claude/`. All tracked.
 
-## 📄 Why `CLAUDE.md` reads the way it does
+## Why `CLAUDE.md` reads the way it does
 
-The root file says outright what it is for: what the READMEs do not say, or what gets done wrong
-anyway. It is not project documentation restated for a machine — the actual documentation is the
-READMEs, which a human and an agent both read. `CLAUDE.md` exists where a plain reading of the code
-has produced a wrong edit before: style rules, the "looks reasonable and is wrong here" list and
-the pairs of files that must agree.
+`CLAUDE.md` holds only what the READMEs and code don't show, or what agents get wrong anyway. Each
+project's file is a pointer to its README plus the invariants worth losing a build over. The root
+file loads every turn; a project's loads once Claude reads something there.
 
-Every project's `CLAUDE.md` follows the same shape: a short pointer to its README, then the
-invariants worth losing a build over. Claude loads the root file on every turn and a project's file
-once it reads something in that project.
-
-## 🪝 The hooks
+## The hooks
 
 Two `PostToolUse` hooks fire after every edit, and one `PreToolUse` hook before every shell
 command.
@@ -27,31 +20,25 @@ command.
 | [`eslint-fix.sh`](../../.claude/hooks/eslint-fix.sh) | Runs `eslint --fix` on the touched file, so style is corrected mechanically, and records each rule hit first for the portal's [lint usage](../../infrastructure/scripts/src/usage/README.md) |
 | [`check-invariants.sh`](../../.claude/hooks/check-invariants.sh) | Runs [`pnpm invariants:check`](../../infrastructure/scripts/src/invariants/README.md) after a manifest edit, and reminds about the cross-file steps of a new project or a boundary change |
 | [`guard-live.sh`](../../.claude/hooks/guard-live.sh) | Refuses `pnpm start`, `nuxt preview`, requests to the live WordPress site, force pushes and pushes to `master`: the things an unattended run must never do, whatever its prompt says |
+| [`reap-processes.sh`](../../.claude/hooks/reap-processes.sh) | On `SessionEnd`, kills every `nuxt dev` and `playwright test` the session started, so a closed session leaves no server or Chromium behind |
 
-The bans the hook enforces live in `pnpm invariants:check`, which `pre-commit` and `ci.yml` also
-run. Claude's hook is earlier feedback, not the only authority, so an edit made by hand fails the
-same gate. Its two reminders have no gate behind them.
+The hooks are early feedback; `pre-commit` and CI run the same gates on edits made by hand.
 
-## 🚫 What the deny list forecloses
+## What the deny list forecloses
 
-[`.claude/settings.json`](../../.claude/settings.json) denies editing generated changelogs and the
-feature map, running a release and reading real `.env` files. These are guardrails over rules
-stated in [`CLAUDE.md`](../../CLAUDE.md): generated artifacts have a named renderer, and real
-environment values are outside the repository's documentation surface.
+[`.claude/settings.json`](../../.claude/settings.json) denies editing changelogs and
+`docs/FEATURES.md`, running a release, and reading real `.env` files.
 
-## 🛠 What the skills are collectively
+## What the skills are collectively
 
-A skill loads for a matching task rather than on every turn. The split keeps always-applicable
-invariants in `CLAUDE.md` while detailed procedures such as adding a package, writing a spec or
-filing an issue stay out of unrelated context. [`docs/FEATURES.md`](../FEATURES.md) lists every
-skill and its source; the map is rendered by `pnpm docs:map`, never maintained by hand.
+A skill loads only for a matching task, which keeps procedures out of unrelated context.
+[`docs/FEATURES.md`](../FEATURES.md) lists every skill.
 
-## 🚢 The ship-issue pipeline
+## The ship-issue pipeline
 
 [`ship-issue.js`](../../.claude/workflows/ship-issue.js) takes issues to merged PRs with no human
-reading the code: `/ship-issue 340 341`. Issues run strictly one after another, because each one
-branches off the `master` the previous one merged into, and because only one `pnpm check` should
-run at a time.
+reading the code: `/ship-issue 340 341`. Issues run one after another, each branching off the
+`master` the previous one merged into.
 
 | Stage | Who | Stops the run when |
 | --- | --- | --- |
@@ -62,32 +49,12 @@ run at a time.
 | Polish | `comment-cleanup` and `doc-drift-check` | `check` goes red |
 | Ship | Conventional commits, then [`pnpm issue:ship`](../../infrastructure/scripts/src/ship/README.md) | The required checks fail after one repair, or the PR never merges |
 
-The labels decide the route before any branch is linked. An `owner` ticket is skipped and the run
-moves on, since the owner closes it and a linked branch would show it as taken. A `spike` ticket
-skips Plan, Review and Polish: one agent writes a single decision report for the whole ticket, however
-many `cap:` labels it carries, runs
-`pnpm check`, and ships. Running the pipeline on a spike is the request for those reports.
-
-The planner is the only stage that decides structure, and it decides nothing new: every file it
-plans names the existing path it copies, so an unattended run can't invent a convention. Reviewers
-get the issue and the diff, never the implementer's account of it, so they judge the code rather
-than the story about it.
-
-Run it from a checkout no other session writes to: `pnpm worktree:prepare` makes one. The ship step
-commits only the paths the run reported touching, and stops rather than commit anything else it
-finds dirty.
-
-A stopped run labels the issue or PR `needs-human`, comments why, and leaves later issues
-unstarted. The pipeline's `git` and `gh` permissions live in each machine's
-`.claude/settings.local.json`, so a fresh clone prompts for them until they're allowed there.
-
-## 🧭 Deliberately deferred
-
-| Later need | What changes |
-| --- | --- |
-| A second agent with a different discovery convention | Pick one editable tree and generate the other from it; two hand-kept copies drift |
-| A runtime hook another tool can run too | Move the check into a script both call; until then scripts and CI remain the shared authority |
-| Coverage that fails a PR | CI runs `test` without `--coverage`, so thresholds never gate a merge. A project built by `ship-issue` should put `--coverage` in its own `test` script, with thresholds in its `vitest.config.ts` |
-| Lint for what only `review-architecture` checks today | A scoped `no-restricted-imports` per project, like [`coreIsolation.ts`](../../packages/configs/src/eslint/lib/coreIsolation.ts). A second config setting that rule on `app/` or `server/` replaces [`layerIsolation.ts`](../../packages/configs/src/eslint/lib/layerIsolation.ts) rather than merging with it, so it needs a case in [`index.spec.ts`](../../packages/configs/src/eslint/index.spec.ts) |
-| Tests that pass `review-tests` and are still weak | Mutation testing (Stryker) on a project's domain code, as a dependency check-in |
-| Proof that `guard-live.sh` fires inside workflow agents | Claude Code documents settings hooks applying inside subagents, not workflow agents specifically; the first `ship-issue` run should try a blocked command |
+- An `owner` ticket is skipped. A `spike` ticket skips Plan, Review and Polish: one agent writes a
+  decision report, runs `pnpm check`, and ships.
+- The planner decides structure, and every file it plans names the existing path it copies, so an
+  unattended run can't invent a convention.
+- Reviewers get the issue and the diff, never the implementer's summary.
+- Run it from a checkout nothing else writes to (`pnpm worktree:prepare`). The ship step commits only
+  the paths the run touched.
+- A stopped run labels the issue or PR `needs-human`, comments why, and starts nothing further.
+- `git` and `gh` permissions live in each machine's `.claude/settings.local.json`.

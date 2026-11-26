@@ -1,9 +1,8 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@monorepo/configs/playwright/test";
+import { axeViolations } from "@joinery/configs/playwright/utils/a11y";
+import { expect, test } from "@joinery/configs/playwright/utils/test";
+import { t } from "./copy.ts";
 import { ARTICLE, SUBJECT } from "./fakes.ts";
 import { TURNSTILE_SCRIPT, TURNSTILE_SCRIPT_PATTERN } from "./vendors.ts";
-
-const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 
 test.beforeEach(async ({ page }) => {
     await page.route(TURNSTILE_SCRIPT_PATTERN, (route) =>
@@ -17,21 +16,21 @@ test("subscribes from the band under an article and asks the reader to confirm",
     await page.goto(`/${ARTICLE.slug}/`);
 
     const band = page.getByRole("region", { name: "Un correo al mes" });
-    const confirmation = band.getByRole("heading", { name: "Revisa tu bandeja de entrada" });
+    const confirmation = band.getByRole("heading", { name: t("newsletterForm.success.title") });
 
     // CI's runner can type before hydration, which a server-rendered form then drops on submit
     await expect(async () => {
-        await band.getByRole("textbox", { name: "Correo electrónico" }).fill("lucia@ejemplo.test");
-        await band.getByRole("button", { name: "Suscribirme" }).click();
+        await band
+            .getByRole("textbox", { name: t("newsletterForm.email.label") })
+            .fill("lucia@ejemplo.test");
+        await band.getByRole("button", { name: t("newsletterForm.submit") }).click();
 
         await expect(confirmation).toBeVisible({ timeout: 2000 });
     }).toPass();
 
     await expect(confirmation).toBeFocused();
 
-    const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
-    expect(violations).toEqual([]);
+    expect(await axeViolations(page)).toEqual([]);
 });
 
 test("tells a reader back from Kit's confirmation link that they are on the list", async ({
@@ -40,16 +39,14 @@ test("tells a reader back from Kit's confirmation link that they are on the list
     await page.goto("/suscripcion-confirmada/");
 
     await expect(
-        page.getByRole("heading", { level: 1, name: "Suscripción confirmada" }),
+        page.getByRole("heading", { level: 1, name: t("newsletterConfirmed.title") }),
     ).toBeVisible();
-    await expect(page.getByRole("link", { name: "Leer lo último" })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: t("newsletterConfirmed.latest") })).toHaveAttribute(
         "href",
         "/publicaciones/",
     );
 
-    const { violations } = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
-
-    expect(violations).toEqual([]);
+    expect(await axeViolations(page)).toEqual([]);
 });
 
 test("refuses an address with no domain without sending it", async ({ page }) => {
@@ -61,12 +58,11 @@ test("refuses an address with no domain without sending it", async ({ page }) =>
 
     await page.goto(`/areas/${SUBJECT.slug}/`);
 
-    // The sidebar card is the subject page's only newsletter form
-    const email = page.getByRole("textbox", { name: "Correo electrónico" });
+    const email = page.getByRole("textbox", { name: t("newsletterForm.email.label") });
 
     await expect(async () => {
         await email.fill("lucia@");
-        await page.getByRole("button", { name: "Suscribirme" }).click();
+        await page.getByRole("button", { name: t("newsletterForm.submit") }).click();
 
         await expect(email).toHaveAttribute("aria-invalid", "true", { timeout: 500 });
     }).toPass();
