@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readProject } from "../../shared/project.ts";
-import { GLYPH_MAP, projectMap, type MapScale } from "./projectMap.ts";
+import { projectMap } from "./projectMap.ts";
 import { projectView } from "../../shared/projectView.ts";
 import { readTemplate } from "../../shared/template.ts";
 import type { SnapshotIssue } from "../../shared/types/SnapshotIssue.ts";
@@ -41,7 +41,7 @@ const issue = (number: number, caps: string[], overrides: Partial<SnapshotIssue>
         ...overrides,
     }) satisfies SnapshotIssue;
 
-const mapOf = (issues: SnapshotIssue[] | null, scale?: MapScale) =>
+const mapOf = (issues: SnapshotIssue[] | null) =>
     projectMap(
         projectView(
             readProject(PROJECT).project,
@@ -54,7 +54,6 @@ const mapOf = (issues: SnapshotIssue[] | null, scale?: MapScale) =>
             },
             null,
         ),
-        scale,
     );
 
 const toneOf = (map: ReturnType<typeof mapOf>, id: string) =>
@@ -97,13 +96,5 @@ describe("projectMap", () => {
         ]);
 
         expect(map.tickets).toEqual({ closed: 1, total: 2 });
-    });
-
-    it("sizes a glyph from its own grid, with no band left for stage titles", () => {
-        const map = mapOf([], GLYPH_MAP);
-
-        expect(map.nodes[0]).toMatchObject({ x: 0, y: 0 });
-        expect(map.width).toBe(GLYPH_MAP.column + GLYPH_MAP.nodeWidth);
-        expect(map.height).toBe(2 * GLYPH_MAP.row);
     });
 });

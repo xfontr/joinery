@@ -8,7 +8,14 @@ export interface Capability {
 }
 
 /** Omit commands already exposed by the root so the map stays focused on project-specific capabilities. */
-const STANDARD_TARGETS = ["lint", "typecheck", "test", "test:dev", "test:coverage", "build"];
+const STANDARD_TARGETS = new Set([
+    "lint",
+    "typecheck",
+    "test",
+    "test:dev",
+    "test:coverage",
+    "build",
+]);
 
 export interface ProjectScripts {
     root: string;
@@ -27,7 +34,7 @@ export const rootCommands = (scripts: string[]): Capability[] =>
 export const projectCommands = (projects: ProjectScripts[], rootScripts: string[]): Capability[] =>
     projects.flatMap(({ root, name, scripts }) =>
         scripts
-            .filter((script) => !STANDARD_TARGETS.includes(script) && !rootScripts.includes(script))
+            .filter((script) => !STANDARD_TARGETS.has(script) && !rootScripts.includes(script))
             .map((script) => ({
                 kind: "command" as const,
                 invocation: `pnpm exec nx ${script} ${name}`,

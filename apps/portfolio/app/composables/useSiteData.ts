@@ -43,12 +43,6 @@ export const useWorkflowMaps = () =>
         workflows.projects.map(({ id, title, map }) => ({ id, title, map })),
     );
 
-export const useWorkflowGlyph = (id: string) =>
-    useSiteData(
-        `workflow-glyph-${id}`,
-        ({ workflows }) => workflows.projects.find((project) => project.id === id)?.glyph ?? null,
-    );
-
 export const useWorkflowTemplates = () =>
     useSiteData("workflow-templates", ({ workflows }) => ({
         templates: workflows.templates,

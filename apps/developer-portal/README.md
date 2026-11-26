@@ -77,7 +77,7 @@ imports none of its code: [`data.json.ts`](./server/routes/embed/data.json.ts) p
 | --- | --- |
 | `benchmarks` | `docs/benchmarks/` through the `docs` collection: id, title, screenshot path |
 | `decisions` | The collected docs artifact: id, number, title, status |
-| `workflows` | `data/workflows/`: each project's map at full and glyph scale, the templates, the lesson count |
+| `workflows` | `data/workflows/`: each project's map, the templates, the lesson count |
 | `rules` | Enabled and in-house lint rules from the usage artifact |
 | `specs` | Spec files across every project, from the metrics artifact |
 

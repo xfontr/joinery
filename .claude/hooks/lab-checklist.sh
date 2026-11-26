@@ -6,13 +6,16 @@
 command -v jq >/dev/null 2>&1 || exit 0
 command -v gh >/dev/null 2>&1 || exit 0
 
-cmd=$(jq -r '.tool_input.command // empty' 2>/dev/null)
+input=$(cat)
+cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // empty' 2>/dev/null)
 [ -n "$cmd" ] || exit 0
 
 at='(^|[;&|(])[[:space:]]*'
 printf '%s' "$cmd" | grep -Eq "$at(gh[[:space:]]+pr[[:space:]]+create|pnpm[[:space:]]+issue:ship)" || exit 0
 
-cd "${CLAUDE_PROJECT_DIR:-.}" || exit 0
+# A worktree session's branch is in its own cwd; the project dir is the main checkout (#487).
+dir=$(printf '%s' "$input" | jq -r '.cwd // empty' 2>/dev/null)
+cd "${dir:-${CLAUDE_PROJECT_DIR:-.}}" || exit 0
 issue=$(git branch --show-current | sed -nE 's#^[a-z]+/[^/]+/([0-9]+)-.*#\1#p')
 [ -n "$issue" ] || exit 0
 

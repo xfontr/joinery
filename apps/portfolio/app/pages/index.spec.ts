@@ -80,7 +80,6 @@ describe("front page", () => {
         expect(wrapper.findAll("[data-rule]")).toHaveLength(5);
         expect(wrapper.text()).toContain("index.rules.look.proof");
         expect(wrapper.text()).toContain("index.rules.prove.proof");
-        expect(wrapper.find("[data-workflow-glyph]").exists()).toBe(false);
     });
 
     it("words the portal's lint rule counts", async () => {

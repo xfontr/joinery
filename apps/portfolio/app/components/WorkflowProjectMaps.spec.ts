@@ -29,7 +29,7 @@ const open = async (blocks: ProjectMap["blocks"], project?: string) => {
                 benchmarks: [],
                 decisions: [],
                 workflows: {
-                    projects: [{ id: "blog", title: "Blog", map: map(blocks), glyph: map(blocks) }],
+                    projects: [{ id: "blog", title: "Blog", map: map(blocks) }],
                     templates: [],
                     lessons: 0,
                 },

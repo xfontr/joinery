@@ -127,6 +127,22 @@ opens.
 A dependency that turns up later is added on GitHub, on the issue's *Relationships* panel or with
 `gh issue edit <n> --add-blocked-by <m>`, not in the project file. After filing, GitHub wins.
 
+## 2.5 Redrafting once the design is approved
+
+The map is drafted from the idea a project starts with, and the lab changes that idea. Once the user
+picks a direction, and before `design-approval` closes, re-read every build block against the
+approved lab and the decision reports. Where the two differ, the design wins (#479 built
+the old plan and was thrown away).
+
+| Block is | Do |
+| --- | --- |
+| Unfiled | Rewrite it in the project yaml, naming its lab page, then file it |
+| Filed, not started | Edit the issue's body and criteria with `gh issue edit`, since GitHub wins after filing; close it as not planned if the design dropped it |
+| In flight | Ask the user: re-scope it, or let it finish and file a follow-up |
+| Closed | Never reopen it; file a follow-up if the design changed what it built |
+
+A block the design added and the map lacks becomes an `extra`, and a lesson for the template.
+
 ## 3. Placing unsorted tickets
 
 To organise lists milestone issues with no usable `cap:` label, and open issues with the project's

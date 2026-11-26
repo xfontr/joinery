@@ -3,7 +3,12 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 const start = async () => {
     let finish!: () => void;
     const finished = new Promise<void>((resolve) => (finish = resolve));
-    await useNuxtApp().callHook("page:view-transition:start", { finished } as ViewTransition);
+    const done = Promise.resolve();
+    await useNuxtApp().callHook("page:view-transition:start", {
+        finished,
+        ready: done,
+        updateCallbackDone: done,
+    } as ViewTransition);
     return { finished, finish };
 };
 

@@ -24,7 +24,7 @@ const DATA = {
     benchmarks: [],
     decisions: [],
     workflows: {
-        projects: ["blog", "shop"].map((id) => ({ id, title: id, map: MAP, glyph: MAP })),
+        projects: ["blog", "shop"].map((id) => ({ id, title: id, map: MAP })),
         templates: [{ id: "kiosk", title: "Kiosk app", summary: "A screen in a shop window." }],
         lessons: 0,
     },

@@ -96,6 +96,6 @@ watch(open, (hidden) => document.documentElement.toggleAttribute("data-cursor-hi
 
 onBeforeUnmount(() => {
     cancelAnimationFrame(frame);
-    document.documentElement.removeAttribute("data-cursor-hidden");
+    delete document.documentElement.dataset.cursorHidden;
 });
 </script>
