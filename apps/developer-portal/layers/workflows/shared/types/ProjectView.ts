@@ -8,7 +8,6 @@ import type { Snapshot } from "./Snapshot.ts";
 import type { StageView } from "./StageView.ts";
 import type { Template } from "./Template.ts";
 import type { TicketCount } from "./TicketCount.ts";
-import type { UnsortedIssue } from "./UnsortedIssue.ts";
 
 export interface ProjectView {
     project: Project;
@@ -25,7 +24,6 @@ export interface ProjectView {
     counts: Record<CapabilityState, number>;
     /** The longest chain of unfinished blocks, which decides when the project can finish. */
     critical: string[];
-    unsorted: UnsortedIssue[];
     progress: Progress;
     points: Points;
     tickets: TicketCount;

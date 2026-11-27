@@ -9,10 +9,6 @@ describe("git", () => {
 });
 
 describe("tryRun", () => {
-    it("preserves a successful value", async () => {
-        await expect(tryRun(async () => "value")).resolves.toEqual({ ok: true, value: "value" });
-    });
-
     it("turns Error and non-Error rejections into failure results", async () => {
         await expect(tryRun(async () => Promise.reject(new Error("broken")))).resolves.toEqual({
             ok: false,

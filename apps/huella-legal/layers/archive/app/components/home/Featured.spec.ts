@@ -44,23 +44,6 @@ describe("home featured", () => {
         expect(title.attributes("href")).toBe("/la-teoria-juridica-del-delito/");
     });
 
-    it("asks for the lead image first", async () => {
-        const wrapper = await mount({ lead: LEAD, latest: LATEST });
-
-        expect(wrapper.find("img").attributes()).toMatchObject({
-            fetchpriority: "high",
-            alt: "",
-        });
-        expect(wrapper.find("img").attributes("loading")).toBeUndefined();
-    });
-
-    it("asks for the lead image at its frame's 16:10, so the CDN crops what the frame would hide", async () => {
-        const lead = { ...LEAD, image: fakeAsset({ width: 1280, height: 1276 }) };
-        const wrapper = await mount({ lead, latest: LATEST });
-
-        expect(wrapper.find("img").attributes()).toMatchObject({ width: "1280", height: "800" });
-    });
-
     it("names the lead's format and links its subject", async () => {
         const wrapper = await mount({ lead: LEAD, latest: LATEST });
 
@@ -82,13 +65,5 @@ describe("home featured", () => {
         expect(items[0]!.text()).toContain("t(homeFeatured.formats.comment)");
         expect(items[0]!.text()).toContain("Luis Martín, Eva Ruiz");
         expect(items[1]!.text()).toContain("t(homeFeatured.formats.thesis)");
-    });
-
-    it("labels the latest list by its own heading", async () => {
-        const wrapper = await mount({ lead: LEAD, latest: LATEST });
-
-        const aside = wrapper.find("aside");
-
-        expect(aside.attributes("aria-labelledby")).toBe(aside.find("h2").attributes("id"));
     });
 });

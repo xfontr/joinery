@@ -27,6 +27,7 @@
     "brand:extract": "pnpm --silent cli src/brand/index.ts extract",
     "brand:contrast": "pnpm --silent cli src/brand/index.ts contrast",
     "coverage": "pnpm --silent cli src/coverage-report/index.ts",
+    "tasks": "pnpm --silent cli src/tasks/index.ts",
     "cli": "node --disable-warning=ExperimentalWarning",
     "lint": "nx eslint:lint",
     "typecheck": "tsc --noEmit",

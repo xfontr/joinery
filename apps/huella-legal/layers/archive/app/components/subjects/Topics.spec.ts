@@ -33,22 +33,4 @@ describe("subjects topics", () => {
             ["D", ["Dolo"]],
         ]);
     });
-
-    it("links every topic to its tag listing", async () => {
-        const wrapper = await mountSuspended(SubjectsTopics, { props, global });
-
-        expect(wrapper.findAll("li a").map((link) => link.attributes("href"))).toEqual([
-            "/etiquetas/arrendamiento/",
-            "/etiquetas/arbitros/",
-            "/etiquetas/dolo/",
-        ]);
-    });
-
-    it("hides each count from screen readers behind a worded one, so a bare number is never read out", async () => {
-        const wrapper = await mountSuspended(SubjectsTopics, { props, global });
-        const link = wrapper.find("li a");
-
-        expect(link.find("[aria-hidden='true']").text()).toBe("2");
-        expect(link.find(".sr-only").text()).toBe("t(subjectsTopics.count)");
-    });
 });

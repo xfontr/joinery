@@ -10,6 +10,7 @@
                     {{ $t("listCard.shown", { shown, total }) }}
                 </span>
             </div>
+            <div v-if="$slots.filters" class="mt-3"><slot name="filters" /></div>
         </template>
 
         <slot v-if="shown === 0" name="empty">

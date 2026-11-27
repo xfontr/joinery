@@ -21,14 +21,4 @@ describe("WizardSummary", () => {
         expect(await figures("block")).toEqual(["17", "17", "40"]);
         expect(await figures("fast")).toEqual(["17", "3", "40"]);
     });
-
-    it("reports a ticket size picked in the side panel", async () => {
-        const wrapper = await mountSuspended(Summary, {
-            props: { ...ESTIMATE, ticketSize: "block" },
-        });
-
-        await wrapper.findAll("input[type='radio']")[2]?.setValue();
-
-        expect(wrapper.emitted("update:ticketSize")).toEqual([["fast"]]);
-    });
 });

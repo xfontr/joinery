@@ -13,7 +13,7 @@ import {
 import { assertCommit, manifestAt } from "./adapters/git.ts";
 import { manifestBans } from "./domain/bans.ts";
 import { contractFindings, validatePackage } from "./domain/contracts.ts";
-import { blocking, type Finding } from "./domain/findings.ts";
+import type { Finding } from "./domain/findings.ts";
 import { oneSidedShared } from "./domain/sides.ts";
 import { compareLayoutBlock, compareTagTables } from "./domain/tables.ts";
 import { misnamedWorkflow } from "./domain/workflows.ts";
@@ -46,21 +46,11 @@ export const main = ({ flags }: Args): void => {
     const baseFlag = optionValue(flags, "base");
     const findings = collect(baseFlag === undefined ? undefined : assertCommit(baseFlag));
 
-    if (flags.has("json")) {
-        out.json(findings);
-        return;
+    for (const finding of findings) out.error(`${finding.title}: ${finding.detail}`);
+
+    if (findings.length > 0) {
+        throw new ExpectedError(`invariants:check found ${findings.length} violation(s).`);
     }
 
-    for (const finding of findings) {
-        (finding.blocks ? out.error : out.warn)(`${finding.title}: ${finding.detail}`);
-    }
-
-    const failures = blocking(findings).length;
-    if (failures > 0) throw new ExpectedError(`invariants:check found ${failures} violation(s).`);
-
-    out.success(
-        findings.length === 0
-            ? "Repo invariants hold."
-            : `Repo invariants hold; ${findings.length} docs warning(s) above.`,
-    );
+    out.success("Repo invariants hold.");
 };

@@ -1,7 +1,7 @@
 import { serveEndpoint } from "@joinery/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import type { SnapshotIssue } from "#layers/workflows/shared/types/SnapshotIssue.ts";
 import { assembleWorkflows, type Workflows } from "#layers/workflows/shared/workflows.ts";
 import Page from "./index.vue";
@@ -38,16 +38,20 @@ const MESSAGES = {
     workflow: {
         fallback: "Workflow",
     },
+    workflowBlock: {
+        hide: "Hide the block",
+    },
+    workflowPane: {
+        show: "Show the pane",
+    },
     workflowActions: {
         never: "Never synced — run {setup} then {sync}",
         settings: "Settings",
         synced: "Snapshot updated {age}",
     },
     workflowActivityStrip: {
-        lastCommit: "Last commit {day}",
         moved: "{count} capabilities | {count} capability | {count} capabilities",
         segment: "{stage} · {day} · {moved}",
-        title: "Activity",
         tooltip: "Capabilities moved per day, from commits tagged with a ticket number",
     },
     workflowAlerts: {
@@ -55,13 +59,6 @@ const MESSAGES = {
             description:
                 "Ask Claude to draft its map: it asks what the project is, writes the blocks under {extras} in {file}, and they show here for you to check before anything is filed.",
             title: "This project has no blocks yet",
-        },
-        reasons: {
-            noLabel: "no {detail} label",
-        },
-        unsorted: {
-            lead: "Not placed yet. Give each one the milestone and a {label} label on GitHub, then sync again.",
-            title: "{count} to organise",
         },
     },
     workflowCapabilityDetail: {
@@ -76,7 +73,6 @@ const MESSAGES = {
         },
     },
     workflowGraph: {
-        details: "Details for {title}",
         fit: "Fit the selected path",
         full: "Full screen",
         node: "{title}, {state}",
@@ -86,12 +82,6 @@ const MESSAGES = {
         },
         zoomIn: "Zoom in",
         zoomOut: "Zoom out",
-    },
-    workflowGraphSection: {
-        chain: "{status} Longest chain left: {chain}.",
-        status: "{state}. Its path stays lit; click an empty spot for the whole map.",
-        title: "Dependency graph",
-        titleSelected: "Dependency graph · {title}",
     },
     workflowLeft: {
         blocks: "{state} blocks",
@@ -109,7 +99,6 @@ const MESSAGES = {
     },
     workflowStageCards: {
         activity: "Active on {days} days, last on {day}",
-        details: "Details for {title}",
         dot: "#{number} {title} · {status}",
         progress: "{done} of {total} · {points}",
         stagePoints: "{done}/{total} SP",
@@ -230,12 +219,21 @@ const blocksIn = async (wrapper: VueWrapper, state: string) => {
     return document.body.querySelector<HTMLElement>(`ul[aria-label='${state} blocks']`)!;
 };
 
+/** happy-dom's handle on its window, which `xl` media queries read their width from. */
+interface HappyDOM {
+    setViewport: (size: { width: number; height: number }) => void;
+}
+
+/** The block pane, which shows whichever block is selected. */
+const pane = (wrapper: VueWrapper) => wrapper.findComponent({ name: "WorkflowBlock" });
+
 const graphBlock = (wrapper: VueWrapper, title: string) =>
     wrapper.findComponent({ name: "WorkflowGraph" }).find(`button[aria-label^='${title},']`);
 
 beforeEach(() => {
     editing.editable = false;
     editing.edit.mockReset();
+    localStorage.clear();
 });
 
 beforeEach(() => {
@@ -243,13 +241,6 @@ beforeEach(() => {
 });
 
 describe("workflow page", () => {
-    it("puts a ticket with no capability label under To organise", async () => {
-        const wrapper = await open();
-
-        expect(wrapper.text()).toContain("1 to organise");
-        expect(wrapper.text()).toContain("Stray ticket");
-    });
-
     it("asks for a map on a project with no blocks, instead of calling it done", async () => {
         const wrapper = await open(
             assembleWorkflows(
@@ -286,33 +277,91 @@ describe("workflow page", () => {
         expect((await blocksIn(wrapper, "can file now")).textContent).toContain("Cutover");
     });
 
-    it("lights a block picked from its state's list on its stage cards and on the graph", async () => {
+    it("lights a block picked from its state's list on its stage cards and in the pane", async () => {
         const wrapper = await open();
 
         const list = await blocksIn(wrapper, "can file now");
         [...list.querySelectorAll("button")]
             .find((button) => button.textContent?.trim().startsWith("Cutover"))!
             .click();
-        await flushPromises();
 
+        await vi.waitFor(() => expect(pane(wrapper).find("h2").text()).toBe("Cutover"));
         expect(wrapper.find("#stage-launch button[aria-pressed='true']").text()).toContain(
             "Cutover",
         );
+    });
+
+    it("lights a picked block's path on the graph view", async () => {
+        const wrapper = await open(workflows(PROJECT), "/workflows/blog?view=map&block=cutover");
+
         expect(graphBlock(wrapper, "Cutover").attributes("aria-pressed")).toBe("true");
         expect(graphBlock(wrapper, "Comments").text()).toContain("needed");
     });
 
-    it("opens a block's details from its info button, selecting it on the way", async () => {
+    it("shows a block's details on a plain click on its card, with no second button", async () => {
         const wrapper = await open();
 
-        expect(document.body.textContent).not.toContain("Moderate comments");
+        expect(pane(wrapper).exists()).toBe(false);
 
-        await wrapper.find("button[aria-label='Details for Comments']").trigger("click");
-        await flushPromises();
+        await wrapper
+            .findAll("ol button")
+            .find((button) => button.text().includes("Launch"))!
+            .trigger("click");
+        await wrapper.find("#stage-launch button[aria-pressed]").trigger("click");
 
-        expect(document.body.querySelector("[role=dialog]")?.textContent).toContain(
-            "Moderate comments",
-        );
+        await vi.waitFor(() => expect(pane(wrapper).find("h2").text()).toBe("Cutover"));
+        // happy-dom's window is narrower than `xl`, where the pane slides over the board instead.
+        expect(document.body.querySelector("[role=dialog]")?.textContent).toContain("Cutover");
+        expect(useRouter().currentRoute.value.query.block).toBe("cutover");
+    });
+
+    it("opens the block a pasted link names", async () => {
+        const wrapper = await open(workflows(PROJECT), "/workflows/blog?block=cutover");
+
+        expect(pane(wrapper).find("h2").text()).toBe("Cutover");
+    });
+
+    it("hides the pane without dropping the selection, and grows it back from the corner button", async () => {
+        const viewport = (window as unknown as { happyDOM: HappyDOM }).happyDOM;
+        viewport.setViewport({ width: 1440, height: 900 });
+        onTestFinished(() => viewport.setViewport({ width: 1024, height: 768 }));
+        const wrapper = await open(workflows(PROJECT), "/workflows/blog?block=cutover");
+        const corner = () => wrapper.find("button[aria-label='Show the pane']");
+        expect(corner().attributes("aria-hidden")).toBe("true");
+
+        await pane(wrapper).find("button[aria-label='Hide the block']").trigger("click");
+
+        expect(pane(wrapper).exists()).toBe(false);
+        expect(useRouter().currentRoute.value.query.block).toBe("cutover");
+        expect(wrapper.find("#stage-launch button[aria-pressed='true']").exists()).toBe(true);
+
+        expect(corner().attributes("aria-hidden")).toBeUndefined();
+        await corner().trigger("click");
+
+        expect(pane(wrapper).find("h2").text()).toBe("Cutover");
+    });
+
+    it("opens a hidden pane again for the first block picked after the selection was cleared", async () => {
+        const viewport = (window as unknown as { happyDOM: HappyDOM }).happyDOM;
+        viewport.setViewport({ width: 1440, height: 900 });
+        onTestFinished(() => viewport.setViewport({ width: 1024, height: 768 }));
+        const wrapper = await open(workflows(PROJECT), "/workflows/blog?block=cutover");
+        await pane(wrapper).find("button[aria-label='Hide the block']").trigger("click");
+        await wrapper.find("#stage-launch button[aria-pressed='true']").trigger("click");
+        await vi.waitFor(() => expect(useRouter().currentRoute.value.query.block).toBeUndefined());
+        await wrapper.find("ol button[aria-label^='Cutover,']").trigger("click");
+
+        await vi.waitFor(() => expect(pane(wrapper).find("h2").text()).toBe("Cutover"));
+    });
+
+    it("clears the selection and closes the pane on a second click on the same block", async () => {
+        const wrapper = await open(workflows(PROJECT), "/workflows/blog?block=cutover");
+
+        await wrapper.find("#stage-launch button[aria-pressed='true']").trigger("click");
+
+        await vi.waitFor(() => expect(pane(wrapper).exists()).toBe(false));
+        expect(useRouter().currentRoute.value.query.block).toBeUndefined();
+        expect(wrapper.find("#stage-launch button[aria-pressed='true']").exists()).toBe(false);
     });
 
     it("replays an earlier day, showing work in flight that is done today", async () => {
@@ -327,23 +376,18 @@ describe("workflow page", () => {
                     activity: ["2026-11-02"],
                 }),
             ]),
+            "/workflows/blog?view=map",
         );
 
         expect(graphBlock(wrapper, "Comments").text()).toContain("Done");
 
+        await wrapper
+            .find("button:has(.i-lucide-chart-column), button:has([class*='chart-column'])")
+            .trigger("click");
         await wrapper.findComponent({ name: "USlider" }).setValue(0);
 
         expect(graphBlock(wrapper, "Comments").text()).toContain("In flight");
         expect(wrapper.find("output").text()).toContain("2 Nov");
-    });
-
-    it("keeps features, ticket size and deleting behind Settings rather than on the page", async () => {
-        editing.editable = true;
-        const wrapper = await open();
-        const controls = wrapper.findAll("a, button").map((control) => control.text());
-
-        expect(wrapper.find("a[href='/workflows/blog/settings']").exists()).toBe(true);
-        expect(controls.filter((label) => /delete|features|ticket size/i.test(label))).toEqual([]);
     });
 
     it("says so when the project doesn't exist instead of rendering an empty pipeline", async () => {

@@ -1,7 +1,8 @@
 #!/bin/sh
 
-# Scripts record a usage row unless this is set; a hook running them is not anyone choosing to.
-export JOINERY_GIT_HOOK=1
+# Scripts skip their usage row when this is set, since no one chose to run them; Nx task timings
+# keep theirs, tagged with this hook's name.
+export JOINERY_GIT_HOOK=post-merge
 
 # Git sets GIT_DIR in a linked worktree's hooks, so a tool run from a package folder took that
 # folder for the repo root; unset, git finds the same repository from the hook's cwd.

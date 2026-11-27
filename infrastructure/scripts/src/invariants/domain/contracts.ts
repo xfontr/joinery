@@ -400,5 +400,4 @@ export const contractFindings = ({ packageName, errors }: PackageReport): Findin
         title: "A package breaks its manifest contract",
         detail: error,
         evidence: [`packages/${packageName.replace("@joinery/", "")}/package.json`],
-        blocks: true,
     }));

@@ -133,6 +133,10 @@ the errors arrive inline. It runs `eslint:lint` rather than `lint`, because `lin
 `eslint:lint` lacks that dependency. A run with a cold cache can take longer than the shell's
 default two-minute timeout, so give it a longer one.
 
+Run `pnpm check` once, before handing work over, not after every edit. While iterating, run only the
+spec you touched with `pnpm exec vitest run <path>` from its project. Parallel sessions share one
+machine, so each extra full run slows every other session's.
+
 The rest of this section is reference for when the user asks for it, not licence to offer it.
 [`docs/guides/change-lifecycle.md`](./docs/guides/change-lifecycle.md) has the whole flow; these are
 the traps in it.

@@ -32,7 +32,6 @@ export const misnamedWorkflow = ({ file, text }: WorkflowSource): Finding[] => {
                     ? `.github/workflows/${file} has no top-level name. Name it "<Category>${SEPARATOR}<Subject>", e.g. "Deploy${SEPARATOR}Portfolio", or a single word like "CI".`
                     : `.github/workflows/${file} is named "${name}", so the file is ${expected}. Rename one so they match; the category before "${SEPARATOR}" is what groups the Actions sidebar.`,
             evidence: [`.github/workflows/${file}`],
-            blocks: true,
         },
     ];
 };

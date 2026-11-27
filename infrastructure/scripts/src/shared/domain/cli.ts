@@ -6,6 +6,15 @@ export interface Args {
     positionals: string[];
 }
 
+/** How a run ended, recorded in place of a bare exit code so a refusal never reads as a crash. */
+type Outcome = "ok" | "finding" | "refused" | "usage" | "crash" | "cancelled" | "interrupted";
+
+export interface Ending {
+    outcome: Outcome;
+    /** Set for a crash only, and only to a kind such as `gh:exit` or `ENOENT`: rows are public. */
+    error: string;
+}
+
 interface ErrorReport {
     cancelled: boolean;
     message: string;
@@ -79,4 +88,20 @@ export const report = (error: unknown): ErrorReport => {
         cancelled: false,
         message: detail && !stack.includes(detail) ? `${stack}\n${detail}` : stack,
     };
+};
+
+/** `exec.run` tags a failed child with the command it ran, which is the useful part of the kind. */
+export const errorKindOf = (error: unknown): string => {
+    const { code, command } = (error ?? {}) as { code?: unknown; command?: unknown };
+    const systemCode = typeof code === "string" ? code : undefined;
+
+    if (typeof command === "string") return `${command}:${systemCode ?? "exit"}`;
+    if (systemCode) return systemCode;
+    return error instanceof Error ? error.name : typeof error;
+};
+
+export const endingOf = (error: unknown): Ending => {
+    if (error instanceof CancelledError) return { outcome: "cancelled", error: "" };
+    if (error instanceof ExpectedError) return { outcome: "refused", error: "" };
+    return { outcome: "crash", error: errorKindOf(error) };
 };

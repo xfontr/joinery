@@ -6,11 +6,14 @@ import {
     readFileSync,
     renameSync,
     rmSync,
+    writeFileSync,
 } from "node:fs";
 import { dirname, join } from "node:path";
 import process from "node:process";
 import { at } from "../../shared/adapters/git.ts";
 import { usageBufferPath } from "../../shared/adapters/usage.ts";
+import type { Log } from "../../shared/domain/usage.ts";
+import { upgradedLog } from "../domain/rows.ts";
 
 const LOG_ROOT = "data/telemetry";
 
@@ -58,17 +61,16 @@ export const takeBuffer = (log: string): { text: string; discard: () => void } =
 };
 
 /** Returns the repo-relative path written to. */
-export const appendToLog = (
-    log: string,
-    file: string,
-    columns: readonly string[],
-    lines: string[],
-): string => {
-    const path = `${LOG_ROOT}/${log}/${file}`;
+export const appendToLog = (log: Log, file: string, lines: string[]): string => {
+    const path = `${LOG_ROOT}/${log.name}/${file}`;
     const absolute = at(path);
 
     mkdirSync(dirname(absolute), { recursive: true });
-    const header = existsSync(absolute) ? "" : `${columns.join(",")}\n`;
+    const exists = existsSync(absolute);
+    const upgraded = exists ? upgradedLog(log, readFileSync(absolute, "utf8")) : undefined;
+    if (upgraded !== undefined) writeFileSync(absolute, upgraded);
+
+    const header = exists ? "" : `${log.columns.join(",")}\n`;
     appendFileSync(absolute, `${header}${lines.join("\n")}\n`);
 
     return path;

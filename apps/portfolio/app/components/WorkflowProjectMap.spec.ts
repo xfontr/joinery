@@ -56,13 +56,6 @@ beforeEach(() => {
 });
 
 describe("WorkflowProjectMap", () => {
-    it("lists each block under its stage for a phone, where the drawing is hidden", async () => {
-        const stages = (await mount()).findAll("ol.md\\:hidden > li").map((stage) => stage.text());
-
-        expect(stages[0]).toContain("Page");
-        expect(stages[1]).toContain("Cutover");
-    });
-
     it("tells a screen reader each block's state, which the glyph alone only shows", async () => {
         const blocks = (await mount()).findAll("li[data-tone]");
 

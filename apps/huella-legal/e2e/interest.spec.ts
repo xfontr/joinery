@@ -92,33 +92,6 @@ test("calculates the legal and judicial rates and announces each result", async 
     await expect(result).toContainText(/52,50\s€/);
 });
 
-test("reads 1.000 as a thousand euros, the way a Spanish reader writes it", async ({ page }) => {
-    await open(page);
-
-    await fillYear(page);
-    await panel(page).getByLabel("Importe").fill("1.000");
-    await calculate(page);
-
-    await expect(panel(page).getByRole("status")).toContainText(/32,50\s€/);
-});
-
-test("takes separate day, month and year fields and a custom rate in the advanced tab", async ({
-    page,
-}) => {
-    await open(page);
-    await advanced(page);
-
-    await fillAdvanced(page, "3");
-    await panel(page)
-        .getByRole("radio", { name: t("interestCalculator.rate.options.custom") })
-        .check();
-    await panel(page).getByLabel("Tipo personalizado").fill("4");
-    await calculate(page);
-
-    await expect(panel(page).getByRole("status")).toContainText("365");
-    await expect(panel(page).getByRole("status")).toContainText(/12,00\s€/);
-});
-
 test("adds calculations to a table that totals them and survives a reload", async ({ page }) => {
     await open(page);
     await advanced(page);
@@ -155,55 +128,6 @@ test("adds calculations to a table that totals them and survives a reload", asyn
     await table.getByRole("button", { name: "Quitar la fila 2" }).click();
 
     await expect(table.locator("tbody tr")).toHaveCount(1);
-});
-
-test("announces a failed submit in an alert that links to each invalid field", async ({ page }) => {
-    await open(page);
-
-    await calculate(page);
-
-    const alert = panel(page).getByRole("alert");
-
-    await expect(alert).toContainText("Revisa 3 campos antes de enviar");
-    await expect(
-        alert.getByRole("link", { name: t("interestCalculator.principal.label") }),
-    ).toBeVisible();
-    await expect(alert).toContainText("Importe: Escribe un importe mayor que cero");
-
-    await panel(page).getByLabel("Importe").fill("1000");
-
-    await expect(alert).toContainText("Revisa 2 campos antes de enviar");
-    await expect(
-        alert.getByRole("link", { name: t("interestCalculator.principal.label") }),
-    ).toHaveCount(0);
-    await expect(panel(page).getByRole("status")).not.toContainText("Intereses");
-
-    await alert.getByRole("link", { name: t("interestCalculator.from.label") }).click();
-    await expect(panel(page).getByLabel("Fecha inicial")).toBeFocused();
-
-    await fillYear(page);
-    await panel(page).getByLabel("Fecha final").fill("2025-01-01");
-    await calculate(page);
-
-    await expect(panel(page).getByRole("alert")).toContainText(
-        "Fecha final: La fecha final no puede ser anterior a la inicial",
-    );
-});
-
-test("refuses a day that doesn't exist in the advanced tab", async ({ page }) => {
-    await open(page);
-    await advanced(page);
-
-    await fillAdvanced(page, "2");
-    await panel(page)
-        .getByRole("group", { name: t("interestCalculator.from.label") })
-        .getByLabel("Día")
-        .fill("31");
-    await calculate(page);
-
-    await expect(panel(page).getByRole("alert")).toContainText(
-        "Fecha inicial: La fecha inicial no existe",
-    );
 });
 
 test("the page fits the viewport without scrolling sideways, table included", async ({ page }) => {

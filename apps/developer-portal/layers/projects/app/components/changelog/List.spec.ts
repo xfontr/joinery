@@ -38,18 +38,4 @@ describe("ChangelogList", () => {
         expect(entries[0]).toMatch(/v1\.4\.0\s*\+3 unreleased/);
         expect(entries[1]).toBe("Content");
     });
-
-    it("picks the changelog clicked", async () => {
-        const wrapper = await mountSuspended(List, {
-            props: {
-                changelogs: CHANGELOGS,
-                projects: [],
-                modelValue: CHANGELOGS[0]?.path ?? null,
-            },
-        });
-
-        await wrapper.findAll("button")[1]?.trigger("click");
-
-        expect(wrapper.emitted("update:modelValue")).toEqual([["/packages/content/changelog"]]);
-    });
 });

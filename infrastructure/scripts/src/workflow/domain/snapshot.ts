@@ -1,4 +1,4 @@
-/** Mirrors `CAPABILITY_LABEL_PREFIX` in apps/developer-portal/layers/workflows/shared/constants.ts. */
+/** The prefix of the GitHub label that places an issue under a capability. */
 export const CAPABILITY_LABEL_PREFIX = "cap:";
 
 /** Mirrors `OWNER_LABEL` in apps/developer-portal/layers/workflows/shared/constants.ts. */

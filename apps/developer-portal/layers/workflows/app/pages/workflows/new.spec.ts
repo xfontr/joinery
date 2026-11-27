@@ -411,7 +411,7 @@ describe("new project wizard", () => {
 
         await button(wrapper, "Next")?.trigger("click");
         await wrapper.find("input").setValue("Harbour Notes");
-        const id = wrapper.findAll("input")[1]!;
+        const id = wrapper.findAll("input")[2]!;
         await id.setValue("typed");
         await id.setValue("");
 

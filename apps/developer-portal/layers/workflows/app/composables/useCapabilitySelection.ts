@@ -1,22 +1,22 @@
 import type { ComputedRef } from "vue";
 import type { ProjectView } from "#layers/workflows/shared/workflows.ts";
 
-/** One block, picked anywhere, drives the cards, the skyline and the graph. */
+/** One block, picked anywhere and kept in `?block=`, drives every view and the block pane. */
 export const useCapabilitySelection = (view: ComputedRef<ProjectView | undefined>) => {
-    const chosenId = ref<string | null>(null);
-    /** What was picked, else what needs doing first, else the last block on the map. */
-    const selectedId = computed(() => {
-        const capabilities = view.value?.capabilities ?? [];
-        const isOn = (capabilityId: string | null) =>
-            capabilities.some(({ id: other, state }) => other === capabilityId && state !== "off");
+    const route = useRoute();
+    const router = useRouter();
 
-        if (isOn(chosenId.value)) return chosenId.value;
-        return (
-            view.value?.left[0]?.id ??
-            capabilities.findLast(({ state }) => state !== "off")?.id ??
-            null
-        );
-    });
+    const chosenId = computed(() =>
+        typeof route.query.block === "string" ? route.query.block : null,
+    );
+    /** What was picked, while it is still on the map; nothing picked leaves the pane closed. */
+    const selectedId = computed(() =>
+        view.value?.capabilities.some(
+            ({ id: other, state }) => other === chosenId.value && state !== "off",
+        )
+            ? chosenId.value
+            : null,
+    );
     const selected = computed(() =>
         view.value?.capabilities.find((capability) => capability.id === selectedId.value),
     );
@@ -24,30 +24,31 @@ export const useCapabilitySelection = (view: ComputedRef<ProjectView | undefined
     const stageId = ref<string | null>(null);
     const activeIndex = computed(() => {
         const stages = view.value?.stages ?? [];
-        const wanted = stageId.value ?? selected.value?.stage;
+        const wanted = stageId.value ?? selected.value?.stage ?? view.value?.left[0]?.stage;
         return Math.max(
             stages.findIndex((stage) => stage.id === wanted),
             0,
         );
     });
     const activeStage = computed(() => view.value?.stages[activeIndex.value]);
-    const selectedStage = computed(
-        () => view.value?.stages.find((stage) => stage.id === selected.value?.stage)?.title,
-    );
+
+    // Replaced rather than pushed, so clicking through the skyline doesn't fill the back button.
+    const choose = (block: string | undefined) =>
+        void router.replace({ query: { ...route.query, block } });
 
     const select = (capabilityId: string) => {
-        chosenId.value = capabilityId;
         stageId.value = null;
+        choose(capabilityId === selectedId.value ? undefined : capabilityId);
     };
+    const clear = () => choose(undefined);
 
     return {
-        chosenId,
         selectedId,
         selected,
         stageId,
         activeIndex,
         activeStage,
-        selectedStage,
         select,
+        clear,
     };
 };

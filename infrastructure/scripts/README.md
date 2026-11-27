@@ -1,7 +1,6 @@
 # 🤖 @joinery/scripts
 
-The repo's CLI toolbox: dev startup, issue workflows, doc checks and repo gates. Nothing imports
-it; every script is run by hand, a hook or CI.
+The repo's CLI scripts: dev startup, issues, doc checks and gates.
 
 ⚠️ This is a mostly vibe-coded app, with low human intervention. Why: it's purely a DX tool. I do not
 have the resources to properly build and maintain this, so I went for the quick and easy shortcut.
@@ -35,6 +34,7 @@ domain/      pure functions and their types. No fs, no subprocess, no clack, no 
 | [`map`](./src/map/README.md) | `pnpm docs:map` | Rendering the feature index, and asserting in CI that it's current |
 | [`invariants`](./src/invariants/README.md) | `pnpm invariants:check` | The repo rules every author is held to, run by hooks and CI |
 | [`usage`](./src/usage/README.md) | `pnpm usage:flush` | Moving the runs every script records into the committed log; the pre-commit hook runs it |
+| [`tasks`](./src/tasks/README.md) | `pnpm check`, `lint`, `typecheck`, `test`, `build`, `test:coverage`, `unused:check` (root) | Running the root Nx commands and timing every task they run |
 | [`coverage-report`](./src/coverage-report/README.md) | `pnpm test:coverage` (root) | Merging every project's coverage into one browsable HTML report |
 
 ## Run by agents, not only by people

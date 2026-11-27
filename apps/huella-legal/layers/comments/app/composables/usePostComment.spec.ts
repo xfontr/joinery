@@ -1,7 +1,7 @@
 import type { Challenge } from "#layers/forms/app/types/Challenge";
-import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
-import { mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { serveEndpoint, withSetup } from "@joinery/configs/vitest/utils/nuxt";
+import { createError, readBody } from "h3";
+import { describe, expect, it, vi } from "vitest";
 import { usePostComment } from "./usePostComment";
 
 const FIELDS = {
@@ -14,40 +14,30 @@ const FIELDS = {
     honeypot: "",
 };
 
-const fetch = vi.hoisted(() => vi.fn());
-
-// The i18n loader fetches the locale through the same import, so only the route is faked
-mockNuxtImport(
-    "$fetch",
-    () => (url: string, options: unknown) =>
-        url === "/api/comments" ? fetch(url, options) : globalThis.$fetch(url, options as never),
-);
-
 const challenge = vi.fn((send: (token: string) => Promise<unknown>) => send("tok")) as Challenge;
 
-const rejected = (statusCode: number, data?: unknown) =>
-    Object.assign(new Error("fetch failed"), {
-        statusCode,
-        data: { error: true, statusCode, statusMessage: "Refused", data },
+const serveComments = (statusCode?: number) => {
+    const received: unknown[] = [];
+
+    serveEndpoint("/api/comments", async (event) => {
+        received.push(await readBody(event));
+
+        if (statusCode) throw createError({ statusCode });
+
+        return {};
     });
 
-const setUp = async () => (await withSetup(() => usePostComment())).value;
-
-beforeEach(() => {
-    vi.clearAllMocks();
-    fetch.mockResolvedValue(undefined);
-});
+    return received;
+};
 
 describe("usePostComment", () => {
     it("posts the fields and the honeypot with the challenge's token, then reports success", async () => {
-        const comment = await setUp();
+        const received = serveComments();
+        const { value: comment } = await withSetup(() => usePostComment());
 
         await comment.send(FIELDS, challenge);
 
-        expect(fetch).toHaveBeenCalledWith("/api/comments", {
-            method: "POST",
-            body: { ...FIELDS, token: "tok" },
-        });
+        expect(received).toEqual([{ ...FIELDS, token: "tok" }]);
         expect(comment.status.value).toBe("success");
     });
 
@@ -58,9 +48,9 @@ describe("usePostComment", () => {
         [403, "unavailable"],
         [502, "unavailable"],
     ] as const)("tells the reader why a %s failed: %s", async (statusCode, failure) => {
-        const comment = await setUp();
+        serveComments(statusCode);
+        const { value: comment } = await withSetup(() => usePostComment());
 
-        fetch.mockRejectedValue(rejected(statusCode));
         await comment.send(FIELDS, challenge);
 
         expect(comment.status.value).toBe("error");

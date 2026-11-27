@@ -46,12 +46,11 @@ const page = (path: string, overrides: Partial<DocPage> = {}): DocPage => ({
     decisionOutcome: null,
     decisionSupersededBy: null,
     audit: null,
-    brokenLinks: [],
     ...overrides,
 });
 
 const serve = (pages: DocPage[]) => {
-    artifacts.docs = { generatedAt: "2026-11-01T00:00:00Z", pages, brokenLinkCount: 0 };
+    artifacts.docs = { generatedAt: "2026-11-01T00:00:00Z", pages };
 };
 
 const FIRST_HOUR = "/wiki/docs/guides/first-hour";
@@ -66,11 +65,7 @@ beforeEach(() => {
         },
         { path: "/docs/guides/next", title: "Next" },
     ];
-    serve([
-        page("docs/guides/first-hour.md", {
-            brokenLinks: [{ href: "./missing", resolved: "docs/guides/missing.md" }],
-        }),
-    ]);
+    serve([page("docs/guides/first-hour.md")]);
 });
 
 describe("doc detail page", () => {
@@ -78,19 +73,6 @@ describe("doc detail page", () => {
         await mountSuspended(Page, { global, route: "/wiki/docs/guides/nope" });
 
         expect(setStatus).toHaveBeenCalledWith(404);
-    });
-
-    it("leaves a found page on 200", async () => {
-        await mountSuspended(Page, { global, route: FIRST_HOUR });
-
-        expect(setStatus).not.toHaveBeenCalled();
-    });
-
-    it("warns about the page's broken links, naming each one", async () => {
-        const wrapper = await mountSuspended(Page, { global, route: FIRST_HOUR });
-
-        expect(wrapper.text()).toContain("wikiPage.broken");
-        expect(wrapper.text()).toContain("./missing");
     });
 
     it("links the next page in the same group", async () => {
@@ -105,12 +87,6 @@ describe("doc detail page", () => {
         expect(wrapper.findComponent({ name: "UContentToc" }).props("links")).toEqual([
             { id: "intro", depth: 2, text: "Intro" },
         ]);
-    });
-
-    it("says there is no such page instead of rendering an empty one", async () => {
-        const wrapper = await mountSuspended(Page, { global, route: "/wiki/docs/guides/nope" });
-
-        expect(wrapper.text()).toContain("wikiPage.missing.title");
     });
 
     it("loads the new page when the route changes under it", async () => {

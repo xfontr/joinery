@@ -1,4 +1,4 @@
-import { mockNuxtImport, mountSuspended, registerEndpoint } from "@nuxt/test-utils/runtime";
+import { mountSuspended, registerEndpoint } from "@nuxt/test-utils/runtime";
 import { createError } from "h3";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import InterestCalculatorPage from "./interest-calculator.vue";
@@ -22,8 +22,6 @@ registerEndpoint("/api/pages/calculo-intereses", () => {
         },
     };
 });
-
-mockNuxtImport("useSeoMeta", () => () => {});
 
 beforeEach(() => {
     wordpress.fails = false;

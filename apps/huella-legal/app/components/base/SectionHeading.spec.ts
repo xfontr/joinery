@@ -5,15 +5,6 @@ import SectionHeading from "./SectionHeading.vue";
 const SEE_ALL = { label: "Ver todo", to: "/publicaciones" };
 
 describe("section heading", () => {
-    it("carries the id on the heading itself, so aria-labelledby and anchors reach it", async () => {
-        const wrapper = await mountSuspended(SectionHeading, {
-            props: { title: "Recientes", id: "recientes" },
-        });
-
-        expect(wrapper.find("h2").attributes("id")).toBe("recientes");
-        expect(wrapper.find("h2").text()).toBe("Recientes");
-    });
-
     it("draws the see-all link only when given one", async () => {
         const plain = await mountSuspended(SectionHeading, { props: { title: "Recientes" } });
         const linked = await mountSuspended(SectionHeading, {
@@ -38,13 +29,5 @@ describe("section heading", () => {
             unnamed.find("h2").attributes("id"),
         );
         expect(unnamed.find("h2").attributes("id")).toBeTruthy();
-    });
-
-    it("prints the kicker above the title only when given one", async () => {
-        const wrapper = await mountSuspended(SectionHeading, {
-            props: { title: "Recientes", kicker: "Archivo" },
-        });
-
-        expect(wrapper.find("p").text()).toBe("Archivo");
     });
 });

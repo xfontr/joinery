@@ -1,7 +1,7 @@
 <template>
     <WidgetPanel
         :title="$t('projectDepsTab.title')"
-        :meta="$t('projectDepsTab.meta', { age })"
+        :meta="$t('projectDepsTab.meta')"
         to="/deps"
         :count="outdated.length"
     >
@@ -41,9 +41,7 @@ import type { OutdatedPackage } from "#layers/snapshot/shared/types/OutdatedPack
 
 interface Props {
     outdated: OutdatedPackage[];
-    /** When the dependencies were collected, as relative time. */
-    age: string;
 }
 
-const { outdated, age } = defineProps<Props>();
+const { outdated } = defineProps<Props>();
 </script>

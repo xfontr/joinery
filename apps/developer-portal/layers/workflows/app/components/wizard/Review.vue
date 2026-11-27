@@ -21,6 +21,7 @@
                 :selected="picked"
                 class="rounded-t-none"
                 @select="pick"
+                @clear="picked = null"
             />
         </section>
     </div>

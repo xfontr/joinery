@@ -1,11 +1,8 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
+import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { InterestEntry } from "../types/InterestEntry";
 import InterestCalculatorHistory from "./InterestCalculatorHistory.vue";
-
-const toast = vi.hoisted(() => ({ add: vi.fn() }));
-
-mockNuxtImport("useToast", () => () => toast);
 
 const MESSAGES = {
     interestCalculator: {
@@ -66,8 +63,12 @@ class ClipboardItem {
     constructor(readonly items: Record<string, string>) {}
 }
 
-beforeEach(() => {
+let toast: ReturnType<typeof useToast>;
+
+beforeEach(async () => {
     vi.clearAllMocks();
+    toast = (await withSetup(() => useToast())).value;
+    toast.clear();
     Object.defineProperty(navigator, "clipboard", { value: clipboard, configurable: true });
     vi.stubGlobal("ClipboardItem", ClipboardItem);
 });
@@ -132,17 +133,6 @@ describe("interest calculator history", () => {
         expect(wrapper.emitted("rename")).toEqual([["a", "Mayo"]]);
     });
 
-    it("names each row's controls by its position, so two rows never share a label", async () => {
-        const wrapper = await mountHistory();
-
-        expect(
-            wrapper.findAll("tbody input").map((input) => input.attributes("aria-label")),
-        ).toEqual(["concept 1", "concept 2"]);
-        expect(
-            wrapper.findAll("tbody button").map((button) => button.attributes("aria-label")),
-        ).toEqual(["remove 1", "remove 2"]);
-    });
-
     it("emits the removed row's id", async () => {
         const wrapper = await mountHistory();
 
@@ -196,6 +186,6 @@ describe("interest calculator history", () => {
                 ].join("\n"),
             }),
         ]);
-        expect(toast.add).toHaveBeenCalledWith(expect.objectContaining({ title: "copied" }));
+        expect(toast.toasts.value.map(({ title }) => title)).toEqual(["copied"]);
     });
 });

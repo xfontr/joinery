@@ -81,7 +81,7 @@ describe("assembleWorkflows", () => {
             },
         );
 
-        expect(projects[0]?.unsorted.map(({ issue: { number } }) => number)).toEqual([3]);
+        expect(projects[0]?.snapshot?.issues.map(({ number }) => number)).toEqual([3]);
         expect(problems).toEqual([
             {
                 file: "projects/site.snapshot.json",

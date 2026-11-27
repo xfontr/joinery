@@ -29,7 +29,6 @@
                     </div>
 
                     <WikiStart :known />
-                    <WikiBroken :pages />
                     <WikiRecent :pages :known />
                 </div>
             </div>

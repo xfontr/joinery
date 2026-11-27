@@ -46,12 +46,13 @@ const MESSAGES = {
         },
         facts: {
             agent: "By agents",
+            check: "pnpm check",
             failed: "Failed",
             neverRun: "Never run",
             runs: "Runs",
             scripts: "Scripts",
         },
-        provenance: "Usage log · last {days} days · collected {age}",
+        provenance: "Usage log · last {days} days",
         title: "Tooling usage",
     },
     telemetryDaily: {
@@ -98,7 +99,7 @@ const tally = (overrides: Partial<ScriptUsage> = {}): ScriptUsage => ({
     targets: {},
     areas: { content: 6, repo: 4 },
     flags: { check: 3 },
-    days: { "2026-11-08": { runs: 10, agent: 4, failures: 1 } },
+    days: { "2026-11-08": { runs: 10, agent: 4, failures: 1, known: 10 } },
     ...overrides,
 });
 
@@ -148,7 +149,7 @@ describe("telemetry page", () => {
                     drift: tally(),
                     map: tally({
                         runs: 500,
-                        days: { "2026-11-08": { runs: 30, agent: 0, failures: 1 } },
+                        days: { "2026-11-08": { runs: 30, agent: 0, failures: 1, known: 30 } },
                     }),
                 },
                 ["drift", "map", "ship"],
@@ -160,6 +161,7 @@ describe("telemetry page", () => {
             Runs: "40",
             "By agents": "10%",
             Failed: "5%",
+            "pnpm check": "—",
             Scripts: "3",
             "Never run": "1",
         });

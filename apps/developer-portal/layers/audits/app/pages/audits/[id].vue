@@ -4,12 +4,13 @@
             <PageHeader
                 :crumbs="[{ label: $t('audit.crumb'), to: '/audits' }]"
                 :title="report?.title ?? page?.title ?? $t('audit.notFound')"
+                :lead="provenance"
             >
                 <template #actions>
                     <StatusPill v-if="state" :label="state.label" :tone="state.tone" />
                 </template>
-                <template v-if="report" #intro>
-                    <PageFacts :provenance :facts />
+                <template v-if="report" #facts>
+                    <PageFacts :facts />
                 </template>
             </PageHeader>
         </template>

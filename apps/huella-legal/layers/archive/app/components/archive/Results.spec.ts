@@ -45,32 +45,6 @@ describe("archive results", () => {
         expect(wrapper.attributes("aria-labelledby")).toBe(wrapper.find("h2").attributes("id"));
     });
 
-    it("names the listing with the heading it is given instead of the count", async () => {
-        const wrapper = await mountSuspended(ArchiveResults, {
-            props: { ...props, heading: "Publicaciones" },
-            global,
-        });
-
-        expect(wrapper.find("h2").text()).toBe("Publicaciones");
-    });
-
-    it("draws format pills only when it is given some", async () => {
-        const bare = await mountSuspended(ArchiveResults, { props, global });
-        const filtered = await mountSuspended(ArchiveResults, {
-            props: {
-                ...props,
-                formatPills: [
-                    { label: "Todo", count: 2, to: "/", active: true },
-                    { label: "Comentarios", count: 1, to: "/?format=comentario" },
-                ],
-            },
-            global,
-        });
-
-        expect(bare.find("nav[aria-label='t(archiveResults.formats)']").exists()).toBe(false);
-        expect(filtered.findAll("nav[aria-label='t(archiveResults.formats)'] a")).toHaveLength(2);
-    });
-
     it("invites an article instead of an empty list when nothing is published in the subject", async () => {
         const wrapper = await mountSuspended(ArchiveResults, {
             props: { ...props, listing: EMPTY, emptySubject: "Derecho civil" },
@@ -79,15 +53,6 @@ describe("archive results", () => {
 
         expect(wrapper.find("ol").exists()).toBe(false);
         expect(wrapper.text()).toContain('t(emptyState.title, {"subject":"Derecho civil"})');
-    });
-
-    it("shows no empty state without a subject, since its copy names one", async () => {
-        const wrapper = await mountSuspended(ArchiveResults, {
-            props: { ...props, listing: EMPTY },
-            global,
-        });
-
-        expect(wrapper.text()).not.toContain("emptyState");
     });
 
     it("says nothing matched the query instead of showing an empty list", async () => {

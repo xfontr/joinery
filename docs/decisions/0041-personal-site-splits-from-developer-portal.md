@@ -1,5 +1,5 @@
 ---
-issue:
+issue: 512
 status: to-implement
 decision: accepted
 ---
@@ -13,7 +13,7 @@ developer view, and [0040](./0040-developer-portal-visitor-structure.md) put bot
 a toggle. Built out, the two views share a domain and nothing else a reader sees:
 
 - **Two identities.** The visitor pages are serif and editorial, and the developer view is black
-  chrome in IBM Plex. [`visitor.css`](../../apps/developer-portal/layers/design/app/assets/visitor.css)
+  chrome in IBM Plex. `visitor.css`
   is a list of `@source not` lines keeping seven layers, the developer pages and dozens of Nuxt UI
   themes out of the visitor stylesheet.
 - **Two subjects.** The visitor pages are about a person: an About page, case studies, a

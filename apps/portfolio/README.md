@@ -1,8 +1,6 @@
 # 🪪 @joinery/portfolio
 
-Xifré Font's personal site: the five rules, the method behind them, the project maps and the work
-they produced. It shows what the [developer portal](../developer-portal/README.md) builds, without
-building any of it.
+Xifré Font's personal site: the rules, the method and the work.
 
 ## Development
 

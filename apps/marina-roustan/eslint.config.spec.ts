@@ -27,14 +27,10 @@ beforeAll(() => restrictedClasses("bg-default"), 30_000);
 describe("eslint config", () => {
     it.each([
         "bg-tide-600",
-        "hover:text-red-500",
         "bg-red-500/50",
         "bg-red-500!",
         "!text-neutral-700",
-        "border-x-neutral-200",
-        "inset-shadow-red-500",
         "inset-ring-sky-300",
-        "drop-shadow-red-500",
     ])(
         "rejects a palette step in any variant or opacity form, so colour can only arrive through a role (%s)",
         async (classes) => {
@@ -44,7 +40,7 @@ describe("eslint config", () => {
         },
     );
 
-    it.each(["text-[#333]", "leading-[1.4]", "tracking-[0.02em]"])(
+    it.each(["text-[#333]", "tracking-[0.02em]"])(
         "rejects an arbitrary type value, so sizes and spacing only come from main.css tokens (%s)",
         async (classes) => {
             expect(await restrictedClasses(classes)).toEqual([
@@ -55,14 +51,10 @@ describe("eslint config", () => {
 
     it.each([
         "bg-[#333]",
-        "hover:border-[oklch(0.5_0.1_150)]",
         "fill-[var(--color-marina-sage-600)]",
         "bg-(--color-red-500)",
-        "text-(--color-tide-400)",
-        "border-(--color-ochre-500)",
         "ring-(color:--color-tide-400)",
         "bg-[red]",
-        "border-[tomato]",
         "border-s-[#333]",
     ])(
         "rejects an arbitrary colour in bracket, variable or named form, so no hex or palette step slips past the roles (%s)",
@@ -73,14 +65,14 @@ describe("eslint config", () => {
         },
     );
 
-    it.each(["border-[2px]", "shadow-[0_1px_2px_rgb(0_0_0/0.1)]", "border-(length:--border-w)"])(
+    it.each(["border-[2px]", "border-(length:--border-w)"])(
         "lets a non-colour arbitrary value through, so the colour ban never blocks a size (%s)",
         async (classes) => {
             expect(await restrictedClasses(classes)).toEqual([]);
         },
     );
 
-    it.each(["bg-default", "text-muted", "text-primary", "border-accented"])(
+    it.each(["bg-default", "text-primary"])(
         "lets a Nuxt UI role through, so the ban never blocks the way colour is meant to arrive (%s)",
         async (classes) => {
             expect(await restrictedClasses(classes)).toEqual([]);

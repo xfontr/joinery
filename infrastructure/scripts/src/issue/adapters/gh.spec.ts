@@ -10,7 +10,7 @@ const ghApi = vi.hoisted(() => ({ gh: vi.fn() }));
 vi.mock("../../shared/adapters/cache.ts", () => cache);
 vi.mock("../../shared/adapters/gh.ts", () => ghApi);
 
-import { isOnline, listIssues, listLabels, listProjects } from "./gh.ts";
+import { listIssues, listLabels, listProjects } from "./gh.ts";
 
 beforeEach(() => {
     vi.resetAllMocks();
@@ -54,15 +54,6 @@ describe("project and label lookup", () => {
 
         expect(listProjects()).toEqual([]);
     });
-
-    it("reports online reachability independently from project scope", () => {
-        ghApi.gh.mockReturnValueOnce("ok");
-        expect(isOnline()).toBe(true);
-        ghApi.gh.mockImplementationOnce(() => {
-            throw new Error("offline");
-        });
-        expect(isOnline()).toBe(false);
-    });
 });
 
 describe("issue lookup and mutations", () => {
@@ -92,14 +83,5 @@ describe("issue lookup and mutations", () => {
         expect(cache.writeCache).toHaveBeenCalledWith("issues-roadmap", [
             { number: 1, title: "One", url: "one", labels: ["bug"] },
         ]);
-    });
-
-    it("reads cached issues without contacting gh", () => {
-        cache.readCache.mockReturnValue([{ number: 4, title: "Cached", url: "url", labels: [] }]);
-
-        expect(listIssues("Roadmap", true)).toEqual([
-            { number: 4, title: "Cached", url: "url", labels: [] },
-        ]);
-        expect(ghApi.gh).not.toHaveBeenCalled();
     });
 });

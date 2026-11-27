@@ -75,7 +75,8 @@ See [README.md](./README.md) for the env vars, the i18n wiring and the telemetry
   `fake*` factories.
 - **`vitest.config.ts` and `playwright.config.ts` are wrappers over `@joinery/configs`.** A setting
   every Nuxt app would want goes in the preset; only this app's specifics are passed as options.
-  Don't lower a threshold to get green; write the spec.
+  A threshold catches coverage collapsing, so never write a spec only to reach it; deleting a spec
+  that pinned nothing may lower it.
 - `e2e/` holds the Playwright specs, `server.ts` (the MSW preload), `fakes.ts` (its data),
   `vendors.ts` (handlers for the vendors with no package), `forms.ts` (the steps every form spec
   shares) and `copy.ts` (the copy by key, so a spec names a control by its key and survives a

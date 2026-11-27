@@ -4,4 +4,6 @@ export interface DayUsage {
     /** Runs whose caller is not `human`. */
     agent: number;
     failures: number;
+    /** Runs whose outcome was recorded; failure rates divide by this, since older rows have none. */
+    known: number;
 }

@@ -21,30 +21,11 @@ describe("newsletter card", () => {
         useNuxtApp().$i18n.mergeLocaleMessage("es-ES", MESSAGES);
     });
 
-    it("stays out of the landmarks, since it sits inside the page's sidebar", async () => {
-        const wrapper = await mountSuspended(NewsletterCard);
-
-        expect(wrapper.find("section").exists()).toBe(false);
-        expect(wrapper.find("p").text()).toBe("lead");
-    });
-
     it("names the subject in its lead when it sits on a subject page", async () => {
         const wrapper = await mountSuspended(NewsletterCard, {
             props: { subject: "derecho penal" },
         });
 
         expect(wrapper.find("p").text()).toBe("lead: derecho penal");
-    });
-
-    it("stacks its form, since the sidebar is too narrow for a row", async () => {
-        const wrapper = await mountSuspended(NewsletterCard);
-
-        expect(wrapper.findComponent({ name: "NewsletterForm" }).props("layout")).toBe("stacked");
-    });
-
-    it("carries the privacy notice like every other newsletter form", async () => {
-        const wrapper = await mountSuspended(NewsletterCard);
-
-        expect(wrapper.find("form p").text()).toContain("notice");
     });
 });

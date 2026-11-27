@@ -1,7 +1,6 @@
 import type { DecisionOutcome, DecisionStatus } from "../decisions.ts";
 import type { AuditMeta } from "./AuditMeta.ts";
 import type { DocKind } from "./DocKind.ts";
-import type { DocLink } from "./DocLink.ts";
 
 export interface DocPage {
     path: string;
@@ -16,5 +15,4 @@ export interface DocPage {
     decisionSupersededBy: string | null;
     /** Parsed from an audit's frontmatter and findings tables; null for anything that isn't one. */
     audit: AuditMeta | null;
-    brokenLinks: DocLink[];
 }

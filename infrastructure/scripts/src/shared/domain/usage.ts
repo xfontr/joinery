@@ -9,20 +9,82 @@ export const COLUMNS = [
     "flags",
     "area",
     "caller",
-    "tty",
     "exit",
+    "outcome",
+    "error",
     "ms",
 ] as const;
 
 export type UsageRow = Record<(typeof COLUMNS)[number], string>;
 
+/** The `scripts` header before `outcome` replaced `tty`, still written by worktrees on older code. */
+const PREVIOUS_COLUMNS = [
+    "at",
+    "script",
+    "command",
+    "target",
+    "flags",
+    "area",
+    "caller",
+    "tty",
+    "exit",
+    "ms",
+] as const;
+
 /** `.claude/hooks/eslint-fix.sh` writes these in this order, so a change here changes it too. */
 export const LINT_COLUMNS = ["at", "rule", "project", "severity", "fixable", "caller"] as const;
 
+/** One row per Nx task, written by `src/tasks` from Nx's `run.json`. */
+export const TASK_COLUMNS = [
+    "at",
+    "run",
+    "trigger",
+    "hook",
+    "caller",
+    "area",
+    "project",
+    "target",
+    "cache",
+    "exit",
+    "ms",
+    "load",
+] as const;
+
+export type TaskRow = Record<(typeof TASK_COLUMNS)[number], string>;
+
+export interface Log {
+    name: string;
+    columns: readonly string[];
+    /** A header this log had before, and how a row written under it reads under the current one. */
+    previous?: {
+        columns: readonly string[];
+        upgrade: (row: Record<string, string>) => Record<string, string>;
+    };
+}
+
 /** Each log is buffered in `.git/telemetry/<name>.csv` and flushed to `data/telemetry/<name>/`. */
-export const LOGS: readonly { name: string; columns: readonly string[] }[] = [
-    { name: "scripts", columns: COLUMNS },
+export const LOGS: readonly Log[] = [
+    {
+        name: "scripts",
+        columns: COLUMNS,
+        previous: {
+            columns: PREVIOUS_COLUMNS,
+            upgrade: (row) => {
+                // `dev` exited 0 on Ctrl+C, so its `ms` was how long the server stayed up.
+                const stopped = row.script === "dev" && row.exit === "0";
+
+                return {
+                    ...row,
+                    // An old non-zero exit was a finding, a refusal or a crash, with nothing to tell which.
+                    outcome: row.exit === "0" && !stopped ? "ok" : "",
+                    error: "",
+                    ms: stopped ? "" : (row.ms ?? ""),
+                };
+            },
+        },
+    },
     { name: "lint", columns: LINT_COLUMNS },
+    { name: "tasks", columns: TASK_COLUMNS },
 ];
 
 /** The only flags whose value is kept, because each takes one of a fixed set of words. */
@@ -40,8 +102,10 @@ const cell = (value: string): string => value.replace(/[,"\r\n]/g, " ");
 
 const label = (value: string): string => cell(value).replaceAll(";", " ");
 
-export const toLine = (row: UsageRow): string =>
-    COLUMNS.map((column) => cell(row[column])).join(",");
+export const lineOf = (columns: readonly string[], row: Readonly<Record<string, string>>): string =>
+    columns.map((column) => cell(row[column] ?? "")).join(",");
+
+export const toLine = (row: UsageRow): string => lineOf(COLUMNS, row);
 
 /** A line cut short by a killed process has fewer cells than the header, and is dropped. */
 export const isCompleteLine = (line: string, columns: readonly string[] = COLUMNS): boolean =>
@@ -53,6 +117,16 @@ export const callerOf = (env: Record<string, string | undefined>): string => {
     if (env.CLAUDECODE === "1") return "claude-code";
     return "human";
 };
+
+/** `.husky/*` sets the variable to its own name; `1` is what hooks set before they named themselves. */
+export const hookOf = (env: Record<string, string | undefined>): string => {
+    const hook = env[HOOK_ENV];
+    if (!hook) return "";
+    return hook === "1" ? "hook" : label(hook);
+};
+
+/** Task timings keep git-hook runs, tagged by `hookOf`, since that's where a slow check is felt. */
+export const isTimed = (env: Record<string, string | undefined>): boolean => !env.CI && !env.VITEST;
 
 /** The flush is skipped too: it would record itself into the buffer it just emptied. */
 export const isRecorded = (env: Record<string, string | undefined>, script: string): boolean =>

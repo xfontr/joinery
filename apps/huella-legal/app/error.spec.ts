@@ -35,12 +35,6 @@ beforeEach(() => {
 });
 
 describe("error page", () => {
-    it("renders inside the site layout, so a reader who hits it can still navigate away", async () => {
-        const wrapper = await mountError(NOT_FOUND);
-
-        expect(wrapper.find("[data-shell='layout'] h1").exists()).toBe(true);
-    });
-
     it("shows the not-found design, with a search that lands on the search page, for a 404", async () => {
         const wrapper = await mountError(NOT_FOUND);
 

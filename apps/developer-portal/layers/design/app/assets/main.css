@@ -210,9 +210,12 @@ body {
 }
 
 /* With macOS set to always show scrollbars, every scrolling column otherwise gets a grey OS bar */
-* {
-    scrollbar-width: thin;
-    scrollbar-color: var(--ui-border-accented) transparent;
+/* In the base layer, since an unlayered rule would beat every utility, `scrollbar-none` included */
+@layer base {
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--ui-border-accented) transparent;
+    }
 }
 
 .dark {
@@ -246,6 +249,11 @@ mark {
     background: none;
     color: var(--ui-primary);
     font-style: italic;
+}
+
+/* A strip that scrolls by trackpad or drag but would break its row with a visible bar */
+@utility scrollbar-none {
+    scrollbar-width: none;
 }
 
 /* An ink fill that stays dark in both modes, such as the developer rail; it sets the fill itself */

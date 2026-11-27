@@ -4,9 +4,8 @@ import Actions from "./Actions.vue";
 
 const MESSAGES = {
     workflowActions: {
-        never: "Never synced — run {setup} then {sync}",
+        never: "Never synced",
         settings: "Settings",
-        synced: "Snapshot updated {age}",
     },
 };
 
@@ -15,19 +14,14 @@ beforeEach(() => {
 });
 
 describe("WorkflowActions", () => {
-    it("gives the commands that set up and sync a project never synced", async () => {
-        const wrapper = await mountSuspended(Actions, { props: { project: "blog", found: true } });
+    it("says only a project never synced is never synced", async () => {
+        const never = await mountSuspended(Actions, { props: { project: "blog", found: true } });
+        expect(never.text()).toContain("Never synced");
 
-        expect(wrapper.text()).toContain("pnpm workflow:setup blog");
-        expect(wrapper.text()).toContain("pnpm workflow:sync blog");
-    });
-
-    it("dates a synced snapshot instead", async () => {
-        const wrapper = await mountSuspended(Actions, {
+        const synced = await mountSuspended(Actions, {
             props: { project: "blog", found: true, syncedAt: new Date().toISOString() },
         });
-
-        expect(wrapper.text()).not.toContain("pnpm workflow:sync");
+        expect(synced.text()).not.toContain("Never synced");
     });
 
     it("links to settings only for a project that has a file", async () => {

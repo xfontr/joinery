@@ -36,6 +36,7 @@
                             {{ $t("telemetryScriptActivity.columns.agent") }}
                         </th>
                         <th class="numeric">{{ $t("telemetryScriptActivity.columns.failed") }}</th>
+                        <th class="numeric">{{ $t("telemetryScriptActivity.columns.median") }}</th>
                         <th class="numeric whitespace-nowrap">
                             {{ $t("telemetryScriptActivity.columns.last") }}
                         </th>
@@ -57,6 +58,7 @@
                         <td class="numeric font-mono" :class="row.failing && 'tone-bad'">
                             {{ row.failed }}
                         </td>
+                        <td class="numeric font-mono whitespace-nowrap">{{ row.median }}</td>
                         <td
                             class="numeric font-mono whitespace-nowrap text-muted"
                             :title="row.lastExact"
@@ -82,6 +84,7 @@
                         </td>
                         <td class="numeric font-mono font-medium">{{ total.failed }}</td>
                         <td />
+                        <td />
                     </tr>
                 </tfoot>
             </table>
@@ -93,7 +96,13 @@
 import type { DayUsage } from "#layers/snapshot/shared/types/DayUsage.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import { FAILING_RATE, MIN_RUNS } from "#layers/telemetry/shared/usage.ts";
-import { dailyTotals, scriptRows, shownDays, sumDays } from "#layers/telemetry/shared/usageView.ts";
+import {
+    dailyTotals,
+    formatMs,
+    scriptRows,
+    shownDays,
+    sumDays,
+} from "#layers/telemetry/app/utils/usageView.ts";
 
 interface Props {
     usage: Omit<UsageArtifact, "lint">;
@@ -112,11 +121,16 @@ const { t } = useI18n();
 
 const failingPercent = Math.round(FAILING_RATE * 100);
 
-const failedShare = ({ runs, failures }: DayUsage): string =>
-    runs ? `${percentOf(failures, runs)}%` : "—";
+const failedShare = ({ known, failures }: DayUsage): string =>
+    known ? `${percentOf(failures, known)}%` : "—";
 
 const agentShare = ({ runs, agent }: DayUsage): string =>
     runs ? `${percentOf(agent, runs)}%` : "—";
+
+const medianOf = (name: string): string => {
+    const durations = usage.scripts[name]?.durations;
+    return durations ? formatMs(durations.medianMs) : "—";
+};
 
 const days = computed(() => shownDays(usage));
 const scripts = computed(() => scriptRows(usage));
@@ -130,6 +144,7 @@ const rows = computed(() =>
         agent: row.agent,
         failing: row.failing,
         failed: failedShare(row),
+        median: medianOf(row.name),
         agentShare: agentShare(row),
         last: shortAge(row.last, t),
         lastExact: row.last ? calendarDay(row.last.slice(0, 10)) : "",

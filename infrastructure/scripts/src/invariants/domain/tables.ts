@@ -37,7 +37,6 @@ export const compareTagTables = (boundaries: string, readme: string): Finding[] 
             title: "A tag is enforced but not documented",
             detail: `${undocumented.join(", ")} appears in boundaries.ts with no row in the README tag table.`,
             evidence: [BOUNDARIES_PATH, README_PATH],
-            blocks: false,
         });
     }
 
@@ -47,7 +46,6 @@ export const compareTagTables = (boundaries: string, readme: string): Finding[] 
             title: "A tag is documented but not enforced",
             detail: `${unenforced.join(", ")} has a README row but no depConstraints entry.`,
             evidence: [README_PATH, BOUNDARIES_PATH],
-            blocks: false,
         });
     }
 
@@ -68,7 +66,6 @@ export const compareLayoutBlock = (readme: string, projectRoots: string[]): Find
             title: "A project is missing from the workspace layout",
             detail: `${missing.join(", ")} exists in the workspace but is not in the README layout block.`,
             evidence: [README_PATH],
-            blocks: false,
         },
     ];
 };

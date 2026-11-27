@@ -178,18 +178,21 @@ that are on and not skipped.
 
 ## The page
 
-A day-by-day replay from the first commit, the blocks left, stage cards, and a graph of what blocks
-what. **Settings** (features, ticket size, details, delete) writes the project file under `pnpm dev`
-and is read-only when deployed.
+A day-by-day replay from the first commit, the blocks left, and the blocks as stage cards, a list or
+a map of what blocks what. A click on a block shows it in a side pane, which folds into a corner
+button and grows back out of it; a second click or empty map space clears it. `?block=` and
+`?view=` keep both in the link.
+**Settings** (features, ticket size, details, delete) writes the project file under `pnpm dev` and
+is read-only when deployed.
 
 ## How a ticket finds its place
 
 | The issue has | It shows |
 | --- | --- |
 | The milestone and `cap:comments` | Under the Comments block |
-| The milestone and no `cap:` label | Under **To organise** |
-| A `cap:` label naming no block, naming a feature that bundles blocks, or, while open, one switched off | Under **To organise**, with the reason |
-| The area label, no milestone, and open | Under **To organise** while any block that is on is unfinished, then nowhere: from there on it is maintenance |
+| The milestone and no `cap:` label | Nowhere, and `pnpm workflow:sync` fails naming it |
+| A `cap:` label naming no block, naming a feature that bundles blocks, or, while open, one switched off | Nowhere, and sync fails with the reason |
+| The area label, no milestone, and open | Sync fails while any block that is on is unfinished; after that it is maintenance |
 | Neither the milestone nor the area label | Nowhere: it isn't part of the effort |
 
 Place a ticket by adding the milestone and a `cap:` label on GitHub.

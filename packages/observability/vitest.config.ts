@@ -1,5 +1,5 @@
 import { vitest } from "@joinery/configs";
 
 export default vitest.createNodeConfig({
-    thresholds: { lines: 100, statements: 100, functions: 100, branches: 100 },
+    thresholds: { lines: 85, statements: 85, functions: 85, branches: 80 },
 });

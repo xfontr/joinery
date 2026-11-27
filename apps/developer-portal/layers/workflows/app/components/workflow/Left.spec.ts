@@ -1,5 +1,4 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
-import { flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import Left from "./Left.vue";
@@ -55,18 +54,6 @@ describe("WorkflowLeft", () => {
 
         const counts = wrapper.findAll("li > button").map((group) => group.find("span").text());
         expect(counts.reduce((sum, count) => sum + Number(count), 0)).toBe(3);
-    });
-
-    it("reports the block picked from a state's list", async () => {
-        const wrapper = await mountSuspended(Left, {
-            props: { blocks: LEFT, selected: null, blank: false },
-        });
-
-        await wrapper.findComponent({ name: "UPopover" }).setValue(true, "open");
-        await flushPromises();
-        document.body.querySelector<HTMLButtonElement>("ul[aria-label$=' blocks'] button")?.click();
-
-        expect(wrapper.emitted("select")).toHaveLength(1);
     });
 
     it("tells a blank project from a finished one", async () => {

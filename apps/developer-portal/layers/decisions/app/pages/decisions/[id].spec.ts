@@ -1,5 +1,5 @@
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
-import { flushPromises, type VueWrapper } from "@vue/test-utils";
+import { flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DecisionOutcome, DecisionStatus } from "#layers/snapshot/shared/decisions.ts";
 import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
@@ -47,7 +47,6 @@ const report = (
     decisionOutcome,
     decisionSupersededBy,
     audit: null,
-    brokenLinks: [],
 });
 
 const open = async (route: string) => {
@@ -55,9 +54,6 @@ const open = async (route: string) => {
     await flushPromises();
     return wrapper;
 };
-
-const pills = (wrapper: VueWrapper) =>
-    wrapper.findAllComponents({ name: "StatusPill" }).map((pill) => pill.props());
 
 beforeEach(() => {
     setStatus.mockClear();
@@ -73,7 +69,6 @@ beforeEach(() => {
             report("0002-second", "to-implement", "superseded", "0003-third.md"),
             report("0003-third", "implemented", "accepted"),
         ],
-        brokenLinkCount: 0,
     };
 });
 
@@ -82,23 +77,6 @@ describe("decision detail page", () => {
         await open("/decisions/missing");
 
         expect(setStatus).toHaveBeenCalledWith(404);
-    });
-
-    it("leaves a found report on 200", async () => {
-        await open("/decisions/0002-second");
-
-        expect(setStatus).not.toHaveBeenCalled();
-    });
-
-    it("shows the report's status and links a superseded one to its replacement", async () => {
-        const wrapper = await open("/decisions/0002-second");
-
-        expect(pills(wrapper)).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({ to: "/decisions/0003-third" }),
-                expect.objectContaining({ label: "decisions.status.to-implement" }),
-            ]),
-        );
     });
 
     it("links both neighbours in decision order", async () => {
@@ -116,12 +94,6 @@ describe("decision detail page", () => {
 
         expect(wrapper.find(`a[href='${linked}']`).exists()).toBe(true);
         expect(wrapper.find(`a[href='${self}']`).exists()).toBe(false);
-    });
-
-    it("says there is no such report instead of rendering an empty one", async () => {
-        const wrapper = await open("/decisions/missing");
-
-        expect(wrapper.text()).toContain("decision.missing.title");
     });
 
     it("loads the new report when the route changes under it", async () => {

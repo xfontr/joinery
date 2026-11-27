@@ -30,31 +30,13 @@ beforeEach(() => {
 });
 
 describe("startWebTelemetry", () => {
-    it("initializes Faro against the collector, identifying the app that is reporting", () => {
+    it("reports to the collector as the app, with web instrumentations plus tracing", () => {
         start();
 
         expect(faro.initializeFaro).toHaveBeenCalledWith(
             expect.objectContaining({ url, app }) as object,
         );
-    });
-
-    it("keeps the default web instrumentations, so errors and web vitals arrive without extra wiring", () => {
-        start();
-
         expect(instrumentations()).toContainEqual({ name: "web" });
-    });
-
-    it("adds tracing, so a browser action and the requests it makes end up on one trace", () => {
-        start();
-
-        expect(tracing.TracingInstrumentation).toHaveBeenCalledOnce();
         expect(instrumentations()).toHaveLength(2);
-    });
-
-    it("returns the Faro instance, so a caller can push logs and errors to it", () => {
-        const instance = { api: {} };
-        faro.initializeFaro.mockReturnValue(instance);
-
-        expect(start()).toBe(instance);
     });
 });

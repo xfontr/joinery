@@ -10,7 +10,6 @@ const state = vi.hoisted(() => ({
 }));
 const fs = vi.hoisted(() => ({ readFile: vi.fn() }));
 const run = vi.hoisted(() => ({ git: vi.fn() }));
-const invariants = vi.hoisted(() => ({ collectInvariants: vi.fn() }));
 
 vi.mock("node:fs/promises", () => fs);
 vi.mock("../lib/run.ts", () => ({
@@ -26,7 +25,6 @@ vi.mock("../lib/run.ts", () => ({
         }
     },
 }));
-vi.mock("../lib/invariants.ts", () => invariants);
 
 const projects: ProjectNode[] = [
     { name: "@joinery/ui", root: "packages/ui", tags: [], dependsOn: [], dependedOnBy: [] },
@@ -53,9 +51,6 @@ beforeEach(() => {
     vi.clearAllMocks();
     state.failHistoryFor = null;
     state.emptySubjects = false;
-    invariants.collectInvariants.mockResolvedValue([
-        { id: "tags", title: "Tags", detail: "drift", evidence: ["README"] },
-    ]);
     fs.readFile.mockImplementation(async (path: string) =>
         path.endsWith("packages/ui/package.json") ? JSON.stringify({ version: "3.2.1" }) : "{}\n",
     );
@@ -132,9 +127,6 @@ describe("collectMetrics", () => {
             commitsSinceLastRelease: 4,
             conventionalCommitRate: 50,
         });
-        expect(result.invariantFindings).toEqual([
-            { id: "tags", title: "Tags", detail: "drift", evidence: ["README"] },
-        ]);
     });
 
     it("keeps a project when its history commands fail, with only history-derived fields null", async () => {

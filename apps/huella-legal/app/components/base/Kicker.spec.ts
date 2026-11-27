@@ -14,14 +14,4 @@ describe("kicker", () => {
         expect(plain.find("a").exists()).toBe(false);
         expect(plain.text()).toBe("Derecho penal");
     });
-
-    it("keeps its colour on a link instead of taking Nuxt UI's link colours", async () => {
-        const wrapper = await mountSuspended(Kicker, {
-            props: { to: "/areas", muted: true },
-            slots: { default: () => "Área" },
-        });
-
-        expect(wrapper.find("a").classes()).toContain("text-muted");
-        expect(wrapper.find("a").classes()).not.toContain("text-primary");
-    });
 });

@@ -1,7 +1,7 @@
 import { countAll } from "#layers/audits/shared/auditReports.ts";
 import { countByStatus } from "#layers/decisions/shared/decisionReports.ts";
 import { worstSeverity } from "#layers/snapshot/shared/deps.ts";
-import { isFailing, scriptRows, sumDays } from "#layers/telemetry/shared/usageView.ts";
+import { isFailing, scriptRows, sumDays } from "#layers/telemetry/app/utils/usageView.ts";
 import type { HealthLine } from "~/types/HealthLine";
 
 const FULL = 100;
@@ -63,14 +63,14 @@ export const useHealthLines = () => {
             },
             {
                 label: t("healthLines.lines.tooling"),
-                value: runs.runs ? `${percentOf(runs.failures, runs.runs)}%` : "—",
-                tone: runs.runs && isFailing(runs) ? "bad" : "neutral",
+                value: runs.known ? `${percentOf(runs.failures, runs.known)}%` : "—",
+                tone: isFailing(runs) ? "bad" : "neutral",
                 to: "/telemetry",
                 legend: true,
                 parts: [
                     {
                         label: t("healthLines.parts.passed"),
-                        value: runs.runs - runs.failures,
+                        value: runs.known - runs.failures,
                         tone: "ink",
                     },
                     { label: t("healthLines.parts.failed"), value: runs.failures, tone: "bad" },
@@ -113,11 +113,10 @@ export const useHealthLines = () => {
             {
                 label: t("healthLines.lines.docs"),
                 value: docs ? String(docs.pages.length) : "—",
-                tone: docs?.brokenLinkCount ? "bad" : "neutral",
+                tone: "neutral",
                 to: "/wiki",
                 legend: false,
                 parts: [],
-                note: t("healthLines.brokenLinks", docs?.brokenLinkCount ?? 0),
             },
         ];
     });

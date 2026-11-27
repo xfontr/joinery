@@ -1,18 +1,12 @@
 import { serveEndpoint } from "@joinery/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
-import { ref } from "vue";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { IssuesRead } from "#layers/github/app/utils/issues.ts";
 import type { Badges } from "#layers/snapshot/shared/types/Badges.ts";
 import type { MenuRow } from "~/types/MenuRow";
-import type { RailFigure } from "~/types/RailFigure";
 import type { SearchSection } from "~/utils/search";
 import Layout from "./default.vue";
 import en from "../../i18n/locales/en.json";
-
-const github = vi.hoisted(() => ({ read: null as unknown }));
-mockNuxtImport("useIssues", () => () => ({ data: github.read, shown: github.read }));
 
 const search = vi.hoisted(() => vi.fn((): Promise<SearchSection[]> => Promise.resolve([])));
 mockNuxtImport("queryCollectionSearchSections", () => search);
@@ -31,8 +25,6 @@ const NEVER_COLLECTED = {
     advisories: 0,
     worstSeverity: null,
     lineCoverage: null,
-    docPages: null,
-    brokenLinks: 0,
     collected: null,
 } satisfies Badges;
 
@@ -40,10 +32,8 @@ const serve = ({
     badges = {} as Partial<Badges>,
     decisions = [] as MenuRow[],
     projects = [] as MenuRow[],
-    tooling = { value: "—", alert: false } as RailFigure,
 } = {}) => {
     shell.badges = { ...NEVER_COLLECTED, ...badges };
-    serveEndpoint("/api/telemetry/figure", () => tooling);
     const answers: Record<string, MenuRow[]> = {
         "/api/decisions/menu": decisions,
         "/api/projects/menu": projects,
@@ -103,7 +93,6 @@ const KINDS: MenuRow[] = [
 const DECISION = { label: "0036 Drop the UI kit", to: "/decisions/0036-ui" };
 
 beforeEach(() => {
-    github.read = ref<IssuesRead>({ fetchedAt: "", error: null, issues: [] });
     search.mockClear();
 });
 
@@ -184,52 +173,6 @@ describe("default layout", () => {
         expect(wrapper.find("nav a[href='/audits']").exists()).toBe(true);
     });
 
-    it("prints each Health page's figure in its tone, and nothing for a figure never collected", async () => {
-        github.read = ref<IssuesRead>({
-            fetchedAt: "2026-11-18T10:00:00Z",
-            error: null,
-            issues: [
-                {
-                    number: 1,
-                    title: "One",
-                    body: "",
-                    url: "",
-                    labels: [],
-                    assignees: [],
-                    createdAt: "",
-                    updatedAt: "",
-                },
-            ],
-        });
-        serve({
-            badges: {
-                advisories: 3,
-                worstSeverity: "high",
-                collected: { branch: "master", commit: "abc1234", at: "2026-11-18T10:00:00Z" },
-            },
-            tooling: { value: "40%", alert: true },
-        });
-        const wrapper = await open();
-
-        expect(page(wrapper, "Work in progress").badge).toEqual({ label: "1", class: "" });
-        expect(page(wrapper, "Dependencies").badge).toEqual({ label: "3 adv.", class: "tone-bad" });
-        expect(page(wrapper, "Tooling usage").badge).toEqual({
-            label: "40% fail",
-            class: "tone-bad",
-        });
-        expect(page(wrapper, "Coverage").badge).toBeUndefined();
-    });
-
-    it("lists a menu's groups on the page that holds them", async () => {
-        serve({ projects: KINDS });
-        const wrapper = await open("/projects");
-
-        expect(page(wrapper, "Projects").children?.map((row) => row.label)).toEqual([
-            "All projects",
-            "Apps",
-        ]);
-    });
-
     it("leaves a page folded on its own landing, and unfolds it on a page below", async () => {
         serve({ projects: KINDS });
         const landing = await open("/projects");
@@ -239,43 +182,6 @@ describe("default layout", () => {
         expect(below.find("nav a[href='/projects/site']").exists()).toBe(true);
     });
 
-    it("lists a group's members, each in its coverage tone, on a member's own page", async () => {
-        serve({ projects: KINDS });
-        const wrapper = await open("/projects/blog");
-
-        expect(page(wrapper, "Projects").children).toEqual([
-            expect.objectContaining({
-                to: "/projects/blog",
-                badge: { label: "40%", class: "tone-bad" },
-            }),
-            expect.objectContaining({ to: "/projects/site", badge: { label: "—", class: "" } }),
-        ]);
-    });
-
-    it("prints the snapshot's branch, commit and figures in the status bar", async () => {
-        serve({
-            badges: {
-                advisories: 2,
-                worstSeverity: "high",
-                lineCoverage: 81,
-                docPages: 12,
-                brokenLinks: 1,
-                collected: { branch: "master", commit: "abc1234def", at: "2026-11-18T10:00:00Z" },
-            },
-        });
-        const wrapper = await open();
-
-        expect(status(wrapper)).toContain("master");
-        expect(status(wrapper)).toContain("@abc1234");
-        expect(figures(wrapper)).toEqual([
-            "coverage: 81% lines",
-            "advisories: 2 worst high",
-            "tooling: — failed",
-            "issues: — open",
-            "docs: 12 1 broken link",
-        ]);
-    });
-
     it("says the snapshot was never collected instead of printing zeros", async () => {
         serve();
         const wrapper = await open();
@@ -283,17 +189,6 @@ describe("default layout", () => {
         expect(status(wrapper)).toContain("never collected");
         expect(figures(wrapper)).toContain("coverage: — lines");
         expect(figures(wrapper)).toContain("advisories: — none");
-    });
-
-    it("links the repository's source, in a new tab", async () => {
-        serve();
-        useRuntimeConfig().public.repoUrl = "https://github.com/acme/repo";
-        const wrapper = await open();
-        useRuntimeConfig().public.repoUrl = "";
-        const source = wrapper.find("a[aria-label='View source on GitHub']");
-
-        expect(source.attributes("href")).toBe("https://github.com/acme/repo");
-        expect(source.attributes("target")).toBe("_blank");
     });
 
     it("builds the search data only once search is first opened", async () => {

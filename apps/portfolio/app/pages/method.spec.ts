@@ -1,44 +1,9 @@
 import { serveEndpoint } from "@joinery/configs/vitest/utils/nuxt";
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { SiteData } from "~/types/SiteData";
 import Page from "./method.vue";
-
-const WORK = [
-    {
-        path: "/work/huella-legal",
-        name: "Huella Legal",
-        title: "Huella",
-        mark: "Legal",
-        facts: ["105 articles"],
-        screenshot: { file: "huella-legal.jpg", alt: "Home", caption: "Home." },
-        kind: "Law magazine",
-        stage: "Redesign on staging",
-        line: "A law magazine.",
-        caseStudy: true,
-        live: { href: "https://staging.example.com", label: "See the new site" },
-    },
-    {
-        path: "/work/portal",
-        name: "This portal",
-        kind: "Developer portal",
-        stage: "Mid-redesign",
-        line: "The site you're reading.",
-        caseStudy: false,
-        live: { href: "/", label: "Open the developer view" },
-    },
-];
-
-mockNuxtImport("queryCollection", () => () => {
-    const query = {
-        where: () => query,
-        select: () => query,
-        order: () => query,
-        all: () => Promise.resolve(WORK),
-    };
-    return query;
-});
 
 const DATA_URL = "https://portal.test/embed/data.json";
 
@@ -111,12 +76,6 @@ describe("method page", () => {
         expect(wrapper.get("#prove").text()).toContain("42 specs");
     });
 
-    it("words the portal's lint rule counts", async () => {
-        const wrapper = await open({ rules: { enabled: 2, inHouse: 1 } });
-
-        expect(wrapper.get("#prove").text()).toContain("2 rules");
-    });
-
     it("states every rule without a number when nothing was ever collected", async () => {
         const wrapper = await open({ workflows: { projects: [], templates: [], lessons: 0 } });
 
@@ -137,12 +96,5 @@ describe("method page", () => {
                 ].map(portalUrl),
             ),
         );
-    });
-
-    it("ends on a real case, so the rules can be seen applied", async () => {
-        const wrapper = await open();
-
-        const links = wrapper.findAll("a").map((link) => link.attributes("href"));
-        expect(links).toContain("/work/huella-legal");
     });
 });

@@ -8,7 +8,6 @@ import {
     layerBoundaries,
     pureDomain,
     routeMeta,
-    i18nKeys,
     tailwind,
 } from "./index.ts";
 
@@ -75,17 +74,6 @@ describe("eslint factories", () => {
         expect(await importBans(config, "src/map/domain/render.spec.ts")).toBeUndefined();
     });
 
-    it("lets specs log and build HTML, and nothing else", async () => {
-        const config = createNodeConfig();
-        const source = await resolve(config, "src/report.ts");
-        const spec = await resolve(config, "src/report.spec.ts");
-
-        expect(severity(source?.["no-console"])).toBe(2);
-        expect(severity(source?.["no-eval"])).toBe(2);
-        expect(spec?.["no-console"]).toBeUndefined();
-        expect(spec?.["no-eval"]).toBeUndefined();
-    });
-
     it("applies the Vue rules only to the Vue flavours, and route meta only when appended", async () => {
         const node = await resolve(createNodeConfig(), "server/api/items.get.ts");
         const vue = await resolve(createVueConfig(), "lib/Button.vue");
@@ -96,24 +84,6 @@ describe("eslint factories", () => {
         expect(severity(vue?.["joinery/no-template-call"])).toBe(2);
         expect(severity(vue?.["joinery/props-shape"])).toBe(2);
         expect(severity(vue?.["vue/no-v-html"])).toBe(2);
-    });
-
-    it("requires a reason on every disable, in scripts and templates alike", async () => {
-        const script = await resolve(createNodeConfig(), "src/report.ts");
-        const component = await resolve(createNuxtConfig(), "app/App.vue");
-
-        expect(severity(script?.["joinery/disable-needs-reason"])).toBe(2);
-        expect(severity(component?.["joinery/disable-needs-reason"])).toBe(2);
-    });
-
-    it("runs ESLint's core recommended rules in a Nuxt app without tripping on auto-imports", async () => {
-        const config = createNuxtConfig();
-        const component = await resolve(config, "app/App.vue");
-        const server = await resolve(config, "server/utils/items.ts");
-
-        expect(severity(component?.["no-fallthrough"])).toBe(2);
-        expect(severity(server?.["no-cond-assign"])).toBe(2);
-        expect(severity(component?.["no-undef"])).toBe(0);
     });
 
     it("type-checks a Nuxt app's scripts but not the specs and stories that import components", async () => {
@@ -130,35 +100,6 @@ describe("eslint factories", () => {
         expect(component?.["@typescript-eslint/no-misused-promises"]).toBeUndefined();
     });
 
-    it("flags a quadratic regex, a nested ternary and an await in a loop outside specs", async () => {
-        const config = createNodeConfig();
-        const source = await resolve(config, "src/report.ts");
-        const spec = await resolve(config, "src/report.spec.ts");
-
-        expect(severity(source?.["regexp/no-super-linear-move"])).toBe(2);
-        expect(severity(source?.["no-await-in-loop"])).toBe(2);
-        expect(severity(source?.["no-nested-ternary"])).toBe(2);
-        expect(spec?.["no-await-in-loop"]).toBeUndefined();
-        expect(spec?.["no-nested-ternary"]).toBeUndefined();
-    });
-
-    it("runs the SonarJS preset on source but not on specs", async () => {
-        const config = createNodeConfig();
-        const source = await resolve(config, "src/report.ts");
-        const spec = await resolve(config, "src/report.spec.ts");
-
-        expect(severity(source?.["sonarjs/cognitive-complexity"])).toBe(2);
-        expect(spec?.["sonarjs/cognitive-complexity"]).toBeUndefined();
-    });
-
-    it("scopes Tailwind to the entry point the app passes", async () => {
-        const config = [...createNuxtConfig(), tailwind("app/main.css")];
-        const rules = await resolve(config, "app/App.vue");
-
-        expect(severity(rules?.["better-tailwindcss/no-unknown-classes"])).toBe(2);
-        expect(severity(rules?.["better-tailwindcss/enforce-consistent-line-wrapping"])).toBe(0);
-    });
-
     it("holds every spec to observable behaviour: no call order, snapshots or instance reads", async () => {
         const rules = await resolve(createNuxtConfig(), "app/components/Thing.spec.ts");
         const source = await resolve(createNuxtConfig(), "app/components/Thing.ts");
@@ -168,15 +109,6 @@ describe("eslint factories", () => {
             "toHaveBeenNthCalledWith",
         );
         expect(source?.["joinery/no-implementation-details"]).toBeUndefined();
-    });
-
-    it("checks i18n keys in app code but never in specs, whose messages are placeholders", async () => {
-        const config = [...createNuxtConfig(), i18nKeys("i18n/locales/*.json")];
-        const app = await resolve(config, "app/App.vue");
-        const spec = await resolve(config, "app/App.spec.ts");
-
-        expect(severity(app?.["@intlify/vue-i18n/no-missing-keys"])).toBe(2);
-        expect(spec?.["@intlify/vue-i18n/no-missing-keys"]).toBeUndefined();
     });
 
     it("scopes layer boundaries to layers/ and leaves the tools/ ban in place there", async () => {
@@ -203,16 +135,11 @@ describe("eslint factories", () => {
         expect(severity(kit?.["joinery/layer-boundaries"])).toBe(2);
         expect(shell?.["joinery/layer-boundaries"]).toBeUndefined();
     });
-    it("caps the blocks of a page, in a layer too, but not a lab page or a component", async () => {
-        const config = createNuxtConfig();
-        const page = await resolve(config, "app/pages/index.vue");
-        const layerPage = await resolve(config, "layers/archive/app/pages/authors/[slug].vue");
-        const lab = await resolve(config, "app/pages/lab/idea/index.vue");
-        const component = await resolve(config, "app/components/home/Hero.vue");
 
-        expect(severity(page?.["vue/max-lines-per-block"])).toBe(2);
-        expect(severity(layerPage?.["vue/max-lines-per-block"])).toBe(2);
-        expect(lab?.["vue/max-lines-per-block"]).toBeUndefined();
-        expect(component?.["vue/max-lines-per-block"]).toBeUndefined();
+    it("scopes Tailwind to the entry point the app passes", async () => {
+        const config = [...createNuxtConfig(), tailwind("app/main.css")];
+        const rules = await resolve(config, "app/App.vue");
+
+        expect(severity(rules?.["better-tailwindcss/no-unknown-classes"])).toBe(2);
     });
 });

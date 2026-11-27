@@ -1,0 +1,26 @@
+name: Accessibility barrier
+description: Something on the site is hard or impossible to use
+title: "[a11y]: "
+labels: ["bug", "accessibility"]
+body:
+    - type: textarea
+      id: task
+      attributes:
+          label: What were you trying to do, and what got in the way?
+      validations:
+          required: true
+    - type: input
+      id: url
+      attributes:
+          label: Page URL
+          placeholder: https://www.huellalegal.com/...
+      validations:
+          required: true
+    - type: input
+      id: setup
+      attributes:
+          label: Browser, device and assistive technology
+          placeholder: Safari on iPhone 15, VoiceOver
+    - type: markdown
+      attributes:
+          value: Screenshots or recordings help but are optional. You never need to say why you use what you use.

@@ -1,5 +1,5 @@
 <template>
-    <PageFacts :provenance="$t('benchmarksFacts.provenance')" :facts />
+    <PageFacts :facts />
 </template>
 
 <script setup lang="ts">

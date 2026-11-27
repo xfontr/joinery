@@ -1,8 +1,6 @@
 # 📦 @joinery/i18n
 
-A vendor-neutral client for locale messages: a framework-agnostic core plus an optional Nuxt module
-that wires a TMS into `@nuxtjs/i18n` behind a cached server route. Vendors: `internal` (our own
-[translations server](../../infrastructure/translations)) and `tolgee`.
+Translations client with an optional Nuxt module. Vendors: `internal` and `tolgee`.
 
 | Import | Contains | Depends on |
 | --- | --- | --- |

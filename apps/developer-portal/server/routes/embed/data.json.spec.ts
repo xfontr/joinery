@@ -1,25 +1,34 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const store = vi.hoisted(() => ({ readArtifact: vi.fn() }));
-const workflows = vi.hoisted(() => ({ loadWorkflows: vi.fn() }));
 const content = vi.hoisted(() => {
     const pages = vi.fn();
     const query = { where: () => query, select: () => query, all: pages };
     return { pages, queryCollection: () => query };
 });
 
-vi.mock("#layers/snapshot/server/utils/store.ts", () => store);
-vi.mock("#layers/workflows/server/utils/workflows.ts", () => workflows);
 vi.mock("@nuxt/content/server", () => content);
 vi.mock("h3", () => ({ defineEventHandler: (handler: unknown) => handler }));
 
 import handler from "./data.json.ts";
 
-beforeEach(() => {
+let dir = "";
+
+const artifact = (name: string, value: unknown) =>
+    writeFile(join(dir, `${name}.json`), JSON.stringify(value));
+
+beforeEach(async () => {
     vi.clearAllMocks();
     content.pages.mockResolvedValue([]);
-    store.readArtifact.mockResolvedValue(null);
-    workflows.loadWorkflows.mockResolvedValue({ templates: [], projects: [] });
+    dir = await mkdtemp(join(tmpdir(), "embed-"));
+    vi.stubGlobal("useRuntimeConfig", () => ({ snapshotDir: dir, workflowsDir: dir }));
+});
+
+afterEach(async () => {
+    vi.unstubAllGlobals();
+    await rm(dir, { recursive: true, force: true });
 });
 
 describe("site data payload", () => {
@@ -61,21 +70,17 @@ describe("site data payload", () => {
     });
 
     it("carries only the decision reports, not every collected doc", async () => {
-        store.readArtifact.mockImplementation(async (name: string) =>
-            name === "docs"
-                ? {
-                      pages: [
-                          {
-                              path: "docs/decisions/0009-comment-discipline.md",
-                              kind: "decision",
-                              title: "🧭 Comments",
-                              decisionStatus: "implemented",
-                          },
-                          { path: "README.md", kind: "readme", title: "Repo" },
-                      ],
-                  }
-                : null,
-        );
+        await artifact("docs", {
+            pages: [
+                {
+                    path: "docs/decisions/0009-comment-discipline.md",
+                    kind: "decision",
+                    title: "🧭 Comments",
+                    decisionStatus: "implemented",
+                },
+                { path: "README.md", kind: "readme", title: "Repo" },
+            ],
+        });
 
         const { decisions } = await handler({} as never);
 

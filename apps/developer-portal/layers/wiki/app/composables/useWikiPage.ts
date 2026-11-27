@@ -57,9 +57,6 @@ export const useWikiPage = () => {
         around,
         meta,
         source: computed(() => meta.value?.path ?? `${path.value.slice(1)}.md`),
-        brokenLinks: computed(
-            () => meta.value?.brokenLinks.map((link) => link.href).join(", ") ?? "",
-        ),
         ready: Promise.all([wiki, content]),
     };
 };

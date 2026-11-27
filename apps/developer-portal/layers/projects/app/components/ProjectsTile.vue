@@ -8,20 +8,12 @@
             {{ $t("projectsTile.label") }}
         </div>
 
-        <div data-figure class="text-2xl leading-none" :class="colorClass">
+        <div data-figure class="text-2xl leading-none">
             {{ count }}
-        </div>
-
-        <div class="truncate text-xs text-dimmed">
-            {{ hint }}
         </div>
     </NuxtLink>
 </template>
 
 <script setup lang="ts">
 const count = projectsArtifact()?.projects.length ?? 0;
-const findings = metricsArtifact()?.invariantFindings.length ?? 0;
-const { t } = useI18n();
-const hint = t("projectsTile.findings", findings);
-const colorClass = toneClass(findings > 0 ? "warn" : "neutral");
 </script>

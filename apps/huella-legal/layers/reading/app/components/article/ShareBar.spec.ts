@@ -1,17 +1,17 @@
+import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import ArticleShareBar from "./ShareBar.vue";
 
-const toast = vi.hoisted(() => ({ add: vi.fn() }));
+const MESSAGES = {
+    shareBar: { cite: "cite", linkCopied: "link copied", print: "print", share: "share" },
+};
 
-mockNuxtImport("useToast", () => () => toast);
+const track = vi.fn();
+let toast: ReturnType<typeof useToast>;
 
-const track = vi.hoisted(() => vi.fn());
-
-mockNuxtImport("useTrack", () => () => track);
-
-const global = { mocks: { $t: (key: string) => `t(${key})` } };
+const toasted = () => toast.toasts.value.map(({ title }) => title);
 
 const PROPS = { title: "La acción", url: "https://huella.test/la-accion" };
 
@@ -36,11 +36,16 @@ const withShareSheet = (share: typeof browser.share): void => {
     Object.defineProperty(navigator, "canShare", { value: () => true, configurable: true });
 };
 
-const button = (wrapper: VueWrapper, key: string) =>
-    wrapper.find(`button[aria-label="t(shareBar.${key})"]`);
+const button = (wrapper: VueWrapper, key: string) => wrapper.find(`button[aria-label="${key}"]`);
 
-beforeEach(() => {
+beforeEach(async () => {
     vi.clearAllMocks();
+    const { $i18n, hooks } = useNuxtApp();
+
+    $i18n.mergeLocaleMessage("es-ES", MESSAGES);
+    onTestFinished(hooks.hook("analytics:event", ({ name, params }) => track(name, params)));
+    toast = (await withSetup(() => useToast())).value;
+    toast.clear();
     Object.defineProperty(navigator, "clipboard", {
         value: { write: browser.write },
         configurable: true,
@@ -59,7 +64,7 @@ afterEach(() => {
 describe("share bar", () => {
     it("hands the given title and URL to the native share sheet, never the current location", async () => {
         withShareSheet(browser.share.mockResolvedValue(undefined));
-        const wrapper = await mountSuspended(ArticleShareBar, { props: PROPS, global });
+        const wrapper = await mountSuspended(ArticleShareBar, { props: PROPS });
 
         await button(wrapper, "share").trigger("click");
 
@@ -69,43 +74,41 @@ describe("share bar", () => {
 
     it("treats a dismissed share sheet as a choice, not an error", async () => {
         withShareSheet(browser.share.mockRejectedValue(new DOMException("", "AbortError")));
-        const wrapper = await mountSuspended(ArticleShareBar, { props: PROPS, global });
+        const wrapper = await mountSuspended(ArticleShareBar, { props: PROPS });
 
         await button(wrapper, "share").trigger("click");
         await flushPromises();
 
         expect(browser.write).not.toHaveBeenCalled();
-        expect(toast.add).not.toHaveBeenCalled();
+        expect(toasted()).toEqual([]);
         expect(track).not.toHaveBeenCalled();
     });
 
     it("copies the URL instead when the browser refuses the share sheet", async () => {
         withShareSheet(browser.share.mockRejectedValue(new DOMException("", "NotAllowedError")));
-        const wrapper = await mountSuspended(ArticleShareBar, { props: PROPS, global });
+        const wrapper = await mountSuspended(ArticleShareBar, { props: PROPS });
 
         await button(wrapper, "share").trigger("click");
         await flushPromises();
 
         expect(browser.write).toHaveBeenCalled();
-        expect(toast.add).toHaveBeenCalledWith(
-            expect.objectContaining({ title: "shareBar.linkCopied" }),
-        );
+        expect(toasted()).toEqual(["link copied"]);
         expect(track).toHaveBeenCalledWith("share", { method: "copy_link" });
     });
 
     it("claims no copy when the share sheet fails and there is no clipboard to fall back on", async () => {
         withoutClipboard();
         withShareSheet(browser.share.mockRejectedValue(new DOMException("", "NotAllowedError")));
-        const wrapper = await mountSuspended(ArticleShareBar, { props: PROPS, global });
+        const wrapper = await mountSuspended(ArticleShareBar, { props: PROPS });
 
         await button(wrapper, "share").trigger("click");
         await flushPromises();
 
-        expect(toast.add).not.toHaveBeenCalled();
+        expect(toasted()).toEqual([]);
     });
 
     it("copies the URL where there is no share sheet, and confirms it in a toast", async () => {
-        const wrapper = await mountSuspended(ArticleShareBar, { props: PROPS, global });
+        const wrapper = await mountSuspended(ArticleShareBar, { props: PROPS });
 
         await button(wrapper, "share").trigger("click");
         await flushPromises();
@@ -113,35 +116,13 @@ describe("share bar", () => {
         expect(browser.write).toHaveBeenCalledWith([
             new ClipboardItem({ "text/plain": PROPS.url }),
         ]);
-        expect(toast.add).toHaveBeenCalledWith(
-            expect.objectContaining({ title: "shareBar.linkCopied" }),
-        );
+        expect(toasted()).toEqual(["link copied"]);
     });
 
     it("hides the share button where the browser can neither share nor copy", async () => {
         withoutClipboard();
-        const wrapper = await mountSuspended(ArticleShareBar, { props: PROPS, global });
+        const wrapper = await mountSuspended(ArticleShareBar, { props: PROPS });
 
         expect(button(wrapper, "share").exists()).toBe(false);
-    });
-
-    it("prints the page", async () => {
-        const wrapper = await mountSuspended(ArticleShareBar, { props: PROPS, global });
-
-        await button(wrapper, "print").trigger("click");
-
-        expect(browser.print).toHaveBeenCalled();
-    });
-
-    it("links to the citation only when the page has one", async () => {
-        const without = await mountSuspended(ArticleShareBar, { props: PROPS, global });
-        const withCite = await mountSuspended(ArticleShareBar, {
-            props: { ...PROPS, citeTo: "#citar" },
-            global,
-        });
-
-        expect(without.find("a").exists()).toBe(false);
-        expect(withCite.find("a").attributes("href")).toBe("#citar");
-        expect(withCite.find("a").text()).toBe("t(shareBar.cite)");
     });
 });

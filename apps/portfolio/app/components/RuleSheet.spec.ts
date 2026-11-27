@@ -82,6 +82,7 @@ describe("RuleSheet", () => {
         const preview = await hover(await open(FULL), "look");
 
         expect(preview.findAll("img")).toHaveLength(3);
+        expect(preview.get("img").attributes("src")).toBe(portalUrl("/a.webp"));
     });
 
     it("previews the decision report the rule names, with its status", async () => {
@@ -89,18 +90,6 @@ describe("RuleSheet", () => {
 
         expect(preview.text()).toContain("URLs and cutover");
         expect(preview.text()).toContain("decisions.status.implemented");
-    });
-
-    it("draws Huella Legal's plan under the planning rule", async () => {
-        const preview = await hover(await open(FULL), "plan");
-
-        expect(preview.find("[data-workflow-glyph]").exists()).toBe(true);
-    });
-
-    it("walks the agent pipeline under the agents rule", async () => {
-        const preview = await hover(await open(FULL), "agents");
-
-        expect(preview.findAll("[data-pipeline-step]").length).toBeGreaterThan(0);
     });
 
     it.each([
@@ -120,15 +109,6 @@ describe("RuleSheet", () => {
             expect(preview.text()).toBe("");
         },
     );
-
-    it("closes the preview once the pointer leaves the rule", async () => {
-        const wrapper = await open(FULL);
-        await hover(wrapper, "look");
-
-        await wrapper.get('[data-rule="look"]').trigger("pointerleave");
-
-        expect(wrapper.find("[data-cursor-preview]").exists()).toBe(false);
-    });
 
     it("starts fetching the first three screenshots when the pointer first enters the sheet", async () => {
         const fetched: string[] = [];

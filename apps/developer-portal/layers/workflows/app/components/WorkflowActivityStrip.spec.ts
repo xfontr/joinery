@@ -6,10 +6,8 @@ import WorkflowActivityStrip from "./WorkflowActivityStrip.vue";
 
 const MESSAGES = {
     workflowActivityStrip: {
-        lastCommit: "Last commit {day}",
         moved: "{count} capabilities | {count} capability | {count} capabilities",
         segment: "{stage} · {day} · {moved}",
-        title: "Activity",
         tooltip: "Capabilities moved per day, from commits tagged with a ticket number",
     },
 };

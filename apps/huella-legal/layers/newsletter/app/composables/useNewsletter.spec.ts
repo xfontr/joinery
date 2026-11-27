@@ -1,39 +1,27 @@
 import type { Challenge } from "#layers/forms/app/types/Challenge";
-import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
-import { mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { serveEndpoint, withSetup } from "@joinery/configs/vitest/utils/nuxt";
+import { readBody } from "h3";
+import { describe, expect, it, vi } from "vitest";
 import { useNewsletter } from "./useNewsletter";
 
 const FIELDS = { email: "lucia@ejemplo.es", honeypot: "" };
 
-const fetch = vi.hoisted(() => vi.fn());
-
-// The i18n loader fetches the locale through the same import, so only the route is faked
-mockNuxtImport(
-    "$fetch",
-    () => (url: string, options: unknown) =>
-        url === "/api/newsletter" ? fetch(url, options) : globalThis.$fetch(url, options as never),
-);
-
 const challenge = vi.fn((send: (token: string) => Promise<unknown>) => send("tok")) as Challenge;
-
-const setUp = async () => (await withSetup(() => useNewsletter())).value;
-
-beforeEach(() => {
-    vi.clearAllMocks();
-    fetch.mockResolvedValue(undefined);
-});
 
 describe("useNewsletter", () => {
     it("posts the address and the honeypot with the challenge's token, then reports success", async () => {
-        const newsletter = await setUp();
+        const received: unknown[] = [];
+
+        serveEndpoint("/api/newsletter", async (event) => {
+            received.push(await readBody(event));
+
+            return {};
+        });
+        const { value: newsletter } = await withSetup(() => useNewsletter());
 
         await newsletter.send(FIELDS, challenge);
 
-        expect(fetch).toHaveBeenCalledWith("/api/newsletter", {
-            method: "POST",
-            body: { ...FIELDS, token: "tok" },
-        });
+        expect(received).toEqual([{ ...FIELDS, token: "tok" }]);
         expect(newsletter.status.value).toBe("success");
     });
 });

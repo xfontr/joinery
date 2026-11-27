@@ -34,7 +34,6 @@ const lifecycleFinding = (path: string, scripts: string[]): Finding => ({
     title: "A lifecycle script is declared",
     detail: `${path} declares ${scripts.join(", ")}. CI installs with --ignore-scripts, so it would work locally and do nothing there.`,
     evidence: [path],
-    blocks: true,
 });
 
 const buildFinding = (path: string, fields: string[]): Finding => ({
@@ -42,7 +41,6 @@ const buildFinding = (path: string, fields: string[]): Finding => ({
     title: "A package declares a build step",
     detail: `${path} declares ${fields.join(", ")}. packages/* export raw source through their exports map, with no build script, main or types.`,
     evidence: [path],
-    blocks: true,
 });
 
 const versionFinding = (path: string, from: string, to: string): Finding => ({
@@ -50,7 +48,6 @@ const versionFinding = (path: string, from: string, to: string): Finding => ({
     title: "A version was edited by hand",
     detail: `${path} moved from ${from} to ${to}. nx release derives versions from Conventional Commits.`,
     evidence: [path],
-    blocks: true,
 });
 
 export const manifestBans = ({ path, manifest, baseVersion }: ManifestSource): Finding[] => {

@@ -4,9 +4,7 @@ template: custom
 area: app:developer-portal
 milestone: Developer portal front door
 ticketSize: block
-summary: The developer portal turned into the repo's public front door — a visitor view that shows
-  craft, AI-built engineering and the people the shipped apps serve, a developer view one click
-  away with every feature kept, and a visual identity of its own.
+summary: Portal's public front door
 
 settled:
   scope-signoff:

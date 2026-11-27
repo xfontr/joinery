@@ -1,9 +1,9 @@
 <template>
     <UDashboardPanel id="telemetry">
         <template #header>
-            <PageHeader :title="$t('telemetry.title')">
-                <template #intro>
-                    <PageFacts v-model:series="series" :provenance :facts />
+            <PageHeader :title="$t('telemetry.title')" :lead="provenance">
+                <template #facts>
+                    <PageFacts v-model:series="series" :facts />
                 </template>
             </PageHeader>
         </template>
@@ -31,7 +31,11 @@
             <template v-if="usage">
                 <TelemetryDaily :usage :series />
 
+                <TelemetryBuildTimes :usage />
+
                 <TelemetryScriptActivity :usage />
+
+                <TelemetryFailureCauses :usage />
 
                 <TelemetryUsageTriage :usage />
 

@@ -9,7 +9,7 @@ export const useDepsPage = () => {
     const counts = deps?.vulnerabilities ?? null;
     const outdated = deps?.outdated ?? null;
 
-    const provenance = t("deps.provenance", { age: relativeTime(deps?.generatedAt, t) });
+    const provenance = t("deps.provenance");
 
     const facts: PageFact[] = [
         ...SEVERITIES.map((severity) => ({

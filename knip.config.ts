@@ -31,6 +31,10 @@ export default {
             // Run by cloudflare/wrangler-action in the deploy workflow, never imported
             ignoreDependencies: ["wrangler"],
         },
+        "packages/i18n": {
+            // Handed to @nuxtjs/i18n by its folder and file name, never imported
+            entry: ["src/nuxt/runtime/locales/loader.ts"],
+        },
         "packages/configs": {
             // A spec runs @playwright/test's `playwright` binary by path
             ignoreDependencies: ["playwright"],

@@ -172,19 +172,6 @@ const node = (name: string, root: string, links: Partial<ProjectNode> = {}): Pro
     ...links,
 });
 
-const metric = (name: string, values: Partial<ProjectMetrics>): ProjectMetrics => ({
-    name,
-    root: "",
-    specs: 0,
-    commits: null,
-    commitsLastTwoWeeks: null,
-    coverageLinesPct: null,
-    unreleasedCommits: null,
-    currentVersion: null,
-    hasChangelog: false,
-    ...values,
-});
-
 const outdatedPackage = (name: string, dependents: string[]): OutdatedPackage => ({
     name,
     current: "1.0.0",
@@ -220,7 +207,6 @@ const serve = ({
         commit: "abc",
         branch: "master",
         projects: metrics,
-        invariantFindings: [],
         conventionalCommitRate: null,
         commitsSinceLastRelease: null,
     } satisfies MetricsArtifact;
@@ -240,16 +226,6 @@ const serve = ({
 };
 
 /** Each About fact by its label, the count beside a list label left out. */
-const facts = (wrapper: VueWrapper) =>
-    Object.fromEntries(
-        wrapper
-            .findAll("aside dl > div")
-            .map((fact) => [
-                fact.find("dt").element.firstChild?.textContent?.trim(),
-                fact.findAll("dd").map((dd) => dd.text()),
-            ]),
-    );
-
 /** Each tab's link, whether it is current, and the count beside it. */
 const tabs = (wrapper: VueWrapper) =>
     wrapper.findAll("nav[aria-label$='sections'] a").map((tab) => ({
@@ -268,42 +244,6 @@ beforeEach(() => {
 });
 
 describe("project page", () => {
-    it("links what a project depends on and what uses it to their own pages", async () => {
-        serve();
-        const wrapper = await mountSuspended(Page, { route: "/projects/UI" });
-
-        expect(facts(wrapper)["Depends on"]).toEqual(["@joinery/configs"]);
-        expect(facts(wrapper)["Used by"]).toEqual(["@joinery/developer-portal"]);
-        expect(wrapper.find("a[href='/projects/configs']").exists()).toBe(true);
-    });
-
-    it("prints each fact with its unit and a dash where nothing was measured", async () => {
-        serve({
-            metrics: [
-                metric("@joinery/ui", { unreleasedCommits: 3, specs: 2, hasChangelog: true }),
-            ],
-            coverage: [
-                {
-                    name: "@joinery/ui",
-                    root: "packages/UI",
-                    collected: true,
-                    files: 4,
-                    lines: { pct: 90, covered: 90, total: 100 },
-                },
-            ],
-        });
-        const wrapper = await mountSuspended(Page, { route: "/projects/UI" });
-
-        expect(facts(wrapper)).toMatchObject({
-            Version: ["—"],
-            Unreleased: ["+3"],
-            "Commits, 2 wk": ["—"],
-            Specs: ["2"],
-            "Lines covered": ["90%"],
-            Changelog: ["yes"],
-        });
-    });
-
     it("opens on the README and links every other tab with its count", async () => {
         serve({ outdated: [outdatedPackage("vue", ["packages/UI"])] });
         const wrapper = await mountSuspended(Page, { route: "/projects/UI" });

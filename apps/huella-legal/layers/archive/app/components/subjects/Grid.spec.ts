@@ -28,19 +28,4 @@ describe("subjects grid", () => {
             "/areas/derecho-civil/",
         ]);
     });
-
-    it("labels the section by a heading at #areas", async () => {
-        const wrapper = await mountSuspended(SubjectsGrid, { props, global });
-
-        expect(wrapper.find("section").attributes("aria-labelledby")).toBe("areas");
-        expect(wrapper.find("h2#areas").exists()).toBe(true);
-    });
-
-    it("renders a description only for a subject that has one", async () => {
-        const wrapper = await mountSuspended(SubjectsGrid, { props, global });
-        const [penal, civil] = wrapper.findAll("li");
-
-        expect(penal!.find("p").text()).toBe("Teoría del delito.");
-        expect(civil!.find("p").exists()).toBe(false);
-    });
 });

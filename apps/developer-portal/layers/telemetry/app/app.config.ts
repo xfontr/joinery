@@ -3,7 +3,6 @@ export default defineAppConfig({
         telemetry: {
             icon: "i-lucide-wrench",
             to: "/telemetry",
-            figure: "/api/telemetry/figure",
         },
     },
 });

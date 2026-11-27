@@ -9,10 +9,15 @@ const DRAG_THRESHOLD = 4;
 /** A mouse notch reports a deltaY near 100, against a trackpad's handful per event. */
 const WHEEL_STEP = 25;
 
-/** Pan and zoom over a laid-out graph, framing whichever blocks `lit` returns. */
+interface Point {
+    x: number;
+    y: number;
+}
+
+/** Pan and zoom over a laid-out graph, framing the blocks `frame` returns around its `anchor`. */
 export const useGraphCamera = (
     viewport: Ref<HTMLElement | null>,
-    lit: () => { x: number; y: number }[],
+    frame: () => { nodes: Point[]; anchor: Point | null },
 ) => {
     const camera = reactive({ x: 0, y: 0, k: 1 });
     const easing = ref(false);
@@ -26,10 +31,10 @@ export const useGraphCamera = (
         if (animate) easeTimer = setTimeout(() => (easing.value = false), 500);
     };
 
-    /** Centres the lit blocks, the selected path or the whole map, as large as fits but never unreadable. */
+    /** Centres the framed blocks as large as fits but never unreadable, keeping the anchor on screen. */
     const fit = (animate: boolean) => {
         const box = viewport.value?.getBoundingClientRect();
-        const nodes = lit();
+        const { nodes, anchor } = frame();
         if (!box?.width || nodes.length === 0) return;
 
         const left = Math.min(...nodes.map(({ x }) => x));
@@ -50,6 +55,13 @@ export const useGraphCamera = (
         camera.k = k;
         camera.x = box.width / 2 - ((left + right) / 2) * k;
         camera.y = box.height / 2 - ((top + bottom) / 2) * k;
+        if (!anchor) return;
+
+        // A frame wider than the screen at readable zoom would otherwise centre the anchor away.
+        const into = (at: number, size: number, room: number) =>
+            Math.min(Math.max(at, PADDING), Math.max(room - PADDING - size * k, PADDING)) - at;
+        camera.x += into(camera.x + anchor.x * k, NODE_WIDTH, box.width);
+        camera.y += into(camera.y + anchor.y * k, NODE_HEIGHT, box.height);
     };
 
     /** Zooms keeping the map point under `(px, py)` in place; the viewport's centre by default. */

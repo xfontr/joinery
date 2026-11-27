@@ -2,7 +2,6 @@ import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
-import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import Page from "./changelog.vue";
 
 const MESSAGES = {
@@ -86,25 +85,11 @@ const global = {
     },
 };
 
-const project = (root: string, metrics: Partial<ProjectMetrics>): ProjectMetrics => ({
-    name: root,
-    root,
-    specs: 0,
-    commits: null,
-    commitsLastTwoWeeks: null,
-    coverageLinesPct: null,
-    unreleasedCommits: null,
-    currentVersion: null,
-    hasChangelog: false,
-    ...metrics,
-});
-
 const METRICS = {
     generatedAt: "2026-11-01T00:00:00Z",
     commit: "abc",
     branch: "master",
     projects: [],
-    invariantFindings: [],
     conventionalCommitRate: null,
     commitsSinceLastRelease: 0,
 } satisfies MetricsArtifact;
@@ -137,21 +122,6 @@ describe("changelog page", () => {
         expect(entries(wrapper)).toHaveLength(0);
     });
 
-    it("lists each changelog by project with its version and unreleased commits", async () => {
-        docs.changelogs = [{ path: "/packages/ui/CHANGELOG", title: "UI" }];
-        serve({
-            projects: [project("packages/ui", { currentVersion: "3.2.1", unreleasedCommits: 4 })],
-        });
-        const wrapper = await mountSuspended(Page, { global });
-
-        const [entry] = entries(wrapper);
-
-        expect(entries(wrapper)).toHaveLength(1);
-        expect(entry!.find(".font-mono").text()).toBe("UI");
-        expect(entry!.text()).toContain("v3.2.1");
-        expect(entry!.find(".tone-warn").text()).toBe("+4 unreleased");
-    });
-
     it("opens the first changelog and switches to the one picked", async () => {
         docs.changelogs = [
             { path: "/packages/ui/CHANGELOG", title: "UI" },
@@ -171,22 +141,6 @@ describe("changelog page", () => {
 
         expect(wrapper.text()).toContain("i18n history");
         expect(wrapper.text()).not.toContain("UI history");
-    });
-
-    it("names the projects that shipped commits without ever releasing", async () => {
-        docs.changelogs = [{ path: "/packages/ui/CHANGELOG", title: "UI" }];
-        serve({
-            projects: [
-                project("packages/ui", { hasChangelog: true, unreleasedCommits: 4 }),
-                project("packages/content", { unreleasedCommits: 2 }),
-                project("packages/quiet", { unreleasedCommits: 0 }),
-            ],
-        });
-        const wrapper = await mountSuspended(Page, { global });
-
-        expect(alert(wrapper, "Never released")?.props("description")).toBe(
-            "Content — commits waiting on a first release, so no changelog yet.",
-        );
     });
 
     it.each([

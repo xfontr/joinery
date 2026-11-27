@@ -13,7 +13,6 @@ export type { StageView } from "./types/StageView.ts";
 export type { Template } from "./types/Template.ts";
 export type { TicketSize } from "./types/TicketSize.ts";
 export type { TicketStatus } from "./types/TicketStatus.ts";
-export type { UnsortedIssue } from "./types/UnsortedIssue.ts";
 export type { WorkflowProblem } from "./types/WorkflowProblem.ts";
 export { lessonCount, readTemplate } from "./template.ts";
 export { featuresOf, readProject, typedExtra } from "./project.ts";

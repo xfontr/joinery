@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts" generic="Kind extends string">
-import type { Quadrants } from "#layers/telemetry/shared/usageView.ts";
+import type { Quadrants } from "#layers/telemetry/app/utils/usageView.ts";
 
 type Corner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 

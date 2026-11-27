@@ -2,32 +2,20 @@
     <UDashboardPanel id="benchmarks">
         <template #header>
             <PageHeader :title="$t('benchmarks.title')">
-                <template #actions>
-                    <UButton
-                        to="/wiki/docs/benchmarks/readme"
-                        :label="$t('benchmarks.guide')"
-                        icon="i-lucide-ruler"
-                        color="neutral"
-                        variant="ghost"
-                        size="xs"
-                    />
-                </template>
-                <template v-if="benchmarks.length > 0" #intro>
+                <template v-if="benchmarks.length > 0" #facts>
                     <BenchmarksFacts :benchmarks />
                 </template>
             </PageHeader>
-
-            <BenchmarksToolbar
-                v-model:search="search"
-                v-model:verdict="verdict"
-                v-model:kind="kind"
-                :kinds
-            />
         </template>
 
         <template #body>
             <div class="flex flex-col gap-4">
-                <p class="max-w-3xl text-sm text-muted">{{ $t("benchmarks.intro") }}</p>
+                <p class="max-w-3xl text-sm text-muted">
+                    {{ $t("benchmarks.intro") }}
+                    <ULink to="/wiki/docs/benchmarks/readme" class="text-default underline">{{
+                        $t("benchmarks.guide")
+                    }}</ULink>
+                </p>
 
                 <CollectionEmpty
                     v-if="benchmarks.length === 0"
@@ -39,6 +27,12 @@
                 />
 
                 <template v-else>
+                    <BenchmarksToolbar
+                        v-model:search="search"
+                        v-model:verdict="verdict"
+                        v-model:kind="kind"
+                        :kinds
+                    />
                     <EmptyState v-if="visible.length === 0">
                         {{ $t("benchmarks.noMatch") }}
                     </EmptyState>

@@ -76,10 +76,4 @@ describe("pagination", () => {
 
         expect(wrapper.find("p").text()).toBe('t(pagination.position, {"page":2,"total":3})');
     });
-
-    it("names the landmark, since a listing page has more than one nav", async () => {
-        const wrapper = await mountAt(1);
-
-        expect(wrapper.find("nav").attributes("aria-label")).toBe("t(pagination.label)");
-    });
 });

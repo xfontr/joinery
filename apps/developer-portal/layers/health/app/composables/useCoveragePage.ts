@@ -10,7 +10,6 @@ export const useCoveragePage = () => {
     const provenance = t("coverage.provenance", {
         collected,
         total: projects.length,
-        age: relativeTime(coverage?.generatedAt, t),
     });
 
     const facts = COVERAGE_METRICS.map((key): PageFact => ({

@@ -13,7 +13,7 @@
             :label="$t('wizardDetails.summary.label')"
             :help="$t('wizardDetails.summary.help')"
         >
-            <UTextarea v-model="summary" :rows="2" class="w-full" />
+            <UInput v-model="summary" class="w-full" />
         </UFormField>
         <div class="grid gap-4 sm:grid-cols-3">
             <UFormField

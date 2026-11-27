@@ -5,6 +5,7 @@ import { areaIssuesWithoutMilestone, milestoneIssues } from "./adapters/gh.ts";
 import { commitLog } from "./adapters/git.ts";
 import {
     projectIds,
+    projectMap,
     readProject,
     readSnapshot,
     snapshotPath,
@@ -18,15 +19,19 @@ import {
     syncTargetOf,
     toSnapshot,
 } from "./domain/snapshot.ts";
+import { unplaced } from "./domain/placement.ts";
 import { issueFromBranch } from "../issue/domain/branch.ts";
 import { currentBranch } from "../shared/adapters/usage.ts";
 
-/** False when the milestone isn't there yet, so one missing milestone doesn't stop the others. */
+/**
+ * The tickets the map can't place, or null when the milestone isn't there yet, so one missing
+ * milestone doesn't stop the others.
+ */
 const syncOne = (
     id: string,
     activity: ReturnType<typeof activityByIssue>,
     closing: number | null,
-): boolean => {
+): string[] | null => {
     const read = syncTargetOf(readProject(id));
 
     if ("problem" in read) throw new ExpectedError(`${id}.yaml can't be synced: ${read.problem}.`);
@@ -37,7 +42,7 @@ const syncOne = (
     } catch (error) {
         if (!(error instanceof ExpectedError)) throw error;
         out.warn(`${id}: ${error.message}`);
-        return false;
+        return null;
     }
 
     const previous = readSnapshot(id);
@@ -55,12 +60,12 @@ const syncOne = (
 
     if (sameIssues(previous, snapshot)) {
         out.success(`${id}: unchanged — ${describeSnapshot(snapshot)}.`);
-        return true;
+    } else {
+        writeSnapshot(id, snapshot);
+        out.success(`${id}: wrote ${snapshotPath(id)} — ${describeSnapshot(snapshot)}.`);
     }
 
-    writeSnapshot(id, snapshot);
-    out.success(`${id}: wrote ${snapshotPath(id)} — ${describeSnapshot(snapshot)}.`);
-    return true;
+    return unplaced(projectMap(id), snapshot).map((ticket) => `${id} ${ticket}`);
 };
 
 /**
@@ -86,7 +91,17 @@ export const sync = ({ positionals, flags }: Args): void => {
     }
 
     const activity = activityByIssue(commitLog());
-    const failed = ids.filter((id) => !syncOne(id, activity, closing));
+    const results = ids.map((id) => ({ id, unplaced: syncOne(id, activity, closing) }));
+    const failed = results.filter((result) => result.unplaced === null).map(({ id }) => id);
+    const strays = results.flatMap((result) => result.unplaced ?? []);
 
     if (failed.length > 0) throw new ExpectedError(`Not synced: ${failed.join(", ")}.`);
+
+    if (strays.length > 0) {
+        for (const stray of strays) out.error(stray);
+        throw new ExpectedError(
+            `${strays.length} ticket(s) the map can't place. Give each the milestone and one ` +
+                "`cap:` label of a capability that's on, on GitHub, then sync again.",
+        );
+    }
 };
