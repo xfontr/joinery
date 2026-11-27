@@ -6,7 +6,7 @@ test.describe("@any-width", () => {
     test("every page stays out of search, though its links are still followed", async ({
         request,
     }) => {
-        for (const path of ["/", "/wiki/", "/decisions/", "/coverage/", "/workflows/"].map(
+        for (const path of ["/", "/wiki", "/decisions", "/coverage", "/workflows"].map(
             (path) => `/portal${path}`,
         )) {
             const html = await (await request.get(path)).text();
@@ -16,7 +16,7 @@ test.describe("@any-width", () => {
     });
 
     test("a missing page answers 404", async ({ request }) => {
-        expect((await request.get("/portal/no-such-page/")).status()).toBe(404);
+        expect((await request.get("/portal/no-such-page")).status()).toBe(404);
     });
 });
 
@@ -24,7 +24,7 @@ test.describe(() => {
     test.use({ allowedConsole: [NOT_FOUND] });
 
     test("a missing page asks not to be indexed", async ({ page }) => {
-        await page.goto("/portal/no-such-page/");
+        await page.goto("/portal/no-such-page");
 
         await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex");
     });

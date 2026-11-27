@@ -42,5 +42,7 @@ const status = computed(() =>
         ? { label: t(`decisions.status.${report.status}`), tone: decisionStatusTone(report.status) }
         : null,
 );
-const updated = computed(() => relativeTime(report.updatedAt, t));
+const updated = computed(() =>
+    report.updatedAt ? calendarDay(report.updatedAt.slice(0, 10)) : t("common.never"),
+);
 </script>

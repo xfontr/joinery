@@ -1,8 +1,14 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { coverageTone, relativeTime, severityTone, shortAge } from "./format.ts";
+import { calendarTime, coverageTone, relativeTime, severityTone, shortAge } from "./format.ts";
 
 const t = (key: string, named?: Record<string, unknown> | number): string =>
     named === undefined ? key : `${key} ${JSON.stringify(named)}`;
+
+describe("calendarTime", () => {
+    it("reads the instant in UTC so a prerendered page and the browser print the same time", () => {
+        expect(calendarTime("2026-11-27T23:30:00.000+01:00")).toBe("27 Nov, 22:30 UTC");
+    });
+});
 
 describe("relativeTime", () => {
     afterEach(() => {

@@ -15,7 +15,7 @@ const item = (id: string, tone: StatusItem["tone"]): StatusItem => ({
 describe("StatusBar", () => {
     beforeEach(() => {
         useNuxtApp().$i18n.mergeLocaleMessage("en", {
-            statusBar: { collected: "{'@'}{commit} collected {age}" },
+            statusBar: { collected: "{'@'}{commit} collected {at}" },
         });
     });
 

@@ -7,6 +7,14 @@ export default defineAppConfig({
         dashboardPanel: {
             slots: { root: "pb-7", body: "bg-muted *:shrink-0" },
         },
+        prose: {
+            img: {
+                // The docs' only images are status badges, which sit inline at their own size.
+                slots: { base: "inline-block rounded-none" },
+                variants: { width: { false: "w-auto" } },
+                defaultVariants: { zoom: false },
+            },
+        },
         card: {
             variants: {
                 variant: {
