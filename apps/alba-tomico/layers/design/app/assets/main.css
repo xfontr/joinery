@@ -1,0 +1,72 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/* The old site's SCSS variables, one token per variable */
+@theme static {
+    --color-paper: #fff;
+    --color-ink: #000;
+
+    --font-sans: Montserrat, ui-sans-serif, system-ui, sans-serif;
+
+    --spacing-s: 1rem;
+    --spacing-m: 1.5rem;
+    --spacing-l: 3rem;
+
+    --text-m: 1.25rem;
+    --text-l: 2rem;
+    --text-xl: 2.75rem;
+    --text-xxl: 4.5rem;
+    --text-status: calc(1.5 * 4.5rem);
+
+    --z-index-s: 1;
+    --z-index-m: 2;
+    --z-index-l: 3;
+    --z-index-xl: 4;
+    --z-index-xxl: 5;
+}
+
+/* Nuxt UI's semantic roles on the site's two colours. Dark only: colour mode is off. */
+:root {
+    --ui-bg: var(--color-ink);
+    --ui-bg-muted: var(--color-ink);
+    --ui-bg-elevated: var(--color-ink);
+    --ui-bg-accented: var(--color-ink);
+    --ui-bg-inverted: var(--color-paper);
+
+    --ui-text-dimmed: var(--color-paper);
+    --ui-text-muted: var(--color-paper);
+    --ui-text-toned: var(--color-paper);
+    --ui-text: var(--color-paper);
+    --ui-text-highlighted: var(--color-paper);
+    --ui-text-inverted: var(--color-ink);
+
+    --ui-border: var(--color-paper);
+    --ui-border-muted: var(--color-paper);
+    --ui-border-accented: var(--color-paper);
+    --ui-border-inverted: var(--color-ink);
+
+    --ui-primary: var(--color-paper);
+}
+
+/* The old site's `:root`, and the line height and text rendering from its reset */
+html {
+    background: var(--ui-bg);
+    color: var(--ui-text);
+    font-family: var(--font-sans);
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    text-size-adjust: none;
+}
+
+@layer base {
+    :focus-visible {
+        outline: 2px solid var(--ui-primary);
+        outline-offset: 2px;
+    }
+}
+
+/* Tailwind v4 preflight leaves native <button> at `cursor: default` */
+button:not(:disabled) {
+    cursor: pointer;
+}

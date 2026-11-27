@@ -1,0 +1,80 @@
+{
+  "name": "@joinery/alba-tomico",
+  "description": "Alba Tomico, a photographer's portfolio port (Nuxt 4)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxi prepare && nx nuxt:build",
+    "dev": "nx serve",
+    "preview": "nuxt preview",
+    "lint": "nx eslint:lint",
+    "nuxt-prepare": "nuxi prepare",
+    "typecheck": "nuxt typecheck",
+    "test": "vitest . --watch=false",
+    "test:dev": "vitest .",
+    "test:coverage": "vitest . --watch=false --coverage",
+    "test:e2e": "playwright test"
+  },
+  "nx": {
+    "tags": [
+      "type:app",
+      "scope:alba-tomico"
+    ],
+    "targets": {
+      "build": {
+        "inputs": [
+          "production",
+          "^production",
+          {
+            "env": "NUXT_SITE_ENV"
+          }
+        ]
+      },
+      "nuxt:build": {
+        "inputs": [
+          "production",
+          "^production",
+          {
+            "externalDependencies": [
+              "nuxt"
+            ]
+          },
+          {
+            "env": "NUXT_SITE_ENV"
+          }
+        ]
+      },
+      "test:e2e": {
+        "inputs": [
+          "default",
+          "^production",
+          {
+            "env": "CI"
+          }
+        ]
+      }
+    }
+  },
+  "dependencies": {
+    "@nuxt/fonts": "catalog:",
+    "@nuxt/ui": "^4.11.0",
+    "@nuxtjs/i18n": "catalog:",
+    "nuxt": "catalog:",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@joinery/configs": "workspace:*",
+    "@nuxt/test-utils": "^4.3.2",
+    "@playwright/test": "catalog:",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "@vue/test-utils": "^2.4.11",
+    "eslint": "catalog:",
+    "happy-dom": "^21.0.1",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "^5.5.3",
+    "vue-tsc": "catalog:"
+  }
+}

@@ -28,6 +28,7 @@ packages/
     i18n/             @joinery/i18n — translations core + a Nuxt module
     observability/    @joinery/observability — Grafana Faro in the browser, OpenTelemetry on the server
 apps/
+    alba-tomico/      @joinery/alba-tomico — Alba Tomico, a photographer's portfolio port (Nuxt 4)
     developer-portal/ @joinery/developer-portal — the repository's developer portal over its docs, projects, architecture, workflows and engineering health
     huella-legal/     @joinery/huella-legal — Huella Legal, a WIP law blog redesign (Nuxt 4)
     marina-roustan/   @joinery/marina-roustan — Marina Roustan, a website rebuild (Nuxt 4)
@@ -59,7 +60,7 @@ Projects are layered with Nx tags (declared in each `package.json` under `nx.tag
 <!-- docs:map:type-tags -->
 | Tag | May depend on | Who has it |
 | --- | --- | --- |
-| `type:app` | `type:integration`, `type:observability`, `type:config` | `developer-portal`, `huella-legal`, `marina-roustan`, `portfolio`, `wp-editor` |
+| `type:app` | `type:integration`, `type:observability`, `type:config` | `alba-tomico`, `developer-portal`, `huella-legal`, `marina-roustan`, `portfolio`, `wp-editor` |
 | `type:integration` | `type:config` | `content`, `i18n` |
 | `type:observability` | `type:config` | `observability` |
 | `type:infra` | `type:config` | `translations` |
@@ -73,6 +74,7 @@ Every project also carries exactly one `scope:*` tag, and both rules apply at on
 | Scope | May depend on | Who has it |
 | --- | --- | --- |
 | `scope:shared` | `scope:shared` | `configs`, `content`, `i18n`, `observability` |
+| `scope:alba-tomico` | `scope:alba-tomico`, `scope:shared` | `alba-tomico` |
 | `scope:huella-legal` | `scope:huella-legal`, `scope:shared` | `huella-legal` |
 | `scope:marina-roustan` | `scope:marina-roustan`, `scope:shared` | `marina-roustan` |
 | `scope:portfolio` | `scope:portfolio`, `scope:shared` | `portfolio` |

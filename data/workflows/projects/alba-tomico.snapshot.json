@@ -1,0 +1,46 @@
+{
+    "syncedAt": "2026-11-27T23:37:49.054Z",
+    "milestone": "Alba Tomico",
+    "issues": [
+        {
+            "number": 544,
+            "title": "404 and error pages, App scaffold",
+            "url": "https://github.com/xfontr/joinery/issues/544",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "app-scaffold",
+                "error-pages"
+            ],
+            "createdAt": "2026-11-27T23:37:10Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [],
+            "branch": true,
+            "pr": false,
+            "owner": false,
+            "complexity": 5
+        },
+        {
+            "number": 545,
+            "title": "Visual baseline and bug inventory, ImageKit content model, Hosting, rendering and rebuilds",
+            "url": "https://github.com/xfontr/joinery/issues/545",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "hosting-rendering",
+                "imagekit-content-model",
+                "visual-baseline"
+            ],
+            "createdAt": "2026-11-27T23:37:21Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 15
+        }
+    ],
+    "noMilestone": []
+}

@@ -1,6 +1,9 @@
 app:developer-portal:
     - changed-files:
           - any-glob-to-any-file: apps/developer-portal/**
+app:alba-tomico:
+    - changed-files:
+          - any-glob-to-any-file: apps/alba-tomico/**
 app:huella-legal:
     - changed-files:
           - any-glob-to-any-file: apps/huella-legal/**

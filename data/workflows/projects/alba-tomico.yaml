@@ -7,6 +7,12 @@ summary: Photographer portfolio port
 
 ticketSize: fast
 
+settled:
+  scope-signoff:
+    status: done
+    on: 2026-11-28
+    note: The owner approved the map as drafted, every recommended block left on.
+
 extras:
   - id: visual-baseline
     stage: plan

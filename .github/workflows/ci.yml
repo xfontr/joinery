@@ -89,6 +89,7 @@ jobs:
                   # Off by default, and it would drop .playwright/ with each failure's error-context.md
                   include-hidden-files: true
                   path: |
+                      apps/alba-tomico/.playwright
                       apps/huella-legal/.playwright
                       apps/marina-roustan/.playwright
                       apps/portfolio/.playwright
