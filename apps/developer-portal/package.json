@@ -16,7 +16,8 @@
     "test:dev": "vitest .",
     "test:coverage": "vitest . --watch=false --coverage",
     "test:e2e": "playwright test",
-    "collect": "node tools/collect/index.ts"
+    "collect": "node tools/collect/index.ts",
+    "verify": "node tools/verify/index.ts"
   },
   "nx": {
     "tags": [

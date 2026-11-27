@@ -24,7 +24,7 @@
 
             <div v-else class="flex flex-col gap-6">
                 <WorkflowSummary :view :selected="selectedId" :blank @select="select" />
-                <WorkflowAlerts :project="id" :blank :problems :unsorted />
+                <WorkflowAlerts :project="id" :blank />
                 <WorkflowBoard
                     v-model:day="dayIndex"
                     :stages="view.stages"
@@ -63,8 +63,6 @@ const { t } = useI18n();
 const {
     id,
     base,
-    problems,
-    unsorted,
     replay,
     view,
     activity,

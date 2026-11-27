@@ -56,13 +56,6 @@ const MESSAGES = {
                 "Ask Claude to draft its map: it asks what the project is, writes the blocks under {extras} in {file}, and they show here for you to check before anything is filed.",
             title: "This project has no blocks yet",
         },
-        reasons: {
-            noLabel: "no {detail} label",
-        },
-        unsorted: {
-            lead: "Not placed yet. Give each one the milestone and a {label} label on GitHub, then sync again.",
-            title: "{count} to organise",
-        },
     },
     workflowCapabilityDetail: {
         headings: {
@@ -243,13 +236,6 @@ beforeEach(() => {
 });
 
 describe("workflow page", () => {
-    it("puts a ticket with no capability label under To organise", async () => {
-        const wrapper = await open();
-
-        expect(wrapper.text()).toContain("1 to organise");
-        expect(wrapper.text()).toContain("Stray ticket");
-    });
-
     it("asks for a map on a project with no blocks, instead of calling it done", async () => {
         const wrapper = await open(
             assembleWorkflows(

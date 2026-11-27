@@ -1,8 +1,6 @@
 import { openAudits } from "#layers/audits/shared/auditReports.ts";
 import { toImplement } from "#layers/decisions/shared/decisionReports.ts";
-import { toCollectionPath } from "#layers/docs/shared/docPages.ts";
 import { sortIssues } from "#layers/github/app/utils/issues.ts";
-import { brokenPages } from "#layers/snapshot/app/utils/docs.ts";
 import { unreleased } from "#layers/snapshot/app/utils/metrics.ts";
 import type { QueueKind } from "~/types/QueueKind";
 import type { QueueRow } from "~/types/QueueRow";
@@ -14,7 +12,6 @@ export const useWorkQueue = () => {
     const decisions = useDecisionReports();
     const audits = useAuditReports();
     const metrics = metricsArtifact();
-    const docs = docsArtifact();
 
     const rows = computed((): Record<QueueKind, QueueRow[]> => ({
         issues: sortIssues(issues.value.issues).map((issue) => ({
@@ -51,22 +48,6 @@ export const useWorkQueue = () => {
             }),
             to: `/projects/${folderOf(project.root)}`,
         })),
-        attention: [
-            ...(metrics?.invariantFindings ?? []).map((finding) => ({
-                key: `finding-${finding.id}`,
-                id: t("workQueue.rows.invariant"),
-                title: finding.title,
-                meta: finding.detail,
-                to: null,
-            })),
-            ...brokenPages(docs).map((page) => ({
-                key: `docs-${page.path}`,
-                id: t("workQueue.rows.link"),
-                title: page.path,
-                meta: t("workQueue.rows.brokenLinks", { count: page.brokenLinks.length }),
-                to: `/wiki${toCollectionPath(page.path)}`,
-            })),
-        ],
     }));
 
     return { rows, issues };

@@ -26,6 +26,7 @@
         "worktree:prepare": "pnpm --silent --dir infrastructure/scripts cli src/worktree/index.ts",
         "docs:drift": "pnpm --silent --dir infrastructure/scripts cli src/drift/index.ts",
         "docs:map": "pnpm --silent --dir infrastructure/scripts cli src/map/index.ts",
+        "docs:verify": "pnpm --silent --dir apps/developer-portal run verify",
         "invariants:check": "pnpm --silent --dir infrastructure/scripts cli src/invariants/index.ts",
         "unused:check": "pnpm --silent --dir infrastructure/scripts cli src/tasks/index.ts unused:check run-many -t nuxt-prepare --outputStyle=static-failures-only && knip --no-progress",
         "usage:flush": "pnpm --silent --dir infrastructure/scripts cli src/usage/index.ts",

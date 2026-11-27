@@ -13,7 +13,6 @@
                     }}</ULink>
                 </p>
 
-                <WorkflowProblems :problems="data.problems" />
                 <WorkflowProjects :projects="data.projects" />
                 <WorkflowTemplates :templates="data.templates" />
             </div>

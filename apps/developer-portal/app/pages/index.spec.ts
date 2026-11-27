@@ -87,7 +87,6 @@ const METRICS = {
     commit: "abc",
     branch: "master",
     projects: [],
-    invariantFindings: [],
     conventionalCommitRate: null,
     commitsSinceLastRelease: null,
 } satisfies MetricsArtifact;
@@ -146,20 +145,13 @@ describe("home page", () => {
     });
 
     it("narrows the queue to one kind of work when its filter is picked", async () => {
-        serve({
-            metrics: {
-                ...METRICS,
-                projects: [unreleased("lib", 3)],
-                invariantFindings: [
-                    { id: "drift", title: "Drift", detail: "Fix it", evidence: [] },
-                ],
-            },
-        });
+        serve({ metrics: { ...METRICS, projects: [unreleased("lib", 3)] } });
         const wrapper = await open();
 
-        await wrapper.findComponent({ name: "UTabs" }).setValue("attention");
+        await wrapper.findComponent({ name: "UTabs" }).setValue("releases");
+        expect(hrefs(wrapper)).toContain("/projects/lib");
 
-        expect(wrapper.text()).toContain("Drift");
+        await wrapper.findComponent({ name: "UTabs" }).setValue("decisions");
         expect(hrefs(wrapper)).not.toContain("/projects/lib");
     });
 
@@ -182,45 +174,6 @@ describe("home page", () => {
         const wrapper = await open();
 
         expect(health(wrapper)).toMatchObject({ "Line coverage": "82%", Advisories: "0" });
-    });
-
-    it("links each page with a broken link and lists invariant findings for attention", async () => {
-        serve({
-            docs: {
-                generatedAt: "2026-11-01T00:00:00Z",
-                pages: [
-                    {
-                        path: "docs/a.md",
-                        kind: "doc",
-                        title: "A",
-                        words: 1,
-                        updatedAt: null,
-                        decisionStatus: null,
-                        decisionOutcome: null,
-                        decisionSupersededBy: null,
-                        audit: null,
-                        brokenLinks: [{ href: "./missing", resolved: "docs/missing.md" }],
-                    },
-                ],
-                brokenLinkCount: 1,
-            },
-            metrics: {
-                generatedAt: "2026-11-01T00:00:00Z",
-                commit: "abc",
-                branch: "master",
-                projects: [],
-                invariantFindings: [
-                    { id: "drift", title: "Drift", detail: "Fix it", evidence: [] },
-                ],
-                conventionalCommitRate: null,
-                commitsSinceLastRelease: null,
-            },
-        });
-        const wrapper = await open();
-        await wrapper.findComponent({ name: "UTabs" }).setValue("attention");
-
-        expect(hrefs(wrapper)).toContain("/wiki/docs/a");
-        expect(wrapper.text()).toContain("Drift");
     });
 
     describe("once the welcome and featured widgets are added back", () => {

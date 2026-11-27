@@ -90,7 +90,6 @@ const METRICS = {
     commit: "abc",
     branch: "master",
     projects: [],
-    invariantFindings: [],
     conventionalCommitRate: null,
     commitsSinceLastRelease: 0,
 } satisfies MetricsArtifact;

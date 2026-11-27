@@ -128,6 +128,19 @@ fi
 # Run checks
 # =========================
 
+# Whole-repo, not affected: a link breaks when its target moves, in a commit that touches no markdown.
+echo ""
+info "Checking links, audits, decisions and workflow files..."
+pnpm docs:verify
+
+if [ $? -ne 0 ]; then
+  error "Broken links or malformed docs"
+  exit 1
+fi
+
+echo ""
+success "Docs hold"
+
 echo ""
 info "Running lint..."
 pnpm lint

@@ -33,14 +33,12 @@ describe("toBadges", () => {
                 docs: {
                     generatedAt: DEPS.generatedAt,
                     pages: [{}, {}, {}] as DocsArtifact["pages"],
-                    brokenLinkCount: 4,
                 } satisfies DocsArtifact,
                 metrics: {
                     generatedAt: "2026-11-18T10:00:00Z",
                     commit: "abc1234def",
                     branch: "master",
                     projects: [],
-                    invariantFindings: [],
                     conventionalCommitRate: null,
                     commitsSinceLastRelease: null,
                 } satisfies MetricsArtifact,
@@ -50,7 +48,6 @@ describe("toBadges", () => {
             worstSeverity: "low",
             lineCoverage: 81,
             docPages: 3,
-            brokenLinks: 4,
             collected: { branch: "master", commit: "abc1234def", at: "2026-11-18T10:00:00Z" },
         });
     });
@@ -67,7 +64,6 @@ describe("toBadges", () => {
             worstSeverity: null,
             lineCoverage: null,
             docPages: null,
-            brokenLinks: 0,
             collected: null,
         });
     });

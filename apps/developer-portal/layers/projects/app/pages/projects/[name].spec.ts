@@ -207,7 +207,6 @@ const serve = ({
         commit: "abc",
         branch: "master",
         projects: metrics,
-        invariantFindings: [],
         conventionalCommitRate: null,
         commitsSinceLastRelease: null,
     } satisfies MetricsArtifact;

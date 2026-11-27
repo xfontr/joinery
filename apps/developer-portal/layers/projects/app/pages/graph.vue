@@ -6,15 +6,6 @@
 
         <template #body>
             <div class="flex flex-col gap-4">
-                <UAlert
-                    v-for="finding in findings"
-                    :key="finding.id"
-                    color="warning"
-                    variant="subtle"
-                    icon="i-lucide-unlink"
-                    :title="finding.title"
-                    :description="finding.detail"
-                />
                 <GraphMap :projects />
                 <GraphGroups :projects />
                 <GraphEdges :projects />
@@ -25,5 +16,4 @@
 
 <script setup lang="ts">
 const projects = projectsArtifact()?.projects ?? [];
-const findings = metricsArtifact()?.invariantFindings ?? [];
 </script>

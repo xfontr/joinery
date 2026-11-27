@@ -145,8 +145,9 @@ A block the design added and the map lacks becomes an `extra`, and a lesson for 
 
 ## 3. Placing unsorted tickets
 
-To organise lists milestone issues with no usable `cap:` label, and open issues with the project's
-area label but no milestone — `pnpm issue:add` sets none, so that's where the user's own tickets land.
+`pnpm workflow:sync` fails listing milestone issues with no usable `cap:` label, and open issues with
+the project's area label but no milestone — `pnpm issue:add` sets none, so that's where the user's
+own tickets land.
 Propose a capability for each in a table (issue, title, proposed `cap:`, why). After the user
 confirms, add them with `gh issue edit <n> --milestone "<Milestone>" --add-label cap:<id>` and sync
 again.

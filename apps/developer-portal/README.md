@@ -1,8 +1,6 @@
 # 📦 @joinery/developer-portal
 
-The repo's developer view: every markdown file rendered as a wiki, plus what isn't written down —
-coverage, the project graph, open issues, decisions, audits, workflows and tooling usage. Visitors
-arrive through [`apps/portfolio`](../portfolio/README.md), which links in here.
+The repo's docs as a wiki, plus coverage, the project graph, issues and workflows.
 
 Under `pnpm dev developer-portal` it reads the working tree live. The deployed site is a prerendered
 [snapshot of `master`](#the-deployed-site-is-a-snapshot) on GitHub Pages.
@@ -95,7 +93,7 @@ Its spec pins the keys, since renaming one blanks that site's figures without fa
 | Workflows | `data/workflows/`, read on every request. Under `pnpm dev` the wizard and Settings page write it |
 | Work in progress | Open issues, fetched from GitHub in the reader's browser |
 | What's new | Every `CHANGELOG.md` plus unreleased commit counts |
-| Engineering health | Coverage, `pnpm audit`, outdated deps and the invariant findings |
+| Engineering health | Coverage, `pnpm audit` and outdated deps |
 | Tooling usage | `data/telemetry/` CSVs, enabled lint rules, `eslint-disable` comments, and the last 20 green `ci.yml` runs' step times through `gh` |
 
 ### Doc links
@@ -155,17 +153,17 @@ huella-legal's Storybook is built into the same output under `/huella-legal-stor
 | Indexing | None: one `/**` route rule in [`nuxt.config.ts`](./nuxt.config.ts) sets `noindex, follow` on every page, so links out are still followed |
 | First paint | Styles inlined; no script preload or chunk prefetch; links prefetch on interaction |
 
-## Checks it surfaces
+## `pnpm docs:verify`
 
-[`tools/lib/invariants.ts`](./tools/lib/invariants.ts) runs on every collect and shows findings on
-Home. It blocks nothing.
+[`tools/verify`](./tools/verify/index.ts) fails on anything the portal would otherwise render broken.
+It runs at pre-push and in CI, over the whole repo. The portal shows none of it.
 
-| Check | Flags |
+| Check | Fails on |
 | --- | --- |
-| `pnpm invariants:check --json` | Everything the [invariants gate](../../infrastructure/scripts/src/invariants/README.md) reports |
-| `compareAuditShape` | An audit with a bad filename, missing frontmatter, a reused ID or an unknown status |
-| `compareDecisionShape` | A decision with a bad filename, reused number, unknown `status:`/`decision:`, no `issue:` or a dangling `supersededBy:` |
-| `compareWorkflowShape` | A workflow file that breaks [the workflow rules](../../docs/workflows/README.md) |
+| [`brokenLinks`](./tools/lib/brokenLinks.ts) | A relative link in any tracked `*.md` whose target isn't on disk |
+| `auditProblems` | An audit with a bad filename, missing frontmatter, a reused ID or an unknown status |
+| `decisionProblems` | A decision with a bad filename, reused number, unknown `status:`/`decision:`, no `issue:` or a dangling `supersededBy:` |
+| `workflowProblems` | A workflow file that breaks [the workflow rules](../../docs/workflows/README.md) |
 
 ## Design system
 

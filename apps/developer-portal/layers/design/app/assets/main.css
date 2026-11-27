@@ -210,9 +210,12 @@ body {
 }
 
 /* With macOS set to always show scrollbars, every scrolling column otherwise gets a grey OS bar */
-* {
-    scrollbar-width: thin;
-    scrollbar-color: var(--ui-border-accented) transparent;
+/* In the base layer, since an unlayered rule would beat every utility, `scrollbar-none` included */
+@layer base {
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--ui-border-accented) transparent;
+    }
 }
 
 .dark {

@@ -7,7 +7,7 @@
                 class="group relative flex flex-wrap items-baseline justify-between gap-x-3 gap-y-2 px-4 py-3"
             >
                 <dt class="text-sm text-toned group-hover:text-highlighted">
-                    <!-- Stretched over the row, so the bar and the note click through too -->
+                    <!-- Stretched over the row, so the bar clicks through too -->
                     <NuxtLink :to="line.to" class="after:absolute after:inset-0">
                         {{ line.label }}
                     </NuxtLink>
@@ -15,9 +15,8 @@
                 <dd data-figure class="text-xl leading-none" :class="line.figureClass">
                     {{ line.value }}
                 </dd>
-                <dd class="flex basis-full flex-col gap-2">
-                    <SplitBar v-if="line.parts.length" :parts="line.parts" :legend="line.legend" />
-                    <p v-if="line.note" class="text-xs text-muted">{{ line.note }}</p>
+                <dd v-if="line.parts.length" class="flex basis-full flex-col gap-2">
+                    <SplitBar :parts="line.parts" :legend="line.legend" />
                 </dd>
             </div>
         </dl>

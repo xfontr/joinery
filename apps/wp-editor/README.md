@@ -1,8 +1,6 @@
 # 🤖 @joinery/wp-editor
 
-A local tool for bulk edits to WordPress posts and pages. Claude proposes edits through the
-`pnpm editor` CLI; you review each as a diff in the app, apply it, and can restore it later. It keeps
-its own backup of every article, since WordPress's REST API can't restore a revision.
+Local tool to review and apply bulk edits to WordPress posts, with backups.
 
 Runs on `127.0.0.1` only and **never deploys**.
 

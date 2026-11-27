@@ -47,7 +47,6 @@ const report = (
     decisionOutcome,
     decisionSupersededBy,
     audit: null,
-    brokenLinks: [],
 });
 
 const open = async (route: string) => {
@@ -70,7 +69,6 @@ beforeEach(() => {
             report("0002-second", "to-implement", "superseded", "0003-third.md"),
             report("0003-third", "implemented", "accepted"),
         ],
-        brokenLinkCount: 0,
     };
 });
 

@@ -11,11 +11,6 @@ export const useWorkflowProject = () => {
     const { editable, edit } = useWorkflowEdit();
 
     const base = computed(() => data.value.projects.find(({ project }) => project.id === id.value));
-    const problems = computed(() =>
-        data.value.problems
-            .filter(({ file }) => file.startsWith(`projects/${id.value}.`))
-            .map(({ file, message }) => `${file}: ${message}`),
-    );
 
     const replay = useProjectReplay(base);
     const { view, isLatest } = replay;
@@ -57,14 +52,12 @@ export const useWorkflowProject = () => {
     return {
         id,
         base,
-        problems,
         replay,
         view,
         activity,
         blank,
         titles,
         selection,
-        unsorted: computed(() => (isLatest.value ? (view.value?.unsorted ?? []) : [])),
         canSettle: computed(() => editable && isLatest.value),
         settle,
         detailsOpen,

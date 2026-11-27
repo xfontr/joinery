@@ -85,15 +85,14 @@ const issuesFigure = (read: IssuesRead, to: string, t: Translate): ShellFigure =
 
 const docsFigure = (badges: Badges | null, to: string, t: Translate): ShellFigure => {
     const pages = badges?.docPages ?? null;
-    const broken = badges?.brokenLinks ?? 0;
 
     return {
         status: {
             id: "docs",
             label: t("statusBar.items.docs"),
             value: pages === null ? "—" : String(pages),
-            detail: t("statusBar.items.brokenLinks", broken),
-            tone: broken > 0 ? "bad" : "neutral",
+            detail: t("statusBar.items.pages"),
+            tone: "neutral",
             to,
         },
     };

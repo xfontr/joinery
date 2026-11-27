@@ -37,9 +37,6 @@ const MESSAGES = {
     workflowNewProjectCard: {
         label: "New project",
     },
-    workflowProblems: {
-        title: "{count} workflow file problems",
-    },
     workflowProjects: {
         empty: "No project under {folder} yet.",
         title: "Projects",
@@ -146,13 +143,5 @@ describe("workflows page", () => {
         expect(wrapper.find("a[href='/workflows/new']").attributes("aria-label")).toBe(
             "New project",
         );
-    });
-
-    it("lists file problems so a broken project never just disappears", async () => {
-        const wrapper = await open(
-            workflows([{ id: "p0", title: "Blog", template: "missing", milestone: "Blog" }]),
-        );
-
-        expect(wrapper.text()).toContain("`template: missing` names no template");
     });
 });

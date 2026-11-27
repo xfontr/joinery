@@ -4,7 +4,7 @@ import type { QueueKind } from "~/types/QueueKind";
 import type { QueueRow } from "~/types/QueueRow";
 import WorkQueue from "./WorkQueue.vue";
 
-const row = (key: string, to: string | null = `/decisions/${key}`): QueueRow => ({
+const row = (key: string, to = `/decisions/${key}`): QueueRow => ({
     key,
     id: key,
     title: `Title ${key}`,
@@ -17,7 +17,6 @@ const rows = (overrides: Partial<Record<QueueKind, QueueRow[]>> = {}) => ({
     decisions: [],
     audits: [],
     releases: [],
-    attention: [],
     ...overrides,
 });
 
@@ -35,15 +34,6 @@ describe("WorkQueue", () => {
 
         expect(wrapper.findAll("li")).toHaveLength(8);
         expect(wrapper.find('a[href="/decisions"]').text()).toContain("workQueue.all");
-    });
-
-    it("offers no 'All' link for a kind with no page of its own", async () => {
-        const attention = Array.from({ length: 10 }, (_, index) => row(`a${index}`, null));
-        const wrapper = await open({ rows: rows({ attention }) });
-
-        await wrapper.findComponent({ name: "UTabs" }).setValue("attention");
-
-        expect(wrapper.text()).not.toContain("workQueue.all");
     });
 
     it("leaves the issue count blank until GitHub has answered", async () => {

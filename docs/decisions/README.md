@@ -53,8 +53,8 @@ Whoever lands the follow-up work flips `status` in the same PR. Nothing is comme
 the PR references it.
 
 The [developer portal](../../apps/developer-portal/README.md) builds its Decisions page from these
-fields and flags a bad filename, unknown value, reused number or dangling `supersededBy:` on its
-Overview. It blocks nothing ([0025](./0025-check-docs-removal.md)).
+fields. A bad filename, unknown value, reused number, missing `issue:` or dangling `supersededBy:`
+fails `pnpm docs:verify` at pre-push and in CI.
 
 ## Superseding a decision
 

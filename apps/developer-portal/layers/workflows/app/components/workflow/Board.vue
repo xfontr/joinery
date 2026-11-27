@@ -1,6 +1,32 @@
 <template>
     <div ref="root" class="flex flex-col gap-6">
-        <div class="rounded-2xl border border-default bg-elevated/50 p-3 sm:p-6">
+        <div>
+            <UCollapsible
+                v-if="activity || days > 0"
+                v-model:open="showActivity"
+                class="mb-4 border-b border-default pb-3"
+            >
+                <UButton
+                    :label="$t('workflowBoard.activity')"
+                    icon="i-lucide-chart-column"
+                    :trailing-icon="showActivity ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    class="-ml-2"
+                />
+                <template #content>
+                    <div class="flex flex-wrap items-start gap-x-8 gap-y-3 pt-3">
+                        <WorkflowActivityStrip
+                            v-if="activity"
+                            :activity
+                            :stages="syncedStages"
+                            class="w-full shrink-0 sm:w-80"
+                        />
+                        <WorkflowReplay v-if="days > 0" v-model:day="day" :days :label="dayLabel" />
+                    </div>
+                </template>
+            </UCollapsible>
             <WorkflowSkyline
                 :stages
                 :selected="activeStage?.id ?? null"
@@ -20,18 +46,6 @@
                 <span class="shrink-0">{{ picked.state }}</span>
                 <UIcon name="i-lucide-arrow-down" class="size-3.5 shrink-0" />
             </button>
-            <div
-                v-if="activity || days > 0"
-                class="mt-4 flex flex-wrap items-start gap-x-8 gap-y-3 border-t border-default pt-3"
-            >
-                <WorkflowActivityStrip
-                    v-if="activity"
-                    :activity
-                    :stages="syncedStages"
-                    class="w-full shrink-0 sm:w-80"
-                />
-                <WorkflowReplay v-if="days > 0" v-model:day="day" :days :label="dayLabel" />
-            </div>
         </div>
 
         <WorkflowStageCards
@@ -48,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLocalStorage } from "@vueuse/core";
 import type { CapabilityView, StageView } from "#layers/workflows/shared/workflows.ts";
 import type { ProjectActivity } from "#layers/workflows/app/utils/workflowActivity.ts";
 
@@ -72,6 +87,14 @@ const emit = defineEmits<{
     details: [capability: string];
 }>();
 const day = defineModel<number>("day", { required: true });
+
+// The server has no saved choice, so the browser's copy is read only once hydration is done.
+const showActivity = useLocalStorage("workflow-activity", false, { initOnMounted: true });
+
+// Hidden, the replay can't be seen, so the board returns to today rather than staying on a past day.
+watch(showActivity, (shown) => {
+    if (!shown) day.value = days - 1;
+});
 
 const { t } = useI18n();
 

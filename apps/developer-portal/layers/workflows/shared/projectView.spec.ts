@@ -222,46 +222,6 @@ describe("projectView", () => {
         expect(result.critical).toEqual(["b", "c", "d"]);
     });
 
-    it("puts an area ticket outside the milestone under To organise while the project runs", () => {
-        const stray = issue(7, [], { state: "open", reason: null });
-
-        expect(view({}, [], [stray]).unsorted).toEqual([
-            { issue: stray, reason: "noMilestone", detail: "" },
-        ]);
-    });
-
-    it("treats an area ticket outside the milestone as maintenance once everything on is delivered", () => {
-        const stray = open(7, []);
-        const delivered = [
-            issue(1, ["content-audit"]),
-            issue(2, ["article-page"]),
-            issue(3, ["search"]),
-        ];
-
-        expect(view({}, delivered, [stray]).unsorted).toEqual([]);
-    });
-
-    it("sends issues it can't place to the unsorted list, but not closed history on a dropped capability", () => {
-        const result = view({}, [
-            issue(1, []),
-            issue(2, ["nope"]),
-            issue(3, ["comments"], { state: "open", reason: null }),
-            issue(4, ["comments"]),
-        ]);
-
-        expect(
-            result.unsorted.map(({ issue: { number }, reason, detail }) => [
-                number,
-                reason,
-                detail,
-            ]),
-        ).toEqual([
-            [1, "noLabel", "cap:"],
-            [2, "unknown", "nope"],
-            [3, "off", ""],
-        ]);
-    });
-
     it("always counts a project's own extra capabilities", () => {
         const result = view(
             { extras: [{ id: "calculator", stage: "build", title: "Calculator" }] },
@@ -269,7 +229,6 @@ describe("projectView", () => {
         );
 
         expect(stateOf(result, "calculator")).toBe("done");
-        expect(result.unsorted).toEqual([]);
     });
 });
 
@@ -317,14 +276,6 @@ describe("groups", () => {
 
         expect(stateOf(result, "article-page")).toBe("can-file");
         expect(stateOf(result, "comments")).toBe("off");
-    });
-
-    it("sends a ticket labelled with a group to To organise, since a group holds no tickets", () => {
-        const result = groupedView({}, [issue(7, ["blog"], { state: "open", reason: null })]);
-
-        expect(result.unsorted.map(({ reason, detail }) => [reason, detail])).toEqual([
-            ["group", "blog"],
-        ]);
     });
 });
 

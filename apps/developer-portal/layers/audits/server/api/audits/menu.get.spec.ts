@@ -26,7 +26,6 @@ const page = (date: string, findings: AuditFinding[]): DocPage => ({
     decisionOutcome: null,
     decisionSupersededBy: null,
     audit: { scope: "@joinery/developer-portal", commit: "61b6f7f", findings },
-    brokenLinks: [],
 });
 
 let dir = "";

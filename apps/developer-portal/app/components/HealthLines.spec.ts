@@ -19,7 +19,6 @@ const LINES: HealthLine[] = [
         to: "/wiki",
         legend: false,
         parts: [],
-        note: "2 broken links",
     },
 ];
 
@@ -34,12 +33,11 @@ describe("HealthLines", () => {
         expect(figures[1]?.classes()).toContain("text-highlighted");
     });
 
-    it("draws a bar only for a line with parts, and its note when it has one", async () => {
+    it("draws a bar only for a line with parts", async () => {
         const wrapper = await mountSuspended(HealthLines, {
             props: { lines: LINES },
         });
 
         expect(wrapper.findAllComponents({ name: "SplitBar" })).toHaveLength(1);
-        expect(wrapper.text()).toContain("2 broken links");
     });
 });

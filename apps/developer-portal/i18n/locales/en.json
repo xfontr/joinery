@@ -366,7 +366,6 @@
         "search": "Search issues…"
     },
     "healthLines": {
-        "brokenLinks": "No broken links | {count} broken link | {count} broken links",
         "lines": {
             "advisories": "Advisories",
             "audits": "Audit findings open",
@@ -507,6 +506,7 @@
         "breadcrumb": "Breadcrumb",
         "wordmark": "joinery"
     },
+    "personalSiteLink": "Visitor site",
     "project": {
         "missing": {
             "description": "No collected project lives in a folder called {name}.",
@@ -619,7 +619,6 @@
         }
     },
     "projectsTile": {
-        "findings": "No invariant findings | {count} invariant finding | {count} invariant findings",
         "label": "Projects"
     },
     "projectsWelcome": {
@@ -691,7 +690,6 @@
         "items": {
             "advisories": "advisories",
             "advisoriesBadge": "{count} adv.",
-            "brokenLinks": "no broken links | {count} broken link | {count} broken links",
             "coverage": "coverage",
             "docs": "docs",
             "failed": "failed",
@@ -699,6 +697,7 @@
             "lines": "lines",
             "none": "none",
             "open": "open",
+            "pages": "pages",
             "tooling": "tooling",
             "toolingBadge": "{count} fail",
             "worst": "worst {severity}"
@@ -905,7 +904,6 @@
             "warning": "Meant for AI-run projects: a ticket bundles several blocks, so no one reviews each block's code by hand."
         }
     },
-    "personalSiteLink": "Visitor site",
     "wiki": {
         "count": "{count} pages, read in place",
         "groups": {
@@ -951,13 +949,9 @@
         },
         "title": "Wiki"
     },
-    "wikiBroken": {
-        "title": "Broken relative links"
-    },
     "wikiPage": {
         "after": "Next in {group}",
         "before": "Previous in {group}",
-        "broken": "This page links to something that is not there",
         "crumb": "wiki",
         "missing": {
             "description": "Nothing in the workspace matches {path}. The wiki links only to files that exist, so this is a hand-typed or stale URL.",
@@ -1048,7 +1042,6 @@
         "all": "All {count}",
         "empty": "Nothing open here.",
         "filters": {
-            "attention": "Attention",
             "audits": "Audits",
             "decisions": "Decisions",
             "issues": "Issues",
@@ -1059,9 +1052,6 @@
         "reading": "Reading open issues…",
         "rows": {
             "auditOpen": "{open} of {total} open",
-            "brokenLinks": "{count} broken",
-            "invariant": "invariant",
-            "link": "link",
             "release": "{version} · unreleased",
             "toImplement": "to implement",
             "unversioned": "unversioned"
@@ -1087,19 +1077,10 @@
         "blank": {
             "description": "Ask Claude to draft its map: it asks what the project is, writes the blocks under {extras} in {file}, and they show here for you to check before anything is filed.",
             "title": "This project has no blocks yet"
-        },
-        "problems": "This project's files have problems",
-        "reasons": {
-            "group": "{detail} is a group; label one of its capabilities instead",
-            "noLabel": "no {detail} label",
-            "noMilestone": "not in the milestone",
-            "off": "its capability is switched off",
-            "unknown": "unknown capability {detail}"
-        },
-        "unsorted": {
-            "lead": "Not placed yet. Give each one the milestone and a {label} label on GitHub, then sync again.",
-            "title": "{count} to organise"
         }
+    },
+    "workflowBoard": {
+        "activity": "Activity"
     },
     "workflowCapabilityDetail": {
         "activity": {
@@ -1221,9 +1202,6 @@
         "points": "{points} SP",
         "remove": "Remove {page}",
         "rename": "Rename {page}"
-    },
-    "workflowProblems": {
-        "title": "{count} workflow file problems"
     },
     "workflowProjects": {
         "empty": "No project under {folder} yet.",

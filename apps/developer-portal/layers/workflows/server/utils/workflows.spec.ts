@@ -381,7 +381,7 @@ describe("loadWorkflows", () => {
 
         expect(problems).toEqual([]);
         expect(projects[0]?.syncedAt).toBe("2026-11-09T00:00:00Z");
-        expect(projects[0]?.unsorted.map(({ issue }) => issue.number)).toEqual([7]);
+        expect(projects[0]?.snapshot?.issues.map(({ number }) => number)).toEqual([7]);
     });
 
     it("reports a snapshot that isn't JSON instead of blanking every project", async () => {

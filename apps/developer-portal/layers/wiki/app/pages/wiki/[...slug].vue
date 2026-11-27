@@ -31,15 +31,6 @@
                     />
 
                     <template v-else>
-                        <UAlert
-                            v-if="brokenLinks"
-                            color="warning"
-                            variant="subtle"
-                            icon="i-lucide-link-2-off"
-                            :title="$t('wikiPage.broken')"
-                            :description="brokenLinks"
-                            :ui="{ description: 'text-xs font-mono' }"
-                        />
                         <UPageBody class="mt-0">
                             <ContentRenderer :value="page" />
                         </UPageBody>
@@ -55,8 +46,7 @@
 </template>
 
 <script setup lang="ts">
-const { path, sections, page, here, crumbs, around, meta, source, brokenLinks, ready } =
-    useWikiPage();
+const { path, sections, page, here, crumbs, around, meta, source, ready } = useWikiPage();
 
 const { t } = useI18n();
 

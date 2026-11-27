@@ -26,9 +26,10 @@ See [README.md](./README.md) for what each page reads, the snapshot and the depl
   [`conventions.md`](../../docs/concepts/conventions.md).
 - **No value is chosen outside the `design` layer.** The [README](./README.md#design-system) lists
   the tokens and classes; a new size or colour is a token there, not a bracketed class.
-- **`tools/lib/invariants.ts` reads `pnpm invariants:check --json`** and adds the audit, decision
-  and workflow shape checks. A repo rule belongs in the
-  [invariants gate](../../infrastructure/scripts/src/invariants/README.md), not here.
+- **A page never shows the repo as broken.** A broken link or malformed doc fails
+  [`pnpm docs:verify`](./README.md#pnpm-docsverify) before it is pushed, so no page needs a
+  warning for it. A repo rule belongs in that gate or the
+  [invariants gate](../../infrastructure/scripts/src/invariants/README.md), not in a page.
 - **Visitor pages and their copy live in [`apps/portfolio`](../portfolio/README.md).** This app
   is the developer view only; a figure the visitor side needs goes in the
   [`/embed/data.json`](./README.md#the-payload) payload, never in a page here or an import there.

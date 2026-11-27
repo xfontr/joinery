@@ -18,7 +18,6 @@ const page = (path: string, overrides: Partial<DocPage> = {}): DocPage => ({
     decisionOutcome: "accepted",
     decisionSupersededBy: null,
     audit: null,
-    brokenLinks: [],
     ...overrides,
 });
 

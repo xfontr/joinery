@@ -1,7 +1,6 @@
 # 🤖 @joinery/scripts
 
-The repo's CLI toolbox: dev startup, issue workflows, doc checks and repo gates. Nothing imports
-it; every script is run by hand, a hook or CI.
+The repo's CLI scripts: dev startup, issues, doc checks and gates.
 
 ⚠️ This is a mostly vibe-coded app, with low human intervention. Why: it's purely a DX tool. I do not
 have the resources to properly build and maintain this, so I went for the quick and easy shortcut.

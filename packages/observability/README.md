@@ -1,8 +1,6 @@
 # 📦 @joinery/observability
 
-Thin wrappers over Grafana Faro (browser) and the OpenTelemetry SDK (Node), so every app starts
-telemetry the same way. Both land in Grafana Cloud's Tempo, so a browser span and the server span it
-caused share a trace.
+Faro and OpenTelemetry setup, so browser and server spans share a trace.
 
 ```ts
 import { startWebTelemetry } from "@joinery/observability";

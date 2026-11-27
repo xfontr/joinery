@@ -29,7 +29,6 @@ const NEVER_COLLECTED = {
     worstSeverity: null,
     lineCoverage: null,
     docPages: null,
-    brokenLinks: 0,
     collected: null,
 } satisfies Badges;
 

@@ -34,6 +34,9 @@ jobs:
               env:
                   INVARIANTS_BASE: ${{ github.event_name == 'pull_request' && env.NX_BASE || '' }}
 
+            # Whole-repo too: a link breaks when its target moves, in a commit that touches no markdown
+            - run: pnpm docs:verify
+
             # Whole-workspace too: an export goes unused when its last importer changes, not itself
             - run: pnpm unused:check
 

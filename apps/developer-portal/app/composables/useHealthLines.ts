@@ -113,11 +113,10 @@ export const useHealthLines = () => {
             {
                 label: t("healthLines.lines.docs"),
                 value: docs ? String(docs.pages.length) : "—",
-                tone: docs?.brokenLinkCount ? "bad" : "neutral",
+                tone: "neutral",
                 to: "/wiki",
                 legend: false,
                 parts: [],
-                note: t("healthLines.brokenLinks", docs?.brokenLinkCount ?? 0),
             },
         ];
     });

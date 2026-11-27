@@ -1,7 +1,6 @@
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 import type { ProjectsArtifact } from "#layers/snapshot/shared/types/ProjectsArtifact.ts";
 import Page from "./graph.vue";
@@ -63,15 +62,10 @@ const MESSAGES = {
     },
 };
 
-const artifacts = vi.hoisted(() => ({
-    metrics: null as MetricsArtifact | null,
-    projects: null as ProjectsArtifact | null,
-}));
-mockNuxtImport("metricsArtifact", () => () => artifacts.metrics);
+const artifacts = vi.hoisted(() => ({ projects: null as ProjectsArtifact | null }));
 mockNuxtImport("projectsArtifact", () => () => artifacts.projects);
 
 beforeEach(() => {
-    artifacts.metrics = null;
     artifacts.projects = null;
 });
 
@@ -84,19 +78,8 @@ const node = (root: string, links: Partial<ProjectNode> = {}): ProjectNode => ({
     ...links,
 });
 
-const METRICS = {
-    generatedAt: "2026-11-01T00:00:00Z",
-    commit: "abc",
-    branch: "master",
-    projects: [],
-    invariantFindings: [],
-    conventionalCommitRate: null,
-    commitsSinceLastRelease: null,
-} satisfies MetricsArtifact;
-
-const serve = (projects: ProjectNode[], metrics: MetricsArtifact = METRICS) => {
+const serve = (projects: ProjectNode[]) => {
     artifacts.projects = { generatedAt: "2026-11-01T00:00:00Z", projects, retired: [] };
-    artifacts.metrics = metrics;
 };
 
 const group = (wrapper: VueWrapper, heading: string) =>
@@ -150,15 +133,5 @@ describe("graph page", () => {
         expect(group(wrapper, "Applications").textContent).not.toContain(
             "No projects in this group.",
         );
-    });
-
-    it("surfaces invariant findings", async () => {
-        serve([], {
-            ...METRICS,
-            invariantFindings: [{ id: "x", title: "Drift", detail: "Fix it", evidence: [] }],
-        });
-        const wrapper = await mount();
-
-        expect(wrapper.text()).toContain("Drift");
     });
 });

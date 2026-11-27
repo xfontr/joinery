@@ -18,7 +18,6 @@ const page = (number: string, status: DocPage["decisionStatus"]): DocPage => ({
     decisionOutcome: "accepted",
     decisionSupersededBy: null,
     audit: null,
-    brokenLinks: [],
 });
 
 let dir = "";
