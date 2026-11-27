@@ -18,10 +18,11 @@
 
         <ul class="cards grid gap-4">
             <li
-                v-for="capability in shown"
+                v-for="(capability, order) in shown"
                 :id="`block-${capability.id}`"
                 :key="capability.id"
                 class="flex scroll-mt-24"
+                :style="{ '--order': order }"
             >
                 <button
                     type="button"
@@ -188,5 +189,33 @@ const activityOf = computed(() =>
 <style scoped>
 .cards {
     grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .cards > li {
+        animation: settle 0.35s ease-out calc(var(--order) * 20ms) backwards;
+    }
+}
+
+/* An identical animation under a new name restarts, so the cards settle each time the pane joins
+   or leaves the layout, which only happens where it sits beside the board. */
+@media (min-width: 80rem) and (prefers-reduced-motion: no-preference) {
+    :root:has([data-pane]:not([data-floating])) .cards > li {
+        animation-name: settle-beside-pane;
+    }
+}
+
+@keyframes settle {
+    from {
+        opacity: 0.25;
+        transform: scale(0.96);
+    }
+}
+
+@keyframes settle-beside-pane {
+    from {
+        opacity: 0.25;
+        transform: scale(0.96);
+    }
 }
 </style>

@@ -1,6 +1,7 @@
 <template>
     <Transition
         :css="false"
+        @before-enter="float"
         @enter="(el, done) => meld(el, done, true)"
         @leave="(el, done) => meld(el, done, false)"
     >
@@ -37,10 +38,19 @@ const button = useTemplateRef<ComponentPublicInstance>("button");
 
 /** The curve of `page-reveal` in the design layer, so the pane opens the way the site switch does. */
 const MELD = { duration: 450, easing: "cubic-bezier(0.7, 0, 0.2, 1)" };
-const FLOATING = { position: "absolute", top: "0", right: "0", bottom: "0", "z-index": "10" };
+
+// Floating over the board while it melds, so the board never slides and only the circle moves.
+// Set before an opening pane is inserted, since one frame in the layout would rewrap the cards.
+const float = (wrapper: Element) => {
+    if (wrapper instanceof HTMLElement) wrapper.dataset.floating = "";
+};
+const land = (wrapper: Element) => {
+    if (wrapper instanceof HTMLElement) delete wrapper.dataset.floating;
+};
 
 /** Grows the whole pane out of the button as a circle, or folds it back in. */
 const meld = (wrapper: Element, done: () => void, opening: boolean) => {
+    float(wrapper);
     const panel = wrapper.firstElementChild;
     const origin = (button.value?.$el as HTMLElement | undefined)?.getBoundingClientRect();
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -52,14 +62,11 @@ const meld = (wrapper: Element, done: () => void, opening: boolean) => {
         still ||
         getComputedStyle(wrapper).display === "none"
     ) {
+        land(wrapper);
         done();
         return;
     }
 
-    // Floating over the board while it melds, so the board never slides and only the circle moves.
-    for (const [property, value] of Object.entries(FLOATING)) {
-        wrapper.style.setProperty(property, value);
-    }
     const box = panel.getBoundingClientRect();
     const x = origin.left + origin.width / 2 - box.left;
     const y = origin.top + origin.height / 2 - box.top;
@@ -76,7 +83,8 @@ const meld = (wrapper: Element, done: () => void, opening: boolean) => {
     void melding.finished
         .catch(() => undefined)
         .then(() => {
-            for (const property of Object.keys(FLOATING)) wrapper.style.removeProperty(property);
+            // A folded pane stays afloat until Vue removes it; landing it would rewrap the cards.
+            if (opening) land(wrapper);
             done();
         });
 };

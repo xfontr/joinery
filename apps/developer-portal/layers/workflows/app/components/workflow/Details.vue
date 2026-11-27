@@ -1,5 +1,8 @@
 <template>
-    <div class="hidden w-88 shrink-0 justify-end overflow-hidden xl:flex">
+    <div
+        data-pane
+        class="hidden w-88 shrink-0 justify-end overflow-hidden data-floating:absolute data-floating:inset-y-0 data-floating:right-0 data-floating:z-10 xl:flex"
+    >
         <UDashboardPanel
             id="workflow-block"
             :default-size="22"
