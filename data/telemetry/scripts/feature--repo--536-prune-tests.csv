@@ -86,3 +86,6 @@ at,script,command,target,flags,area,caller,exit,outcome,error,ms
 2026-11-27,tasks,check,,,repo,claude-code,0,ok,,4862
 2026-11-27,tasks,unused:check,,outputStyle,repo,claude-code,0,ok,,1572
 2026-11-27,invariants,,,,repo,claude-code,0,ok,,234
+2026-11-27,map,,,check,repo,claude-code,0,ok,,215
+2026-11-27,tasks,check,,,repo,claude-code,1,finding,,95747
+2026-11-27,tasks,unused:check,,outputStyle,repo,claude-code,0,ok,,1559
