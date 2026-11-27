@@ -77,10 +77,10 @@ describe("WorkflowList", () => {
         wrapper.unmount();
     });
 
-    it("selects a block from a click anywhere on its row", async () => {
+    it("selects a block from its row's button", async () => {
         const wrapper = await mount();
 
-        await wrapper.find("tr[data-block='page'] td:last-child").trigger("click");
+        await wrapper.find("tr[data-block='page'] button").trigger("click");
 
         expect(wrapper.emitted("select")).toEqual([["page"]]);
     });

@@ -42,17 +42,16 @@
                         v-for="block in group.blocks"
                         :key="block.id"
                         :data-block="block.id"
-                        class="cursor-pointer"
+                        class="relative"
                         :class="block.id === selected && 'bg-elevated'"
                         :style="{ '--state': capabilityColor(block.state) }"
-                        @click="emit('select', block.id)"
                     >
                         <td>
                             <button
                                 type="button"
-                                class="flex items-center gap-2 text-left font-medium text-highlighted"
+                                class="flex cursor-pointer items-center gap-2 text-left font-medium text-highlighted after:absolute after:inset-0"
                                 :aria-pressed="block.id === selected"
-                                @click.stop="emit('select', block.id)"
+                                @click="emit('select', block.id)"
                             >
                                 <span
                                     class="size-2.5 shrink-0 rounded-xs bg-(--state)"
@@ -70,7 +69,8 @@
                             {{ $t(`workflows.capabilityState.${block.state}`) }}
                         </td>
                         <td class="hidden md:table-cell">
-                            <span class="flex flex-wrap gap-1">
+                            <!-- Above the row's stretched button, so each dot keeps its tooltip -->
+                            <span class="relative flex flex-wrap gap-1">
                                 <span
                                     v-for="issue in block.issues"
                                     :key="issue.number"
