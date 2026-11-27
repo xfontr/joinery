@@ -50,7 +50,7 @@ import {
     formatMs,
     localBuildTimes,
     type BuildTimeRow,
-} from "#layers/telemetry/shared/usageView.ts";
+} from "#layers/telemetry/app/utils/usageView.ts";
 
 interface Props {
     usage: Pick<UsageArtifact, "scripts" | "tasks" | "ci">;

@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
-import { failureCauseRows } from "#layers/telemetry/shared/usageView.ts";
+import { failureCauseRows } from "#layers/telemetry/app/utils/usageView.ts";
 
 interface Props {
     usage: Pick<UsageArtifact, "scripts">;

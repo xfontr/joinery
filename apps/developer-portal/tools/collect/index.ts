@@ -121,7 +121,7 @@ const main = async (): Promise<void> => {
         (value) => `${value.advisories.length} advisories, ${value.outdated?.length ?? 0} outdated`,
     );
 
-    const docs = await step(
+    await step(
         run,
         "docs",
         () => collectDocs(generatedAt),
@@ -136,7 +136,7 @@ const main = async (): Promise<void> => {
             `${Object.values(value.scripts).reduce((sum, item) => sum + item.runs, 0)} runs across ${Object.keys(value.scripts).length} scripts`,
     );
 
-    await write("badges", toBadges({ deps, coverage, docs, metrics }));
+    await write("badges", toBadges({ deps, coverage, metrics }));
     await writeManifest();
 
     print(`\nSnapshot written to ${SNAPSHOT_DIR}`);

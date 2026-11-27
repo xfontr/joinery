@@ -102,7 +102,7 @@ import {
     scriptRows,
     shownDays,
     sumDays,
-} from "#layers/telemetry/shared/usageView.ts";
+} from "#layers/telemetry/app/utils/usageView.ts";
 
 interface Props {
     usage: Omit<UsageArtifact, "lint">;

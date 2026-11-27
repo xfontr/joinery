@@ -132,10 +132,8 @@ const {
     public: { repoUrl },
 } = useRuntimeConfig();
 
-const { figures, collected, ready } = useShellFigures();
+const { figures, collected } = useShellFigures();
 const { apps, menus, items: rail } = useRailEntries(figures);
 const statusItems = useStatusItems(figures);
 const search = useShellSearch(apps, menus.projects);
-
-await ready;
 </script>

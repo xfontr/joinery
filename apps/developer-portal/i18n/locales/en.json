@@ -691,15 +691,8 @@
             "advisories": "advisories",
             "advisoriesBadge": "{count} adv.",
             "coverage": "coverage",
-            "docs": "docs",
-            "failed": "failed",
-            "issues": "issues",
             "lines": "lines",
             "none": "none",
-            "open": "open",
-            "pages": "pages",
-            "tooling": "tooling",
-            "toolingBadge": "{count} fail",
             "worst": "worst {severity}"
         },
         "label": "Status",
@@ -1026,7 +1019,7 @@
         }
     },
     "wizardReview": {
-        "graph": "Dependency graph"
+        "graph": "Dependency map"
     },
     "wizardSummary": {
         "noTemplate": "No template",
@@ -1066,11 +1059,9 @@
         "settings": "Settings"
     },
     "workflowActivityStrip": {
-        "lastCommit": "Last commit {day}",
         "moved": "{count} capabilities | {count} capability | {count} capabilities",
         "noCommits": "No commits yet",
         "segment": "{stage} · {day} · {moved}",
-        "title": "Activity",
         "tooltip": "Capabilities moved per day, from commits tagged with a ticket number"
     },
     "workflowAlerts": {
@@ -1079,8 +1070,19 @@
             "title": "This project has no blocks yet"
         }
     },
+    "workflowBlock": {
+        "hide": "Hide the details"
+    },
     "workflowBoard": {
-        "activity": "Activity"
+        "activity": "Activity",
+        "mapHint": "Click an empty spot for the whole map",
+        "search": "Search blocks",
+        "view": "How to browse the blocks",
+        "views": {
+            "cards": "Cards",
+            "list": "List",
+            "map": "Map"
+        }
     },
     "workflowCapabilityDetail": {
         "activity": {
@@ -1145,11 +1147,10 @@
         "points": "{points} SP"
     },
     "workflowGraph": {
-        "details": "Details for {title}",
         "exitFull": "Exit full screen",
-        "fit": "Fit the selected path",
+        "fit": "Frame the selected block",
         "full": "Full screen",
-        "label": "Dependency graph",
+        "label": "Dependency map",
         "node": "{title}, {state}",
         "relation": {
             "needed": "needed",
@@ -1157,11 +1158,6 @@
         },
         "zoomIn": "Zoom in",
         "zoomOut": "Zoom out"
-    },
-    "workflowGraphSection": {
-        "hint": "Click an empty spot for the whole map",
-        "title": "Dependency graph",
-        "titleSelected": "Dependency graph · {title}"
     },
     "workflowHomePanel": {
         "meta": "Projects working through their map",
@@ -1181,6 +1177,16 @@
         "done": "Everything switched on is done.",
         "none": "No blocks yet.",
         "unblocks": "unblocks {count}"
+    },
+    "workflowList": {
+        "columns": {
+            "block": "Block",
+            "points": "SP",
+            "state": "State",
+            "tickets": "Tickets",
+            "unblocks": "Unblocks"
+        },
+        "none": "No block matches “{term}”."
     },
     "workflowNew": {
         "cancel": "Cancel",
@@ -1202,6 +1208,9 @@
         "points": "{points} SP",
         "remove": "Remove {page}",
         "rename": "Rename {page}"
+    },
+    "workflowPane": {
+        "show": "Show the block's details"
     },
     "workflowProjects": {
         "empty": "No project under {folder} yet.",
@@ -1228,7 +1237,6 @@
     },
     "workflowStageCards": {
         "activity": "Active on {days} days, last on {day}",
-        "details": "Details for {title}",
         "dot": "#{number} {title} · {status}",
         "points": "{points} SP",
         "progress": "{done} of {total} · {points}",

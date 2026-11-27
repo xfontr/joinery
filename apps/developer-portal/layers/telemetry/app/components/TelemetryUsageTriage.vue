@@ -62,7 +62,7 @@ import {
     scriptRows,
     type CallerMix,
     type FixKind,
-} from "#layers/telemetry/shared/usageView.ts";
+} from "#layers/telemetry/app/utils/usageView.ts";
 
 interface Props {
     usage: UsageArtifact;

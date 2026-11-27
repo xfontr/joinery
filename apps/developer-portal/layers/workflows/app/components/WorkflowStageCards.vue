@@ -21,11 +21,11 @@
                 v-for="capability in shown"
                 :id="`block-${capability.id}`"
                 :key="capability.id"
-                class="relative flex scroll-mt-24"
+                class="flex scroll-mt-24"
             >
                 <button
                     type="button"
-                    class="flex flex-1 flex-col gap-1 border bg-default py-3 pr-10 pl-4 text-left transition-colors hover:bg-elevated"
+                    class="flex flex-1 flex-col gap-1 border bg-default px-4 py-3 text-left transition-colors hover:bg-elevated"
                     :class="[
                         capability.id === selected ? 'border-inverted' : 'border-default',
                         activity && 'min-h-24',
@@ -59,7 +59,7 @@
                     </span>
                     <span
                         v-if="capability.issues.length > 0 || activityOf[capability.id]?.weeks"
-                        class="mt-auto -mr-6 flex flex-wrap items-end gap-1.5 pt-2"
+                        class="mt-auto flex flex-wrap items-end gap-1.5 pt-2"
                     >
                         <span v-if="capability.issues.length > 0" class="sr-only">{{
                             ticketSummary(capability.issues)
@@ -99,15 +99,6 @@
                         />
                     </span>
                 </button>
-                <UButton
-                    icon="i-lucide-info"
-                    color="neutral"
-                    variant="ghost"
-                    size="xs"
-                    class="absolute top-2 right-2"
-                    :aria-label="$t('workflowStageCards.details', { title: capability.title })"
-                    @click="emit('details', capability.id)"
-                />
             </li>
         </ul>
     </section>
@@ -134,7 +125,7 @@ interface Props {
 }
 
 const { stage, index, selected = null, activity = null, activityPeak = 1 } = defineProps<Props>();
-const emit = defineEmits<{ select: [capability: string]; details: [capability: string] }>();
+const emit = defineEmits<{ select: [capability: string] }>();
 
 /** Past this many tickets the dots stack in two rows, so an activity line keeps their row. */
 const TWO_ROWS_FROM = 5;

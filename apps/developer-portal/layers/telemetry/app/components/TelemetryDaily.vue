@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { dailyTotals, scriptRows, shownDays } from "#layers/telemetry/shared/usageView.ts";
+import { dailyTotals, scriptRows, shownDays } from "#layers/telemetry/app/utils/usageView.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 
 interface Props {

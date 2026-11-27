@@ -2,8 +2,8 @@ import type { DayUsage } from "#layers/snapshot/shared/types/DayUsage.ts";
 import type { Durations } from "#layers/snapshot/shared/types/Durations.ts";
 import type { LintUsage } from "#layers/snapshot/shared/types/LintUsage.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
-import { FOUGHT_DISABLES, NOISY_SHARE } from "./lintUsage.ts";
-import { FAILING_RATE, MIN_RUNS, windowStart } from "./usage.ts";
+import { FOUGHT_DISABLES, NOISY_SHARE } from "#layers/telemetry/shared/lintUsage.ts";
+import { FAILING_RATE, MIN_RUNS, windowStart } from "#layers/telemetry/shared/usage.ts";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

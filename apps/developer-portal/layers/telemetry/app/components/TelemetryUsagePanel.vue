@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { WINDOW_DAYS } from "#layers/telemetry/shared/usage.ts";
-import { isFailing, scriptRows, sumDays } from "#layers/telemetry/shared/usageView.ts";
+import { isFailing, scriptRows, sumDays } from "#layers/telemetry/app/utils/usageView.ts";
 
 const { t } = useI18n();
 

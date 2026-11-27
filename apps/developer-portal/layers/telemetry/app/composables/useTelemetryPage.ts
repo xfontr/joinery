@@ -4,7 +4,7 @@ import {
     isFailing,
     scriptRows,
     sumDays,
-} from "#layers/telemetry/shared/usageView.ts";
+} from "#layers/telemetry/app/utils/usageView.ts";
 import type { PageFact } from "~/types/PageFact";
 
 /** The usage snapshot and the header facts drawn from it. */

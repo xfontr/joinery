@@ -80,7 +80,7 @@
 
 <script setup lang="ts">
 import { FOUGHT_DISABLES, neverFired } from "#layers/telemetry/shared/lintUsage.ts";
-import { lintTable } from "#layers/telemetry/shared/usageView.ts";
+import { lintTable } from "#layers/telemetry/app/utils/usageView.ts";
 import type { LintUsage } from "#layers/snapshot/shared/types/LintUsage.ts";
 
 interface Props {

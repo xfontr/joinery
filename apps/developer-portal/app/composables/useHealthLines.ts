@@ -1,7 +1,7 @@
 import { countAll } from "#layers/audits/shared/auditReports.ts";
 import { countByStatus } from "#layers/decisions/shared/decisionReports.ts";
 import { worstSeverity } from "#layers/snapshot/shared/deps.ts";
-import { isFailing, scriptRows, sumDays } from "#layers/telemetry/shared/usageView.ts";
+import { isFailing, scriptRows, sumDays } from "#layers/telemetry/app/utils/usageView.ts";
 import type { HealthLine } from "~/types/HealthLine";
 
 const FULL = 100;

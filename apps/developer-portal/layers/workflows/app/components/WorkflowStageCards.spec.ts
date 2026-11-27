@@ -5,7 +5,6 @@ import WorkflowStageCards from "./WorkflowStageCards.vue";
 
 const MESSAGES = {
     workflowStageCards: {
-        details: "Details for {title}",
         dot: "#{number} {title} · {status}",
         points: "{points} SP",
         progress: "{done} of {total} · {points}",
@@ -145,12 +144,5 @@ describe("WorkflowStageCards", () => {
         expect(page!.attributes("aria-pressed")).toBe("true");
         await kit!.trigger("click");
         expect(wrapper.emitted("select")).toEqual([["kit"]]);
-    });
-
-    it("asks for a block's details from its info button without needing it selected first", async () => {
-        const wrapper = await mount("page");
-
-        await wrapper.find("button[aria-label='Details for Kit']").trigger("click");
-        expect(wrapper.emitted("details")).toEqual([["kit"]]);
     });
 });

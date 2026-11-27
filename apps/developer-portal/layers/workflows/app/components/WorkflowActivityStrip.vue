@@ -1,11 +1,10 @@
 <template>
     <figure class="flex max-w-sm flex-col gap-1">
         <figcaption
-            class="flex flex-wrap items-baseline justify-between gap-x-4 text-xs text-dimmed"
+            class="self-end text-xs text-dimmed tabular-nums"
             :title="$t('workflowActivityStrip.tooltip')"
         >
-            <span class="font-semibold text-muted">{{ $t("workflowActivityStrip.title") }}</span>
-            <span class="tabular-nums">{{ lastCommit }}</span>
+            {{ lastCommit }}
         </figcaption>
 
         <div ref="track" class="scrollbar-none overflow-x-auto">
@@ -61,9 +60,7 @@ watch(
 );
 
 const lastCommit = computed(() =>
-    activity.lastDay
-        ? t("workflowActivityStrip.lastCommit", { day: calendarDay(activity.lastDay) })
-        : t("workflowActivityStrip.noCommits"),
+    activity.lastDay ? calendarDay(activity.lastDay) : t("workflowActivityStrip.noCommits"),
 );
 
 /** A month gets a label on its first day, or at the start when at least a week of it is shown. */

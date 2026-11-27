@@ -6,6 +6,7 @@
             class="group touch-none overflow-hidden bg-default select-none"
             :class="[
                 expanded ? 'fixed inset-0 z-50 rounded-none' : 'relative h-144 rounded-xl',
+                expanded && $slots.aside && 'xl:right-88',
                 dragging ? 'cursor-grabbing' : 'cursor-grab',
             ]"
             :role="expanded ? 'dialog' : undefined"
@@ -76,7 +77,7 @@
                 >
                     <button
                         type="button"
-                        class="relative flex flex-1 flex-col justify-center gap-0.5 overflow-hidden rounded-xl border bg-default py-2 pr-9 pl-4 text-left"
+                        class="relative flex flex-1 flex-col justify-center gap-0.5 overflow-hidden rounded-xl border bg-default py-2 pr-3 pl-4 text-left"
                         :class="
                             node.id === focus
                                 ? 'border-inverted ring-2 ring-inverted'
@@ -113,15 +114,6 @@
                             >
                         </span>
                     </button>
-                    <UButton
-                        icon="i-lucide-info"
-                        color="neutral"
-                        variant="ghost"
-                        size="xs"
-                        class="absolute top-1/2 right-1.5 -translate-y-1/2 rounded-full"
-                        :aria-label="$t('workflowGraph.details', { title: node.capability.title })"
-                        @click="details(node.id)"
-                    />
                 </div>
             </div>
 
@@ -164,13 +156,20 @@
                 />
             </div>
         </div>
+        <aside
+            v-if="expanded && $slots.aside"
+            class="fixed inset-y-0 right-0 z-50 hidden w-88 overflow-y-auto border-s border-default bg-default xl:block"
+        >
+            <slot name="aside" />
+        </aside>
     </Teleport>
 </template>
 
 <script setup lang="ts">
 const { capabilities, stages, selected = null } = defineProps<Props>();
 
-const emit = defineEmits<{ select: [capability: string]; details: [capability: string] }>();
+const emit = defineEmits<{ select: [capability: string]; clear: [] }>();
+defineSlots<{ aside?: () => unknown }>();
 
 defineOptions({ inheritAttrs: false });
 
@@ -186,13 +185,7 @@ interface Props {
 const uid = useId();
 const viewport = ref<HTMLElement | null>(null);
 
-/** The whole map, without leaving the page's selection, which the cards and skyline still show. */
-const overview = ref(false);
-const focus = computed(() => (overview.value ? null : selected));
-watch(
-    () => selected,
-    () => (overview.value = false),
-);
+const focus = computed(() => selected);
 
 const stageColors = computed(() =>
     Object.fromEntries(stages.map((stage, index) => [stage.id, stageColor(index)])),
@@ -230,22 +223,22 @@ const orderedEdges = computed(() =>
 );
 
 const { camera, easing, dragging, wasDragged, fit, zoomBy, wheel, press, move, release } =
-    useGraphCamera(viewport, () =>
-        layout.value.nodes.filter(({ id }) => relation.value[id] !== undefined),
-    );
+    useGraphCamera(viewport, () => {
+        const byId = new Map(layout.value.nodes.map((node) => [node.id, node]));
+        const anchor = focus.value ? byId.get(focus.value) : undefined;
+        if (!anchor) return { nodes: layout.value.nodes, anchor: null };
+
+        // The block and what it unblocks next; its whole chain can span most of the map.
+        const next = anchor.capability.unblocks.flatMap((id) => byId.get(id) ?? []);
+        return { nodes: [anchor, ...next], anchor };
+    });
 
 const click = (id: string) => {
-    if (wasDragged()) return;
-    if (id === selected) overview.value = !overview.value;
-    emit("select", id);
+    if (!wasDragged()) emit("select", id);
 };
 
 const clickMap = (event: MouseEvent) => {
-    if (!wasDragged() && !(event.target as Element).closest("button")) overview.value = true;
-};
-
-const details = (id: string) => {
-    if (!wasDragged()) emit("details", id);
+    if (!wasDragged() && !(event.target as Element).closest("button")) emit("clear");
 };
 
 const expanded = ref(false);
@@ -253,7 +246,7 @@ defineShortcuts({ escape: { usingInput: true, handler: () => (expanded.value = f
 
 /** Full screen claims Escape to close, so only the inline map treats it as a click on empty space. */
 const keydownMap = (event: KeyboardEvent) => {
-    if (event.key === "Escape" && !expanded.value) overview.value = true;
+    if (event.key === "Escape" && !expanded.value) emit("clear");
 };
 
 onMounted(() => fit(false));

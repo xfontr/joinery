@@ -1,3 +1,4 @@
+import { useMediaQuery } from "@vueuse/core";
 import type { SettledState } from "#layers/workflows/shared/workflows.ts";
 import { projectActivity } from "#layers/workflows/app/utils/workflowActivity.ts";
 
@@ -31,7 +32,7 @@ export const useWorkflowProject = () => {
     );
 
     const selection = useCapabilitySelection(view);
-    const { selected, select } = selection;
+    const { selected, select, clear } = selection;
 
     const settle = (settlement: { status: SettledState; note: string } | null) =>
         selected.value &&
@@ -43,10 +44,21 @@ export const useWorkflowProject = () => {
             note: settlement?.note ?? "",
         });
 
+    /** Tailwind's `xl`, where the block pane fits beside the board. */
+    const wide = useMediaQuery("(min-width: 80rem)");
     const detailsOpen = ref(false);
-    const openDetails = (capabilityId: string) => {
+    /** Whether the pane shows beside the board; hiding it keeps the selection. */
+    const paneShown = ref(true);
+    /** Picking the selected block again clears it; picking one from nothing always opens the pane. */
+    const pick = (capabilityId: string) => {
+        const clearing = capabilityId === selection.selectedId.value;
+        if (selection.selectedId.value === null) paneShown.value = true;
         select(capabilityId);
-        detailsOpen.value = true;
+        if (!wide.value) detailsOpen.value = !clearing;
+    };
+    const deselect = () => {
+        clear();
+        detailsOpen.value = false;
     };
 
     return {
@@ -60,8 +72,11 @@ export const useWorkflowProject = () => {
         selection,
         canSettle: computed(() => editable && isLatest.value),
         settle,
+        wide,
         detailsOpen,
-        openDetails,
+        pick,
+        deselect,
+        paneShown,
         ready: read,
     };
 };

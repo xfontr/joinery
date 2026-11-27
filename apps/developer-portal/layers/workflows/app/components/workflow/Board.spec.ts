@@ -20,7 +20,6 @@ const MESSAGES = {
         title: "{title} · {state}",
     },
     workflowStageCards: {
-        details: "Details for {title}",
         progress: "{done} of {total} · {points}",
         stagePoints: "{done}/{total} SP",
     },
@@ -92,11 +91,13 @@ const MOVED: ProjectActivity = {
 
 const ACTIVITY = "button:has(.i-lucide-chart-column), button:has([class*='chart-column'])";
 
-const mount = (days: number) => {
+const mount = (days: number, route?: string) => {
     if (!VIEW) throw new Error("the fixture project did not assemble");
     return mountSuspended(Board, {
+        route,
         props: {
             stages: VIEW.stages,
+            capabilities: VIEW.capabilities,
             syncedStages: VIEW.stages,
             activeStage: VIEW.stages[0],
             activeIndex: 0,
@@ -115,16 +116,35 @@ beforeEach(() => {
 });
 
 describe("WorkflowBoard", () => {
-    it("scrolls to the picked block's card from the label under the skyline", async () => {
-        const scroll = vi.fn();
-        vi.spyOn(HTMLElement.prototype, "scrollIntoView").mockImplementation(scroll);
-        const wrapper = await mount(0);
+    it.each([
+        ["/workflows/blog", "WorkflowStageCards"],
+        ["/workflows/blog?view=list", "WorkflowList"],
+        ["/workflows/blog?view=map", "WorkflowGraph"],
+        ["/workflows/blog?view=nonsense", "WorkflowStageCards"],
+    ])(
+        "opens %s on the view it names, so a pasted link shows what was copied",
+        async (route, view) => {
+            const wrapper = await mount(0, route);
+
+            expect(wrapper.findComponent({ name: view }).exists()).toBe(true);
+        },
+    );
+
+    it("scrolls the list to a stage clicked in the skyline", async () => {
+        const scrolled: string[] = [];
+        vi.spyOn(HTMLElement.prototype, "scrollIntoView").mockImplementation(function (
+            this: HTMLElement,
+        ) {
+            scrolled.push(this.dataset.stage ?? "");
+        });
+        const wrapper = await mount(0, "/workflows/blog?view=list");
 
         await wrapper
-            .find("button:has(.i-lucide-arrow-down), button:has([class*='arrow-down'])")
+            .findAll("ol button")
+            .find((button) => button.text().includes("Build"))!
             .trigger("click");
 
-        expect(scroll).toHaveBeenCalledOnce();
+        expect(scrolled).toContain("build");
     });
 
     it("offers the replay only when the snapshot covers a day", async () => {
@@ -140,6 +160,7 @@ describe("WorkflowBoard", () => {
         const wrapper = await mountSuspended(Board, {
             props: {
                 stages: TICKETED.stages,
+                capabilities: TICKETED.capabilities,
                 syncedStages: TICKETED.stages,
                 activeStage: TICKETED.stages[0],
                 activeIndex: 0,

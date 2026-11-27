@@ -1,6 +1,6 @@
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it } from "vitest";
-import type { Quadrants } from "#layers/telemetry/shared/usageView.ts";
+import type { Quadrants } from "#layers/telemetry/app/utils/usageView.ts";
 import TelemetryQuadrantChart from "./TelemetryQuadrantChart.vue";
 
 const axis = { ticks: [{ label: "10", at: 50 }], threshold: 40 };

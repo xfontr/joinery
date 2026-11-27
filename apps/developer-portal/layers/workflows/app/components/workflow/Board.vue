@@ -1,5 +1,5 @@
 <template>
-    <div ref="root" class="flex flex-col gap-6">
+    <div class="flex flex-col gap-6">
         <div>
             <div class="mb-4 border-b border-default pb-3">
                 <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -42,33 +42,65 @@
                 :stages
                 :selected="activeStage?.id ?? null"
                 :highlight="selected?.id ?? null"
-                @select-stage="emit('selectStage', $event)"
+                @select-stage="pickStage"
                 @select="emit('select', $event)"
             />
-            <button
-                v-if="selected && picked"
-                type="button"
-                class="mt-3 flex max-w-full items-center gap-2 rounded-md px-1.5 py-0.5 text-left text-xs text-muted transition hover:bg-elevated hover:text-default"
-                :style="{ '--state': picked.color }"
-                @click="scrollToBlock(selected.id)"
-            >
-                <span class="size-2 shrink-0 rounded-xs bg-(--state)" aria-hidden="true" />
-                <span class="truncate font-semibold text-default">{{ selected.title }}</span>
-                <span class="shrink-0">{{ picked.state }}</span>
-                <UIcon name="i-lucide-arrow-down" class="size-3.5 shrink-0" />
-            </button>
         </div>
 
-        <WorkflowStageCards
-            v-if="activeStage"
-            :stage="activeStage"
-            :index="activeIndex"
-            :selected="selected?.id ?? null"
-            :activity="showActivity ? activity?.capabilities : null"
-            :activity-peak="activity?.peak"
-            @select="emit('select', $event)"
-            @details="emit('details', $event)"
-        />
+        <div class="flex flex-col gap-4">
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <UTabs
+                    v-model="view"
+                    :items="views"
+                    :content="false"
+                    :aria-label="$t('workflowBoard.view')"
+                    size="xs"
+                    color="neutral"
+                />
+                <div class="ml-auto flex min-w-0 items-center gap-3">
+                    <UInput
+                        v-if="view === 'list'"
+                        v-model="term"
+                        icon="i-lucide-search"
+                        :placeholder="$t('workflowBoard.search')"
+                        :aria-label="$t('workflowBoard.search')"
+                        size="sm"
+                        class="w-56"
+                    />
+                    <p v-else-if="view === 'map'" class="text-xs text-muted">
+                        {{ $t("workflowBoard.mapHint") }}
+                    </p>
+                </div>
+            </div>
+
+            <WorkflowStageCards
+                v-if="view === 'cards' && activeStage"
+                :stage="activeStage"
+                :index="activeIndex"
+                :selected="selected?.id ?? null"
+                :activity="showActivity ? activity?.capabilities : null"
+                :activity-peak="activity?.peak"
+                @select="emit('select', $event)"
+            />
+            <WorkflowList
+                v-else-if="view === 'list'"
+                ref="list"
+                :stages
+                :term
+                :selected="selected?.id ?? null"
+                @select="emit('select', $event)"
+            />
+            <WorkflowGraph
+                v-else-if="view === 'map'"
+                :capabilities
+                :stages
+                :selected="selected?.id ?? null"
+                @select="emit('select', $event)"
+                @clear="emit('clear')"
+            >
+                <template v-if="$slots.aside" #aside><slot name="aside" /></template>
+            </WorkflowGraph>
+        </div>
     </div>
 </template>
 
@@ -79,6 +111,8 @@ import type { ProjectActivity } from "#layers/workflows/app/utils/workflowActivi
 
 interface Props {
     stages: StageView[];
+    /** Every block in the project, which the map lays out. */
+    capabilities: CapabilityView[];
     /** The synced stages, which the activity strip reads whatever day is replayed. */
     syncedStages: StageView[];
     activeStage?: StageView;
@@ -90,15 +124,33 @@ interface Props {
     dayLabel: string;
 }
 
-const { stages, syncedStages, activeStage, activeIndex, selected, activity, days, dayLabel } =
-    defineProps<Props>();
+const {
+    stages,
+    capabilities,
+    syncedStages,
+    activeStage,
+    activeIndex,
+    selected,
+    activity,
+    days,
+    dayLabel,
+} = defineProps<Props>();
 const emit = defineEmits<{
     selectStage: [stage: string];
     select: [capability: string];
-    details: [capability: string];
+    clear: [];
 }>();
 const day = defineModel<number>("day", { required: true });
 
+defineSlots<{ summary?: () => unknown; aside?: () => unknown }>();
+
+const term = ref("");
+
+const list = useTemplateRef("list");
+const pickStage = (stage: string) => {
+    emit("selectStage", stage);
+    list.value?.showStage(stage);
+};
 // The server has no saved choice, so the browser's copy is read only once hydration is done.
 const showActivity = useLocalStorage("workflow-activity", false, { initOnMounted: true });
 
@@ -108,27 +160,20 @@ watch(showActivity, (shown) => {
 });
 
 const { t } = useI18n();
+const route = useRoute();
+const router = useRouter();
 
-const picked = computed(() =>
-    selected
-        ? {
-              color: capabilityColor(selected.state),
-              state: t(`workflows.capabilityState.${selected.state}`),
-          }
-        : null,
+const VIEWS = ["cards", "list", "map"] as const;
+const views = computed(() =>
+    VIEWS.map((value) => ({ value, label: t(`workflowBoard.views.${value}`) })),
 );
 
-const FLASH = [
-    { boxShadow: "0 0 0 0 var(--ui-text-highlighted)" },
-    { boxShadow: "0 0 0 3px var(--ui-text-highlighted)" },
-    { boxShadow: "0 0 0 0 var(--ui-text-highlighted)" },
-];
-
-const root = useTemplateRef("root");
-
-const scrollToBlock = (capability: string) => {
-    const card = root.value?.querySelector(`[id="block-${capability}"]`);
-    card?.scrollIntoView({ behavior: "smooth", block: "center" });
-    card?.animate(FLASH, { duration: 500, delay: 350, iterations: 2, easing: "ease-in-out" });
-};
+/** Kept in `?view=`, so a pasted link opens the view it was copied from. */
+const view = computed({
+    get: () => VIEWS.find((value) => value === route.query.view) ?? "cards",
+    set: (value: string) =>
+        void router.replace({
+            query: { ...route.query, view: value === "cards" ? undefined : value },
+        }),
+});
 </script>

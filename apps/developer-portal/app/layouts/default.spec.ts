@@ -4,7 +4,6 @@ import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Badges } from "#layers/snapshot/shared/types/Badges.ts";
 import type { MenuRow } from "~/types/MenuRow";
-import type { RailFigure } from "~/types/RailFigure";
 import type { SearchSection } from "~/utils/search";
 import Layout from "./default.vue";
 import en from "../../i18n/locales/en.json";
@@ -14,8 +13,6 @@ mockNuxtImport("queryCollectionSearchSections", () => search);
 
 const shell = vi.hoisted(() => ({ badges: null as Badges | null }));
 mockNuxtImport("shellBadges", () => () => shell.badges);
-
-const ISSUES_API = "https://api.github.com/repos/acme/repo/issues";
 
 const MENUS = [
     "/api/decisions/menu",
@@ -28,7 +25,6 @@ const NEVER_COLLECTED = {
     advisories: 0,
     worstSeverity: null,
     lineCoverage: null,
-    docPages: null,
     collected: null,
 } satisfies Badges;
 
@@ -36,12 +32,8 @@ const serve = ({
     badges = {} as Partial<Badges>,
     decisions = [] as MenuRow[],
     projects = [] as MenuRow[],
-    tooling = { value: "—", alert: false } as RailFigure,
-    issues = [] as unknown[],
 } = {}) => {
-    serveEndpoint(ISSUES_API, () => issues);
     shell.badges = { ...NEVER_COLLECTED, ...badges };
-    serveEndpoint("/api/telemetry/figure", () => tooling);
     const answers: Record<string, MenuRow[]> = {
         "/api/decisions/menu": decisions,
         "/api/projects/menu": projects,
@@ -50,7 +42,6 @@ const serve = ({
 };
 
 const open = async (route = "/") => {
-    clearNuxtData("issues");
     const wrapper = await mountSuspended(Layout, { route });
     await flushPromises();
     return wrapper;

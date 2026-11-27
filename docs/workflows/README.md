@@ -178,9 +178,12 @@ that are on and not skipped.
 
 ## The page
 
-A day-by-day replay from the first commit, the blocks left, stage cards, and a graph of what blocks
-what. **Settings** (features, ticket size, details, delete) writes the project file under `pnpm dev`
-and is read-only when deployed.
+A day-by-day replay from the first commit, the blocks left, and the blocks as stage cards, a list or
+a map of what blocks what. A click on a block shows it in a side pane, which folds into a corner
+button and grows back out of it; a second click or empty map space clears it. `?block=` and
+`?view=` keep both in the link.
+**Settings** (features, ticket size, details, delete) writes the project file under `pnpm dev` and
+is read-only when deployed.
 
 ## How a ticket finds its place
 
