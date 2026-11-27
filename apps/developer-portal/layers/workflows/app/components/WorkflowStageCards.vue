@@ -25,8 +25,11 @@
             >
                 <button
                     type="button"
-                    class="flex min-h-24 flex-1 flex-col gap-1 border bg-default py-3 pr-10 pl-4 text-left transition-colors hover:bg-elevated"
-                    :class="capability.id === selected ? 'border-inverted' : 'border-default'"
+                    class="flex flex-1 flex-col gap-1 border bg-default py-3 pr-10 pl-4 text-left transition-colors hover:bg-elevated"
+                    :class="[
+                        capability.id === selected ? 'border-inverted' : 'border-default',
+                        activity && 'min-h-24',
+                    ]"
                     :style="{ '--state': capabilityColor(capability.state) }"
                     :aria-pressed="capability.id === selected"
                     @click="emit('select', capability.id)"
@@ -42,8 +45,7 @@
                         {{ capability.title }}
                     </span>
                     <span class="flex items-center gap-1.5 text-xs">
-                        <span class="size-2 shrink-0 rounded-xs bg-(--state)" aria-hidden="true" />
-                        <span class="font-semibold text-default">
+                        <span class="font-semibold text-(--state)">
                             {{ $t(`workflows.capabilityState.${capability.state}`) }}
                         </span>
                         <span v-if="capability.points.total > 0" class="text-muted tabular-nums">
@@ -55,7 +57,10 @@
                             }}
                         </span>
                     </span>
-                    <span class="mt-auto -mr-6 flex flex-wrap items-end gap-1.5 pt-2">
+                    <span
+                        v-if="capability.issues.length > 0 || activityOf[capability.id]?.weeks"
+                        class="mt-auto -mr-6 flex flex-wrap items-end gap-1.5 pt-2"
+                    >
                         <span v-if="capability.issues.length > 0" class="sr-only">{{
                             ticketSummary(capability.issues)
                         }}</span>
@@ -64,9 +69,10 @@
                             aria-hidden="true"
                             class="gap-1.5"
                             :class="
-                                capability.issues.length > TWO_ROWS_FROM
+                                capability.issues.length > TWO_ROWS_FROM &&
+                                activityOf[capability.id]?.weeks
                                     ? 'grid grid-flow-col grid-rows-2'
-                                    : 'flex'
+                                    : 'flex flex-wrap'
                             "
                         >
                             <span
@@ -130,7 +136,7 @@ interface Props {
 const { stage, index, selected = null, activity = null, activityPeak = 1 } = defineProps<Props>();
 const emit = defineEmits<{ select: [capability: string]; details: [capability: string] }>();
 
-/** Past this many tickets the dots stack in two rows, so the activity line keeps their row. */
+/** Past this many tickets the dots stack in two rows, so an activity line keeps their row. */
 const TWO_ROWS_FROM = 5;
 
 const { t } = useI18n();

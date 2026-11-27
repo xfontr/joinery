@@ -64,7 +64,7 @@
             :stage="activeStage"
             :index="activeIndex"
             :selected="selected?.id ?? null"
-            :activity="activity?.capabilities"
+            :activity="showActivity ? activity?.capabilities : null"
             :activity-peak="activity?.peak"
             @select="emit('select', $event)"
             @details="emit('details', $event)"
