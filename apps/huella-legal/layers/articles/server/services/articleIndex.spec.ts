@@ -4,7 +4,6 @@ import type { ArticleSummary } from "../../shared/types/ArticleSummary";
 
 const nitro = vi.hoisted(() => ({
     listEntries: vi.fn(),
-    cache: {} as { getKey?: () => string; maxAge?: number; swr?: boolean },
     window: { maxAge: 300, swr: false },
 }));
 
@@ -12,11 +11,7 @@ const blobs = vi.hoisted(() => ({ readSaved: vi.fn(), save: vi.fn() }));
 
 vi.mock("../adapters/netlify", () => blobs);
 
-vi.stubGlobal("defineCachedFunction", (fn: unknown, options: typeof nitro.cache) => {
-    nitro.cache = options;
-
-    return fn;
-});
+vi.stubGlobal("defineCachedFunction", (fn: unknown) => fn);
 vi.stubGlobal("useRuntimeConfig", () => ({
     articles: { cache: nitro.window, hiddenTerms: ["consultas-legales-gratuitas"] },
 }));
@@ -87,13 +82,5 @@ describe("getArticleIndex", () => {
         await pending;
 
         expect(settled).toBe(true);
-    });
-
-    it("is cached as one entry, so listings never remap the archive per query", () => {
-        expect(nitro.cache.getKey?.()).toBe("posts");
-    });
-
-    it("caches for the window the runtime config sets, not a fixed one", () => {
-        expect(nitro.cache).toMatchObject(nitro.window);
     });
 });

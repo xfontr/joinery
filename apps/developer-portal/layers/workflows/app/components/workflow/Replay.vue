@@ -11,6 +11,7 @@
                 :max="lastDay"
                 size="xs"
                 class="flex-1"
+                :ui="{ thumb: 'cursor-pointer' }"
                 :aria-label="$t('workflowReplay.label')"
             />
             <UButton

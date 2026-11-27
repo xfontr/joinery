@@ -34,9 +34,16 @@
                 <slot name="title">
                     <h1 class="truncate text-2xl font-semibold text-highlighted">{{ title }}</h1>
                 </slot>
+                <p v-if="lead" class="mt-1 text-xs text-muted">{{ lead }}</p>
             </div>
-            <div v-if="$slots.actions" class="flex shrink-0 items-center gap-2 pb-1">
-                <slot name="actions" />
+            <div
+                v-if="$slots.actions || $slots.facts"
+                class="flex shrink-0 flex-col items-end gap-3 pb-1"
+            >
+                <div v-if="$slots.actions" class="flex items-center gap-2">
+                    <slot name="actions" />
+                </div>
+                <slot name="facts" />
             </div>
         </div>
 
@@ -54,12 +61,14 @@ import type { NavLink } from "~/types/NavLink";
 
 interface Props {
     title: string;
+    /** Where the page's figures come from, under the title. */
+    lead?: string;
     /** The steps below the app, the page's own last. */
     crumbs?: Crumb[];
     tabs?: PageTab[];
 }
 
-const { title, crumbs = [], tabs } = defineProps<Props>();
+const { title, lead = "", crumbs = [], tabs } = defineProps<Props>();
 
 const { nav }: { nav: Record<string, NavLink | undefined> } = useAppConfig();
 const route = useRoute();

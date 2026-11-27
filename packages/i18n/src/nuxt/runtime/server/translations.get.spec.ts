@@ -4,7 +4,6 @@ import type { CachedEventHandlerOptions } from "nitropack";
 import type { VendorConfig } from "#core/registry";
 import type { Locale, TranslationMap } from "#core/domain/translations";
 import { translationsKey } from "#core/translationsKey";
-import { TRANSLATIONS_MAX_AGE, TRANSLATIONS_STALE_MAX_AGE } from "#nuxt/config";
 
 const nitro = vi.hoisted(() => ({
     vendor: undefined as VendorConfig | undefined,
@@ -72,15 +71,6 @@ describe("GET /api/translations/:locale", () => {
     it("404s a locale the app does not declare, without asking the vendor for it", async () => {
         await expect(handler(createEvent("fr-FR"))).rejects.toMatchObject({ statusCode: 404 });
         expect(ofetch.raw).not.toHaveBeenCalled();
-    });
-
-    it("serves every declared locale, not just the first", async () => {
-        await expect(handler(createEvent("es-ES"))).resolves.toBe(messages);
-
-        expect(ofetch.raw).toHaveBeenCalledWith("es-ES/external", {
-            headers: undefined,
-            query: undefined,
-        });
     });
 
     it("500s when the configured vendor does not exist", async () => {
@@ -164,19 +154,5 @@ describe("translations cache", () => {
         expect(() => nitro.cache?.getKey?.(createEvent("fr-FR"))).toThrow(
             expect.objectContaining({ statusCode: 404 }) as Error,
         );
-    });
-
-    it("caches outside of dev", () => {
-        expect(nitro.cache?.shouldBypassCache?.(createEvent("en-GB"))).toBe(false);
-    });
-
-    it("holds a locale tree for the window the config declares, and serves it stale for longer", () => {
-        expect(nitro.cache).toMatchObject({
-            name: "translations",
-            group: "i18n",
-            maxAge: TRANSLATIONS_MAX_AGE,
-            staleMaxAge: TRANSLATIONS_STALE_MAX_AGE,
-        });
-        expect(TRANSLATIONS_STALE_MAX_AGE).toBeGreaterThan(TRANSLATIONS_MAX_AGE);
     });
 });

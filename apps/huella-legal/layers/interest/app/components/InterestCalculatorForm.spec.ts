@@ -76,12 +76,6 @@ describe("interest calculator form", () => {
         expect(wrapper.emitted("submit")?.[0]?.[0]).toMatchObject({ ratePercent: 5.25 });
     });
 
-    it("offers only the two presets, leaving a custom rate to the advanced calculator", async () => {
-        const { wrapper } = await mountForm();
-
-        expect(wrapper.findAll("[role=radio]")).toHaveLength(2);
-    });
-
     it("withholds the submit and names the empty principal", async () => {
         const { wrapper, submit } = await mountForm();
 

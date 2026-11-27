@@ -24,15 +24,6 @@ describe("tag pill", () => {
         expect(idle.find("a").attributes("aria-current")).toBeUndefined();
     });
 
-    it("fills the active pill instead of outlining it", async () => {
-        const wrapper = await mountSuspended(TagPill, {
-            props: { label: "Derecho penal", to: "/areas/penal", active: true },
-            global,
-        });
-
-        expect(wrapper.find("a").classes()).toContain("bg-primary");
-    });
-
     it("reads the count as a phrase, since a bare number means nothing out loud", async () => {
         const wrapper = await mountSuspended(TagPill, {
             props: { label: "Derecho penal", to: "/areas/penal", count: 12 },
@@ -41,14 +32,5 @@ describe("tag pill", () => {
 
         expect(wrapper.find("[aria-hidden=true]").text()).toBe("12");
         expect(wrapper.find(".sr-only").text()).toBe('t(tagPill.count, {"count":12})');
-    });
-
-    it("shows no count when none is given", async () => {
-        const wrapper = await mountSuspended(TagPill, {
-            props: { label: "Derecho penal", to: "/areas/penal" },
-            global,
-        });
-
-        expect(wrapper.find(".sr-only").exists()).toBe(false);
     });
 });

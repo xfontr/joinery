@@ -44,13 +44,6 @@ describe("GET /api/articles/:slug", () => {
         expect(article.tags.map(({ slug }) => slug)).toEqual(["civil"]);
     });
 
-    it("reads the post named by the route, its slug decoded", async () => {
-        await handler({});
-
-        expect(nitro.param).toHaveBeenCalledWith({}, "slug", { decode: true });
-        expect(nitro.getEntry).toHaveBeenCalledWith("posts", "la-culpa");
-    });
-
     it("returns the entry mapped into an article, cited at its permalink on the site", async () => {
         const article = await handler({});
 

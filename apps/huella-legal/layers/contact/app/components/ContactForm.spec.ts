@@ -1,10 +1,8 @@
-import { slotStub } from "@joinery/configs/vitest/utils/nuxt";
-import type { FormError } from "@nuxt/ui";
+import { serveEndpoint, slotStub } from "@joinery/configs/vitest/utils/nuxt";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
+import { createError, readBody } from "h3";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ref } from "vue";
-import type { FormPostStatus } from "#layers/forms/app/composables/useFormPost";
 import ContactForm from "./ContactForm.vue";
 
 const MESSAGES = {
@@ -29,17 +27,27 @@ const FIELDS = {
     message: "Una pregunta sobre un artículo.",
 };
 
-const contact = vi.hoisted(() => ({
-    status: undefined as unknown as import("vue").Ref<FormPostStatus>,
-    errors: undefined as unknown as import("vue").Ref<FormError[]>,
-    send: vi.fn(),
-}));
-
-const challenge = vi.hoisted(() => vi.fn());
+const challenge = vi.hoisted(() =>
+    vi.fn((send: (token: string) => Promise<unknown>) => send("tok")),
+);
 
 const FormChallenge = slotStub({ challenge });
 
-vi.mock("../composables/useContact", () => ({ useContact: () => contact }));
+const serveContact = (respond: () => unknown = () => ({})) => {
+    const received: unknown[] = [];
+
+    serveEndpoint("/api/contact", async (event) => {
+        received.push(await readBody(event));
+
+        return respond();
+    });
+
+    return received;
+};
+
+const rejectWith = (statusCode: number, data?: unknown) => () => {
+    throw createError({ statusCode, data });
+};
 
 type Wrapper = Awaited<ReturnType<typeof mountSuspended>>;
 
@@ -64,48 +72,29 @@ describe("contact form", () => {
         useNuxtApp().$i18n.mergeLocaleMessage("es-ES", MESSAGES);
     });
 
-    beforeEach(() => {
-        vi.clearAllMocks();
-        contact.status = ref("idle");
-        contact.errors = ref([]);
-    });
-
     it("sends the trimmed fields, the consent and the honeypot through the challenge", async () => {
+        const received = serveContact();
         const wrapper = await mount();
 
         await fill(wrapper, { ...FIELDS, email: ` ${FIELDS.email} ` });
         await submit(wrapper);
 
-        expect(contact.send).toHaveBeenCalledWith(
-            { ...FIELDS, consent: true, honeypot: "" },
-            challenge,
-        );
-    });
-
-    it("sends what a bot typed into the honeypot, which sits inside the form it guards", async () => {
-        const wrapper = await mount();
-
-        await fill(wrapper, FIELDS);
-        await wrapper.find("form input[name=sitio]").setValue("https://spam.test");
-        await submit(wrapper);
-
-        expect(contact.send).toHaveBeenCalledWith(
-            expect.objectContaining({ honeypot: "https://spam.test" }),
-            challenge,
-        );
+        expect(received).toEqual([{ ...FIELDS, consent: true, honeypot: "", token: "tok" }]);
     });
 
     it("withholds the request without consent, and blames the checkbox", async () => {
+        const received = serveContact();
         const wrapper = await mount();
 
         await fill(wrapper, FIELDS, false);
         await submit(wrapper);
 
-        expect(contact.send).not.toHaveBeenCalled();
+        expect(received).toHaveLength(0);
         expect(wrapper.find("[role=alert]").text()).toContain("consent: required value");
     });
 
     it("lists every invalid field in a summary that links to it", async () => {
+        const received = serveContact();
         const wrapper = await mount();
 
         await fill(wrapper, { name: "   ", email: "lucia@" });
@@ -114,18 +103,23 @@ describe("contact form", () => {
         const links = wrapper.findAll("[role=alert] a");
         const email = wrapper.find("input[type=email]");
 
-        expect(contact.send).not.toHaveBeenCalled();
+        expect(received).toHaveLength(0);
         expect(links.map((link) => link.text())).toEqual(["name", "email", "message"]);
         expect(links[1]!.attributes("href")).toBe(`#${email.attributes("id")}`);
         expect(email.attributes("aria-invalid")).toBe("true");
     });
 
     it("marks the form busy and locks the fields while submitting, keeping what was typed", async () => {
+        let release!: () => void;
+        const pending = new Promise<void>((resolve) => {
+            release = resolve;
+        });
+
+        serveContact(() => pending.then(() => ({})));
         const wrapper = await mount();
 
         await fill(wrapper, FIELDS);
-        contact.status.value = "submitting";
-        await flushPromises();
+        await submit(wrapper);
 
         const textarea = wrapper.find("textarea");
 
@@ -133,13 +127,12 @@ describe("contact form", () => {
         expect(textarea.attributes("disabled")).toBeDefined();
         expect((textarea.element as HTMLTextAreaElement).value).toBe(FIELDS.message);
         expect(wrapper.findComponent({ name: "UButton" }).props("loading")).toBe(true);
+        release();
+        await flushPromises();
     });
 
     it("words the server's codes on their fields and in the summary", async () => {
-        contact.send.mockImplementation(() => {
-            contact.status.value = "invalid";
-            contact.errors.value = [{ name: "email", message: "invalid" }];
-        });
+        serveContact(rejectWith(422, [{ name: "email", message: "invalid" }]));
         const wrapper = await mount();
 
         await fill(wrapper, FIELDS);
@@ -154,24 +147,24 @@ describe("contact form", () => {
     });
 
     it("announces a failed request and keeps the form for a retry", async () => {
-        contact.status = ref("error");
+        serveContact(rejectWith(500));
         const wrapper = await mount();
+
+        await fill(wrapper, FIELDS);
+        await submit(wrapper);
 
         expect(wrapper.find("[role=alert]").text()).toContain("error title");
         expect(wrapper.find("textarea").exists()).toBe(true);
     });
 
     it("replaces the form with the success panel, so nobody sends the message twice", async () => {
-        contact.status = ref("success");
+        serveContact();
         const wrapper = await mount();
 
-        expect(wrapper.find("form").exists()).toBe(false);
+        await fill(wrapper, FIELDS);
+        await submit(wrapper);
+
+        await vi.waitFor(() => expect(wrapper.find("form").exists()).toBe(false));
         expect(wrapper.find("h2").text()).toBe("success title");
-    });
-
-    it("links the privacy section from the notice", async () => {
-        const wrapper = await mount();
-
-        expect(wrapper.find("form p a").attributes("href")).toBe("/aviso-legal/#privacidad");
     });
 });

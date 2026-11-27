@@ -1,15 +1,16 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { ref } from "vue";
+import { serveEndpoint } from "@joinery/configs/vitest/utils/nuxt";
+import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import SearchDialog from "./Dialog.vue";
 
-mockNuxtImport("useSearchPreview", () => () => ({
-    home: ref(undefined),
-    search: ref(undefined),
-    pending: ref(false),
-}));
-
 const mounted: { unmount: () => void }[] = [];
+
+const EMPTY_HOME: Home = { latest: [], recent: [], theses: [], subjects: [], formats: [] };
+
+beforeEach(() => {
+    clearNuxtData();
+    serveEndpoint("/api/home", () => EMPTY_HOME);
+});
 
 const mountDialog = async () => {
     const wrapper = await mountSuspended(SearchDialog, {

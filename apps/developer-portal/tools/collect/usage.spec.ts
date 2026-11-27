@@ -12,10 +12,12 @@ const state = vi.hoisted(() => ({
 vi.mock("node:fs/promises", () => ({ readdir: state.readdir, readFile: state.readFile }));
 vi.mock("../lib/run.ts", () => ({ git: state.git }));
 vi.mock("../lib/lintRules.ts", () => ({ enabledRules: state.enabledRules }));
+vi.mock("./ciTimings.ts", () => ({ collectCiTimings: async () => null }));
 
 const NOW = "2026-11-09T00:00:00.000Z";
 const SCRIPT_HEADER = "at,script,command,target,flags,area,caller,tty,exit,ms";
 const LINT_HEADER = "at,rule,project,severity,fixable,caller";
+const TASK_HEADER = "at,run,trigger,hook,caller,area,project,target,cache,exit,ms,load";
 
 const dir = (name: string, directory = true) => ({ name, isDirectory: () => directory });
 
@@ -76,5 +78,12 @@ describe("collectUsage", () => {
         expect(state.enabledRules).toHaveBeenCalledWith(["src/cli.ts"]);
         expect(rules["no-console"]).toMatchObject({ enabled: true, hits: 1, disabled: 1 });
         expect(rules["no-eval"]).toMatchObject({ enabled: true, hits: 0 });
+    });
+
+    it("reads every branch's task log into per-target timings", async () => {
+        const line = "2026-11-09,a1b2c3d4,check,,human,repo,scripts,test,miss,0,8000,0.40";
+        state.files = { "tasks/feature--a--1-x.csv": `${TASK_HEADER}\n${line}\n${line}\n` };
+
+        expect((await collectUsage(NOW)).tasks?.test?.misses?.runs).toBe(2);
     });
 });

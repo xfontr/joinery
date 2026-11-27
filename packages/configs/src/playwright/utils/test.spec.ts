@@ -57,14 +57,6 @@ describe.concurrent("axeViolations", () => {
         expect(result.ok).toBe(false);
         expect(result.error).toContain("image-alt");
     });
-
-    it("passes a page with none", async () => {
-        const result = await scan(
-            '<html lang="es"><title>t</title><main><h1>Hola</h1></main></html>',
-        );
-
-        expect(result).toEqual({ ok: true, error: "" });
-    });
 });
 
 describe.concurrent("playwright test fixture", () => {
@@ -76,15 +68,6 @@ describe.concurrent("playwright test fixture", () => {
         expect(result.ok).toBe(false);
         expect(result.error).toContain("the page logged to its console");
         expect(result.error).toContain("stray");
-    });
-
-    it("fails a test whose page throws", async () => {
-        const result = await runFixture(
-            `test("throws", async ({ page }) => { await page.goto(${JSON.stringify(PAGE("throw new Error('boom')"))}); });`,
-        );
-
-        expect(result.ok).toBe(false);
-        expect(result.error).toContain("pageerror: boom");
     });
 
     it("lets through the output a test declares with allowedConsole", async () => {

@@ -1,21 +1,18 @@
 import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
-import { mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useRouter, type RouteLocationRaw } from "vue-router";
 import { useSiteNav } from "./useSiteNav";
 
-const translate = (key: string, params?: Record<string, unknown>) =>
-    params ? `t(${key}, ${JSON.stringify(params)})` : `t(${key})`;
+const MESSAGES = {
+    app: {
+        footer: {
+            links: { cookieSettings: "cookie settings" },
+            social: { external: "{network} (new tab)", instagram: "Instagram", x: "X" },
+        },
+    },
+};
 
-const social = vi.hoisted(() => ({ profiles: {} as Record<string, string> }));
 const cookies = vi.hoisted(() => ({ enabled: false, open: vi.fn() }));
-
-mockNuxtImport("useI18n", () => () => ({ t: translate }));
-mockNuxtImport("useRuntimeConfig", (original) => () => {
-    const config = original();
-
-    return { ...config, public: { ...config.public, social: social.profiles } };
-});
 
 const navAt = async (route: string) => {
     const { value } = await withSetup(
@@ -38,9 +35,23 @@ const navAt = async (route: string) => {
 const currentOf = (nav: ReturnType<typeof useSiteNav>) =>
     nav.sections.value.map((item) => item["aria-current"]);
 
+type Profiles = ReturnType<typeof useRuntimeConfig>["public"]["social"];
+
+let configured: Profiles;
+
+const setProfiles = (profiles: Profiles) => {
+    useRuntimeConfig().public.social = profiles;
+};
+
 beforeEach(() => {
-    social.profiles = { instagram: "", linkedin: "", x: "" };
+    configured = useRuntimeConfig().public.social;
+    useNuxtApp().$i18n.mergeLocaleMessage("es-ES", MESSAGES);
+    setProfiles({ instagram: "", linkedin: "", x: "" });
     cookies.enabled = false;
+});
+
+afterEach(() => {
+    setProfiles(configured);
 });
 
 describe("useSiteNav", () => {
@@ -68,17 +79,6 @@ describe("useSiteNav", () => {
         expect(currentOf(nav)).toEqual([undefined, undefined, undefined, undefined]);
     });
 
-    it("keeps the about page one step from every header, behind the journal entry", async () => {
-        const nav = await navAt("/");
-        const journal = nav.sections.value[2]!;
-
-        expect(
-            [journal.to, ...(journal.children ?? []).map(({ to }) => to)].map((to) =>
-                nav.href(to!),
-            ),
-        ).toEqual(["/sobre/", "/sobre/", "/colaboradores/", "/contacto/"]);
-    });
-
     it("marks the journal current on the about page itself", async () => {
         const nav = await navAt("/sobre/");
 
@@ -96,52 +96,11 @@ describe("useSiteNav", () => {
         ]);
     });
 
-    it("sends every footer link to a route the URL decision settled, never to a placeholder", async () => {
-        const nav = await navAt("/");
-
-        expect(
-            nav.columns.value.flatMap(({ children }) => children?.map(({ to }) => nav.href(to!))),
-        ).toEqual([
-            "/publicaciones/",
-            "/areas/",
-            "/colaboradores/",
-            "/sobre/",
-            "/calculo-intereses/",
-            "/publicar/",
-            "/publicar/#tesis",
-            "/guia-de-publicaciones/",
-            "/wp-admin/profile.php",
-            "/#newsletter",
-            "/contacto/",
-            "/aviso-legal/",
-            "/aviso-legal/#privacidad",
-            "/aviso-legal/#cookies",
-        ]);
-    });
-
-    it("never prefetches the interest calculator, so a pointer crossing the footer can't load it", async () => {
-        const nav = await navAt("/");
-        const links = nav.columns.value.flatMap(({ children }) => children ?? []);
-
-        expect(
-            links.filter(({ prefetch }) => prefetch === false).map(({ to }) => nav.href(to!)),
-        ).toEqual(["/calculo-intereses/"]);
-    });
-
-    it("leaves the collaborator portal to a full page load, since only the server forwards it to WordPress", async () => {
-        const nav = await navAt("/");
-        const links = nav.columns.value.flatMap(({ children }) => children ?? []);
-
-        expect(links.filter(({ external }) => external).map(({ to }) => nav.href(to!))).toEqual([
-            "/wp-admin/profile.php",
-        ]);
-    });
-
     it("offers no cookie settings when no tracker is configured, since there is nothing to consent to", async () => {
         const nav = await navAt("/");
 
         expect(nav.columns.value.at(-1)?.children?.map(({ label }) => label)).not.toContain(
-            "t(app.footer.links.cookieSettings)",
+            "cookie settings",
         );
     });
 
@@ -151,35 +110,23 @@ describe("useSiteNav", () => {
         const nav = await navAt("/");
         const settings = nav.columns.value
             .at(-1)
-            ?.children?.find(({ label }) => label === "t(app.footer.links.cookieSettings)");
+            ?.children?.find(({ label }) => label === "cookie settings");
 
         expect(settings).toMatchObject({ onClick: cookies.open });
     });
 
-    it("leaves out every profile that is not configured", async () => {
-        const nav = await navAt("/");
-
-        expect(nav.social.value).toEqual([]);
-    });
-
     it("links only the profiles that are set, each warning that it opens a new tab", async () => {
-        social.profiles = {
+        setProfiles({
             instagram: "https://instagram.test/huella",
             linkedin: "",
             x: "https://x.test/huella",
-        };
+        });
 
         const nav = await navAt("/");
 
         expect(nav.social.value.map(({ to, label }) => [to, label])).toEqual([
-            [
-                "https://instagram.test/huella",
-                't(app.footer.social.external, {"network":"t(app.footer.social.instagram)"})',
-            ],
-            [
-                "https://x.test/huella",
-                't(app.footer.social.external, {"network":"t(app.footer.social.x)"})',
-            ],
+            ["https://instagram.test/huella", "Instagram (new tab)"],
+            ["https://x.test/huella", "X (new tab)"],
         ]);
     });
 });

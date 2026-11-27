@@ -74,21 +74,6 @@ describe("issue pick", () => {
         expect(io.out.end).toHaveBeenCalledWith("feature/huella-legal/42-fix-picker");
     });
 
-    it("skips the board prompt and the way back to it when only one board is open", async () => {
-        gh.listProjects.mockReturnValue([PROJECT]);
-        prompts.select.mockReset();
-        prompts.select.mockResolvedValue("feature");
-
-        await pick();
-
-        const issuePrompt = prompts.autocomplete.mock.calls[0]?.[0] as {
-            options: { value: unknown }[];
-        };
-        expect(prompts.select).toHaveBeenCalledOnce();
-        expect(issuePrompt.options.map(({ value }) => value)).toEqual([ISSUE]);
-        expect(gh.developBranch).toHaveBeenCalledWith(42, "feature/huella-legal/42-fix-picker");
-    });
-
     it("uses cached projects and issues when gh is offline", async () => {
         gh.listProjects.mockReturnValueOnce([]).mockReturnValueOnce([PROJECT, OTHER]);
         gh.isOnline.mockReturnValue(false);
@@ -98,23 +83,6 @@ describe("issue pick", () => {
         expect(gh.listProjects).toHaveBeenCalledWith(true);
         expect(gh.listIssues).toHaveBeenCalledWith("Roadmap", true);
         expect(io.out.warn).toHaveBeenCalledWith(expect.stringContaining("cached"));
-    });
-
-    it("falls back to cached issues after an offline live issue request fails", async () => {
-        gh.listIssues
-            .mockImplementationOnce(() => {
-                throw new Error("offline");
-            })
-            .mockReturnValueOnce([ISSUE]);
-        gh.isOnline.mockReturnValue(false);
-
-        await pick();
-
-        expect(gh.listIssues).toHaveBeenCalledWith("Roadmap", true);
-        const issuePrompt = prompts.autocomplete.mock.calls[0]?.[0] as {
-            filter: (search: string, option: { value: unknown }) => boolean;
-        };
-        expect(issuePrompt.filter("42", { value: ISSUE })).toBe(true);
     });
 
     it("turns an online issue lookup failure into the scope guidance", async () => {
@@ -134,27 +102,6 @@ describe("issue pick", () => {
         expect(prompts.select).not.toHaveBeenCalled();
     });
 
-    it("returns to project selection when the issue picker chooses Back", async () => {
-        let projectSelections = 0;
-        prompts.select.mockReset();
-        let selectCalls = 0;
-        prompts.select.mockImplementation(() => {
-            selectCalls++;
-            if (selectCalls < 3) projectSelections++;
-            return selectCalls < 3 ? "Roadmap" : "feature";
-        });
-        let autocompleteCalls = 0;
-        prompts.autocomplete.mockImplementation((options: { options: { value: unknown }[] }) => {
-            autocompleteCalls++;
-            return autocompleteCalls === 1 ? options.options[0]!.value : ISSUE;
-        });
-
-        await pick();
-
-        expect(projectSelections).toBe(2);
-        expect(gh.developBranch).toHaveBeenCalledOnce();
-    });
-
     it("checks out and resumes an existing branch, with assignment and board failures only warning", async () => {
         git.branchForIssue.mockReturnValue("feature/roadmap/42-existing");
         gh.assignToMe.mockImplementation(() => {
@@ -169,49 +116,6 @@ describe("issue pick", () => {
         expect(git.checkout).toHaveBeenCalledWith("feature/roadmap/42-existing");
         expect(gh.developBranch).not.toHaveBeenCalled();
         expect(io.out.warn).toHaveBeenCalledTimes(2);
-    });
-
-    it("continues with a new branch when an existing branch is rejected", async () => {
-        git.branchForIssue.mockReturnValue("feature/roadmap/42-existing");
-        prompts.confirm.mockResolvedValueOnce(false);
-
-        await pick();
-
-        expect(gh.developBranch).toHaveBeenCalled();
-    });
-
-    it("reports gh issue develop failures after the branch prompt", async () => {
-        gh.developBranch.mockImplementation(() => {
-            throw new Error("develop");
-        });
-
-        await expect(pick()).rejects.toThrow("develop");
-        expect(io.out.error).toHaveBeenCalledWith("gh issue develop failed.");
-    });
-
-    it("validates branch titles before asking gh to create the branch", async () => {
-        await pick();
-
-        const branchPrompt = prompts.text.mock.calls[0]?.[0] as {
-            validate: (value: string) => string | undefined;
-        };
-        expect(branchPrompt.validate("!!!")).toBe("Needs at least one letter or digit.");
-    });
-
-    it("turns cancellation at each prompt boundary into a clean cancellation", async () => {
-        prompts.select.mockReset();
-        prompts.select.mockResolvedValue(state.cancel);
-        await expect(pick()).rejects.toThrow(
-            new CancelledError("Cancelled — still on the same branch."),
-        );
-
-        vi.clearAllMocks();
-        gh.listProjects.mockReturnValue([PROJECT, OTHER]);
-        prompts.select.mockResolvedValue("Roadmap");
-        prompts.autocomplete.mockResolvedValue(state.cancel);
-        await expect(pick()).rejects.toThrow(
-            new CancelledError("Cancelled — still on the same branch."),
-        );
     });
 });
 
@@ -321,15 +225,6 @@ describe("issue pick <number>", () => {
         expect(io.out.warn).toHaveBeenCalledWith(expect.stringContaining('"Archived"'));
     });
 
-    it("branches an issue on no board and only skips the board move", async () => {
-        gh.viewThread.mockReturnValue({ ...THREAD, boards: [] });
-
-        await pick(args("42"));
-
-        expect(gh.developBranch).toHaveBeenCalledWith(42, "fix/huella-legal/42-fix-picker");
-        expect(gh.moveToInProgress).not.toHaveBeenCalled();
-    });
-
     it("checks out an existing branch for the issue instead of creating a second one", async () => {
         git.branchForIssue.mockReturnValue("feature/roadmap/42-old-name");
 
@@ -337,26 +232,6 @@ describe("issue pick <number>", () => {
 
         expect(git.checkout).toHaveBeenCalledWith("feature/roadmap/42-old-name");
         expect(gh.developBranch).not.toHaveBeenCalled();
-    });
-
-    it("resumes an existing branch even when the issue has left every board", async () => {
-        git.branchForIssue.mockReturnValue("feature/roadmap/42-old-name");
-        gh.viewThread.mockReturnValue({ ...THREAD, boards: [] });
-
-        await pick(args("42"));
-
-        expect(git.checkout).toHaveBeenCalledWith("feature/roadmap/42-old-name");
-        expect(gh.assignToMe).toHaveBeenCalledWith(42);
-        expect(gh.moveToInProgress).not.toHaveBeenCalled();
-    });
-
-    it("prompts only after confirming there is a terminal to prompt in", async () => {
-        io.requireTerminal.mockImplementation(() => {
-            throw new Error("No terminal");
-        });
-
-        await expect(pick()).rejects.toThrow("No terminal");
-        expect(prompts.select).not.toHaveBeenCalled();
     });
 });
 

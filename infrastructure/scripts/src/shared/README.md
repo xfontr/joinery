@@ -12,10 +12,10 @@ What more than one script needs. Nothing here knows a script exists.
 | [`adapters/exec.ts`](./adapters/exec.ts) | Subprocesses: `run`, `capture`, `inherit`, and `assertNotFlagLike` |
 | [`adapters/git.ts`](./adapters/git.ts) | `git`, `repoRoot()` and `at()` |
 | [`adapters/gh.ts`](./adapters/gh.ts) | `gh` and `createIssue` |
-| [`adapters/usage.ts`](./adapters/usage.ts) | `appendUsage`, the row `run()` records after every command |
+| [`adapters/usage.ts`](./adapters/usage.ts) | `appendUsage`, the row `run()` records after every command, and `appendTasks` |
 | [`adapters/cache.ts`](./adapters/cache.ts) | The file cache under `node_modules/.cache/@joinery/scripts` |
 | [`adapters/prompts.ts`](./adapters/prompts.ts) | `orExit`, so a cancelled prompt unwinds to `run` |
-| [`domain/cli.ts`](./domain/cli.ts) | The argv parser, `optionValue`, `detailOf` |
+| [`domain/cli.ts`](./domain/cli.ts) | The argv parser, `optionValue`, `detailOf`, and `endingOf`, the outcome a run records |
 | [`domain/usage.ts`](./domain/usage.ts) | What a recorded run holds — see [`usage/`](../usage/README.md) |
 | [`domain/layout.ts`](./domain/layout.ts) | `PROJECT_ROOTS` |
 | [`domain/logs.ts`](./domain/logs.ts) | `stripAnsi` and `excerpt` |

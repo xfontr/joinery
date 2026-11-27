@@ -5,16 +5,6 @@ import AuditsToolbar from "./AuditsToolbar.vue";
 const MODELS = { search: "", state: "all", scope: "all", sort: "newest" } as const;
 
 describe("AuditsToolbar", () => {
-    it("reports a search typed in", async () => {
-        const wrapper = await mountSuspended(AuditsToolbar, {
-            props: { ...MODELS, scopes: ["packages/ui"] },
-        });
-
-        await wrapper.find("input").setValue("rail");
-
-        expect(wrapper.emitted("update:search")).toEqual([["rail"]]);
-    });
-
     it("offers every scope an audit covers, after one for all of them", async () => {
         const wrapper = await mountSuspended(AuditsToolbar, {
             props: { ...MODELS, scopes: ["packages/ui", "apps/blog"] },

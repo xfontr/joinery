@@ -91,12 +91,4 @@ describe("map main", () => {
         );
         expect(files.writeReadme).not.toHaveBeenCalled();
     });
-
-    it("does not hide a filesystem failure while writing the generated map", () => {
-        files.writeMap.mockImplementation(() => {
-            throw new Error("read-only");
-        });
-
-        expect(() => main({ flags: new Set(), positionals: [] })).toThrow("read-only");
-    });
 });

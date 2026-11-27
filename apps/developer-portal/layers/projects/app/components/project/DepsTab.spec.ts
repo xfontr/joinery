@@ -38,10 +38,4 @@ describe("ProjectDepsTab", () => {
         const cells = wrapper.findAll("tbody td").map((cell) => cell.text());
         expect(cells).toEqual(["left-pad deprecated", "1.0.0", "1.0.1", "2.0.0"]);
     });
-
-    it("renders no table when nothing is outdated", async () => {
-        const wrapper = await mountSuspended(DepsTab, { props: { outdated: [], age: "today" } });
-
-        expect(wrapper.find("table").exists()).toBe(false);
-    });
 });

@@ -1,6 +1,6 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ref, type Ref } from "vue";
+import { serveEndpoint } from "@joinery/configs/vitest/utils/nuxt";
+import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { beforeEach, describe, expect, it } from "vitest";
 import PageView from "./View.vue";
 
 const PAGE: Page = {
@@ -17,19 +17,20 @@ const PAGE: Page = {
     permalink: "https://revista.test/aviso-legal/",
 };
 
-const nuxt = vi.hoisted(() => ({
-    page: undefined as unknown as Ref<Page | undefined>,
-}));
+const mount = (page: unknown = PAGE) => {
+    serveEndpoint("/api/pages/aviso-legal", () => page);
 
-mockNuxtImport("usePage", () => async () => ({ page: nuxt.page }));
+    return mountSuspended(PageView, { route: "/aviso-legal/" });
+};
 
+// useCachedFetch serves a payload it already holds, which would outlive the test that fetched it
 beforeEach(() => {
-    nuxt.page = ref(PAGE);
+    clearNuxtData();
 });
 
 describe("page view", () => {
     it("titles the page and renders its body as the mapper's HTML", async () => {
-        const wrapper = await mountSuspended(PageView);
+        const wrapper = await mount();
 
         expect(wrapper.find("h1").text()).toBe("Aviso legal");
         expect(wrapper.find("h2#privacidad").exists()).toBe(true);
@@ -37,7 +38,7 @@ describe("page view", () => {
     });
 
     it("leads the breadcrumb home and ends it on the page itself", async () => {
-        const wrapper = await mountSuspended(PageView);
+        const wrapper = await mount();
 
         const crumbs = wrapper.find("nav");
 
@@ -46,7 +47,7 @@ describe("page view", () => {
     });
 
     it("names the TOC for a page, not for an article", async () => {
-        const wrapper = await mountSuspended(PageView);
+        const wrapper = await mount();
 
         expect(wrapper.findAll("nav").map((nav) => nav.attributes("aria-label"))).toContain(
             "page.toc",
@@ -54,7 +55,7 @@ describe("page view", () => {
     });
 
     it("keeps the page's footnotes and references below the text", async () => {
-        nuxt.page = ref({
+        const wrapper = await mount({
             ...PAGE,
             body: {
                 ...PAGE.body,
@@ -63,16 +64,12 @@ describe("page view", () => {
             },
         });
 
-        const wrapper = await mountSuspended(PageView);
-
         expect(wrapper.text()).toContain("Una nota");
         expect(wrapper.text()).toContain("Una ley");
     });
 
     it("renders nothing rather than an empty article while there is no page", async () => {
-        nuxt.page = ref();
-
-        const wrapper = await mountSuspended(PageView);
+        const wrapper = await mount(null);
 
         expect(wrapper.find("article").exists()).toBe(false);
     });

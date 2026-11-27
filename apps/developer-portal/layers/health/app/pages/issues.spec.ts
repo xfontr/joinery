@@ -1,8 +1,8 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
-import type { VueWrapper } from "@vue/test-utils";
-import { ref } from "vue";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Issue, IssuesRead } from "#layers/github/app/utils/issues.ts";
+import { serveEndpoint } from "@joinery/configs/vitest/utils/nuxt";
+import { mountSuspended } from "@nuxt/test-utils/runtime";
+import { flushPromises, type VueWrapper } from "@vue/test-utils";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { GithubIssue } from "#layers/github/app/utils/issues.ts";
 import Page from "./issues.vue";
 
 const MESSAGES = {
@@ -61,9 +61,7 @@ const MESSAGES = {
     },
 };
 
-const github = vi.hoisted(() => ({ read: null as unknown, reload: vi.fn() }));
-
-mockNuxtImport("useIssues", () => () => ({ data: github.read, reload: github.reload }));
+const ISSUES_API = "https://api.github.com/repos/acme/repo/issues";
 
 const global = {
     stubs: {
@@ -74,31 +72,52 @@ const global = {
     },
 };
 
-const issue = (number: number, title: string, labels: string[], updatedAt: string): Issue => ({
+const issue = (
+    number: number,
+    title: string,
+    labels: string[],
+    updatedAt: string,
+): GithubIssue => ({
     number,
     title,
     body: "",
-    url: "",
-    labels,
+    html_url: `https://github.com/acme/repo/issues/${number}`,
+    labels: labels.map((name) => ({ name })),
     assignees: [],
-    createdAt: updatedAt,
-    updatedAt,
+    created_at: updatedAt,
+    updated_at: updatedAt,
 });
 
-const serve = (read: Partial<IssuesRead>) => {
-    github.read = ref<IssuesRead>({ fetchedAt: "2026-09-20", error: null, issues: [], ...read });
+let requests = 0;
+
+const serve = (reply: () => unknown) => {
+    serveEndpoint(ISSUES_API, () => {
+        requests += 1;
+        return reply();
+    });
+};
+
+const open = async () => {
+    clearNuxtData("issues");
+    const wrapper = await mountSuspended(Page, { global });
+    await vi.waitFor(() => expect(requests).toBeGreaterThan(0));
+    await flushPromises();
+    return wrapper;
 };
 
 const rows = (wrapper: VueWrapper) => wrapper.findAll("[data-row]").map((row) => row.text());
 
 beforeEach(() => {
-    github.reload.mockReset().mockResolvedValue(undefined);
-    serve({
-        issues: [
-            issue(2, "Add docs", ["docs"], "2026-09-19"),
-            issue(1, "Fix portal", ["bug"], "2026-09-20"),
-        ],
-    });
+    requests = 0;
+    useRuntimeConfig().public.repoUrl = "https://github.com/acme/repo";
+    serve(() => [
+        issue(2, "Add docs", ["docs"], "2026-09-19T00:00:00Z"),
+        issue(1, "Fix portal", ["bug"], "2026-09-20T00:00:00Z"),
+    ]);
+});
+
+afterEach(() => {
+    useRuntimeConfig().public.repoUrl = "";
 });
 
 beforeEach(() => {
@@ -107,13 +126,13 @@ beforeEach(() => {
 
 describe("issues page", () => {
     it("lists the most recently updated issue first", async () => {
-        const wrapper = await mountSuspended(Page, { global });
+        const wrapper = await open();
 
         expect(rows(wrapper)).toEqual(["Fix portal", "Add docs"]);
     });
 
     it("narrows the list to issues matching the search", async () => {
-        const wrapper = await mountSuspended(Page, { global });
+        const wrapper = await open();
 
         await wrapper.find("input").setValue("docs");
 
@@ -121,7 +140,7 @@ describe("issues page", () => {
     });
 
     it("offers every label found in the live issues, and narrows to the one picked", async () => {
-        const wrapper = await mountSuspended(Page, { global });
+        const wrapper = await open();
         const select = wrapper.findComponent({ name: "USelect" });
 
         expect((select.props("items") as { value: string }[]).map(({ value }) => value)).toEqual([
@@ -136,24 +155,23 @@ describe("issues page", () => {
     });
 
     it("says GitHub could not be reached when the read failed", async () => {
-        serve({ error: "rate limited" });
-        const wrapper = await mountSuspended(Page, { global });
+        serve(
+            () =>
+                new Response(JSON.stringify({ message: "rate limited" }), {
+                    status: 403,
+                    headers: { "content-type": "application/json" },
+                }),
+        );
+        const wrapper = await open();
 
         expect(wrapper.text()).toContain("GitHub could not be reached");
     });
 
-    it("says there are no open issues when GitHub answered with none", async () => {
-        serve({ issues: [] });
-        const wrapper = await mountSuspended(Page, { global });
-
-        expect(wrapper.text()).toContain("No open issues.");
-    });
-
     it("re-reads GitHub when asked to", async () => {
-        const wrapper = await mountSuspended(Page, { global });
+        const wrapper = await open();
 
         await wrapper.find("[aria-label='Re-read the issues from GitHub']").trigger("click");
 
-        expect(github.reload).toHaveBeenCalledOnce();
+        await vi.waitFor(() => expect(requests).toBe(2));
     });
 });

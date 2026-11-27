@@ -102,19 +102,6 @@ const node = (name: string, root: string, links: Partial<ProjectNode> = {}): Pro
     ...links,
 });
 
-const metric = (name: string, values: Partial<ProjectMetrics>): ProjectMetrics => ({
-    name,
-    root: "",
-    specs: 0,
-    commits: null,
-    commitsLastTwoWeeks: null,
-    coverageLinesPct: null,
-    unreleasedCommits: null,
-    currentVersion: null,
-    hasChangelog: false,
-    ...values,
-});
-
 const UI = node("@joinery/ui", "packages/UI", {
     dependsOn: ["@joinery/configs"],
     dependedOnBy: ["@joinery/developer-portal"],
@@ -129,7 +116,6 @@ const serve = (projects: ProjectNode[], metrics: ProjectMetrics[] = []) => {
         commit: "abc",
         branch: "master",
         projects: metrics,
-        invariantFindings: [],
         conventionalCommitRate: null,
         commitsSinceLastRelease: null,
     } satisfies MetricsArtifact;
@@ -159,19 +145,6 @@ beforeEach(() => {
 });
 
 describe("catalog page", () => {
-    it("groups apps, then packages, then infrastructure, each project linking to its page", async () => {
-        serve([UI, SCRIPTS, SITE]);
-        const wrapper = await mountSuspended(Page, { route: "/projects" });
-
-        expect(groupHeaders(wrapper)).toEqual(["Apps 1", "Packages 1", "Infrastructure 1"]);
-        expect(rows(wrapper).map((row) => row.to)).toEqual([
-            "/projects/huella-legal",
-            "/projects/UI",
-            "/projects/scripts",
-        ]);
-        expect(rows(wrapper)[1]?.cells[0]).toContain("Shared interface pieces.");
-    });
-
     it("shows only the kind the side menu picked, without group headers", async () => {
         serve([UI, SCRIPTS, SITE]);
         const wrapper = await mountSuspended(Page, { route: "/projects?kind=packages" });
@@ -190,23 +163,6 @@ describe("catalog page", () => {
         expect(rows(wrapper).map((row) => row.to)).toEqual(["/projects/scripts"]);
         await wrapper.find("input").setValue("nothing-like-it");
         expect(wrapper.text()).toContain("nothing-like-it");
-    });
-
-    it("prints each metric with its unit and a dash where nothing was measured", async () => {
-        serve(
-            [UI],
-            [
-                metric("@joinery/ui", {
-                    currentVersion: "1.2.0",
-                    unreleasedCommits: 4,
-                    coverageLinesPct: 91,
-                    specs: 3,
-                }),
-            ],
-        );
-        const wrapper = await mountSuspended(Page, { route: "/projects" });
-
-        expect(rows(wrapper)[0]?.cells.slice(1)).toEqual(["1.2.0", "+4", "—", "3", "91%", "1"]);
     });
 
     it("says nothing was collected rather than rendering an empty table", async () => {

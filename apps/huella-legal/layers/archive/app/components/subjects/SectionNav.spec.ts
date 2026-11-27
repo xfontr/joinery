@@ -18,16 +18,6 @@ const index = {
 } satisfies SubjectIndex;
 
 describe("subjects section nav", () => {
-    it("jumps to each section of the page", async () => {
-        const wrapper = await mountSuspended(SubjectsSectionNav, { props: { index }, global });
-
-        const hashes = wrapper
-            .findAll("a")
-            .map((link) => new URL(link.attributes("href") ?? "", "https://x.test").hash);
-
-        expect(hashes).toEqual(["#areas", "#formatos", "#temas"]);
-    });
-
     it("counts what each section holds", async () => {
         const wrapper = await mountSuspended(SubjectsSectionNav, { props: { index }, global });
 

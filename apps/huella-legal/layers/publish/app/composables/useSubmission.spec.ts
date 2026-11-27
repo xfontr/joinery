@@ -1,7 +1,7 @@
 import type { Challenge } from "#layers/forms/app/types/Challenge";
-import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
-import { mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { serveEndpoint, withSetup } from "@joinery/configs/vitest/utils/nuxt";
+import { readMultipartFormData } from "h3";
+import { describe, expect, it, vi } from "vitest";
 import { useSubmission } from "./useSubmission";
 
 const FIELDS = {
@@ -15,36 +15,27 @@ const FIELDS = {
     honeypot: "",
 } as const;
 
-const fetch = vi.hoisted(() => vi.fn());
-
-// The i18n loader fetches the locale through the same import, so only the route is faked
-mockNuxtImport(
-    "$fetch",
-    () => (url: string, options: unknown) =>
-        url === "/api/submissions" ? fetch(url, options) : globalThis.$fetch(url, options as never),
-);
-
 const challenge = vi.fn((send: (token: string) => Promise<unknown>) => send("tok")) as Challenge;
-
-const setUp = async () => (await withSetup(() => useSubmission())).value;
-
-beforeEach(() => {
-    vi.clearAllMocks();
-    fetch.mockResolvedValue(undefined);
-});
 
 describe("useSubmission", () => {
     it("posts the proposal and its file as multipart with the challenge's token, then reports success", async () => {
-        const submission = await setUp();
+        let parts: Awaited<ReturnType<typeof readMultipartFormData>>;
+
+        serveEndpoint("/api/submissions", async (event) => {
+            parts = await readMultipartFormData(event);
+
+            return {};
+        });
+        const { value: submission } = await withSetup(() => useSubmission());
 
         await submission.send(FIELDS, challenge);
 
-        const body = fetch.mock.calls[0]?.[1].body as FormData;
+        const text = (name: string) => parts?.find((part) => part.name === name)?.data.toString();
+        const file = parts?.find((part) => part.name === "file");
 
-        expect(fetch).toHaveBeenCalledWith("/api/submissions", { method: "POST", body });
-        expect(body.get("summary")).toBe(FIELDS.summary);
-        expect((body.get("file") as File).name).toBe("borrador.docx");
-        expect(body.get("token")).toBe("tok");
+        expect(text("summary")).toBe(FIELDS.summary);
+        expect(file?.filename).toBe("borrador.docx");
+        expect(text("token")).toBe("tok");
         expect(submission.status.value).toBe("success");
     });
 });

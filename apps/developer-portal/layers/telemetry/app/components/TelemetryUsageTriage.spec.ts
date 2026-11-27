@@ -61,7 +61,7 @@ const USAGE = {
             targets: {},
             areas: {},
             flags: {},
-            days: { "2026-11-09": { runs: 6, agent: 0, failures: 0 } },
+            days: { "2026-11-09": { runs: 6, agent: 0, failures: 0, known: 6 } },
         },
     },
     lint: { since: null, rules: {} },

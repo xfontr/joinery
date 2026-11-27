@@ -1,6 +1,6 @@
 {
   "name": "@joinery/configs",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "shared ESLint, Vitest, Playwright and tsconfig presets",
   "private": true,
   "author": "Xifré Font",

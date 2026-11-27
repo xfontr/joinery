@@ -1,18 +1,14 @@
 <template>
-    <UDashboardToolbar>
-        <template #left>
-            <UInput
-                v-model="search"
-                icon="i-lucide-search"
-                :placeholder="$t('healthIssuesToolbar.search')"
-                size="sm"
-                class="w-56"
-            />
-        </template>
-        <template #right>
-            <USelect v-model="label" :items value-key="value" size="sm" class="w-40" />
-        </template>
-    </UDashboardToolbar>
+    <div class="flex flex-wrap items-center gap-2">
+        <UInput
+            v-model="search"
+            icon="i-lucide-search"
+            :placeholder="$t('healthIssuesToolbar.search')"
+            size="sm"
+            class="w-56"
+        />
+        <USelect v-model="label" :items value-key="value" size="sm" class="ml-auto w-40" />
+    </div>
 </template>
 
 <script setup lang="ts">

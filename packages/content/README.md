@@ -1,7 +1,6 @@
 # 📦 @joinery/content
 
-A vendor-neutral client for CMS entries and taxonomies: a framework-agnostic core plus an optional
-Nuxt module that gives server code a cached reader. WordPress is the only vendor today.
+CMS client with an optional cached Nuxt module.
 
 | Import | Contains | Depends on |
 | --- | --- | --- |

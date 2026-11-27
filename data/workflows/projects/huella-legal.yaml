@@ -3,8 +3,7 @@ title: Huella Legal
 template: website-rebuild
 area: app:huella-legal
 milestone: Huella Legal
-summary: huellalegal.com, a WordPress legal blog for students and general
-  readers, rebuilt as a Nuxt app.
+summary: Legal blog rebuild
 
 switches:
   storybook: true

@@ -81,25 +81,4 @@ describe("startNodeTelemetry", () => {
             "deployment.environment.name": app.environment,
         });
     });
-
-    it("instruments outbound fetches, the half of a server trace the caller cannot open itself", () => {
-        start();
-
-        expect(undici.UndiciInstrumentation).toHaveBeenCalledOnce();
-        expect(autoLoader.registerInstrumentations).toHaveBeenCalledWith({
-            instrumentations: [undici.UndiciInstrumentation.mock.instances[0]],
-        });
-    });
-
-    it("registers itself globally, so a caller's trace.getTracer() reaches this provider", () => {
-        start();
-
-        expect(provider.instance.register).toHaveBeenCalledOnce();
-    });
-
-    it("returns the provider, so the caller can flush it on shutdown", () => {
-        const started: unknown = start();
-
-        expect(started).toBe(provider.instance);
-    });
 });

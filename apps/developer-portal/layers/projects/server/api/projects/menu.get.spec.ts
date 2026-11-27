@@ -1,12 +1,11 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 
-const store = vi.hoisted(() => ({ readArtifact: vi.fn() }));
-const h3 = vi.hoisted(() => ({ defineEventHandler: (handler: unknown) => handler }));
-
-vi.mock("#layers/snapshot/server/utils/store.ts", () => store);
-vi.mock("h3", () => h3);
+vi.mock("h3", () => ({ defineEventHandler: (handler: unknown) => handler }));
 
 import handler from "./menu.get.ts";
 
@@ -30,18 +29,29 @@ const metric = (root: string, coverageLinesPct: number | null): ProjectMetrics =
     hasChangelog: false,
 });
 
-const artifacts = (projects: ProjectNode[], metrics: ProjectMetrics[]) =>
-    store.readArtifact.mockImplementation(async (name: string) =>
-        name === "projects" ? { projects } : { projects: metrics },
-    );
+let dir = "";
 
-beforeEach(() => {
-    vi.clearAllMocks();
+const artifact = (name: string, value: unknown) =>
+    writeFile(join(dir, `${name}.json`), JSON.stringify(value));
+
+const artifacts = async (projects: ProjectNode[], metrics: ProjectMetrics[]) => {
+    await artifact("projects", { projects });
+    await artifact("metrics", { projects: metrics });
+};
+
+beforeEach(async () => {
+    dir = await mkdtemp(join(tmpdir(), "snapshot-"));
+    vi.stubGlobal("useRuntimeConfig", () => ({ snapshotDir: dir }));
+});
+
+afterEach(async () => {
+    vi.unstubAllGlobals();
+    await rm(dir, { recursive: true, force: true });
 });
 
 describe("projects menu route", () => {
     it("counts every kind and leaves out a kind with no project", async () => {
-        artifacts([node("packages/ui"), node("apps/portal"), node("apps/blog")], []);
+        await artifacts([node("packages/ui"), node("apps/portal"), node("apps/blog")], []);
 
         const rows = await handler({} as never);
 
@@ -53,7 +63,7 @@ describe("projects menu route", () => {
     });
 
     it("lists a kind's projects by folder with their rounded line coverage, a dash when uncollected", async () => {
-        artifacts([node("apps/portal"), node("apps/blog")], [metric("apps/portal", 81.6)]);
+        await artifacts([node("apps/portal"), node("apps/blog")], [metric("apps/portal", 81.6)]);
 
         const [, apps] = await handler({} as never);
 

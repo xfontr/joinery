@@ -1,7 +1,6 @@
 # 📦 @joinery/configs
 
-Shared ESLint, Vitest, Playwright and TypeScript presets. Every project's config file is a thin
-wrapper over one of these, so a change here lands everywhere at once.
+Shared ESLint, Vitest, Playwright and TypeScript presets every project wraps.
 
 Raw TypeScript, tagged `type:config`: it depends on nothing in the workspace. `apps/huella-legal`
 extends no tsconfig preset (it references Nuxt's generated ones), so a compiler option added here

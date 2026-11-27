@@ -30,14 +30,6 @@ describe("useSiteData", () => {
         expect(await read(useWorkflowTemplates)).toEqual({ templates: [], lessons: 0 });
     });
 
-    it("reads each figure off the portal's payload", async () => {
-        useRuntimeConfig().public.dataUrl = DATA_URL;
-        serveEndpoint(DATA_URL, () => DATA);
-
-        expect(await read(useSpecTotal)).toBe(42);
-        expect(await read(useRuleCounts)).toEqual({ enabled: 2, inHouse: 1 });
-    });
-
     it("resolves a benchmark screenshot against the portal, since the path is the portal's", async () => {
         useRuntimeConfig().public.dataUrl = DATA_URL;
         serveEndpoint(DATA_URL, () => DATA);

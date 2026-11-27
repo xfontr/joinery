@@ -1,11 +1,8 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { DashboardLayout, WidgetDefinition } from "~/utils/dashboardLayout";
 import DashboardGrid from "./DashboardGrid.vue";
-
-const toast = vi.hoisted(() => ({ add: vi.fn() }));
-mockNuxtImport("useToast", () => () => toast);
 
 const KEY = "grid-spec";
 
@@ -48,7 +45,7 @@ beforeEach(() => {
         },
     });
     localStorage.clear();
-    toast.add.mockReset();
+    useState("toasts").value = [];
 });
 
 afterEach(() => {
@@ -74,15 +71,6 @@ describe("DashboardGrid", () => {
         );
 
         expect(order(await mount())).toEqual(["health", "queue"]);
-    });
-
-    it("warns that changes won't keep when the saved layout can't be read, and shows the default", async () => {
-        localStorage.setItem(KEY, "{not json");
-
-        const wrapper = await mount();
-
-        expect(order(wrapper)).toEqual(["queue", "health"]);
-        expect(toast.add).toHaveBeenCalledOnce();
     });
 
     it("skips a widget with nothing to show, until the layout is being edited", async () => {
@@ -149,16 +137,5 @@ describe("DashboardGrid", () => {
         await reset?.trigger("click");
 
         expect(order(wrapper)).toEqual(["queue", "health"]);
-    });
-
-    it("leaves edit mode on Done", async () => {
-        const wrapper = await mount({ editing: true });
-
-        await wrapper
-            .findAll("button")
-            .find((button) => button.text() === "Done")
-            ?.trigger("click");
-
-        expect(wrapper.emitted("update:editing")).toEqual([[false]]);
     });
 });

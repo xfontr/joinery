@@ -8,5 +8,4 @@ export interface HealthLine {
     to: string;
     parts: SplitPart[];
     legend: boolean;
-    note?: string;
 }

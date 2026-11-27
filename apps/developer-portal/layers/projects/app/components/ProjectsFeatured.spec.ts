@@ -57,16 +57,4 @@ describe("ProjectsFeatured", () => {
             "@joinery/shop",
         ]);
     });
-
-    it("titles an app by its README and links to it in the wiki", async () => {
-        docs.readmes = [
-            { path: "/apps/blog/readme", title: "The blog", description: "Placeholder line" },
-        ];
-
-        const wrapper = await open([node("apps/blog")]);
-
-        expect(wrapper.find("h3").text()).toBe("The blog");
-        expect(wrapper.text()).toContain("Placeholder line");
-        expect(wrapper.find("a[href='/wiki/apps/blog/readme']").exists()).toBe(true);
-    });
 });

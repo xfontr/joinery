@@ -70,7 +70,7 @@ export default defineNuxtConfig({
     site: {
         url: SITE_URL,
         name: "Developer portal",
-        trailingSlash: true,
+        trailingSlash: false,
         separator: "-",
     },
 
@@ -84,6 +84,8 @@ export default defineNuxtConfig({
 
     nitro: {
         prerender: {
+            // Cloudflare Pages serves `wiki/readme.html` at `/wiki/readme`, the route it rendered.
+            autoSubfolderIndex: false,
             routes: ["/embed/data.json"],
             ignore: ["/huella-legal-storybook/"],
         },

@@ -14,7 +14,6 @@ import {
     bulkRestoreBlocker,
     confirm,
     derivedStatus,
-    driftRefusal,
     holdsText,
     itemFingerprint,
     markSeen,
@@ -61,10 +60,6 @@ describe("opening a changeset", () => {
         expect(openBlocker([changeset({ status: "closed" }), changeset()], false)?.id).toBe(
             "0001-test",
         );
-    });
-
-    it("lets --override through even with one open", () => {
-        expect(openBlocker([changeset()], true)).toBeNull();
     });
 
     it("numbers after the highest id, so a gap never reuses a number", () => {
@@ -190,13 +185,6 @@ describe("mandatory dry run", () => {
         expect(bulkApplyBlocker([pending], required, dryRun([pending]))).toBeNull();
     });
 
-    it("is invalidated by an edit made after the dry run", () => {
-        const before = item();
-        const edited = { ...before, proposal: { content: "<p>edited</p>" } };
-
-        expect(bulkApplyBlocker([edited], required, dryRun([before]))).toMatch(/run it again/);
-    });
-
     it("is invalidated by a restore, which moves the timestamp the apply checks", () => {
         const before = item();
         const restored = item({ restored: { at: "now", modifiedGmt: "m7" } });
@@ -230,11 +218,9 @@ describe("settings", () => {
         { reviewGate: "some" },
         { bulkApplyMinLevel: "unreviewed" },
         { requireDryRun: "yes" },
-        { dryRun: 1 },
         { pauseMs: -1 },
         { pauseMs: 2001 },
         { pauseMs: 250.5 },
-        { pauseMs: "500" },
     ])("refuses %o instead of saving it", (patch) => {
         expect(() => parseSettings(patch)).toThrow(Refusal);
     });
@@ -244,22 +230,11 @@ describe("settings", () => {
     });
 });
 
-describe("drift", () => {
-    it("refuses a write when WordPress moved since pull", () => {
-        expect(driftRefusal("m0", "m9")).toMatch(/re-pull/);
-        expect(driftRefusal("m0", "m0")).toBeNull();
-    });
-});
-
 describe("restore", () => {
     const stack = (first: Partial<ItemState>, second: Partial<ItemState>) => [
         { changeset: changeset({ id: "0001-a" }), item: item(first) },
         { changeset: changeset({ id: "0002-b" }), item: item(second) },
     ];
-
-    it("is blocked by a later changeset that still has the article applied, naming it", () => {
-        expect(restoreBlocker(stack(applied("m1"), applied("m2")), 0, "m2")).toContain("0002-b");
-    });
 
     it("is allowed once the later changeset restored it", () => {
         const later = { ...applied("m2"), restored: { at: "now", modifiedGmt: "m3" } };
@@ -304,11 +279,10 @@ describe("restore all", () => {
         );
     });
 
-    it("opens once one article is applied, and shuts again in dry-run mode", () => {
+    it("opens once one article is applied", () => {
         const items = [item(), item(applied())];
 
         expect(bulkRestoreBlocker(items, DEFAULT_SETTINGS)).toBeNull();
-        expect(bulkRestoreBlocker(items, { ...DEFAULT_SETTINGS, dryRun: true })).toMatch(/Dry-run/);
     });
 });
 

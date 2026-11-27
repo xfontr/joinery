@@ -1,7 +1,6 @@
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
 import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import Page from "./index.vue";
 
@@ -22,26 +21,8 @@ mockNuxtImport("queryCollection", () => () => {
 const WikiNav = { props: { sections: Array }, template: "<nav />" };
 const global = { stubs: { WikiNav } };
 
-const page = (path: string, overrides: Partial<DocPage> = {}): DocPage => ({
-    path,
-    kind: "doc",
-    title: path,
-    words: 100,
-    updatedAt: "2026-09-20",
-    decisionStatus: null,
-    decisionOutcome: null,
-    decisionSupersededBy: null,
-    audit: null,
-    brokenLinks: [],
-    ...overrides,
-});
-
-const serve = (pages: DocPage[]) => {
-    artifacts.docs = {
-        generatedAt: "2026-11-01T00:00:00Z",
-        pages,
-        brokenLinkCount: pages.filter((found) => found.brokenLinks.length > 0).length,
-    };
+const serve = () => {
+    artifacts.docs = { generatedAt: "2026-11-01T00:00:00Z", pages: [] };
 };
 
 const hrefs = (wrapper: VueWrapper) => wrapper.findAll("a").map((a) => a.attributes("href"));
@@ -56,7 +37,7 @@ beforeEach(() => {
 
 describe("docs index page", () => {
     it("routes the newcomer entries through /docs, and the overview ones to their pages", async () => {
-        serve([]);
+        serve();
         const wrapper = await mountSuspended(Page, { global });
 
         expect(hrefs(wrapper)).toEqual(
@@ -70,20 +51,8 @@ describe("docs index page", () => {
         );
     });
 
-    it("links every page with a broken link so it can be fixed", async () => {
-        serve([
-            page("docs/guides/first-hour.md"),
-            page("docs/missing.md", {
-                brokenLinks: [{ href: "./gone", resolved: "docs/gone.md" }],
-            }),
-        ]);
-        const wrapper = await mountSuspended(Page, { global });
-
-        expect(hrefs(wrapper)).toContain("/wiki/docs/missing");
-    });
-
     it("hands the nav the wiki built from the docs collection", async () => {
-        serve([]);
+        serve();
         const wrapper = await mountSuspended(Page, { global });
 
         expect(wrapper.findComponent(WikiNav).props("sections")).not.toHaveLength(0);
@@ -91,7 +60,7 @@ describe("docs index page", () => {
 
     it("keeps an empty collected wiki visibly empty", async () => {
         docs.entries = [];
-        serve([]);
+        serve();
         const wrapper = await mountSuspended(Page, { global });
 
         expect(wrapper.text()).toContain("wikiRecent.empty");

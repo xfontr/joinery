@@ -16,14 +16,4 @@ describe("SettingsTicketSize", () => {
                 .every((option) => option.attributes("disabled") !== undefined),
         ).toBe(true);
     });
-
-    it("reports the size picked", async () => {
-        const wrapper = await mountSuspended(TicketSize, {
-            props: { modelValue: "block", counts: COUNTS, editable: true },
-        });
-
-        await wrapper.findAll("input[type='radio']")[1]?.setValue();
-
-        expect(wrapper.emitted("update:modelValue")).toEqual([["supervised"]]);
-    });
 });

@@ -7,7 +7,6 @@ import WorkflowGraph from "./WorkflowGraph.vue";
 
 const MESSAGES = {
     workflowGraph: {
-        details: "Details for {title}",
         fit: "Fit the selected path",
         full: "Full screen",
         node: "{title}, {state}",
@@ -62,18 +61,15 @@ describe("WorkflowGraph", () => {
         expect(block("Search").classList).toContain("opacity-25");
     });
 
-    it("shows the whole map on a click on an empty spot or on the selected block", async () => {
+    it("asks to clear the selection on a click on an empty spot or Escape, not on a block", async () => {
         const wrapper = await mount("page");
-        const block = (title: string) => node(wrapper, title).element.parentElement!;
+
+        await node(wrapper, "Search").trigger("click");
+        expect(wrapper.emitted("clear")).toBeUndefined();
 
         await wrapper.find("svg").trigger("click");
-        expect(block("Search").classList).not.toContain("opacity-25");
-
-        await node(wrapper, "Page").trigger("click");
-        expect(block("Search").classList).toContain("opacity-25");
-
-        await node(wrapper, "Page").trigger("click");
-        expect(block("Search").classList).not.toContain("opacity-25");
+        await wrapper.find("div").trigger("keydown", { key: "Escape" });
+        expect(wrapper.emitted("clear")).toHaveLength(2);
     });
 
     it("leaves a switched-off block off the map instead of greying it", async () => {
@@ -103,24 +99,18 @@ describe("WorkflowGraph", () => {
         expect(wrapper.emitted("select")).toEqual([["search"]]);
     });
 
-    it("asks for a block's details from its info button but not at the end of a drag", async () => {
-        const wrapper = await mount(null);
-        const info = wrapper.find("button[aria-label='Details for Search']");
-        const viewport = wrapper.find("div");
-
-        await info.trigger("click");
-        expect(wrapper.emitted("details")).toEqual([["search"]]);
-
-        await viewport.trigger("pointerdown", {
-            button: 0,
-            clientX: 10,
-            clientY: 10,
-            pointerId: 1,
+    it("keeps the block pane beside the map at full screen, where it would otherwise hide", async () => {
+        const wrapper = await mountSuspended(WorkflowGraph, {
+            props: { capabilities: view.capabilities, stages: view.stages, selected: "page" },
+            slots: { aside: () => "Page details" },
+            global: { stubs: { UIcon: true } },
         });
-        await viewport.trigger("pointermove", { clientX: 60, clientY: 40, pointerId: 1 });
-        await info.trigger("click");
 
-        expect(wrapper.emitted("details")).toEqual([["search"]]);
+        expect(document.body.textContent).not.toContain("Page details");
+        await wrapper.find("button[aria-label='Full screen']").trigger("click");
+        expect(document.body.querySelector("aside")?.textContent).toContain("Page details");
+
+        wrapper.unmount();
     });
 
     it("zooms on a pinch or ctrl-wheel and lets a plain wheel scroll the page", async () => {

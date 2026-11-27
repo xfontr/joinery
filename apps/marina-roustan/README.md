@@ -1,7 +1,6 @@
 # 📦 @joinery/marina-roustan
 
-A Nuxt 4 rebuild of Marina Roustan's website. So far: one placeholder page, the env check, the test
-harness and the design tokens.
+Nuxt 4 rebuild of Marina Roustan's website.
 
 ## Design
 

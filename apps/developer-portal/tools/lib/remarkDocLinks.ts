@@ -87,7 +87,7 @@ export default function remarkDocLinks() {
             const url = resolveDocLink(href, from, isPage) ?? href;
 
             // `@nuxt/content` rewrites a `repo:…/x.md` href to the relative route `…/x`, which the
-            // prerender crawler follows into a 404; the page's broken-links banner still names it.
+            // prerender crawler follows into a 404.
             if (isMissing(url)) return link.children ?? [];
 
             link.url = url;

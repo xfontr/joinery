@@ -59,7 +59,6 @@ const successfulCollectors = (): void => {
             commit: "commit",
             branch: "branch",
             projects: [],
-            invariantFindings: [],
             conventionalCommitRate: null,
             commitsSinceLastRelease: null,
         }),
@@ -74,7 +73,6 @@ const successfulCollectors = (): void => {
     state.collectDocs.mockImplementation(async (generatedAt: string) => ({
         generatedAt,
         pages: [],
-        brokenLinkCount: 0,
     }));
     state.collectUsage.mockImplementation(async (generatedAt: string) => ({
         generatedAt,

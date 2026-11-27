@@ -1,9 +1,9 @@
 <template>
     <UDashboardPanel id="deps">
         <template #header>
-            <PageHeader :title="$t('deps.title')">
-                <template #intro>
-                    <PageFacts :provenance :facts />
+            <PageHeader :title="$t('deps.title')" :lead="provenance">
+                <template #facts>
+                    <PageFacts :facts />
                 </template>
             </PageHeader>
         </template>

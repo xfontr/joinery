@@ -83,8 +83,7 @@
         "title": "Audits"
     },
     "auditsFacts": {
-        "audits": "Audits",
-        "provenance": "Read from docs/audits/ · {closed} of {total} closed"
+        "audits": "Audits"
     },
     "auditsToolbar": {
         "everyScope": "Every scope",
@@ -124,7 +123,6 @@
         "screenshot": "{title}, first screen"
     },
     "benchmarksFacts": {
-        "provenance": "Read from docs/benchmarks/",
         "sites": "Sites"
     },
     "benchmarksMeta": {
@@ -189,7 +187,7 @@
         }
     },
     "coverage": {
-        "provenance": "Vitest coverage · {collected} of {total} projects · collected {age}",
+        "provenance": "Vitest coverage · {collected} of {total} projects",
         "title": "Coverage"
     },
     "dashboardGrid": {
@@ -242,7 +240,6 @@
         "title": "Decisions"
     },
     "decisionsFacts": {
-        "provenance": "Read from docs/decisions/",
         "reports": "Reports"
     },
     "decisionsToolbar": {
@@ -261,7 +258,7 @@
             "dependencies": "Dependencies",
             "outdated": "Outdated"
         },
-        "provenance": "pnpm audit and pnpm outdated · collected {age}",
+        "provenance": "pnpm audit and pnpm outdated",
         "title": "Dependencies"
     },
     "docSource": {
@@ -306,9 +303,20 @@
         "uses": "Uses: {list}"
     },
     "graphMap": {
+        "all": "All",
+        "applications": "Applications",
         "empty": "No projects collected yet.",
-        "lead": "Each arrow points from a project to one it depends on. Select a project to open it.",
-        "title": "Project map"
+        "fit": "Fit the graph to the frame",
+        "focus": "Focus on {name}",
+        "group": "Group by folder",
+        "label": "Project dependency graph",
+        "lead": "Each arrow points from a project to one it depends on. Drag to pan, scroll to zoom, hover a project to trace it, select one to open it.",
+        "leftToRight": "Lay out left to right",
+        "libraries": "Libraries",
+        "reset": "Reset the layout",
+        "search": "Search project list…",
+        "title": "Project map",
+        "topToBottom": "Lay out top to bottom"
     },
     "healthAdvisories": {
         "columns": {
@@ -358,7 +366,6 @@
         "search": "Search issues…"
     },
     "healthLines": {
-        "brokenLinks": "No broken links | {count} broken link | {count} broken links",
         "lines": {
             "advisories": "Advisories",
             "audits": "Audit findings open",
@@ -367,7 +374,6 @@
             "docs": "Doc pages",
             "tooling": "Tooling runs failed"
         },
-        "meta": "Snapshot collected {age}",
         "parts": {
             "covered": "covered",
             "critical": "critical",
@@ -500,6 +506,7 @@
         "breadcrumb": "Breadcrumb",
         "wordmark": "joinery"
     },
+    "personalSiteLink": "Visitor site",
     "project": {
         "missing": {
             "description": "No collected project lives in a folder called {name}.",
@@ -534,7 +541,7 @@
     },
     "projectCoverageTab": {
         "empty": "No usable coverage report for this project.",
-        "meta": "Vitest · {files} files · collected {age}",
+        "meta": "Vitest · {files} files",
         "notCollected": "Not collected",
         "parts": {
             "covered": "covered",
@@ -551,7 +558,7 @@
         },
         "current": "Everything is current.",
         "deprecated": "deprecated",
-        "meta": "pnpm outdated · collected {age} · advisories are workspace-wide",
+        "meta": "pnpm outdated · advisories are workspace-wide",
         "title": "Outdated dependencies"
     },
     "projectExtraTab": {
@@ -612,7 +619,6 @@
         }
     },
     "projectsTile": {
-        "findings": "No invariant findings | {count} invariant finding | {count} invariant findings",
         "label": "Projects"
     },
     "projectsWelcome": {
@@ -644,7 +650,10 @@
             "help": "Rename it on GitHub too, or its tickets drop out of view",
             "label": "Milestone"
         },
-        "summary": "Summary",
+        "summary": {
+            "help": "A few words on what it is, such as \"Photographer portfolio port\"",
+            "label": "Summary"
+        },
         "template": "Template: {template}. It can't change, since the switches and settled blocks belong to it.",
         "title": "General",
         "titleField": "Title"
@@ -676,28 +685,14 @@
         "hint": "How many blocks share a ticket when filed. It can't change once one is.",
         "title": "Ticket size"
     },
-    "snapshotAge": {
-        "at": "At {commit} on {branch}",
-        "collected": "Collected {age}",
-        "failed": "{artifact} failed to collect: {error}",
-        "never": "Never collected — run {command}",
-        "sourceCollected": "{source} · collected {age}"
-    },
     "statusBar": {
-        "collected": "{'@'}{commit} · collected {age}",
+        "collected": "{'@'}{commit} · collected at {at}",
         "items": {
             "advisories": "advisories",
             "advisoriesBadge": "{count} adv.",
-            "brokenLinks": "no broken links | {count} broken link | {count} broken links",
             "coverage": "coverage",
-            "docs": "docs",
-            "failed": "failed",
-            "issues": "issues",
             "lines": "lines",
             "none": "none",
-            "open": "open",
-            "tooling": "tooling",
-            "toolingBadge": "{count} fail",
             "worst": "worst {severity}"
         },
         "label": "Status",
@@ -711,13 +706,35 @@
         },
         "facts": {
             "agent": "By agents",
+            "check": "pnpm check",
             "failed": "Failed",
             "neverRun": "Never run",
             "runs": "Runs",
             "scripts": "Scripts"
         },
-        "provenance": "Usage log · last {days} days · collected {age}",
+        "provenance": "Usage log · last {days} days",
         "title": "Tooling usage"
+    },
+    "telemetryBuildTimes": {
+        "check": "pnpm check, whole",
+        "ciUnread": "GitHub wasn't read: gh is missing or logged out.",
+        "columns": {
+            "hits": "Cache hits",
+            "median": "Median",
+            "name": "Command or target",
+            "prePush": "In pre-push",
+            "runs": "Timed runs",
+            "slowest": "Slowest 10%"
+        },
+        "emptyCi": "No green CI run found.",
+        "emptyLocal": "No Nx run timed yet. Run pnpm check, commit, then collect.",
+        "job": "{name} job, whole",
+        "meta": "Median and slowest 10% of runs that did the work; a cache hit only restores output",
+        "sections": {
+            "ci": "In CI, last 20 green runs",
+            "local": "On your machine"
+        },
+        "title": "Build times"
     },
     "telemetryCallerSplit": {
         "none": "No runs",
@@ -757,6 +774,19 @@
         "cellFailed": "{day} · {runs} · {failures} failed",
         "runs": "{count} runs | {count} run | {count} runs"
     },
+    "telemetryFailureCauses": {
+        "columns": {
+            "crash": "Crashed",
+            "crashes": "What crashed",
+            "refused": "Refused",
+            "script": "Script",
+            "unknown": "Not classified",
+            "usage": "Wrong usage"
+        },
+        "meta": "A check that found something is not a failure; runs from before outcomes were kept are counted apart",
+        "none": "No script refused, was misused or crashed.",
+        "title": "Why runs failed"
+    },
     "telemetryLintUsage": {
         "columns": {
             "disabled": "Disabled inline",
@@ -776,7 +806,7 @@
     },
     "telemetryRunsPanel": {
         "endLabel": "last day",
-        "meta": "Usage log · collected {age}",
+        "meta": "Usage log",
         "title": "Tooling runs per day",
         "unit": "runs"
     },
@@ -786,6 +816,7 @@
             "agent": "By agents",
             "failed": "Failed",
             "last": "Last run",
+            "median": "Median time",
             "runs": "Runs",
             "script": "Script"
         },
@@ -866,7 +897,6 @@
             "warning": "Meant for AI-run projects: a ticket bundles several blocks, so no one reviews each block's code by hand."
         }
     },
-    "personalSiteLink": "Visitor site",
     "wiki": {
         "count": "{count} pages, read in place",
         "groups": {
@@ -912,13 +942,9 @@
         },
         "title": "Wiki"
     },
-    "wikiBroken": {
-        "title": "Broken relative links"
-    },
     "wikiPage": {
         "after": "Next in {group}",
         "before": "Previous in {group}",
-        "broken": "This page links to something that is not there",
         "crumb": "wiki",
         "missing": {
             "description": "Nothing in the workspace matches {path}. The wiki links only to files that exist, so this is a hand-typed or stale URL.",
@@ -974,7 +1000,7 @@
             "label": "Milestone"
         },
         "summary": {
-            "help": "One line on what the site is and who reads it",
+            "help": "A few words on what it is, such as \"Photographer portfolio port\"",
             "label": "Summary"
         },
         "title": {
@@ -993,7 +1019,7 @@
         }
     },
     "wizardReview": {
-        "graph": "Dependency graph"
+        "graph": "Dependency map"
     },
     "wizardSummary": {
         "noTemplate": "No template",
@@ -1009,7 +1035,6 @@
         "all": "All {count}",
         "empty": "Nothing open here.",
         "filters": {
-            "attention": "Attention",
             "audits": "Audits",
             "decisions": "Decisions",
             "issues": "Issues",
@@ -1020,9 +1045,6 @@
         "reading": "Reading open issues…",
         "rows": {
             "auditOpen": "{open} of {total} open",
-            "brokenLinks": "{count} broken",
-            "invariant": "invariant",
-            "link": "link",
             "release": "{version} · unreleased",
             "toImplement": "to implement",
             "unversioned": "unversioned"
@@ -1033,34 +1055,33 @@
         "fallback": "Workflow"
     },
     "workflowActions": {
-        "never": "Never synced — run {setup} then {sync}",
-        "settings": "Settings",
-        "synced": "Snapshot updated {age}"
+        "never": "Never synced",
+        "settings": "Settings"
     },
     "workflowActivityStrip": {
-        "lastCommit": "Last commit {day}",
         "moved": "{count} capabilities | {count} capability | {count} capabilities",
         "noCommits": "No commits yet",
         "segment": "{stage} · {day} · {moved}",
-        "title": "Activity",
         "tooltip": "Capabilities moved per day, from commits tagged with a ticket number"
     },
     "workflowAlerts": {
         "blank": {
             "description": "Ask Claude to draft its map: it asks what the project is, writes the blocks under {extras} in {file}, and they show here for you to check before anything is filed.",
             "title": "This project has no blocks yet"
-        },
-        "problems": "This project's files have problems",
-        "reasons": {
-            "group": "{detail} is a group; label one of its capabilities instead",
-            "noLabel": "no {detail} label",
-            "noMilestone": "not in the milestone",
-            "off": "its capability is switched off",
-            "unknown": "unknown capability {detail}"
-        },
-        "unsorted": {
-            "lead": "Not placed yet. Give each one the milestone and a {label} label on GitHub, then sync again.",
-            "title": "{count} to organise"
+        }
+    },
+    "workflowBlock": {
+        "hide": "Hide the details"
+    },
+    "workflowBoard": {
+        "activity": "Activity",
+        "mapHint": "Click an empty spot for the whole map",
+        "search": "Search blocks",
+        "view": "How to browse the blocks",
+        "views": {
+            "cards": "Cards",
+            "list": "List",
+            "map": "Map"
         }
     },
     "workflowCapabilityDetail": {
@@ -1126,11 +1147,10 @@
         "points": "{points} SP"
     },
     "workflowGraph": {
-        "details": "Details for {title}",
         "exitFull": "Exit full screen",
-        "fit": "Fit the selected path",
+        "fit": "Frame the selected block",
         "full": "Full screen",
-        "label": "Dependency graph",
+        "label": "Dependency map",
         "node": "{title}, {state}",
         "relation": {
             "needed": "needed",
@@ -1138,12 +1158,6 @@
         },
         "zoomIn": "Zoom in",
         "zoomOut": "Zoom out"
-    },
-    "workflowGraphSection": {
-        "chain": "{status} Longest chain left: {chain}.",
-        "status": "{state}. Its path stays lit; click an empty spot for the whole map.",
-        "title": "Dependency graph",
-        "titleSelected": "Dependency graph · {title}"
     },
     "workflowHomePanel": {
         "meta": "Projects working through their map",
@@ -1163,6 +1177,16 @@
         "done": "Everything switched on is done.",
         "none": "No blocks yet.",
         "unblocks": "unblocks {count}"
+    },
+    "workflowList": {
+        "columns": {
+            "block": "Block",
+            "points": "SP",
+            "state": "State",
+            "tickets": "Tickets",
+            "unblocks": "Unblocks"
+        },
+        "none": "No block matches “{term}”."
     },
     "workflowNew": {
         "cancel": "Cancel",
@@ -1185,8 +1209,8 @@
         "remove": "Remove {page}",
         "rename": "Rename {page}"
     },
-    "workflowProblems": {
-        "title": "{count} workflow file problems"
+    "workflowPane": {
+        "show": "Show the block's details"
     },
     "workflowProjects": {
         "empty": "No project under {folder} yet.",
@@ -1213,7 +1237,6 @@
     },
     "workflowStageCards": {
         "activity": "Active on {days} days, last on {day}",
-        "details": "Details for {title}",
         "dot": "#{number} {title} · {status}",
         "points": "{points} SP",
         "progress": "{done} of {total} · {points}",
@@ -1221,11 +1244,9 @@
         "summary": "{count} {status}"
     },
     "workflowSummary": {
-        "done": "{done} of {total} done",
-        "estimated": "{points} still template estimates",
-        "milestone": "Milestone {milestone}",
-        "points": "{done} of {total} SP done",
-        "tickets": "{blocks} blocks · {filed} tickets filed · {toFile} to file",
+        "done": "{done} of {total} blocks done ({points})",
+        "points": "{done}/{total} SP",
+        "tickets": "{filed}/{total} tickets filed",
         "unestimated": "{count} unestimated"
     },
     "workflowTemplateCard": {

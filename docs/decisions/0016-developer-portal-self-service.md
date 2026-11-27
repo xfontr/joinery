@@ -22,9 +22,9 @@ Three facts about the repo decide the answer, and all three are newer than the o
 
 | Fact | Where |
 | --- | --- |
-| developer-portal is built and deployed — a prerender published to GitHub Pages, no host and no secret | [`developer-portal-deploy.yml`](../../.github/workflows/developer-portal-deploy.yml), [`0014`](./0014-developer-portal-deployment.md) |
-| `huella-legal` has a production pipeline, and every deploy is recorded as a GitHub Deployment | [`netlify-deployment.yml`](../../.github/workflows/netlify-deployment.yml) |
-| developer-portal requires exactly one env var, `NUXT_PUBLIC_REPO_URL` — the observability URLs belong to `huella-legal` | [`apps/developer-portal/.env.example`](../../apps/developer-portal/.env.example) |
+| developer-portal is built and deployed — a prerender published to GitHub Pages, no host and no secret | `developer-portal-deploy.yml`, [`0014`](./0014-developer-portal-deployment.md) |
+| `huella-legal` has a production pipeline, and every deploy is recorded as a GitHub Deployment | `netlify-deployment.yml` |
+| developer-portal requires exactly one env var, `NUXT_PUBLIC_REPO_URL` — the observability URLs belong to `huella-legal` | `apps/developer-portal/.env.example` |
 
 ## Result
 
@@ -42,7 +42,7 @@ Python 3.11+ for the docs plugin. Its own docs describe it as "more of a library
 The part that isn't a matter of taste is the catalog. Backstage's is a hand-written
 `catalog-info.yaml` per component; this repo's is the Nx project graph, derived. **Adopting it
 converts derived state into maintained state**, which is the exact direction the invariant checks in
-[`invariants.ts`](../../apps/developer-portal/tools/lib/invariants.ts) exist to prevent.
+`invariants.ts` exist to prevent.
 
 **No other framework is a candidate, because the category has no open-source member that isn't
 Backstage.** Everything else in it is either a Backstage distribution (Roadie, Spotify Portal, Red

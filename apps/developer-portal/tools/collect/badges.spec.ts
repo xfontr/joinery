@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { toBadges } from "./badges.ts";
 import type { CoverageArtifact } from "#layers/snapshot/shared/types/CoverageArtifact.ts";
 import type { DepsArtifact } from "#layers/snapshot/shared/types/DepsArtifact.ts";
-import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
 
 const NONE = { info: 0, low: 0, moderate: 0, high: 0, critical: 0 };
@@ -15,7 +14,7 @@ const DEPS = {
     outdated: null,
 } satisfies DepsArtifact;
 
-const NOTHING = { deps: null, coverage: null, docs: null, metrics: null };
+const NOTHING = { deps: null, coverage: null, metrics: null };
 
 describe("toBadges", () => {
     it("reads every figure from its artifact", () => {
@@ -30,17 +29,11 @@ describe("toBadges", () => {
                     report: false,
                     projects: [],
                 } satisfies CoverageArtifact,
-                docs: {
-                    generatedAt: DEPS.generatedAt,
-                    pages: [{}, {}, {}] as DocsArtifact["pages"],
-                    brokenLinkCount: 4,
-                } satisfies DocsArtifact,
                 metrics: {
                     generatedAt: "2026-11-18T10:00:00Z",
                     commit: "abc1234def",
                     branch: "master",
                     projects: [],
-                    invariantFindings: [],
                     conventionalCommitRate: null,
                     commitsSinceLastRelease: null,
                 } satisfies MetricsArtifact,
@@ -49,8 +42,6 @@ describe("toBadges", () => {
             advisories: 2,
             worstSeverity: "low",
             lineCoverage: 81,
-            docPages: 3,
-            brokenLinks: 4,
             collected: { branch: "master", commit: "abc1234def", at: "2026-11-18T10:00:00Z" },
         });
     });
@@ -66,8 +57,6 @@ describe("toBadges", () => {
             advisories: 0,
             worstSeverity: null,
             lineCoverage: null,
-            docPages: null,
-            brokenLinks: 0,
             collected: null,
         });
     });

@@ -1,5 +1,5 @@
 ---
-issue:
+issue: 489
 status: implemented
 decision: accepted
 ---

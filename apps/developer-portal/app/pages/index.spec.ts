@@ -1,9 +1,7 @@
 import { serveEndpoint } from "@joinery/configs/vitest/utils/nuxt";
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises, type VueWrapper } from "@vue/test-utils";
-import { ref } from "vue";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { IssuesRead } from "#layers/github/app/utils/issues.ts";
 import type { CoverageArtifact } from "#layers/snapshot/shared/types/CoverageArtifact.ts";
 import type { DepsArtifact } from "#layers/snapshot/shared/types/DepsArtifact.ts";
 import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
@@ -12,7 +10,6 @@ import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetric
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 import type { ProjectsArtifact } from "#layers/snapshot/shared/types/ProjectsArtifact.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
-import type { Snapshot } from "#layers/workflows/shared/types/Snapshot.ts";
 import { assembleWorkflows } from "#layers/workflows/shared/workflows.ts";
 import type { DashboardLayout } from "~/utils/dashboardLayout";
 import Page from "./index.vue";
@@ -21,8 +18,6 @@ import en from "../../i18n/locales/en.json";
 const docs = vi.hoisted(() => ({
     readmes: [] as { path: string; title: string; description: string }[],
 }));
-
-const github = vi.hoisted(() => ({ read: null as unknown }));
 
 mockNuxtImport("queryCollection", () => () => {
     let wanted = "";
@@ -37,8 +32,6 @@ mockNuxtImport("queryCollection", () => () => {
     };
     return query;
 });
-
-mockNuxtImport("useIssues", () => () => ({ data: github.read, shown: github.read }));
 
 interface Artifacts {
     projects?: ProjectsArtifact | null;
@@ -63,47 +56,6 @@ const app = (name: string): ProjectNode => ({
     tags: [],
     dependsOn: [],
     dependedOnBy: [],
-});
-
-const TEMPLATE = {
-    id: "website-rebuild",
-    title: "Website",
-    stages: [{ id: "build", title: "Build" }],
-    capabilities: [{ id: "page", stage: "build", title: "Page" }],
-};
-
-const workflowProject = (id: string) => ({
-    file: `projects/${id}.json`,
-    ok: true as const,
-    value: { id, title: id, template: "website-rebuild", milestone: id, switches: {} },
-});
-
-const doneSnapshot = (id: string) => ({
-    file: `snapshots/${id}.json`,
-    ok: true as const,
-    value: {
-        syncedAt: "2026-11-01T00:00:00Z",
-        milestone: id,
-        issues: [
-            {
-                number: 1,
-                title: "Page",
-                url: "",
-                state: "closed",
-                reason: "completed",
-                caps: ["page"],
-                createdAt: "2026-10-01",
-                closedAt: "2026-11-01",
-                activity: [],
-                blockedBy: [],
-                branch: false,
-                pr: false,
-                owner: false,
-                complexity: null,
-            },
-        ],
-        noMilestone: [],
-    } satisfies Snapshot,
 });
 
 const serve = (artifacts: Artifacts, workflows = assembleWorkflows([], [], {})) => {
@@ -135,7 +87,6 @@ const METRICS = {
     commit: "abc",
     branch: "master",
     projects: [],
-    invariantFindings: [],
     conventionalCommitRate: null,
     commitsSinceLastRelease: null,
 } satisfies MetricsArtifact;
@@ -168,7 +119,6 @@ const projects = (nodes: ProjectNode[]): Artifacts => ({
 beforeEach(() => {
     snapshot.artifacts = {};
     docs.readmes = [];
-    github.read = ref<IssuesRead>({ fetchedAt: "2026-11-01", error: null, issues: [] });
 });
 
 afterEach(() => {
@@ -195,33 +145,14 @@ describe("home page", () => {
     });
 
     it("narrows the queue to one kind of work when its filter is picked", async () => {
-        serve({
-            metrics: {
-                ...METRICS,
-                projects: [unreleased("lib", 3)],
-                invariantFindings: [
-                    { id: "drift", title: "Drift", detail: "Fix it", evidence: [] },
-                ],
-            },
-        });
+        serve({ metrics: { ...METRICS, projects: [unreleased("lib", 3)] } });
         const wrapper = await open();
 
-        await wrapper.findComponent({ name: "UTabs" }).setValue("attention");
+        await wrapper.findComponent({ name: "UTabs" }).setValue("releases");
+        expect(hrefs(wrapper)).toContain("/projects/lib");
 
-        expect(wrapper.text()).toContain("Drift");
+        await wrapper.findComponent({ name: "UTabs" }).setValue("decisions");
         expect(hrefs(wrapper)).not.toContain("/projects/lib");
-    });
-
-    it("puts a dash on every Health figure whose artifact was never collected", async () => {
-        serve({});
-        const wrapper = await open();
-
-        expect(health(wrapper)).toMatchObject({
-            "Line coverage": "—",
-            Advisories: "—",
-            "Tooling runs failed": "—",
-            "Doc pages": "—",
-        });
     });
 
     it("reads the Health figures from the snapshot", async () => {
@@ -245,103 +176,9 @@ describe("home page", () => {
         expect(health(wrapper)).toMatchObject({ "Line coverage": "82%", Advisories: "0" });
     });
 
-    it("links each page with a broken link and lists invariant findings for attention", async () => {
-        serve({
-            docs: {
-                generatedAt: "2026-11-01T00:00:00Z",
-                pages: [
-                    {
-                        path: "docs/a.md",
-                        kind: "doc",
-                        title: "A",
-                        words: 1,
-                        updatedAt: null,
-                        decisionStatus: null,
-                        decisionOutcome: null,
-                        decisionSupersededBy: null,
-                        audit: null,
-                        brokenLinks: [{ href: "./missing", resolved: "docs/missing.md" }],
-                    },
-                ],
-                brokenLinkCount: 1,
-            },
-            metrics: {
-                generatedAt: "2026-11-01T00:00:00Z",
-                commit: "abc",
-                branch: "master",
-                projects: [],
-                invariantFindings: [
-                    { id: "drift", title: "Drift", detail: "Fix it", evidence: [] },
-                ],
-                conventionalCommitRate: null,
-                commitsSinceLastRelease: null,
-            },
-        });
-        const wrapper = await open();
-        await wrapper.findComponent({ name: "UTabs" }).setValue("attention");
-
-        expect(hrefs(wrapper)).toContain("/wiki/docs/a");
-        expect(wrapper.text()).toContain("Drift");
-    });
-
-    it("lists only unfinished workflows and always offers a new one", async () => {
-        serve(
-            {},
-            assembleWorkflows(
-                [{ file: "templates/website-rebuild.json", ok: true, value: TEMPLATE }],
-                [workflowProject("live"), workflowProject("shipped")],
-                { shipped: doneSnapshot("shipped") },
-            ),
-        );
-        const wrapper = await open();
-
-        expect(hrefs(wrapper)).toContain("/workflows/live");
-        expect(hrefs(wrapper)).not.toContain("/workflows/shipped");
-        expect(hrefs(wrapper)).toContain("/workflows/new");
-    });
-
     describe("once the welcome and featured widgets are added back", () => {
         beforeEach(() => {
             restore("welcome", "featured");
-        });
-
-        it("introduces the repository from its README and links the newcomer routes", async () => {
-            docs.readmes = [
-                { path: "/readme", title: "Repository overview", description: "What it holds." },
-            ];
-            serve({});
-            const wrapper = await open();
-
-            expect(wrapper.text()).toContain("Repository overview");
-            expect(wrapper.text()).toContain("What it holds.");
-            expect(hrefs(wrapper)).toEqual(
-                expect.arrayContaining(["/projects", "/graph", "/wiki/docs/guides/first-hour"]),
-            );
-        });
-
-        it("features applications, titled by their README, and never a package", async () => {
-            docs.readmes = [
-                { path: "/apps/huella-legal/readme", title: "Huella Legal", description: "Law." },
-            ];
-            serve(
-                projects([
-                    app("huella-legal"),
-                    { ...app("ui"), name: "@joinery/ui", root: "packages/ui" },
-                ]),
-            );
-            const wrapper = await open();
-
-            expect(wrapper.text()).toContain("Huella Legal");
-            expect(hrefs(wrapper)).toContain("/wiki/apps/huella-legal/readme");
-            expect(wrapper.text()).not.toContain("@joinery/ui");
-        });
-
-        it("features at most two applications", async () => {
-            serve(projects([app("one"), app("two"), app("three")]));
-            const wrapper = await open();
-
-            expect(wrapper.text()).toContain("@joinery/two");
-            expect(wrapper.text()).not.toContain("@joinery/three");
         });
 
         it("says the summaries are missing instead of inventing them", async () => {

@@ -1,59 +1,67 @@
-import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
-import { mockNuxtImport } from "@nuxt/test-utils/runtime";
+import { serveEndpoint, withSetup } from "@joinery/configs/vitest/utils/nuxt";
+import { getQuery } from "h3";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { nextTick, ref, type Ref } from "vue";
 import { useSearchPreview } from "./useSearchPreview";
 
-const fetching = vi.hoisted(() => ({
-    urls: [] as string[],
-    query: undefined as Ref<Record<string, unknown>> | undefined,
-    enabled: undefined as (() => boolean) | undefined,
-    status: undefined as Ref<string> | undefined,
-}));
+const HOME: Home = { latest: [], recent: [], theses: [], subjects: [], formats: [] };
 
-mockNuxtImport(
-    "useCachedFetch",
-    () =>
-        (
-            url: string,
-            options?: { query: Ref<Record<string, unknown>>; enabled: () => boolean },
-        ) => {
-            fetching.urls.push(url);
+const RESULT: ArticleSearch = {
+    items: [],
+    page: 1,
+    perPage: 20,
+    total: 0,
+    totalPages: 0,
+    query: "dolo",
+    subjects: [],
+};
 
-            if (options) {
-                fetching.query = options.query;
-                fetching.enabled = options.enabled;
-            }
+const serve = (search: () => unknown = () => RESULT) => {
+    const home: unknown[] = [];
+    const searches: Record<string, unknown>[] = [];
 
-            fetching.status = ref("success");
+    serveEndpoint("/api/home", () => {
+        home.push(true);
 
-            return { data: ref(undefined), status: fetching.status };
-        },
-);
+        return HOME;
+    });
+    serveEndpoint("/api/search", (event) => {
+        searches.push(getQuery(event));
+
+        return search();
+    });
+
+    return { home, searches };
+};
 
 const previewOf = async (term: Ref<string>) =>
     (await withSetup(() => useSearchPreview(term))).value;
 
+// useCachedFetch serves a payload it already holds, which would outlive the test that fetched it
 beforeEach(() => {
-    fetching.urls = [];
-    vi.useRealTimers();
+    clearNuxtData();
 });
 
 describe("useSearchPreview", () => {
     it("asks for the home payload too, since that is what fills the palette before any typing", async () => {
-        await previewOf(ref(""));
+        serve();
 
-        expect(fetching.urls).toEqual(["/api/home", "/api/search"]);
+        const preview = await previewOf(ref(""));
+
+        await vi.waitFor(() => expect(preview.home.value).toEqual(HOME));
     });
 
     it("never searches for a blank term, which the route would answer with a 404", async () => {
+        const { home, searches } = serve();
+
         await previewOf(ref("   "));
 
-        expect(fetching.enabled?.()).toBe(false);
+        await vi.waitFor(() => expect(home).toHaveLength(1));
+        expect(searches).toEqual([]);
     });
 
     it("searches only once typing pauses, so each keystroke is not a WordPress request", async () => {
-        vi.useFakeTimers();
+        const { searches } = serve();
         const term = ref("");
         const preview = await previewOf(term);
 
@@ -62,27 +70,29 @@ describe("useSearchPreview", () => {
         term.value = " dolo ";
         await nextTick();
 
-        expect(fetching.query?.value).toEqual({ query: "" });
         expect(preview.pending.value).toBe(true);
+        expect(searches).toEqual([]);
 
-        vi.advanceTimersByTime(250);
-        await nextTick();
+        await vi.waitFor(() => expect(preview.search.value).toEqual(RESULT));
 
-        expect(fetching.query?.value).toEqual({ query: "dolo" });
-        expect(fetching.enabled?.()).toBe(true);
+        expect(searches).toEqual([{ query: "dolo" }]);
         expect(preview.pending.value).toBe(false);
     });
 
     it("stays pending while the search is in flight, so stale matches are not taken as current", async () => {
-        vi.useFakeTimers();
+        let release!: () => void;
+        const { searches } = serve(
+            () => new Promise<ArticleSearch>((resolve) => (release = () => resolve(RESULT))),
+        );
         const term = ref("");
         const preview = await previewOf(term);
 
         term.value = "dolo";
-        vi.advanceTimersByTime(250);
-        await nextTick();
-        fetching.status!.value = "pending";
+        await vi.waitFor(() => expect(searches).toHaveLength(1));
 
         expect(preview.pending.value).toBe(true);
+
+        release();
+        await vi.waitFor(() => expect(preview.pending.value).toBe(false));
     });
 });

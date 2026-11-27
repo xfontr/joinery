@@ -2,11 +2,7 @@
     <section :id="`stage-${stage.id}`" class="flex flex-col gap-4">
         <header class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <h2 class="flex items-center gap-2 text-2xl font-bold">
-                <span
-                    class="size-3 rounded-full"
-                    :style="{ background: color }"
-                    aria-hidden="true"
-                />
+                <span class="size-3 rounded-xs" :style="{ background: color }" aria-hidden="true" />
                 {{ stage.title }}
             </h2>
             <p class="text-sm text-muted tabular-nums">
@@ -22,34 +18,35 @@
 
         <ul class="cards grid gap-4">
             <li
-                v-for="capability in shown"
+                v-for="(capability, order) in shown"
                 :id="`block-${capability.id}`"
                 :key="capability.id"
-                class="relative flex scroll-mt-24 rounded-2xl"
+                class="flex scroll-mt-24"
+                :style="{ '--order': order }"
             >
                 <button
                     type="button"
-                    class="relative flex min-h-24 flex-1 flex-col gap-1 overflow-hidden rounded-2xl border bg-elevated/50 py-4 pr-11 pl-6 text-left transition hover:-translate-y-0.5 hover:bg-elevated"
-                    :class="
-                        capability.id === selected
-                            ? 'border-inverted ring-1 ring-inverted'
-                            : 'border-default'
-                    "
+                    class="flex flex-1 flex-col gap-1 border bg-default px-4 py-3 text-left transition-colors hover:bg-elevated"
+                    :class="[
+                        capability.id === selected ? 'border-inverted' : 'border-default',
+                        activity && 'min-h-24',
+                    ]"
                     :style="{ '--state': capabilityColor(capability.state) }"
                     :aria-pressed="capability.id === selected"
                     @click="emit('select', capability.id)"
                 >
-                    <span class="absolute inset-y-0 left-0 w-1.5 bg-(--state)" aria-hidden="true" />
-                    <span class="flex items-start gap-1.5 text-base/tight font-semibold">
+                    <span
+                        class="flex items-start gap-1.5 text-sm/tight font-semibold text-highlighted"
+                    >
                         <UIcon
                             v-if="kindIcons[capability.id]"
                             :name="kindIcons[capability.id]!"
-                            class="mt-0.5 size-4 shrink-0 text-dimmed"
+                            class="mt-px size-3.5 shrink-0 text-dimmed"
                         />
                         {{ capability.title }}
                     </span>
-                    <span class="text-xs font-semibold">
-                        <span class="text-(--state)">
+                    <span class="flex items-center gap-1.5 text-xs">
+                        <span class="font-semibold text-(--state)">
                             {{ $t(`workflows.capabilityState.${capability.state}`) }}
                         </span>
                         <span v-if="capability.points.total > 0" class="text-muted tabular-nums">
@@ -61,7 +58,10 @@
                             }}
                         </span>
                     </span>
-                    <span class="mt-auto -mr-5 flex flex-wrap items-end gap-1.5 pt-2">
+                    <span
+                        v-if="capability.issues.length > 0 || activityOf[capability.id]?.weeks"
+                        class="mt-auto flex flex-wrap items-end gap-1.5 pt-2"
+                    >
                         <span v-if="capability.issues.length > 0" class="sr-only">{{
                             ticketSummary(capability.issues)
                         }}</span>
@@ -70,15 +70,16 @@
                             aria-hidden="true"
                             class="gap-1.5"
                             :class="
-                                capability.issues.length > TWO_ROWS_FROM
+                                capability.issues.length > TWO_ROWS_FROM &&
+                                activityOf[capability.id]?.weeks
                                     ? 'grid grid-flow-col grid-rows-2'
-                                    : 'flex'
+                                    : 'flex flex-wrap'
                             "
                         >
                             <span
                                 v-for="issue in capability.issues"
                                 :key="issue.number"
-                                class="size-2.5 rounded-full"
+                                class="size-2.5 rounded-xs"
                                 :style="{ background: stateColor(ticketStatus(issue)) }"
                                 :title="
                                     $t('workflowStageCards.dot', {
@@ -99,15 +100,6 @@
                         />
                     </span>
                 </button>
-                <UButton
-                    icon="i-lucide-info"
-                    color="neutral"
-                    variant="ghost"
-                    size="xs"
-                    class="absolute top-3 right-3 rounded-full"
-                    :aria-label="$t('workflowStageCards.details', { title: capability.title })"
-                    @click="emit('details', capability.id)"
-                />
             </li>
         </ul>
     </section>
@@ -134,9 +126,9 @@ interface Props {
 }
 
 const { stage, index, selected = null, activity = null, activityPeak = 1 } = defineProps<Props>();
-const emit = defineEmits<{ select: [capability: string]; details: [capability: string] }>();
+const emit = defineEmits<{ select: [capability: string] }>();
 
-/** Past this many tickets the dots stack in two rows, so the activity line keeps their row. */
+/** Past this many tickets the dots stack in two rows, so an activity line keeps their row. */
 const TWO_ROWS_FROM = 5;
 
 const { t } = useI18n();
@@ -197,5 +189,33 @@ const activityOf = computed(() =>
 <style scoped>
 .cards {
     grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .cards > li {
+        animation: settle 0.35s ease-out calc(var(--order) * 20ms) backwards;
+    }
+}
+
+/* An identical animation under a new name restarts, so the cards settle each time the pane joins
+   or leaves the layout, which only happens where it sits beside the board. */
+@media (min-width: 80rem) and (prefers-reduced-motion: no-preference) {
+    :root:has([data-pane]:not([data-floating])) .cards > li {
+        animation-name: settle-beside-pane;
+    }
+}
+
+@keyframes settle {
+    from {
+        opacity: 0.25;
+        transform: scale(0.96);
+    }
+}
+
+@keyframes settle-beside-pane {
+    from {
+        opacity: 0.25;
+        transform: scale(0.96);
+    }
 }
 </style>

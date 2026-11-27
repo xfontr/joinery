@@ -1,14 +1,6 @@
 import { serveEndpoint, withSetup } from "@joinery/configs/vitest/utils/nuxt";
-import { mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { useIssues } from "./useIssues.ts";
-
-const nuxt = vi.hoisted(() => ({ options: new Map<string, unknown>() }));
-
-mockNuxtImport("useAsyncData", (original) => (...args: Parameters<typeof original>) => {
-    nuxt.options.set(args[0] as string, args[2]);
-    return original(...args);
-});
 
 const ISSUES_API = "https://api.github.com/repos/acme/repo/issues";
 
@@ -92,13 +84,6 @@ describe("useIssues", () => {
         await issues.reload();
 
         expect(issues.data.value.issues.map((issue) => issue.number)).toEqual([7]);
-    });
-
-    it("reads GitHub from the browser, never into the prerendered page", async () => {
-        github(() => []);
-        await use();
-
-        expect(nuxt.options.get("issues")).toMatchObject({ server: false });
     });
 
     it("shows what was read once mounted, the same issues a render can rely on", async () => {

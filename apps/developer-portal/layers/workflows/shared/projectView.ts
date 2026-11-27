@@ -2,7 +2,7 @@ import { routedNeeds, withStageNeeds } from "./capability.ts";
 import { featuresOf, isEnabled, isGroupEnabled } from "./project.ts";
 import { day, issueAsOf, ticketStatus } from "./ticket.ts";
 import { ticketsToFile } from "./ticketSize.ts";
-import { CAPABILITY_LABEL_PREFIX, CAPABILITY_STATES } from "./constants.ts";
+import { CAPABILITY_STATES } from "./constants.ts";
 import type { Capability } from "./types/Capability.ts";
 import type { CapabilityState } from "./types/CapabilityState.ts";
 import type { CapabilityView } from "./types/CapabilityView.ts";
@@ -13,7 +13,6 @@ import type { ProjectView } from "./types/ProjectView.ts";
 import type { Snapshot } from "./types/Snapshot.ts";
 import type { StageView } from "./types/StageView.ts";
 import type { Template } from "./types/Template.ts";
-import type { UnsortedIssue } from "./types/UnsortedIssue.ts";
 
 const progressOf = (capabilities: CapabilityView[]): Progress => {
     const counted = capabilities.filter(
@@ -201,7 +200,6 @@ export const projectView = (
         unblockCount: unblockCount(capability.id),
         points: pointsOf(capability),
     }));
-    const viewById = new Map(views.map((view) => [view.id, view]));
 
     const chains = new Map<string, string[]>();
     const chainFrom = (id: string, walking: Set<string>): string[] => {
@@ -248,37 +246,6 @@ export const projectView = (
         ]),
     ) as Record<CapabilityState, number>;
 
-    const unsorted: UnsortedIssue[] = issues.flatMap((issue): UnsortedIssue[] => {
-        if (issue.caps.length === 0) {
-            return [{ issue, reason: "noLabel", detail: CAPABILITY_LABEL_PREFIX }];
-        }
-
-        const group = template.groups.find(({ id }) => issue.caps.includes(id));
-        if (group) {
-            return [{ issue, reason: "group", detail: group.id }];
-        }
-
-        const unknown = issue.caps.filter((cap) => !viewById.has(cap));
-        if (unknown.length > 0) {
-            return [{ issue, reason: "unknown", detail: unknown.join(", ") }];
-        }
-
-        if (issue.state === "open" && issue.caps.every((cap) => !enabled.get(cap))) {
-            return [{ issue, reason: "off", detail: "" }];
-        }
-
-        return [];
-    });
-
-    const strays: UnsortedIssue[] =
-        asOf === null && left.length > 0
-            ? (snapshot?.noMilestone ?? []).map((issue) => ({
-                  issue,
-                  reason: "noMilestone",
-                  detail: "",
-              }))
-            : [];
-
     const pool = all.filter(({ id }) => enabled.get(id) && !settledFor(id));
     const filedIds = new Set(
         pool.flatMap(({ id }) => ((live.get(id) ?? []).length > 0 ? [id] : [])),
@@ -300,7 +267,6 @@ export const projectView = (
         left,
         counts,
         critical,
-        unsorted: [...unsorted, ...strays],
         progress: progressOf(views),
         points: addPoints(views.map(({ points }) => points)),
         tickets,

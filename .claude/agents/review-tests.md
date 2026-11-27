@@ -23,6 +23,14 @@ A finding is **blocking** when any of these hold:
 For each untested criterion, name the behaviour, where its spec should sit and a test title. For
 each weak test, quote it and say what mutation of the code it would let through.
 
+A test that shouldn't exist is also **blocking**, since every agent reruns it on every check:
+- it fits a row of the skill's "What not to test" table
+- it pins a case a lower-level spec already pins, or an e2e test repeats a unit spec
+- it mocks the app's own composable where `serveEndpoint` would answer, or adds a mock nothing
+  asserts on, which moves the file into `nuxt-isolated`
+
+For each, quote it and say what to delete or which spec already covers it.
+
 **Advisory** is for style and for coverage of code paths the issue doesn't care about. Don't ask for
 tests of plain `git`/`gh`/framework calls with nothing to assert but a mock of themselves; the repo
 deliberately doesn't write those.

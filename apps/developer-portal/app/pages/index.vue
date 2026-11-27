@@ -3,7 +3,6 @@
         <template #header>
             <PageHeader :title="$t('overview.title')">
                 <template #actions>
-                    <SnapshotAge class="mr-3 hidden sm:flex" :manifest />
                     <UButton
                         :label="editing ? $t('overview.done') : $t('overview.customize')"
                         :icon="editing ? 'i-lucide-check' : 'i-lucide-layout-grid'"
@@ -22,7 +21,7 @@
                     <WorkQueue :rows :issues-read :issues-error />
                 </template>
                 <template #health>
-                    <HealthLines :lines="health" :collected-age />
+                    <HealthLines :lines="health" />
                 </template>
                 <template #workflows><WorkflowHomePanel /></template>
                 <template #activity><TelemetryRunsPanel /></template>
@@ -49,8 +48,6 @@ const widgets = HOME_WIDGETS.map((widget) => ({
 const { rows, issues } = useWorkQueue();
 const health = useHealthLines();
 
-const manifest = snapshotManifest();
-const collectedAge = relativeTime(metricsArtifact()?.generatedAt, t);
 const issuesRead = computed(() => Boolean(issues.value.fetchedAt));
 const issuesError = computed(() => Boolean(issues.value.error));
 const empty = usageArtifact() ? [] : ["activity"];

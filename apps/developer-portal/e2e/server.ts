@@ -9,7 +9,7 @@ const BASE = "/portal/";
 const options = {
     public: new URL("../.output/public", import.meta.url).pathname,
     cleanUrls: true,
-    trailingSlash: true,
+    trailingSlash: false,
     directoryListing: false,
 };
 

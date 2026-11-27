@@ -5,7 +5,6 @@ import WorkflowStageCards from "./WorkflowStageCards.vue";
 
 const MESSAGES = {
     workflowStageCards: {
-        details: "Details for {title}",
         dot: "#{number} {title} · {status}",
         points: "{points} SP",
         progress: "{done} of {total} · {points}",
@@ -94,25 +93,43 @@ describe("WorkflowStageCards", () => {
     });
 
     it.each([
-        [5, false],
-        [6, true],
-    ])("stacks %i ticket dots in two rows: %s", async (count, stacked) => {
-        const crowded = projectView(project, template, {
-            syncedAt: "2026-11-09T00:00:00Z",
-            milestone: "P",
-            issues: Array.from({ length: count }, (_, index) => ticket(index + 1, ["kit"])),
-            noMilestone: [],
-        });
-        const wrapper = await mountSuspended(WorkflowStageCards, {
-            props: { stage: crowded.stages[0]!, index: 0 },
-            global: { stubs: { UIcon: true } },
-        });
-        expect(wrapper.find(".sr-only").text()).toMatch(new RegExp(`^${count} `));
-        const dots = wrapper
-            .findAll("[aria-hidden='true']")
-            .find((group) => group.findAll("[title]").length === count);
-        expect(dots?.classes().includes("grid-rows-2")).toBe(stacked);
-    });
+        [6, false, false],
+        [5, true, false],
+        [6, true, true],
+    ])(
+        "stacks %i ticket dots in two rows beside an activity line (%s): %s",
+        async (count, line, stacked) => {
+            const crowded = projectView(project, template, {
+                syncedAt: "2026-11-09T00:00:00Z",
+                milestone: "P",
+                issues: Array.from({ length: count }, (_, index) => ticket(index + 1, ["kit"])),
+                noMilestone: [],
+            });
+            const wrapper = await mountSuspended(WorkflowStageCards, {
+                props: {
+                    stage: crowded.stages[0]!,
+                    index: 0,
+                    activity: line
+                        ? {
+                              kit: {
+                                  weeks: [1],
+                                  commits: 1,
+                                  days: 1,
+                                  tickets: 1,
+                                  lastDay: "2026-11-02",
+                              },
+                          }
+                        : null,
+                },
+                global: { stubs: { UIcon: true } },
+            });
+            expect(wrapper.find(".sr-only").text()).toMatch(new RegExp(`^${count} `));
+            const dots = wrapper
+                .findAll("[aria-hidden='true']")
+                .find((group) => group.findAll("[title]").length === count);
+            expect(dots?.classes().includes("grid-rows-2")).toBe(stacked);
+        },
+    );
 
     it("gives a switched-off block no card, since it isn't part of the project", async () => {
         const wrapper = await mount();
@@ -127,12 +144,5 @@ describe("WorkflowStageCards", () => {
         expect(page!.attributes("aria-pressed")).toBe("true");
         await kit!.trigger("click");
         expect(wrapper.emitted("select")).toEqual([["kit"]]);
-    });
-
-    it("asks for a block's details from its info button without needing it selected first", async () => {
-        const wrapper = await mount("page");
-
-        await wrapper.find("button[aria-label='Details for Kit']").trigger("click");
-        expect(wrapper.emitted("details")).toEqual([["kit"]]);
     });
 });

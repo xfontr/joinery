@@ -32,7 +32,6 @@ const page = (
     decisionOutcome: null,
     decisionSupersededBy: null,
     audit: { scope, commit: "61b6f7f", findings },
-    brokenLinks: [],
     ...overrides,
 });
 

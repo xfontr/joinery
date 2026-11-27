@@ -13,7 +13,6 @@ const page = (path: string, updatedAt: string | null): DocPage => ({
     decisionOutcome: null,
     decisionSupersededBy: null,
     audit: null,
-    brokenLinks: [],
 });
 
 describe("WikiRecent", () => {

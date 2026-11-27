@@ -1,7 +1,6 @@
 # 📦 @joinery/huella-legal
 
-A Nuxt 4 redesign of the Huella Legal law blog. Content comes from an external WordPress through
-[`@joinery/content`](../../packages/content/README.md); the site is Spanish-only.
+Nuxt 4 redesign of the Huella Legal blog, fed by WordPress. Spanish only.
 
 ## Development
 

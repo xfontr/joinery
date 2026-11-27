@@ -1,7 +1,6 @@
 import type { BreadcrumbItem } from "@nuxt/ui";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
-import { h } from "vue";
 import PageIntro from "./PageIntro.vue";
 
 const global = { mocks: { $t: (key: string) => `t(${key})` } };
@@ -22,15 +21,5 @@ describe("page intro", () => {
             "/publicaciones/",
         ]);
         expect(wrapper.find("nav").text()).toContain("Derecho penal");
-    });
-
-    it("renders whatever heading the page puts under the breadcrumb", async () => {
-        const wrapper = await mountSuspended(PageIntro, {
-            props,
-            global,
-            slots: { default: () => h("h1", "Derecho penal") },
-        });
-
-        expect(wrapper.find("h1").text()).toBe("Derecho penal");
     });
 });

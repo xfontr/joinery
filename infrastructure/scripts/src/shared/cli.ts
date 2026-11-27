@@ -1,7 +1,15 @@
 import process from "node:process";
 import { out } from "./adapters/io.ts";
 import { appendUsage, currentBranch, projectNames } from "./adapters/usage.ts";
-import { dispatch, invocation, parse, report as classifyError, type Args } from "./domain/cli.ts";
+import {
+    dispatch,
+    endingOf,
+    invocation,
+    parse,
+    report as classifyError,
+    type Args,
+    type Ending,
+} from "./domain/cli.ts";
 import { areaOf, callerOf, flagLabels, isRecorded, scriptOf, targetOf } from "./domain/usage.ts";
 
 export type { Args } from "./domain/cli.ts";
@@ -27,26 +35,36 @@ const report = (error: unknown): void => {
     fail(result.message);
 };
 
-const execute = async (commands: Command | Record<string, Command>, args: Args): Promise<void> => {
+const execute = async (
+    commands: Command | Record<string, Command>,
+    args: Args,
+): Promise<Ending> => {
     try {
         if (typeof commands === "function") {
             await commands(args);
-            return;
-        }
+        } else {
+            const result = dispatch(
+                commands,
+                args,
+                invocation(process.argv[1] ?? "", process.cwd()),
+            );
+            if (!result.matched) {
+                fail(result.usage);
+                return { outcome: "usage", error: "" };
+            }
 
-        const result = dispatch(commands, args, invocation(process.argv[1] ?? "", process.cwd()));
-        if (!result.matched) {
-            fail(result.usage);
-            return;
+            await result.command({
+                flags: result.args.flags,
+                positionals: result.args.positionalsWithoutCommandName,
+            });
         }
-
-        await result.command({
-            flags: result.args.flags,
-            positionals: result.args.positionalsWithoutCommandName,
-        });
     } catch (error) {
         report(error);
+        return endingOf(error);
     }
+
+    // A command that sets a failing exit code without throwing has reported what it found.
+    return { outcome: Number(process.exitCode ?? 0) === 0 ? "ok" : "finding", error: "" };
 };
 
 /** The shell's code for a process ended by Ctrl+C. */
@@ -57,6 +75,7 @@ const record = (
     args: Args,
     startedAt: number,
     exit: number,
+    ending: Ending,
 ): void => {
     const script = scriptOf(process.argv[1] ?? "");
     if (!isRecorded(process.env, script)) return;
@@ -74,11 +93,14 @@ const record = (
         flags: flagLabels(args.flags),
         area: areaOf(currentBranch()),
         caller: callerOf(process.env),
-        tty: process.stdout.isTTY ? "1" : "0",
         exit: String(exit),
+        outcome: ending.outcome,
+        error: ending.error,
         ms: String(Date.now() - startedAt),
     });
 };
+
+const INTERRUPTED_ENDING: Ending = { outcome: "interrupted", error: "" };
 
 export const run = async (commands: Command | Record<string, Command>): Promise<void> => {
     const startedAt = Date.now();
@@ -86,13 +108,15 @@ export const run = async (commands: Command | Record<string, Command>): Promise<
 
     // Without this a Ctrl+C on `pnpm dev` kills the process before the row below is written.
     const interrupt = (): void => {
-        record(commands, args, startedAt, INTERRUPTED);
+        record(commands, args, startedAt, INTERRUPTED, INTERRUPTED_ENDING);
         process.exit(INTERRUPTED);
     };
     process.once("SIGINT", interrupt);
 
-    await execute(commands, args);
+    const ending = await execute(commands, args);
 
+    // A SIGINT that arrived while `spawnSync` blocked the loop is delivered on the next tick.
+    await new Promise((resolve) => setImmediate(resolve));
     process.off("SIGINT", interrupt);
-    record(commands, args, startedAt, Number(process.exitCode ?? 0));
+    record(commands, args, startedAt, Number(process.exitCode ?? 0), ending);
 };

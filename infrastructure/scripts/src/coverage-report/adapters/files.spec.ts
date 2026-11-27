@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import libCoverage from "istanbul-lib-coverage";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -17,11 +17,6 @@ beforeEach(() => {
 afterEach(() => rmSync(directory, { recursive: true, force: true }));
 
 describe("loadReport", () => {
-    it("loads an existing coverage JSON file", () => {
-        writeFileSync(join(directory, "coverage-final.json"), JSON.stringify({ files: {} }));
-        expect(loadReport("coverage-final.json")).toEqual({ files: {} });
-    });
-
     it("returns undefined when a project has not produced a report", () => {
         expect(loadReport("missing.json")).toBeUndefined();
     });

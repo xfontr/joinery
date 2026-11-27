@@ -1,0 +1,4 @@
+at,script,command,target,flags,area,caller,exit,outcome,error,ms
+2026-11-27,issue,pick,,title,repo,claude-code,0,ok,,13705
+2026-11-27,map,,,check,repo,claude-code,0,ok,,207
+2026-11-27,tasks,check,,,repo,claude-code,0,ok,,79231

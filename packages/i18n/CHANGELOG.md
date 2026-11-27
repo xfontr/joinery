@@ -1,3 +1,18 @@
+## 0.0.20 (2026-11-27)
+
+### 🚀 Features
+
+- **repo:** [#536] fail pushes on broken docs instead of showing them on the portal ([#536](https://github.com/xfontr/joinery/issues/536))
+- **developer-portal:** [#490] add an about page and tidy the repo for visitors ([#490](https://github.com/xfontr/joinery/issues/490))
+
+### 🧱 Updated Dependencies
+
+- Updated @joinery/configs to 0.0.19
+
+### ❤️ Thank You
+
+- Xifré Font @xfontr
+
 ## 0.0.19 (2026-11-13)
 
 ### 🚀 Features

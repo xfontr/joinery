@@ -10,12 +10,10 @@
         <EmptyState v-if="shown.length === 0">{{ empty }}</EmptyState>
         <ul v-else class="divide-y divide-default">
             <li v-for="row in page" :key="row.key">
-                <component
-                    :is="row.to ? NuxtLink : 'div'"
-                    :to="row.to ?? undefined"
+                <NuxtLink
+                    :to="row.to"
                     :target="row.external ? '_blank' : undefined"
-                    class="flex items-baseline gap-3 px-4 py-2"
-                    :class="row.to && 'hover:bg-elevated'"
+                    class="flex items-baseline gap-3 px-4 py-2 hover:bg-elevated"
                 >
                     <span class="w-18 shrink-0 truncate font-mono text-xs text-muted">
                         {{ row.id }}
@@ -33,14 +31,13 @@
                     >
                         {{ row.meta }}
                     </span>
-                </component>
+                </NuxtLink>
             </li>
         </ul>
     </WidgetPanel>
 </template>
 
 <script setup lang="ts">
-import { NuxtLink } from "#components";
 import type { QueueKind } from "~/types/QueueKind";
 import type { QueueRow } from "~/types/QueueRow";
 
@@ -60,8 +57,7 @@ const FILTERS = [
     { value: "decisions", to: "/decisions" },
     { value: "audits", to: "/audits" },
     { value: "releases", to: "/projects" },
-    { value: "attention", to: null },
-] as const satisfies { value: QueueKind; to: string | null }[];
+] as const satisfies { value: QueueKind; to: string }[];
 
 const { t } = useI18n();
 
@@ -86,7 +82,7 @@ const filters = computed(() =>
 );
 
 const all = computed(() => {
-    const to = FILTERS.find((filter) => filter.value === kind.value)?.to ?? null;
+    const to = FILTERS.find((filter) => filter.value === kind.value)?.to;
     return shown.value.length > PAGE_SIZE && to
         ? { label: t("workQueue.all", { count: shown.value.length }), to }
         : null;

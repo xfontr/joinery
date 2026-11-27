@@ -1,0 +1,6 @@
+at,script,command,target,flags,area,caller,exit,outcome,error,ms
+2026-11-27,issue,pick,,title,developer-portal,claude-code,0,ok,,14055
+2026-11-27,map,,,check,developer-portal,claude-code,0,ok,,203
+2026-11-27,tasks,check,,,developer-portal,claude-code,1,finding,,30088
+2026-11-27,map,,,check,developer-portal,claude-code,0,ok,,161
+2026-11-27,tasks,check,,,developer-portal,claude-code,0,ok,,26447

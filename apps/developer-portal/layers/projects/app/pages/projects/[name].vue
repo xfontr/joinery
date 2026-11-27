@@ -44,12 +44,8 @@
                         <ContentRenderer v-if="readme" :value="readme" />
                         <p v-else class="text-muted">{{ $t("project.noReadme") }}</p>
                     </article>
-                    <ProjectCoverageTab
-                        v-else-if="tab === 'coverage'"
-                        :coverage
-                        :age="coverageAge"
-                    />
-                    <ProjectDepsTab v-else-if="tab === 'deps'" :outdated :age="depsAge" />
+                    <ProjectCoverageTab v-else-if="tab === 'coverage'" :coverage />
+                    <ProjectDepsTab v-else-if="tab === 'deps'" :outdated />
                     <ProjectIssuesTab
                         v-else-if="tab === 'issues'"
                         :issues="issues.list"
@@ -64,21 +60,8 @@
 </template>
 
 <script setup lang="ts">
-const {
-    name,
-    tab,
-    tabs,
-    project,
-    metric,
-    projects,
-    coverage,
-    coverageAge,
-    outdated,
-    depsAge,
-    extra,
-    issues,
-    ready,
-} = useProjectPage();
+const { name, tab, tabs, project, metric, projects, coverage, outdated, extra, issues, ready } =
+    useProjectPage();
 
 await ready;
 

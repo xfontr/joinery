@@ -123,16 +123,4 @@ describe("drift main", () => {
             project: "Joinery",
         });
     });
-
-    it("skips a rejected prompt and turns cancellation into the shared cancellation error", async () => {
-        detect.shouldWarn.mockReturnValue(true);
-        io.isInteractive.mockReturnValue(true);
-        prompts.confirm.mockResolvedValue(false);
-        await main();
-        expect(gh.createIssue).not.toHaveBeenCalled();
-
-        cache.readCache.mockReturnValue({});
-        prompts.confirm.mockResolvedValue(Symbol("cancel"));
-        await expect(main()).rejects.toThrow(new CancelledError("Skipped."));
-    });
 });

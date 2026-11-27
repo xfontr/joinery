@@ -32,6 +32,8 @@ export interface WorkflowMap {
     area: string | null;
     ticketSize: TicketSize;
     isOn: (block: Block) => boolean;
+    /** The template's group ids, which name a set of blocks rather than one. */
+    groups: string[];
     /** Capabilities the project file settles as done or skipped. */
     settled: Set<string>;
 }
@@ -163,6 +165,7 @@ export const readMap = (template: unknown, project: unknown): WorkflowMap => {
                 (block.onDemand
                     ? demanded.has(block.id)
                     : switchedOn(block.id, block.optional, block.default))),
+        groups: groups.map((group) => text(group.id)),
         settled: new Set(Object.keys(record(source.settled))),
     };
 };

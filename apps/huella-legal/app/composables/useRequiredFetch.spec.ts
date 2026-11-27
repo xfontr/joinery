@@ -1,16 +1,9 @@
 import { serveEndpoint, withSetup } from "@joinery/configs/vitest/utils/nuxt";
 import { fakeAuthor } from "@joinery/content/testing";
-import { mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useRequiredFetch } from "./useRequiredFetch";
 
 const AUTHORS: Facet<Author>[] = [{ value: fakeAuthor(), count: 2 }];
-
-const reads = vi.hoisted(() => [] as unknown[][]);
-mockNuxtImport("useCachedFetch", (original) => (...args: Parameters<typeof original>) => {
-    reads.push(args);
-    return original(...args);
-});
 
 const serve = (answer: () => unknown) => {
     serveEndpoint("/api/authors", answer);
@@ -25,7 +18,6 @@ const setUp = () =>
     );
 
 beforeEach(() => {
-    reads.length = 0;
     clearNuxtData();
 });
 
@@ -39,10 +31,15 @@ describe("useRequiredFetch", () => {
 
     it("reads under the route's default key, so it never takes another read's payload", async () => {
         serve(() => AUTHORS);
-        await setUp();
+        serveEndpoint("/api/tags", () => [{ value: "dolo", count: 1 }]);
 
-        expect(reads.map(([url]) => url)).toEqual(["/api/authors"]);
-        expect(reads[0]![1]).not.toHaveProperty("key");
+        const { value } = await withSetup(async () => ({
+            authors: await useRequiredFetch<Facet<Author>[]>("/api/authors", () => []),
+            tags: await useRequiredFetch<unknown[]>("/api/tags", () => []),
+        }));
+
+        expect(value.authors.value).toEqual(AUTHORS);
+        expect(value.tags.value).toEqual([{ value: "dolo", count: 1 }]);
     });
 
     it("throws a fatal page error with the route's status when the route can't be read", async () => {

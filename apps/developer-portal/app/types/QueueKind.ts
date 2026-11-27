@@ -1,1 +1,1 @@
-export type QueueKind = "issues" | "decisions" | "audits" | "releases" | "attention";
+export type QueueKind = "issues" | "decisions" | "audits" | "releases";

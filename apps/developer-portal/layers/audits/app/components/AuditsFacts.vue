@@ -1,5 +1,5 @@
 <template>
-    <PageFacts :provenance :facts />
+    <PageFacts :facts />
 </template>
 
 <script setup lang="ts">
@@ -16,10 +16,6 @@ const { reports } = defineProps<Props>();
 const { t } = useI18n();
 
 const totals = computed(() => countAll(reports));
-
-const provenance = computed(() =>
-    t("auditsFacts.provenance", { closed: totals.value.states.closed, total: reports.length }),
-);
 
 const facts = computed((): PageFact[] => [
     { label: t("auditsFacts.audits"), value: String(reports.length) },

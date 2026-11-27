@@ -1,7 +1,6 @@
 # 🌐 @joinery/translations
 
-A small Hono server that serves the JSON locale files in this folder over HTTP: the `internal`
-vendor of [`@joinery/i18n`](../../packages/i18n/README.md). No app uses it today.
+Hono server for the `internal` i18n vendor's locale files.
 
 ```
 infrastructure/translations/

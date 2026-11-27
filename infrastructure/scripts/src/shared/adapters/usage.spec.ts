@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { toLine, type UsageRow } from "../domain/usage.ts";
+import { TASK_COLUMNS, toLine, type TaskRow, type UsageRow } from "../domain/usage.ts";
 
 const repo = vi.hoisted(() => ({ root: "", fail: false, branch: "" }));
 
@@ -15,7 +15,7 @@ vi.mock("./git.ts", async () => {
     return { git, at: (...parts: string[]) => joinPath(repo.root, ...parts) };
 });
 
-import { appendUsage, currentBranch, projectNames, usageBufferPath } from "./usage.ts";
+import { appendTasks, appendUsage, currentBranch, projectNames, usageBufferPath } from "./usage.ts";
 
 const ROW = {
     at: "2026-11-19T10:00:00.000Z",
@@ -25,8 +25,9 @@ const ROW = {
     flags: "",
     area: "repo",
     caller: "human",
-    tty: "1",
     exit: "0",
+    outcome: "ok",
+    error: "",
     ms: "120",
 } satisfies UsageRow;
 
@@ -53,6 +54,33 @@ describe("appendUsage", () => {
         repo.fail = true;
 
         expect(() => appendUsage(ROW)).not.toThrow();
+    });
+});
+
+describe("appendTasks", () => {
+    const TASK = {
+        at: "2026-11-27",
+        run: "a1b2c3d4",
+        trigger: "check",
+        hook: "",
+        caller: "human",
+        area: "repo",
+        project: "scripts",
+        target: "test",
+        cache: "miss",
+        exit: "0",
+        ms: "8205",
+        load: "0.42",
+    } satisfies TaskRow;
+
+    it("buffers task rows apart from script runs, in the task columns' order", () => {
+        appendTasks([TASK, { ...TASK, target: "typecheck" }]);
+
+        expect(readFileSync(usageBufferPath("tasks"), "utf8").split("\n")).toEqual([
+            TASK_COLUMNS.map((column) => TASK[column]).join(","),
+            TASK_COLUMNS.map((column) => ({ ...TASK, target: "typecheck" })[column]).join(","),
+            "",
+        ]);
     });
 });
 

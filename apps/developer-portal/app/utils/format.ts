@@ -20,6 +20,17 @@ export const calendarDay = (day: string, month: "short" | "only" = "short"): str
             : { timeZone: "UTC", day: "numeric", month: "short" },
     );
 
+/** An ISO instant as "27 Nov, 14:02 UTC", read in UTC so the server and the browser agree. */
+export const calendarTime = (iso: string): string =>
+    new Date(iso).toLocaleString("en-GB", {
+        timeZone: "UTC",
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZoneName: "short",
+    });
+
 export const relativeTime = (iso: string | null | undefined, t: Translate): string => {
     if (!iso) return t("common.never");
 

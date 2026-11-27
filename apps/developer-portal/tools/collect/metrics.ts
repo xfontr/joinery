@@ -4,7 +4,6 @@ import type { CoverageArtifact } from "#layers/snapshot/shared/types/CoverageArt
 import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
 import type { ProjectMetrics } from "#layers/snapshot/shared/types/ProjectMetrics.ts";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
-import { collectInvariants } from "../lib/invariants.ts";
 import { WORKSPACE_ROOT } from "../lib/paths.ts";
 import { git, tryRun } from "../lib/run.ts";
 
@@ -158,7 +157,6 @@ export const collectMetrics = async (
         commit,
         branch,
         projects: measured,
-        invariantFindings: await collectInvariants(),
         conventionalCommitRate:
             subjects.length === 0 ? null : Math.round((conforming.length / subjects.length) * 100),
         commitsSinceLastRelease: release.ok ? release.value : null,

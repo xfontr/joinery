@@ -22,7 +22,6 @@ export const useAuditList = () => {
     );
 
     return {
-        manifest: snapshotManifest(),
         reports,
         state,
         scope,

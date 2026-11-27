@@ -42,8 +42,6 @@ const { pages, known } = defineProps<Props>();
 
 const COLLECT = "pnpm exec nx collect @joinery/developer-portal";
 
-const { t } = useI18n();
-
 const recent = computed(() =>
     pages
         .filter((page) => page.updatedAt !== null && known.has(toCollectionPath(page.path)))
@@ -53,7 +51,7 @@ const recent = computed(() =>
             path: page.path,
             to: `/wiki${toCollectionPath(page.path)}`,
             icon: kindIcon(page.kind),
-            updated: relativeTime(page.updatedAt, t),
+            updated: page.updatedAt ? calendarDay(page.updatedAt.slice(0, 10)) : "",
         })),
 );
 </script>

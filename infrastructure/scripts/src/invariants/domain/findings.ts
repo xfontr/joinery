@@ -1,11 +1,7 @@
-/** The portal's `InvariantFinding` plus `blocks`, so the portal can render this list unchanged. */
+/** One broken repo rule; every one fails the check. */
 export interface Finding {
     id: string;
     title: string;
     detail: string;
     evidence: string[];
-    blocks: boolean;
 }
-
-export const blocking = (findings: Finding[]): Finding[] =>
-    findings.filter((finding) => finding.blocks);

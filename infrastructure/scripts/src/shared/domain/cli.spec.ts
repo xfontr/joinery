@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CancelledError, ExpectedError } from "../errors.ts";
-import { dispatch, invocation, optionValue, parse, report } from "./cli.ts";
+import { dispatch, endingOf, errorKindOf, invocation, optionValue, parse, report } from "./cli.ts";
 
 describe("parse", () => {
     it("separates flags from positionals", () => {
@@ -94,5 +94,38 @@ describe("report", () => {
     it("reports an ordinary error without stderr and a non-error throw as text", () => {
         expect(report(new Error("without stack"))).toMatchObject({ cancelled: false });
         expect(report("string failure")).toEqual({ cancelled: false, message: "string failure" });
+    });
+});
+
+describe("endingOf", () => {
+    it("tells a refusal and a cancel apart from a crash, which alone carries a kind", () => {
+        expect(endingOf(new ExpectedError("Name one project."))).toEqual({
+            outcome: "refused",
+            error: "",
+        });
+        expect(endingOf(new CancelledError("stopped"))).toEqual({
+            outcome: "cancelled",
+            error: "",
+        });
+        expect(endingOf(new TypeError("x is undefined"))).toEqual({
+            outcome: "crash",
+            error: "TypeError",
+        });
+    });
+});
+
+describe("errorKindOf", () => {
+    it("keeps a system code and the failed tool, never the message", () => {
+        const missing = Object.assign(new Error("spawn gh ENOENT /home/someone"), {
+            code: "ENOENT",
+            command: "gh",
+        });
+
+        expect(errorKindOf(missing)).toBe("gh:ENOENT");
+        expect(errorKindOf(Object.assign(new Error("Command failed"), { command: "git" }))).toBe(
+            "git:exit",
+        );
+        expect(errorKindOf(Object.assign(new Error("no file"), { code: "ENOENT" }))).toBe("ENOENT");
+        expect(errorKindOf("a thrown string")).toBe("string");
     });
 });

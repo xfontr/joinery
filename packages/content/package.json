@@ -1,6 +1,6 @@
 {
   "name": "@joinery/content",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "CMS entries and taxonomies + a Nuxt module",
   "private": true,
   "author": "Xifré Font",
@@ -36,7 +36,7 @@
     ]
   },
   "dependencies": {
-    "entities": "^8.1.0",
+    "entities": "^9.0.0",
     "ofetch": "^1.5.1",
     "ohash": "^2.0.11"
   },

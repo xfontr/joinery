@@ -3,7 +3,7 @@
         :title="$t('projectCoverageTab.title')"
         :meta="
             coverage
-                ? $t('projectCoverageTab.meta', { files: coverage.files, age })
+                ? $t('projectCoverageTab.meta', { files: coverage.files })
                 : $t('projectCoverageTab.notCollected')
         "
         to="/coverage"
@@ -33,11 +33,9 @@ import type { SplitPart } from "~/types/SplitPart";
 
 interface Props {
     coverage: ProjectCoverage | undefined;
-    /** When the coverage was collected, as relative time. */
-    age: string;
 }
 
-const { coverage, age } = defineProps<Props>();
+const { coverage } = defineProps<Props>();
 
 const { t } = useI18n();
 

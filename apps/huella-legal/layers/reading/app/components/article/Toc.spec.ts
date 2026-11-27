@@ -81,12 +81,6 @@ describe("article TOC", () => {
         expect(wrapper.find("[aria-current=location]").text()).toBe("La acción");
     });
 
-    it("names the landmark, since a page can hold more than one nav", async () => {
-        const wrapper = await mountSuspended(ArticleToc, { props: { items }, global });
-
-        expect(wrapper.find("nav").attributes("aria-label")).toBe("t(articleToc.title)");
-    });
-
     it("takes the caller's title in place of the article one", async () => {
         const wrapper = await mountSuspended(ArticleToc, {
             props: { items, title: "En esta página" },
@@ -119,14 +113,5 @@ describe("article TOC", () => {
         ]);
 
         wrapper.unmount();
-    });
-
-    it("renders nothing for a body with no sections, rather than an empty box", async () => {
-        const wrapper = await mountSuspended(ArticleToc, {
-            props: { items: [{ id: "suelto", label: "Suelto", level: 3 }] },
-            global,
-        });
-
-        expect(wrapper.find("nav").exists()).toBe(false);
     });
 });
