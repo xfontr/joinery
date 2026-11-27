@@ -1,3 +1,25 @@
+## 0.0.19 (2026-11-27)
+
+### 🚀 Features
+
+- **repo:** [#536] fail pushes on broken docs instead of showing them on the portal ([#536](https://github.com/xfontr/joinery/issues/536))
+- **portfolio:** [#512] split the personal site out of the developer portal ([#512](https://github.com/xfontr/joinery/issues/512))
+- **developer-portal:** [#490] deploy to cloudflare pages and draw the project map natively ([#490](https://github.com/xfontr/joinery/issues/490))
+- **developer-portal:** [#490] add an about page and tidy the repo for visitors ([#490](https://github.com/xfontr/joinery/issues/490))
+- **developer-portal:** [#493] fully move to i18n 1/2 ([#493](https://github.com/xfontr/joinery/issues/493))
+- **configs:** [#493] cap the template and script length of a page ([#493](https://github.com/xfontr/joinery/issues/493))
+- **configs:** [#468] sort test utils and setup into their own folders per tool ([#468](https://github.com/xfontr/joinery/issues/468))
+- **configs:** [#405] lint root config files and keep domain folders free of io ([#405](https://github.com/xfontr/joinery/issues/405))
+- **configs:** [#331] run huella-legal nuxt specs in a shared environment ([#331](https://github.com/xfontr/joinery/issues/331))
+
+### 🩹 Fixes
+
+- **repo:** [#470] resolve the open SonarCloud findings ([#470](https://github.com/xfontr/joinery/issues/470))
+
+### ❤️ Thank You
+
+- Xifré Font @xfontr
+
 ## 0.0.18 (2026-11-13)
 
 ### 🚀 Features

@@ -1,3 +1,24 @@
+## 0.0.14 (2026-11-27)
+
+### 🚀 Features
+
+- **repo:** [#536] fail pushes on broken docs instead of showing them on the portal ([#536](https://github.com/xfontr/joinery/issues/536))
+- **developer-portal:** [#490] add an about page and tidy the repo for visitors ([#490](https://github.com/xfontr/joinery/issues/490))
+- **content:** [#405] decode wordpress text, narrow richtext to html and 404 past the last page ([#405](https://github.com/xfontr/joinery/issues/405))
+
+### 🩹 Fixes
+
+- **content:** hand on WordPress titles and names as plain text ([047b940e](https://github.com/xfontr/joinery/commit/047b940e))
+- **content:** answer a page past the end of a list with a 404 ([1dd63d8d](https://github.com/xfontr/joinery/commit/1dd63d8d))
+
+### 🧱 Updated Dependencies
+
+- Updated @joinery/configs to 0.0.19
+
+### ❤️ Thank You
+
+- Xifré Font @xfontr
+
 ## 0.0.13 (2026-11-13)
 
 ### 🚀 Features

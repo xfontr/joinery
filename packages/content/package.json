@@ -1,6 +1,6 @@
 {
   "name": "@joinery/content",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "CMS entries and taxonomies + a Nuxt module",
   "private": true,
   "author": "Xifré Font",
