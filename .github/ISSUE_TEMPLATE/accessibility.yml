@@ -1,5 +1,5 @@
 name: Accessibility barrier
-description: Something on the site is hard or impossible to use
+description: Something on one of the sites is hard or impossible to use
 title: "[a11y]: "
 labels: ["bug", "accessibility"]
 body:
@@ -13,7 +13,7 @@ body:
       id: url
       attributes:
           label: Page URL
-          placeholder: https://www.huellalegal.com/...
+          placeholder: The full address of the page
       validations:
           required: true
     - type: input

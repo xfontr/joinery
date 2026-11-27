@@ -64,3 +64,8 @@ at,run,trigger,hook,caller,area,project,target,cache,exit,ms,load
 2026-11-27,8f12c9f6,check,,claude-code,developer-portal,developer-portal,test,miss,0,10464,0.41
 2026-11-27,8f12c9f6,check,,claude-code,developer-portal,developer-portal,typecheck,miss,0,10544,0.41
 2026-11-27,8f12c9f6,check,,claude-code,developer-portal,developer-portal,eslint:lint,miss,0,19721,0.41
+2026-11-27,a43a5a99,lint,pre-push,claude-code,developer-portal,configs,lint,hit,0,62,0.35
+2026-11-27,a43a5a99,lint,pre-push,claude-code,developer-portal,developer-portal,nuxt-prepare,hit,0,62,0.35
+2026-11-27,a43a5a99,lint,pre-push,claude-code,developer-portal,developer-portal,lint,miss,0,18947,0.35
+2026-11-27,32436a47,test,pre-push,claude-code,developer-portal,developer-portal,nuxt-prepare,hit,0,61,0.35
+2026-11-27,32436a47,test,pre-push,claude-code,developer-portal,developer-portal,test,miss,0,9917,0.35
