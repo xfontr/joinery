@@ -5,11 +5,7 @@ import Summary from "./Summary.vue";
 
 const MESSAGES = {
     workflowSummary: {
-        done: "{done} of {total} done",
-        milestone: "Milestone {milestone}",
-        points: "{done} of {total} SP done",
-        tickets: "{blocks} blocks · {filed} tickets filed · {toFile} to file",
-        unestimated: "{count} unestimated",
+        tickets: "{filed}/{total} tickets filed",
     },
     workflows: {
         capabilityState: {
@@ -56,17 +52,9 @@ beforeEach(() => {
 });
 
 describe("WorkflowSummary", () => {
-    it("counts the blocks done, filed and still to file", async () => {
+    it("counts the tickets filed out of every ticket the blocks need", async () => {
         const text = (await mount()).text();
 
-        expect(text).toContain("0 of 2 done");
-        expect(text).toContain("2 blocks · 0 tickets filed · 2 to file");
-    });
-
-    it("names the milestone and the area label the tickets carry", async () => {
-        const text = (await mount()).text();
-
-        expect(text).toContain("2026 Q1");
-        expect(text).toContain("app:blog");
+        expect(text).toContain("0/2 tickets filed");
     });
 });

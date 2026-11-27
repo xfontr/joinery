@@ -110,15 +110,6 @@ describe("useArticle", () => {
     });
 
     describe("author counts", () => {
-        it("reads them lazily under a key of their own", async () => {
-            await setUp();
-
-            expect(nuxt.fetches.get("/api/authors")).toMatchObject({
-                key: "author-counts",
-                lazy: true,
-            });
-        });
-
         it("server-renders them, so a prerendered article carries them in its payload", async () => {
             await setUp();
 

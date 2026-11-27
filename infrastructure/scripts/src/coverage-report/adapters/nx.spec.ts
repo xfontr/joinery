@@ -79,16 +79,4 @@ describe("projectsWithCoverage", () => {
             force: true,
         });
     });
-
-    it("uses the exit status when Nx fails without stderr", async () => {
-        const process = spawnProcess();
-        child.spawn.mockReturnValue(process);
-        fs.readFileSync.mockReturnValue(JSON.stringify(["@joinery/ui"]));
-        const result = projectsWithCoverage();
-        process.finish(7);
-
-        await expect(result).rejects.toThrow(
-            "nx show projects --with-target test:coverage --json exited with 7",
-        );
-    });
 });

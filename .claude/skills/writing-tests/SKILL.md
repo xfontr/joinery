@@ -47,6 +47,26 @@ A comment above a `describe` or a tricky `it` explains why the test exists — t
 [`TolgeeProvider.spec.ts`](../../../packages/i18n/src/core/adapters/providers/TolgeeProvider.spec.ts)
 is the example.
 
+## What not to test
+
+Every spec is run by every agent on every check, so one that pins nothing costs time forever. Before
+writing one, check this table; when a row fits, write no spec, or delete the one that's there.
+
+| Don't spec | Because |
+| --- | --- |
+| A component with no branch, handler or computed value | It only shows what it was given, and the page or parent spec already renders it |
+| A one-line wrapper (`useContact = () => useFormPost(url)`) or a re-export | The wrapped function has the spec |
+| A page whose children and shared mapper have specs | Test the wiring only they can't reach, in one test, or not at all |
+| Config, constants, a route table, rule severities | The expected value is copied from the source, so the spec fails on every change and catches none |
+| What Vue, Nuxt or a library does: a prop rendering, a `v-if`, `useFetch` being called | The framework has its own tests |
+| A case a lower level already pins | Push it down; an e2e or page spec covers only the wiring below can't |
+| Anything only to reach a coverage threshold | A threshold catches collapse; it never asks for a spec |
+
+**A mock in an app costs a Nuxt boot.** Any `vi.mock`, `mockNuxtImport` or `mockComponent` in a spec
+under `app/` moves the whole file to `nuxt-isolated`, about 1 s a file against ~50 ms in the shared
+project. Never mock the app's own composable when `serveEndpoint` can answer its request, and
+delete a `mockNuxtImport("useSeoMeta" | "useHead")` that nothing asserts on.
+
 ## What a spec asserts
 
 | Assert | Not | Why |
@@ -78,7 +98,7 @@ A mock sits at the edge of what the code owns, never inside it.
 | A cached server route in a package | `nitropack/runtime` + `ofetch` | [`translations.get.spec.ts`](../../../packages/i18n/src/nuxt/runtime/server/translations.get.spec.ts) |
 | A route, middleware or plugin in an app's `server/` | `stubNitro()` from `@joinery/configs/vitest/utils/nitro`, before the dynamic `import()` | [`contact.post.spec.ts`](../../../apps/huella-legal/layers/contact/server/api/contact.post.spec.ts) |
 | A page or composable reading the app's own API | `serveEndpoint` from `@joinery/configs/vitest/utils/nuxt` answers the route until the test ends; the real `useFetch` runs | [`WorkflowHomePanel.spec.ts`](../../../apps/developer-portal/layers/workflows/app/components/WorkflowHomePanel.spec.ts) |
-| A developer-portal page reading a snapshot artifact | `mockNuxtImport("<name>Artifact")` over a `vi.hoisted` state, reset in a `beforeEach` | [`coverage.spec.ts`](../../../apps/developer-portal/layers/health/app/pages/coverage.spec.ts) |
+| A developer-portal snapshot artifact's data | The pure mapper in the layer's `shared/`, in the node project with no mock; a page spec, if any, `mockNuxtImport("<name>Artifact")` over a `vi.hoisted` state | [`decisionReports.spec.ts`](../../../apps/developer-portal/layers/decisions/shared/decisionReports.spec.ts) |
 | A composable reading a third-party API | `serveEndpoint` on the absolute URL | [`useIssues.spec.ts`](../../../apps/developer-portal/layers/github/app/composables/useIssues.spec.ts) |
 | Nuxt Content | `mockNuxtImport("queryCollection")` returning an in-memory collection | [`changelog.spec.ts`](../../../apps/developer-portal/layers/projects/app/pages/changelog.spec.ts) |
 | A provider | nothing — inject a fake `HttpClient` through the port | [`TolgeeProvider.spec.ts`](../../../packages/i18n/src/core/adapters/providers/TolgeeProvider.spec.ts) |

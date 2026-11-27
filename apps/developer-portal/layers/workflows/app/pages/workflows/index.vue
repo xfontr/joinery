@@ -1,23 +1,17 @@
 <template>
     <UDashboardPanel id="workflows">
         <template #header>
-            <PageHeader :title="$t('workflows.title')">
-                <template #actions>
-                    <UButton
-                        to="/wiki/docs/workflows/readme"
-                        :label="$t('workflows.guide')"
-                        icon="i-lucide-ruler"
-                        color="neutral"
-                        variant="ghost"
-                        size="xs"
-                    />
-                </template>
-            </PageHeader>
+            <PageHeader :title="$t('workflows.title')" />
         </template>
 
         <template #body>
             <div class="flex flex-col gap-6">
-                <p class="max-w-3xl text-sm text-muted">{{ $t("workflows.intro") }}</p>
+                <p class="max-w-3xl text-sm text-muted">
+                    {{ $t("workflows.intro") }}
+                    <ULink to="/wiki/docs/workflows/readme" class="text-default underline">{{
+                        $t("workflows.guide")
+                    }}</ULink>
+                </p>
 
                 <WorkflowProblems :problems="data.problems" />
                 <WorkflowProjects :projects="data.projects" />

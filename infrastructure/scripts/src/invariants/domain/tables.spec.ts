@@ -65,12 +65,6 @@ describe("compareTagTables", () => {
         expect(compareTagTables(BOUNDARIES, README)).toEqual([]);
     });
 
-    it("reports drift without blocking, since docs checks stay advisory", () => {
-        const extra = `${README}| \`type:ghost\` | nothing | — |\n`;
-
-        expect(compareTagTables(BOUNDARIES, extra).every((finding) => !finding.blocks)).toBe(true);
-    });
-
     it("reports a tag that is enforced but undocumented — the drift this repo actually had", () => {
         const extra = BOUNDARIES.replace(
             '{ sourceTag: "type:app"',

@@ -63,14 +63,14 @@ export const useHealthLines = () => {
             },
             {
                 label: t("healthLines.lines.tooling"),
-                value: runs.runs ? `${percentOf(runs.failures, runs.runs)}%` : "—",
-                tone: runs.runs && isFailing(runs) ? "bad" : "neutral",
+                value: runs.known ? `${percentOf(runs.failures, runs.known)}%` : "—",
+                tone: isFailing(runs) ? "bad" : "neutral",
                 to: "/telemetry",
                 legend: true,
                 parts: [
                     {
                         label: t("healthLines.parts.passed"),
-                        value: runs.runs - runs.failures,
+                        value: runs.known - runs.failures,
                         tone: "ink",
                     },
                     { label: t("healthLines.parts.failed"), value: runs.failures, tone: "bad" },

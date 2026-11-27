@@ -65,14 +65,14 @@ const totals = computed(() => {
             },
             {
                 label: t("telemetryUsagePanel.figures.failed"),
-                value: percentOf(sum.failures, sum.runs),
+                value: percentOf(sum.failures, sum.known),
                 unit: "%",
                 class: isFailing(sum) ? toneClass("bad") : "text-highlighted",
             },
         ],
         failing: rows
             .filter((row) => row.failing)
-            .map((row) => ({ name: row.name, failed: percentOf(row.failures, row.runs) })),
+            .map((row) => ({ name: row.name, failed: percentOf(row.failures, row.known) })),
         idle: idle ? t("telemetryUsagePanel.idle", idle) : "",
     };
 });

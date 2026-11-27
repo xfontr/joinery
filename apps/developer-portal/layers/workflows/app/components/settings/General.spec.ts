@@ -38,14 +38,6 @@ describe("SettingsGeneral", () => {
         expect(fields.every((field) => field.attributes("disabled") !== undefined)).toBe(true);
     });
 
-    it("reports an edit under the field's own model", async () => {
-        const wrapper = await mountSuspended(General, { props: { ...FIELDS, editable: true } });
-
-        await wrapper.findAll("input")[1]?.setValue("Blog v2");
-
-        expect(wrapper.emitted("update:milestone")).toEqual([["Blog v2"]]);
-    });
-
     it("names the template, which can't change", async () => {
         const wrapper = await mountSuspended(General, { props: { ...FIELDS, editable: true } });
 

@@ -16,8 +16,7 @@ const MESSAGES = {
         zoomOut: "Zoom out",
     },
     workflowGraphSection: {
-        chain: "{status} Longest chain left: {chain}.",
-        status: "{state}. Its path stays lit; click an empty spot for the whole map.",
+        hint: "Click an empty spot for the whole map",
         title: "Dependency graph",
         titleSelected: "Dependency graph · {title}",
     },
@@ -51,31 +50,17 @@ const VIEW = assembleWorkflows(
     {},
 ).projects[0];
 
-const TITLES = { page: "Page", launch: "Launch" };
-
 beforeEach(() => {
     useNuxtApp().$i18n.mergeLocaleMessage("en", MESSAGES);
 });
 
 describe("WorkflowGraphSection", () => {
-    it("heads the graph with the block picked and the longest chain left", async () => {
+    it("heads the graph with the block picked", async () => {
         if (!VIEW) throw new Error("the fixture project did not assemble");
         const wrapper = await mountSuspended(GraphSection, {
-            props: { view: VIEW, selected: VIEW.capabilities[0], titles: TITLES },
+            props: { view: VIEW, selected: VIEW.capabilities[0] },
         });
 
         expect(wrapper.find("h2").text()).toContain("Page");
-        expect(wrapper.find("header p").text()).toContain("Page → Launch");
-    });
-
-    it("passes a block clicked on the graph up as the one to select", async () => {
-        if (!VIEW) throw new Error("the fixture project did not assemble");
-        const wrapper = await mountSuspended(GraphSection, {
-            props: { view: VIEW, titles: TITLES },
-        });
-
-        await wrapper.find("button[aria-label^='Launch,']").trigger("click");
-
-        expect(wrapper.emitted("select")).toEqual([["launch"]]);
     });
 });

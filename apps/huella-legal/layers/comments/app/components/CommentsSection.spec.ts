@@ -40,12 +40,6 @@ const mount = (comments?: ArticleComments) =>
     mountSuspended(CommentsSection, { props: { article: { id: "42" }, comments }, global });
 
 describe("comments section", () => {
-    it("is the target the bylines' comment counts link to", async () => {
-        const wrapper = await mount(COMMENTS);
-
-        expect(wrapper.find("section").attributes("id")).toBe("comentarios");
-    });
-
     it("titles the section with the count and nests each reply under its thread", async () => {
         const wrapper = await mount(COMMENTS);
 

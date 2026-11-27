@@ -1,0 +1,219 @@
+id: alba-tomico
+title: Alba Tomico
+template: custom
+area: app:alba-tomico
+milestone: Alba Tomico
+summary: Photographer portfolio port
+
+ticketSize: fast
+
+extras:
+  - id: visual-baseline
+    stage: plan
+    kind: spike
+    title: Visual baseline and bug inventory
+    complexity: 5
+    summary: The live site captured route by route and interaction by interaction, so "pixel
+      perfect" has a reference, and every bug it has listed so its fix is a decision.
+    reuse: { plan: method, from: docs/decisions/0037-huella-legal-e2e-and-visual-tooling.md }
+    doneWhen:
+      - Every route and every interaction (landing rotation, menu hover carousel, invert toggle,
+        travel zoom, scroll reveal, project gallery) is captured at 390, 768 and 1280 px.
+      - Every bug has a repro and is marked fix or keep for the scope sign-off; a fix that changes
+        the UI is an exception to pixel-perfect, written down there.
+
+  - id: imagekit-content-model
+    stage: plan
+    kind: spike
+    title: ImageKit content model
+    complexity: 5
+    summary: How ImageKit's folders, tags and custom metadata map onto @joinery/content's domain,
+      with real counts, before a vendor is written.
+    reuse: { plan: method, from: docs/decisions/0027-huella-legal-content-model.md }
+    doneWhen:
+      - Every folder, the `front` tag and the per-locale alt metadata map to a domain field, or the
+        gap the package must close is named.
+      - Image width and height come from ImageKit, so nothing probes dimensions in the browser.
+      - The private key is server-only, and whether ImageKit can call a deploy hook on upload is
+        answered.
+
+  - id: hosting-rendering
+    stage: plan
+    kind: spike
+    title: Hosting, rendering and rebuilds
+    complexity: 5
+    summary: Netlify or Cloudflare Pages, measured with a prerendered prototype, and how a new
+      upload reaches the site.
+    reuse: { plan: method, from: docs/decisions/0033-huella-legal-hybrid-prerender.md }
+    doneWhen:
+      - A prerendered prototype is deployed and measured on each candidate host.
+      - An upload triggering a rebuild, by webhook or schedule, works end to end on the prototype.
+
+  - id: app-scaffold
+    stage: build
+    title: App scaffold
+    complexity: 3
+    dependsOn: [scope-signoff]
+    summary: The Nuxt app, its env check and the old SCSS variables as one token layer.
+    reuse: { plan: method, from: apps/huella-legal/layers/design }
+    doneWhen:
+      - apps/alba-tomico lints, typechecks and tests in CI.
+      - The app refuses to start with a required variable missing.
+      - Colours, spacing, type sizes and z-indexes live in one token layer, with no raw value
+        outside it.
+
+  - id: imagekit-vendor
+    stage: build
+    title: ImageKit vendor
+    complexity: 8
+    dependsOn: [imagekit-content-model, scope-signoff]
+    summary: ImageKit as a @joinery/content vendor, read on the server only.
+    reuse: { plan: package, from: packages/content/src/core/adapters/providers/wordpress }
+    doneWhen:
+      - An ImageKitProvider with configProblems(), one registry line and a spec.
+      - Fakes and MSW handlers for it in @joinery/content/testing.
+      - No ImageKit credential reaches the browser.
+
+  - id: test-harness
+    stage: build
+    title: Test harness and visual diff
+    complexity: 5
+    dependsOn: [app-scaffold, imagekit-vendor, visual-baseline]
+    summary: Playwright at 390, 768 and 1280 px on fake content, diffed against the baseline.
+    reuse: { plan: method, from: apps/huella-legal/e2e }
+    doneWhen:
+      - E2E runs against the fake ImageKit, and local dev never calls the live account.
+      - A visual-diff spec compares each route with the baseline.
+      - Every URL the live site answers answers on the new app.
+
+  - id: ci-deploy
+    stage: build
+    title: CI build, previews and rebuilds
+    complexity: 8
+    dependsOn: [app-scaffold, hosting-rendering]
+    summary: Build in CI, a preview per PR, production from master, and a rebuild on upload.
+    reuse: { plan: copy, from: .github/workflows/deploy-huella-legal.yml }
+    doneWhen:
+      - Every PR gets a preview URL.
+      - An upload to ImageKit reaches a deploy without anyone running a command.
+
+  - id: images
+    stage: build
+    title: Images
+    complexity: 5
+    dependsOn: [imagekit-vendor]
+    summary: Responsive ImageKit renditions, sized from metadata, ready before the effects that show
+      them.
+    reuse: { plan: method, from: apps/huella-legal/server/plugins/cdn.ts }
+    doneWhen:
+      - Every image is served through ImageKit transforms with width and height set.
+      - The menu carousel and landing rotation renditions are loaded before they are shown.
+
+  - id: shell-and-menu
+    stage: build
+    title: Layouts, navigation and menu
+    complexity: 8
+    dependsOn: [app-scaffold, images]
+    summary: Both layouts, the navigation bar, the full menu with its hover carousel, the landing
+      menu and the invert toggle.
+    reuse: { plan: method, from: apps/huella-legal/app/layouts }
+    doneWhen:
+      - Each matches the baseline at 390, 768 and 1280 px.
+      - The menu and the invert toggle work by keyboard.
+
+  - id: landing-contact
+    stage: build
+    title: Landing and contact
+    complexity: 3
+    dependsOn: [shell-and-menu]
+    summary: The home rotation and the contact page.
+    reuse: { plan: new }
+    doneWhen:
+      - Both match the baseline at 390, 768 and 1280 px, from real content.
+
+  - id: grid-views
+    stage: build
+    title: Work and travel grids
+    complexity: 5
+    dependsOn: [shell-and-menu]
+    summary: The work grid and the travel zoom grid.
+    reuse: { plan: new }
+    doneWhen:
+      - Both match the baseline at 390, 768 and 1280 px, from real content.
+
+  - id: scatter-layout
+    stage: build
+    title: Editorial and still-life scatter
+    complexity: 8
+    dependsOn: [shell-and-menu]
+    summary: The scattered layout computed deterministically on the server instead of at random in
+      the browser.
+    reuse: { plan: new }
+    doneWhen:
+      - Editorial and still life render with zero hydration warnings.
+      - The scatter and its scroll reveal match the baseline at 390, 768 and 1280 px.
+
+  - id: project-page
+    stage: build
+    title: Project gallery
+    complexity: 3
+    dependsOn: [grid-views]
+    summary: A project's gallery under its view.
+    reuse: { plan: new }
+    doneWhen:
+      - Matches the baseline at 390, 768 and 1280 px, from real content.
+      - An unknown project answers 404.
+
+  - id: motion
+    stage: build
+    title: GSAP transitions
+    complexity: 13
+    dependsOn: [landing-contact, grid-views, scatter-layout, project-page]
+    summary: Transitions between views and menu motion with GSAP, built on the real pages and tuned
+      with the owner on a preview.
+    reuse: { plan: new }
+    doneWhen:
+      - The owner approved the motion on a preview deploy.
+      - Reduced motion turns it off, and it adds no layout shift or long task.
+
+  - id: seo
+    stage: ship
+    title: SEO
+    complexity: 3
+    dependsOn: [build-review]
+    summary: Meta, Open Graph, sitemap, robots and structured data for a photographer's portfolio.
+    reuse: { plan: method, from: apps/huella-legal/nuxt.config.ts }
+    doneWhen:
+      - Every route has a title, description, canonical and Open Graph image.
+      - The sitemap and robots.txt answer on a preview, and the structured data validates.
+
+  - id: accessibility
+    stage: ship
+    title: Accessibility
+    complexity: 5
+    dependsOn: [build-review]
+    summary: Axe on every route, keyboard paths and alt text from ImageKit.
+    reuse: { plan: method, from: apps/huella-legal/e2e }
+    doneWhen:
+      - Axe is clean on every route at 390 and 1280 px.
+      - Every image has its alt text from ImageKit or the default.
+
+  - id: performance
+    stage: ship
+    title: Performance
+    complexity: 5
+    dependsOn: [build-review]
+    summary: Load and interaction measured on a preview, mobile included.
+    reuse: { plan: method, from: apps/huella-legal/README.md }
+    doneWhen:
+      - LCP and CLS on mobile and desktop are within budget on a preview deploy.
+
+  - id: cutover-runbook
+    stage: ship
+    title: Cutover runbook
+    complexity: 2
+    dependsOn: [ci-deploy]
+    summary: The steps the owner runs at go-live.
+    reuse: { plan: method, from: docs/decisions/0028-huella-legal-urls-and-cutover.md }
+    doneWhen:
+      - DNS, env vars, the ImageKit key rotation and the old deploy's shutdown are written as steps.

@@ -35,6 +35,7 @@ domain/      pure functions and their types. No fs, no subprocess, no clack, no 
 | [`map`](./src/map/README.md) | `pnpm docs:map` | Rendering the feature index, and asserting in CI that it's current |
 | [`invariants`](./src/invariants/README.md) | `pnpm invariants:check` | The repo rules every author is held to, run by hooks and CI |
 | [`usage`](./src/usage/README.md) | `pnpm usage:flush` | Moving the runs every script records into the committed log; the pre-commit hook runs it |
+| [`tasks`](./src/tasks/README.md) | `pnpm check`, `lint`, `typecheck`, `test`, `build`, `test:coverage`, `unused:check` (root) | Running the root Nx commands and timing every task they run |
 | [`coverage-report`](./src/coverage-report/README.md) | `pnpm test:coverage` (root) | Merging every project's coverage into one browsable HTML report |
 
 ## Run by agents, not only by people

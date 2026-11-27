@@ -96,7 +96,7 @@ Its spec pins the keys, since renaming one blanks that site's figures without fa
 | Work in progress | Open issues, fetched from GitHub in the reader's browser |
 | What's new | Every `CHANGELOG.md` plus unreleased commit counts |
 | Engineering health | Coverage, `pnpm audit`, outdated deps and the invariant findings |
-| Tooling usage | `data/telemetry/` CSVs, enabled lint rules and `eslint-disable` comments |
+| Tooling usage | `data/telemetry/` CSVs, enabled lint rules, `eslint-disable` comments, and the last 20 green `ci.yml` runs' step times through `gh` |
 
 ### Doc links
 
@@ -141,7 +141,8 @@ huella-legal's Storybook is built into the same output under `/huella-legal-stor
   built on both.
 - `NUXT_PUBLIC_REPO_URL` is baked in at build time, derived by the workflow.
 - Cloudflare Pages rejects any file over 25 MiB, which is why the Architecture map is drawn from
-  `projects.json` rather than Nx's exported graph viewer.
+  `projects.json` rather than Nx's exported graph viewer. It uses the viewer's own renderer,
+  Cytoscape with `cytoscape-dagre`, and its layout options.
 - The project overrides its `production` Nx input in [`package.json`](./package.json) so any `*.md`
   or `data/workflows/` change makes it affected, and a `runtime` input over
   [`snapshotStamp.ts`](./tools/lib/snapshotStamp.ts) hashes the gitignored `.report/`.
@@ -201,6 +202,7 @@ system in [`main.css`](./layers/design/app/assets/main.css), whose tokens [`apps
 | `<mark>` | A marked word takes the accent in italic |
 | `data-figure` | A count or percentage that leads a panel: tabular, semibold |
 | `data-scroll-x` | A row or table that scrolls sideways fades at its right edge |
+| `scrollbar-none` | A strip that scrolls sideways with no visible bar, such as the workflow activity strip |
 | View transitions | Every page change crossfades in 0.15 s |
 | `data-prose`, `data-readme` | Rendered markdown keeps a 72-character measure; a README drops its own `#` title |
 

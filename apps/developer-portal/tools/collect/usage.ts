@@ -2,10 +2,16 @@ import { readdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { parseDisables, summarizeLint } from "#layers/telemetry/shared/lintUsage.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
-import { parseLog, summarize, windowStart } from "#layers/telemetry/shared/usage.ts";
+import {
+    parseLog,
+    summarize,
+    summarizeTasks,
+    windowStart,
+} from "#layers/telemetry/shared/usage.ts";
 import { enabledRules } from "../lib/lintRules.ts";
 import { WORKSPACE_ROOT } from "../lib/paths.ts";
 import { git } from "../lib/run.ts";
+import { collectCiTimings } from "./ciTimings.ts";
 
 /** One CSV per branch and log, written by `pnpm usage:flush` from the pre-commit hook. */
 const LOG_ROOT = resolve(WORKSPACE_ROOT, "data/telemetry");
@@ -48,12 +54,14 @@ const countDisables = async (files: string[]): Promise<Record<string, number>> =
 
 export const collectUsage = async (generatedAt: string): Promise<UsageArtifact> => {
     const tracked = (await git(["ls-files", "--", "*.ts", "*.vue"])).split("\n").filter(Boolean);
-    const [known, scriptLogs, lintLogs, enabled, disabled] = await Promise.all([
+    const [known, scriptLogs, lintLogs, taskLogs, enabled, disabled, ci] = await Promise.all([
         knownScripts(),
         readLog("scripts"),
         readLog("lint"),
+        readLog("tasks"),
         enabledRules(tracked),
         countDisables(tracked),
+        collectCiTimings(),
     ]);
 
     return {
@@ -64,5 +72,7 @@ export const collectUsage = async (generatedAt: string): Promise<UsageArtifact> 
             disabled,
             windowStart(generatedAt),
         ),
+        tasks: summarizeTasks(taskLogs.flatMap(parseLog), generatedAt),
+        ci,
     };
 };

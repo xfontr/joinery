@@ -21,10 +21,4 @@ describe("WorkflowProblems", () => {
         expect(wrapper.text()).toContain("1 workflow file problems");
         expect(wrapper.find("li").text()).toBe("projects/blog.yaml: no milestone");
     });
-
-    it("renders nothing when every file reads cleanly", async () => {
-        const wrapper = await mountSuspended(WorkflowProblems, { props: { problems: [] } });
-
-        expect(wrapper.text()).toBe("");
-    });
 });

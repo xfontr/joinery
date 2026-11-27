@@ -1,15 +1,10 @@
 import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
 import type { AsyncData, NuxtError } from "#app";
-import { mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { nextTick, ref } from "vue";
 import { useFailOnError } from "./useFailOnError";
 
 const NOT_FOUND = { cause: { response: { status: 404 } } } as unknown as NuxtError;
-
-const errors = vi.hoisted(() => ({ show: vi.fn() }));
-
-mockNuxtImport("showError", () => errors.show);
 
 const requestFailing = (initial?: NuxtError) => {
     const error = ref(initial);
@@ -29,8 +24,8 @@ const mountWith = async (
     options?: Parameters<typeof useFailOnError>[1],
 ) => (await withSetup(() => useFailOnError(request, options))).wrapper;
 
-beforeEach(() => {
-    vi.clearAllMocks();
+afterEach(() => {
+    clearError();
 });
 
 describe("useFailOnError", () => {
@@ -46,9 +41,7 @@ describe("useFailOnError", () => {
 
         error.value = NOT_FOUND;
 
-        await vi.waitFor(() =>
-            expect(errors.show).toHaveBeenCalledWith(expect.objectContaining({ status: 404 })),
-        );
+        await vi.waitFor(() => expect(useError().value).toMatchObject({ status: 404 }));
     });
 
     it("doesn't watch for later errors unless the request refetches", async () => {
@@ -58,7 +51,7 @@ describe("useFailOnError", () => {
         error.value = NOT_FOUND;
         await nextTick();
 
-        expect(errors.show).not.toHaveBeenCalled();
+        expect(useError().value).toBeUndefined();
     });
 
     it("stops watching for errors once the page is gone", async () => {
@@ -69,6 +62,6 @@ describe("useFailOnError", () => {
         error.value = NOT_FOUND;
         await nextTick();
 
-        expect(errors.show).not.toHaveBeenCalled();
+        expect(useError().value).toBeUndefined();
     });
 });

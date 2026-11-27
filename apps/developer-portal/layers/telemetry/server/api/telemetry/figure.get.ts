@@ -8,7 +8,7 @@ export default defineEventHandler(async () => {
     const usage = await readArtifact<UsageArtifact>("usage");
     const sum = usage ? sumDays(scriptRows(usage)) : null;
 
-    if (!sum?.runs) return { value: "—", alert: false };
+    if (!sum?.known) return { value: "—", alert: false };
 
-    return { value: `${Math.round((sum.failures / sum.runs) * 100)}%`, alert: isFailing(sum) };
+    return { value: `${Math.round((sum.failures / sum.known) * 100)}%`, alert: isFailing(sum) };
 });

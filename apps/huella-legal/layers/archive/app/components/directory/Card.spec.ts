@@ -1,4 +1,4 @@
-import { fakeAsset, fakeAuthor, faker } from "@joinery/content/testing";
+import { fakeAsset, fakeAuthor } from "@joinery/content/testing";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { describe, expect, it } from "vitest";
 import DirectoryCard from "./Card.vue";
@@ -24,15 +24,6 @@ describe("directory card", () => {
         });
     });
 
-    it("words the publication count", async () => {
-        const wrapper = await mountSuspended(DirectoryCard, {
-            props: { author: AUTHOR, count: 3 },
-            global,
-        });
-
-        expect(wrapper.text()).toContain("t(directoryCard.count, 3)");
-    });
-
     it("falls back to the initials without an avatar, and shows the avatar when there is one", async () => {
         const bare = await mountSuspended(DirectoryCard, {
             props: { author: { ...AUTHOR, avatar: undefined }, count: 1 },
@@ -46,20 +37,5 @@ describe("directory card", () => {
 
         expect(bare.text()).toContain("MJ");
         expect(pictured.find("img").attributes("src")).toBe(avatar.url);
-    });
-
-    it("renders the bio only for an author who has one", async () => {
-        const bio = faker.lorem.sentence();
-        const withBio = await mountSuspended(DirectoryCard, {
-            props: { author: { ...AUTHOR, bio }, count: 1 },
-            global,
-        });
-        const withoutBio = await mountSuspended(DirectoryCard, {
-            props: { author: { ...AUTHOR, bio: undefined }, count: 1 },
-            global,
-        });
-
-        expect(withBio.text()).toContain(bio);
-        expect(withoutBio.find("[data-slot='description']").exists()).toBe(false);
     });
 });

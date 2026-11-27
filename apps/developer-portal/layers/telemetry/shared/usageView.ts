@@ -1,4 +1,5 @@
 import type { DayUsage } from "#layers/snapshot/shared/types/DayUsage.ts";
+import type { Durations } from "#layers/snapshot/shared/types/Durations.ts";
 import type { LintUsage } from "#layers/snapshot/shared/types/LintUsage.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 import { FOUGHT_DISABLES, NOISY_SHARE } from "./lintUsage.ts";
@@ -6,7 +7,7 @@ import { FAILING_RATE, MIN_RUNS, windowStart } from "./usage.ts";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-const EMPTY_DAY: DayUsage = { runs: 0, agent: 0, failures: 0 };
+const EMPTY_DAY: DayUsage = { runs: 0, agent: 0, failures: 0, known: 0 };
 
 interface ScriptRow extends DayUsage {
     name: string;
@@ -67,12 +68,17 @@ export const sumDays = (days: DayUsage[]): DayUsage =>
             runs: total.runs + day.runs,
             agent: total.agent + day.agent,
             failures: total.failures + day.failures,
+            known: total.known + day.known,
         }),
         EMPTY_DAY,
     );
 
-export const isFailing = ({ runs, failures }: DayUsage): boolean =>
-    runs >= MIN_RUNS && failures / runs >= FAILING_RATE;
+/** Failures over the runs whose outcome is known, or `null` when none is. */
+const failureRate = ({ failures, known }: DayUsage): number | null =>
+    known === 0 ? null : failures / known;
+
+export const isFailing = (day: DayUsage): boolean =>
+    day.known >= MIN_RUNS && (failureRate(day) ?? 0) >= FAILING_RATE;
 
 /** Every known script and every recorded one, busiest in the window first. */
 export const scriptRows = ({
@@ -200,16 +206,11 @@ const callerMix = ({ runs, agent }: DayUsage): CallerMix => {
     return agent === 0 ? "people" : "both";
 };
 
-const rate = (part: number, whole: number): number => (whole === 0 ? 0 : part / whole);
-
 /** Scripts run in the window: how often against how often they fail, on the alerts' thresholds. */
 export const scriptQuadrants = (rows: ScriptRow[]): Quadrants<CallerMix> => {
-    const plotted = rows.filter((row) => row.runs > 0);
+    const plotted = rows.filter((row) => row.known > 0);
     const decades = decadesFor(Math.max(MIN_RUNS, ...plotted.map((row) => row.runs)));
-    const topRate = Math.max(
-        FAILING_RATE * 2,
-        ...plotted.map((row) => rate(row.failures, row.runs)),
-    );
+    const topRate = Math.max(FAILING_RATE * 2, ...plotted.map((row) => failureRate(row) ?? 0));
     const yMax = Math.ceil(topRate * 10) / 10;
 
     return {
@@ -219,7 +220,7 @@ export const scriptQuadrants = (rows: ScriptRow[]): Quadrants<CallerMix> => {
             threshold: (FAILING_RATE / yMax) * 100,
         },
         points: plotted.map((row) => {
-            const failed = rate(row.failures, row.runs);
+            const failed = failureRate(row) ?? 0;
 
             return {
                 name: row.name,
@@ -267,3 +268,115 @@ export const ruleQuadrants = (lint: LintUsage): Quadrants<FixKind> => {
         })),
     };
 };
+
+const SECOND_MS = 1000;
+const MINUTE_MS = 60 * SECOND_MS;
+
+/** `820 ms`, `12.7 s`, `5.5 min`: one unit, so a column of times reads at a glance. */
+export const formatMs = (ms: number): string => {
+    if (ms < SECOND_MS) return `${Math.round(ms)} ms`;
+    if (ms < MINUTE_MS) return `${(ms / SECOND_MS).toFixed(1)} s`;
+    return `${(ms / MINUTE_MS).toFixed(1)} min`;
+};
+
+/** The `pnpm check` wall time sits on the `tasks` script's `check` subcommand. */
+const CHECK_SCRIPT = "tasks";
+const CHECK_COMMAND = "check";
+
+export const checkDurations = ({ scripts }: Pick<UsageArtifact, "scripts">): Durations | null =>
+    scripts[CHECK_SCRIPT]?.commandDurations?.[CHECK_COMMAND] ?? null;
+
+export interface BuildTimeRow {
+    /** A target, a CI step's command, or `check` for the whole of `pnpm check`. */
+    name: string;
+    kind: "check" | "target" | "step" | "job";
+    durations: Durations | null;
+    /** Median of the runs a pre-push hook started; `null` when none was timed. */
+    prePushMs: number | null;
+    /** Cache hits over runs; `null` where caching doesn't apply. */
+    hitShare: number | null;
+}
+
+const PRE_PUSH = "pre-push";
+
+/** Local rows: `pnpm check` whole, then each Nx target, slowest first. */
+export const localBuildTimes = (
+    usage: Pick<UsageArtifact, "scripts" | "tasks">,
+): BuildTimeRow[] => {
+    const check = checkDurations(usage);
+    const targets = Object.entries(usage.tasks ?? {})
+        .map(([name, task]): BuildTimeRow => ({
+            name,
+            kind: "target",
+            durations: task.misses,
+            prePushMs: task.byHook[PRE_PUSH]?.medianMs ?? null,
+            hitShare: task.runs ? task.hits / task.runs : null,
+        }))
+        .sort((a, b) => (b.durations?.medianMs ?? -1) - (a.durations?.medianMs ?? -1));
+
+    const whole: BuildTimeRow[] = check
+        ? [
+              {
+                  name: CHECK_COMMAND,
+                  kind: "check",
+                  durations: check,
+                  prePushMs: null,
+                  hitShare: null,
+              },
+          ]
+        : [];
+
+    return [...whole, ...targets];
+};
+
+/** CI rows: each step that runs a command, then each job's total, slowest first within each. */
+export const ciBuildTimes = ({ ci }: Pick<UsageArtifact, "ci">): BuildTimeRow[] => {
+    const rows = (entries: Record<string, Durations>, kind: "step" | "job"): BuildTimeRow[] =>
+        Object.entries(entries)
+            .map(([name, durations]) => ({
+                name,
+                kind,
+                durations,
+                prePushMs: null,
+                hitShare: null,
+            }))
+            .sort((a, b) => b.durations.medianMs - a.durations.medianMs);
+
+    return ci ? [...rows(ci.steps, "step"), ...rows(ci.jobs, "job")] : [];
+};
+
+export interface FailureCauseRow {
+    name: string;
+    refused: number;
+    usage: number;
+    crash: number;
+    /** A crash's kinds, most frequent first, e.g. `gh:exit ×3`. */
+    crashes: string;
+    /** Runs with no recorded outcome, from before outcomes were kept. */
+    unknown: number;
+}
+
+/** Scripts with at least one refusal, usage error or crash, most failures first. */
+export const failureCauseRows = ({ scripts }: Pick<UsageArtifact, "scripts">): FailureCauseRow[] =>
+    Object.entries(scripts)
+        .map(([name, usage]) => {
+            const outcomes = usage.outcomes ?? {};
+            const classified = Object.values(outcomes).reduce((sum, count) => sum + count, 0);
+
+            return {
+                name,
+                refused: outcomes.refused ?? 0,
+                usage: outcomes.usage ?? 0,
+                crash: outcomes.crash ?? 0,
+                crashes: Object.entries(usage.errors ?? {})
+                    .map(([kind, count]) => `${kind} ×${count}`)
+                    .join(" · "),
+                unknown: usage.runs - classified,
+            };
+        })
+        .filter((row) => row.refused + row.usage + row.crash > 0)
+        .sort(
+            (a, b) =>
+                b.refused + b.usage + b.crash - (a.refused + a.usage + a.crash) ||
+                a.name.localeCompare(b.name),
+        );

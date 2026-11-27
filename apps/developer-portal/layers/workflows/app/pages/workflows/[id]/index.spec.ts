@@ -337,15 +337,6 @@ describe("workflow page", () => {
         expect(wrapper.find("output").text()).toContain("2 Nov");
     });
 
-    it("keeps features, ticket size and deleting behind Settings rather than on the page", async () => {
-        editing.editable = true;
-        const wrapper = await open();
-        const controls = wrapper.findAll("a, button").map((control) => control.text());
-
-        expect(wrapper.find("a[href='/workflows/blog/settings']").exists()).toBe(true);
-        expect(controls.filter((label) => /delete|features|ticket size/i.test(label))).toEqual([]);
-    });
-
     it("says so when the project doesn't exist instead of rendering an empty pipeline", async () => {
         const wrapper = await open(workflows(PROJECT), "/workflows/nope");
 

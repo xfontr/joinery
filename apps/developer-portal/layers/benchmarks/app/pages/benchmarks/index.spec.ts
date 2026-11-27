@@ -45,7 +45,6 @@ const MESSAGES = {
         screenshot: "{title}, first screen",
     },
     benchmarksFacts: {
-        provenance: "Read from docs/benchmarks/",
         sites: "Sites",
     },
     benchmarksToolbar: {

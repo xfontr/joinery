@@ -1,12 +1,11 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AuditFinding } from "#layers/snapshot/shared/audits.ts";
 import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
 
-const store = vi.hoisted(() => ({ readArtifact: vi.fn() }));
-const h3 = vi.hoisted(() => ({ defineEventHandler: (handler: unknown) => handler }));
-
-vi.mock("#layers/snapshot/server/utils/store.ts", () => store);
-vi.mock("h3", () => h3);
+vi.mock("h3", () => ({ defineEventHandler: (handler: unknown) => handler }));
 
 import handler from "./menu.get.ts";
 
@@ -30,13 +29,24 @@ const page = (date: string, findings: AuditFinding[]): DocPage => ({
     brokenLinks: [],
 });
 
-beforeEach(() => {
-    vi.clearAllMocks();
+let dir = "";
+
+const artifact = (name: string, value: unknown) =>
+    writeFile(join(dir, `${name}.json`), JSON.stringify(value));
+
+beforeEach(async () => {
+    dir = await mkdtemp(join(tmpdir(), "snapshot-"));
+    vi.stubGlobal("useRuntimeConfig", () => ({ snapshotDir: dir }));
+});
+
+afterEach(async () => {
+    vi.unstubAllGlobals();
+    await rm(dir, { recursive: true, force: true });
 });
 
 describe("audits menu route", () => {
     it("lists the audits with findings still open, newest first, counting what is owed", async () => {
-        store.readArtifact.mockResolvedValue({
+        await artifact("docs", {
             pages: [
                 page("2026-09-20", [row("B1", "open"), row("B2", "open")]),
                 page("2026-09-25", [row("B1", "fixed")]),
@@ -51,8 +61,6 @@ describe("audits menu route", () => {
     });
 
     it("answers an empty menu when the docs were never collected", async () => {
-        store.readArtifact.mockResolvedValue(null);
-
         await expect(handler({} as never)).resolves.toEqual([]);
     });
 });

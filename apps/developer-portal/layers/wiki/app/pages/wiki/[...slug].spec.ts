@@ -80,12 +80,6 @@ describe("doc detail page", () => {
         expect(setStatus).toHaveBeenCalledWith(404);
     });
 
-    it("leaves a found page on 200", async () => {
-        await mountSuspended(Page, { global, route: FIRST_HOUR });
-
-        expect(setStatus).not.toHaveBeenCalled();
-    });
-
     it("warns about the page's broken links, naming each one", async () => {
         const wrapper = await mountSuspended(Page, { global, route: FIRST_HOUR });
 
@@ -105,12 +99,6 @@ describe("doc detail page", () => {
         expect(wrapper.findComponent({ name: "UContentToc" }).props("links")).toEqual([
             { id: "intro", depth: 2, text: "Intro" },
         ]);
-    });
-
-    it("says there is no such page instead of rendering an empty one", async () => {
-        const wrapper = await mountSuspended(Page, { global, route: "/wiki/docs/guides/nope" });
-
-        expect(wrapper.text()).toContain("wikiPage.missing.title");
     });
 
     it("loads the new page when the route changes under it", async () => {

@@ -2,33 +2,20 @@
     <UDashboardPanel id="decisions">
         <template #header>
             <PageHeader :title="$t('decisions.title')">
-                <template #actions>
-                    <UButton
-                        to="/wiki/docs/decisions/readme"
-                        :label="$t('decisions.guide')"
-                        icon="i-lucide-ruler"
-                        color="neutral"
-                        variant="ghost"
-                        size="xs"
-                    />
-                    <SnapshotAge :manifest artifact="docs" />
-                </template>
-                <template v-if="reports.length > 0" #intro>
+                <template v-if="reports.length > 0" #facts>
                     <DecisionsFacts :reports />
                 </template>
             </PageHeader>
-
-            <DecisionsToolbar
-                v-model:search="search"
-                v-model:status="status"
-                v-model:decision="decision"
-                v-model:sort="sort"
-            />
         </template>
 
         <template #body>
             <div class="flex flex-col gap-4">
-                <p class="max-w-3xl text-sm text-muted">{{ $t("decisions.intro") }}</p>
+                <p class="max-w-3xl text-sm text-muted">
+                    {{ $t("decisions.intro") }}
+                    <ULink to="/wiki/docs/decisions/readme" class="text-default underline">{{
+                        $t("decisions.guide")
+                    }}</ULink>
+                </p>
 
                 <CollectionEmpty
                     v-if="reports.length === 0"
@@ -45,6 +32,14 @@
                         :shown="visible.length"
                         :total="reports.length"
                     >
+                        <template #filters>
+                            <DecisionsToolbar
+                                v-model:search="search"
+                                v-model:status="status"
+                                v-model:decision="decision"
+                                v-model:sort="sort"
+                            />
+                        </template>
                         <DecisionsRow v-for="report in visible" :key="report.path" :report />
                     </ListCard>
                 </template>
@@ -54,5 +49,5 @@
 </template>
 
 <script setup lang="ts">
-const { manifest, reports, status, decision, search, sort, visible } = useDecisionList();
+const { reports, status, decision, search, sort, visible } = useDecisionList();
 </script>

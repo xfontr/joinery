@@ -1,53 +1,39 @@
 import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
-import { mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { type Ref, ref } from "vue";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useInterestRateOptions } from "./useInterestRateOptions";
 
-const i18n = vi.hoisted(() => ({ locale: undefined as unknown as Ref<string> }));
-
-mockNuxtImport("useI18n", () => () => ({
-    t: (key: string, params?: Record<string, unknown>) =>
-        params ? `${key} ${JSON.stringify(params)}` : key,
-    locale: i18n.locale,
-}));
+const MESSAGES = {
+    interestCalculator: {
+        rate: {
+            options: {
+                custom: "custom",
+                judicial: "judicial {percent}",
+                legal: "legal {percent}",
+            },
+        },
+    },
+};
 
 const optionsFor = async (rates: Parameters<typeof useInterestRateOptions>[0]) =>
     (await withSetup(() => useInterestRateOptions(rates))).value;
 
 describe("useInterestRateOptions", () => {
     beforeEach(() => {
-        i18n.locale = ref("es-ES");
+        useNuxtApp().$i18n.mergeLocaleMessage("es-ES", MESSAGES);
     });
 
     it("labels each preset with its percentage in the reader's decimal format", async () => {
         const options = await optionsFor(["legal", "judicial"]);
 
         expect(options.value).toEqual([
-            { value: "legal", label: 'interestCalculator.rate.options.legal {"percent":"3,25"}' },
-            {
-                value: "judicial",
-                label: 'interestCalculator.rate.options.judicial {"percent":"5,25"}',
-            },
+            { value: "legal", label: "legal 3,25" },
+            { value: "judicial", label: "judicial 5,25" },
         ]);
     });
 
     it("gives the custom rate no percentage, since the reader types it", async () => {
         const options = await optionsFor(["legal", "custom"]);
 
-        expect(options.value.at(-1)).toEqual({
-            value: "custom",
-            label: "interestCalculator.rate.options.custom",
-        });
-    });
-
-    it("reformats the percentages when the locale changes, instead of keeping the first one", async () => {
-        const options = await optionsFor(["legal"]);
-
-        i18n.locale.value = "en-GB";
-
-        expect(options.value[0]).toMatchObject({
-            label: 'interestCalculator.rate.options.legal {"percent":"3.25"}',
-        });
+        expect(options.value.at(-1)).toEqual({ value: "custom", label: "custom" });
     });
 });

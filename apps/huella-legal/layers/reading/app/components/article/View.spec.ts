@@ -1,6 +1,7 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { serveEndpoint } from "@joinery/configs/vitest/utils/nuxt";
+import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { h, ref, type Ref } from "vue";
+import { h } from "vue";
 import ArticleView from "./View.vue";
 
 const ARTICLE: Article = {
@@ -27,55 +28,54 @@ const RELATED: ArticleSummary = {
     readingMinutes: 6,
 };
 
-const nuxt = vi.hoisted(() => ({
-    article: undefined as unknown as Ref<Article | undefined>,
-    related: undefined as unknown as Ref<ArticleSummary[]>,
-    comments: undefined as unknown as Ref<ArticleComments | undefined>,
-}));
+const COMMENTS: ArticleComments = { open: true, count: 3, threads: [] };
 
-mockNuxtImport("useArticle", () => async () => ({
-    article: nuxt.article,
-    related: nuxt.related,
-    authorCounts: ref({}),
-    comments: nuxt.comments,
-}));
+const serve = (article: unknown, comments: unknown = undefined) => {
+    serveEndpoint("/api/articles/la-culpa", () => article);
+    serveEndpoint("/api/articles/la-culpa/related", () => [RELATED]);
+    serveEndpoint("/api/articles/la-culpa/comments", () => comments);
+    serveEndpoint("/api/authors", () => []);
+};
 
-mockNuxtImport("useScholarlyMeta", () => () => {});
+const mount = (options: Parameters<typeof mountSuspended>[1] = {}) =>
+    mountSuspended(ArticleView, { route: "/la-culpa/", ...options });
 
+// useCachedFetch serves a payload it already holds, which would outlive the test that fetched it
 beforeEach(() => {
-    nuxt.article = ref(ARTICLE);
-    nuxt.related = ref([RELATED]);
-    nuxt.comments = ref();
+    clearNuxtData();
 });
 
 describe("article view", () => {
     it("renders the article useArticle read, with its related band", async () => {
-        const wrapper = await mountSuspended(ArticleView);
+        serve(ARTICLE);
+
+        const wrapper = await mount();
 
         expect(wrapper.find("h1").text()).toBe("La culpa");
-        expect(wrapper.find('a[href="/el-dolo/"]').exists()).toBe(true);
+        await vi.waitFor(() => expect(wrapper.find('a[href="/el-dolo/"]').exists()).toBe(true));
     });
 
     it("leaves out the related band for an uncategorised article", async () => {
-        nuxt.article = ref({ ...ARTICLE, category: undefined });
+        serve({ ...ARTICLE, category: undefined });
 
-        const wrapper = await mountSuspended(ArticleView);
+        const wrapper = await mount();
 
+        await vi.waitFor(() => expect(wrapper.find("h1").exists()).toBe(true));
         expect(wrapper.find('a[href="/el-dolo/"]').exists()).toBe(false);
     });
 
     it("links the header's comment count to the thread once the comments arrive", async () => {
-        nuxt.comments = ref({ open: true, count: 3, threads: [] });
+        serve(ARTICLE, COMMENTS);
 
-        const wrapper = await mountSuspended(ArticleView);
+        const wrapper = await mount();
 
-        expect(wrapper.find('a[href$="#comentarios"]').exists()).toBe(true);
+        await vi.waitFor(() => expect(wrapper.find('a[href$="#comentarios"]').exists()).toBe(true));
     });
 
     it("hands the article and its thread to the page's comments slot", async () => {
-        nuxt.comments = ref({ open: true, count: 3, threads: [] });
+        serve(ARTICLE, COMMENTS);
 
-        const wrapper = await mountSuspended(ArticleView, {
+        const wrapper = await mount({
             slots: {
                 comments: ({
                     article,
@@ -87,13 +87,13 @@ describe("article view", () => {
             },
         });
 
-        expect(wrapper.find("#thread").text()).toBe("la-culpa 3");
+        await vi.waitFor(() => expect(wrapper.find("#thread").text()).toBe("la-culpa 3"));
     });
 
     it("renders nothing rather than an empty article while there is no post", async () => {
-        nuxt.article = ref();
+        serve(undefined);
 
-        const wrapper = await mountSuspended(ArticleView);
+        const wrapper = await mount();
 
         expect(wrapper.find("article").exists()).toBe(false);
     });

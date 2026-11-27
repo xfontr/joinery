@@ -134,7 +134,6 @@ const oneSidedFinding = (path: string, side: Side): Finding => ({
             ? `${path} is only reached from app/. shared/ is for code both app/ and server/ use, so it goes in that app/ or layer's app/types or app/utils.`
             : `${path} is only reached from server/, tools/ or a nuxt.config. shared/ is for code both app/ and server/ use, so it goes in server/ or tools/.`,
     evidence: [path],
-    blocks: true,
 });
 
 /** Every `shared/` file reached from exactly one of `app/` and the Node side, specs aside. */

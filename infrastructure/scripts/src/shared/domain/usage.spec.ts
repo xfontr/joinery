@@ -4,6 +4,8 @@ import {
     callerOf,
     COLUMNS,
     flagLabels,
+    hookOf,
+    isTimed,
     LINT_COLUMNS,
     isCompleteLine,
     isRecorded,
@@ -22,8 +24,9 @@ const row = (overrides: Partial<UsageRow> = {}): UsageRow => ({
     flags: "",
     area: "repo",
     caller: "human",
-    tty: "1",
     exit: "0",
+    outcome: "ok",
+    error: "",
     ms: "12",
     ...overrides,
 });
@@ -43,7 +46,7 @@ describe("flagLabels", () => {
 describe("toLine", () => {
     it("writes the columns in header order", () => {
         expect(toLine(row({ flags: "check" }))).toBe(
-            "2026-11-09,issue,pick,,check,repo,human,1,0,12",
+            "2026-11-09,issue,pick,,check,repo,human,0,ok,,12",
         );
     });
 
@@ -105,6 +108,22 @@ describe("isRecorded", () => {
 
     it("skips the flush itself, which would otherwise refill the buffer it just emptied", () => {
         expect(isRecorded({}, "usage")).toBe(false);
+    });
+});
+
+describe("isTimed", () => {
+    it("keeps a git hook's runs, which is where a slow check is felt, but never CI or Vitest", () => {
+        expect(isTimed({ JOINERY_GIT_HOOK: "pre-push" })).toBe(true);
+        expect(isTimed({ CI: "true" })).toBe(false);
+        expect(isTimed({ VITEST: "true" })).toBe(false);
+    });
+});
+
+describe("hookOf", () => {
+    it("names the hook a run came from, and reads a hook from before they were named", () => {
+        expect(hookOf({ JOINERY_GIT_HOOK: "pre-push" })).toBe("pre-push");
+        expect(hookOf({ JOINERY_GIT_HOOK: "1" })).toBe("hook");
+        expect(hookOf({})).toBe("");
     });
 });
 

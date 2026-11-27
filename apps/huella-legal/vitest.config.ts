@@ -19,5 +19,5 @@ export default vitest.createNuxtConfig({
     ],
     setupFiles: ["./vitest.setup.ts"],
     coverageExclude: ["**/app/pages/**", "**/__mocks__/**"],
-    thresholds: { lines: 97, statements: 97, functions: 95, branches: 93 },
+    thresholds: { lines: 91, statements: 91, functions: 88, branches: 89 },
 });

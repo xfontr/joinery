@@ -39,10 +39,6 @@ const files = readdirSync(WORK_DIR).map((file) => {
 });
 
 describe("toWork", () => {
-    it("keys an entry by the slug its path ends in", () => {
-        expect(toWork(TOOL).slug).toBe("wp-editor");
-    });
-
     it("keeps only the fields it lists, so a content row's extras never leak into the page", () => {
         const work = toWork({ ...STUDY, order: 1, body: { type: "root" } } as WorkRow);
 
@@ -80,7 +76,6 @@ describe("toWorkCase", () => {
 
 describe("content/work", () => {
     const studies = files.filter(([, row]) => row.caseStudy === true);
-    const tools = files.filter(([, row]) => row.caseStudy === false);
 
     it.each(studies)("%s carries every field its study page prints", (_, row) => {
         expect(toWorkCase(row)).not.toBeNull();
@@ -88,9 +83,5 @@ describe("content/work", () => {
 
     it.each(studies)("%s names a screenshot that exists", (_, row) => {
         expect(existsSync(resolve(SCREENSHOT_DIR, row.screenshot.file))).toBe(true);
-    });
-
-    it.each(tools)("%s links to somewhere", (_, row) => {
-        expect(toWork(row).live.href).toBeTypeOf("string");
     });
 });

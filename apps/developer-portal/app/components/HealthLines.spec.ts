@@ -26,7 +26,7 @@ const LINES: HealthLine[] = [
 describe("HealthLines", () => {
     it("prints a figure in its tone, and a neutral one in the plain highlight", async () => {
         const wrapper = await mountSuspended(HealthLines, {
-            props: { lines: LINES, collectedAge: "1 day ago" },
+            props: { lines: LINES },
         });
 
         const figures = wrapper.findAll("dd[data-figure]");
@@ -36,7 +36,7 @@ describe("HealthLines", () => {
 
     it("draws a bar only for a line with parts, and its note when it has one", async () => {
         const wrapper = await mountSuspended(HealthLines, {
-            props: { lines: LINES, collectedAge: "1 day ago" },
+            props: { lines: LINES },
         });
 
         expect(wrapper.findAllComponents({ name: "SplitBar" })).toHaveLength(1);

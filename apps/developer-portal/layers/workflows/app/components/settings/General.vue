@@ -4,8 +4,11 @@
             <UFormField :label="$t('settingsGeneral.titleField')">
                 <UInput v-model="title" :disabled="!editable" class="w-full" />
             </UFormField>
-            <UFormField :label="$t('settingsGeneral.summary')">
-                <UTextarea v-model="summary" :rows="2" :disabled="!editable" class="w-full" />
+            <UFormField
+                :label="$t('settingsGeneral.summary.label')"
+                :help="$t('settingsGeneral.summary.help')"
+            >
+                <UInput v-model="summary" :disabled="!editable" class="w-full" />
             </UFormField>
             <div class="grid gap-4 sm:grid-cols-2">
                 <UFormField

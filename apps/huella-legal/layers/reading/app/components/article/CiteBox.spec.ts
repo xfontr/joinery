@@ -1,13 +1,12 @@
+import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
 import type { VueWrapper } from "@vue/test-utils";
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
+import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import ArticleCiteBox from "./CiteBox.vue";
 
-const toast = vi.hoisted(() => ({ add: vi.fn() }));
+const MESSAGES = { citeBox: { copied: "copied", copy: "copy", title: "title" } };
 
-mockNuxtImport("useToast", () => () => toast);
-
-const global = { mocks: { $t: (key: string) => `t(${key})` } };
+let toast: ReturnType<typeof useToast>;
 
 const CITATIONS = [
     { style: "APA 7", text: "Gil, M. (2024, 12 de marzo). La acción. Huella Legal." },
@@ -30,8 +29,11 @@ const withoutClipboard = (): void => {
     onTestFinished(() => Object.defineProperty(prototype, "clipboard", descriptor));
 };
 
-beforeEach(() => {
+beforeEach(async () => {
     vi.clearAllMocks();
+    useNuxtApp().$i18n.mergeLocaleMessage("es-ES", MESSAGES);
+    toast = (await withSetup(() => useToast())).value;
+    toast.clear();
     Object.defineProperty(navigator, "clipboard", { value: clipboard, configurable: true });
     vi.stubGlobal("ClipboardItem", ClipboardItem);
 });
@@ -49,7 +51,6 @@ describe("cite box", () => {
     it("shows the first style until another tab is picked", async () => {
         const wrapper = await mountSuspended(ArticleCiteBox, {
             props: { citations: CITATIONS },
-            global,
         });
 
         expect(wrapper.text()).toContain(CITATIONS[0]!.text);
@@ -63,7 +64,6 @@ describe("cite box", () => {
     it("copies the style on screen, not the first one", async () => {
         const wrapper = await mountSuspended(ArticleCiteBox, {
             props: { citations: CITATIONS },
-            global,
         });
 
         await selectTab(wrapper, 1);
@@ -77,34 +77,16 @@ describe("cite box", () => {
     it("confirms the copy in a toast, since the button itself doesn't change", async () => {
         const wrapper = await mountSuspended(ArticleCiteBox, {
             props: { citations: CITATIONS },
-            global,
         });
 
         await wrapper.find("button:not([role=tab])").trigger("click");
 
-        expect(toast.add).toHaveBeenCalledWith(
-            expect.objectContaining({ title: "citeBox.copied" }),
-        );
-    });
-
-    it("puts the citation in the panel its tab controls, so aria-controls never dangles", async () => {
-        const wrapper = await mountSuspended(ArticleCiteBox, {
-            props: { citations: CITATIONS },
-            global,
-            attachTo: document.body,
-        });
-
-        const controls = wrapper.find("[role=tab][aria-selected=true]").attributes("aria-controls");
-
-        expect(document.getElementById(controls!)?.textContent).toContain(CITATIONS[0]!.text);
-
-        wrapper.unmount();
+        expect(toast.toasts.value.map(({ title }) => title)).toEqual(["copied"]);
     });
 
     it("keeps the tab's aria-controls a single id when a style name has a space", async () => {
         const wrapper = await mountSuspended(ArticleCiteBox, {
             props: { citations: CITATIONS },
-            global,
         });
 
         expect(
@@ -116,7 +98,6 @@ describe("cite box", () => {
         withoutClipboard();
         const wrapper = await mountSuspended(ArticleCiteBox, {
             props: { citations: CITATIONS },
-            global,
         });
 
         expect(wrapper.find("button:not([role=tab])").exists()).toBe(false);
@@ -125,16 +106,9 @@ describe("cite box", () => {
     it("shows no tabs for a single style", async () => {
         const wrapper = await mountSuspended(ArticleCiteBox, {
             props: { citations: [CITATIONS[0]!] },
-            global,
         });
 
         expect(wrapper.find("[role=tablist]").exists()).toBe(false);
         expect(wrapper.text()).toContain(CITATIONS[0]!.text);
-    });
-
-    it("renders nothing with no citation to show", async () => {
-        const wrapper = await mountSuspended(ArticleCiteBox, { props: { citations: [] }, global });
-
-        expect(wrapper.find("section").exists()).toBe(false);
     });
 });

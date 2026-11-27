@@ -8,7 +8,7 @@
                         : $t("workflowGraphSection.title")
                 }}
             </h2>
-            <p class="text-xs text-muted">{{ note }}</p>
+            <p v-if="selected" class="text-xs text-muted">{{ $t("workflowGraphSection.hint") }}</p>
         </header>
         <WorkflowGraph
             :capabilities="view.capabilities"
@@ -27,23 +27,8 @@ import type { CapabilityView, ProjectView } from "#layers/workflows/shared/workf
 interface Props {
     view: ProjectView;
     selected?: CapabilityView;
-    /** Capability id to its title, for the chain left. */
-    titles: Record<string, string>;
 }
 
-const { view, selected, titles } = defineProps<Props>();
+const { view, selected } = defineProps<Props>();
 const emit = defineEmits<{ select: [capability: string]; details: [capability: string] }>();
-
-const { t } = useI18n();
-
-const note = computed(() => {
-    if (!selected) return "";
-
-    const chain = view.critical.map((capability) => titles[capability]).join(" → ");
-    const status = t("workflowGraphSection.status", {
-        state: t(`workflows.capabilityState.${selected.state}`),
-    });
-
-    return chain ? t("workflowGraphSection.chain", { status, chain }) : status;
-});
 </script>

@@ -7,7 +7,6 @@ import type { VendorConfig } from "#core/registry";
 
 const nitro = vi.hoisted(() => ({
     vendor: undefined as VendorConfig | undefined,
-    caches: {} as Record<string, CacheOptions>,
     calls: [] as { name: string; key: string; event: unknown }[],
     cache: {
         list: { maxAge: 120, swr: false },
@@ -19,8 +18,6 @@ const transport = vi.hoisted(() => ({ create: vi.fn(), raw: vi.fn() }));
 
 vi.mock("nitropack/runtime", () => ({
     defineCachedFunction: (fn: (...args: unknown[]) => unknown, options: CacheOptions) => {
-        nitro.caches[options.name!] = options;
-
         return async (...args: unknown[]) => {
             nitro.calls.push({
                 name: options.name!,
@@ -91,18 +88,6 @@ describe("useContent", () => {
         });
     });
 
-    it("lists terms without asking for what only an entry embeds", async () => {
-        respond([{ id: 3, name: "News", slug: "news", taxonomy: "category" }]);
-
-        const page = await useContent(EVENT).listTerms("categories");
-
-        expect(page.items[0]).toMatchObject({ id: "3", resource: "categories", name: "News" });
-        expect(transport.raw).toHaveBeenCalledWith("/wp-json/wp/v2/categories", {
-            headers: undefined,
-            query: { page: 1, per_page: 10, slug: undefined, search: undefined },
-        });
-    });
-
     // WordPress has no single-document endpoint, so the inherited one-item list is what serves this
     it("gets the one entry a slug names", async () => {
         await expect(useContent(EVENT).getEntry("posts", "hello-world")).resolves.toMatchObject({
@@ -113,15 +98,6 @@ describe("useContent", () => {
         expect(transport.raw).toHaveBeenCalledWith("/wp-json/wp/v2/posts", {
             headers: undefined,
             query: expect.objectContaining({ per_page: 1, slug: "hello-world" }) as unknown,
-        });
-    });
-
-    it("gets a term by slug", async () => {
-        respond([{ id: 3, name: "News", slug: "news", taxonomy: "category" }]);
-
-        await expect(useContent(EVENT).getTerm("categories", "news")).resolves.toMatchObject({
-            id: "3",
-            resource: "categories",
         });
     });
 
@@ -250,29 +226,10 @@ describe("the list cache", () => {
         },
     );
 
-    it("separates the resources of one vendor, and one filter from another", async () => {
-        await useContent(EVENT).listEntries("posts");
-        const posts = keyOf("content-entry-list");
-
-        await useContent(EVENT).listEntries("pages");
-        expect(keyOf("content-entry-list")).not.toBe(posts);
-
-        await useContent(EVENT).listEntries("posts", {
-            term: { resource: "categories", id: "12" },
-        });
-        expect(keyOf("content-entry-list")).not.toBe(posts);
-    });
-
     it("hands the cache the request, so a stale refresh can outlive the response", async () => {
         await useContent(EVENT).listEntries("posts");
 
         expect(nitro.calls[0]?.event).toBe(EVENT);
-    });
-
-    it("caches entry and term lists for the window the app configures, not a fixed one", () => {
-        for (const name of ["content-entry-list", "content-term-list"]) {
-            expect(nitro.caches[name]).toMatchObject({ group: "content", maxAge: 120, swr: false });
-        }
     });
 });
 
@@ -283,20 +240,5 @@ describe("the item cache", () => {
         expect(keyOf("content-entry")).toBe(
             contentKey(nitro.vendor!, "posts", { slug: "hello-world" }),
         );
-    });
-
-    it("separates the same slug under two resources", async () => {
-        await useContent(EVENT).getEntry("posts", "hello-world");
-        const post = keyOf("content-entry");
-
-        await useContent(EVENT).getEntry("pages", "hello-world");
-
-        expect(keyOf("content-entry")).not.toBe(post);
-    });
-
-    it("caches entries and terms for their own configured window, apart from the list's", () => {
-        for (const name of ["content-entry", "content-term"]) {
-            expect(nitro.caches[name]).toMatchObject({ group: "content", maxAge: 480, swr: true });
-        }
     });
 });

@@ -1,10 +1,8 @@
-import { slotStub } from "@joinery/configs/vitest/utils/nuxt";
-import type { FormError } from "@nuxt/ui";
+import { serveEndpoint, slotStub } from "@joinery/configs/vitest/utils/nuxt";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
+import { createError, readBody } from "h3";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ref } from "vue";
-import type { FormPostStatus } from "#layers/forms/app/composables/useFormPost";
 import NewsletterForm from "./NewsletterForm.vue";
 
 const MESSAGES = {
@@ -26,17 +24,27 @@ const MESSAGES = {
     },
 };
 
-const newsletter = vi.hoisted(() => ({
-    status: undefined as unknown as import("vue").Ref<FormPostStatus>,
-    errors: undefined as unknown as import("vue").Ref<FormError[]>,
-    send: vi.fn(),
-}));
-
-const challenge = vi.hoisted(() => vi.fn());
+const challenge = vi.hoisted(() =>
+    vi.fn((send: (token: string) => Promise<unknown>) => send("tok")),
+);
 
 const FormChallenge = slotStub({ challenge });
 
-vi.mock("../composables/useNewsletter", () => ({ useNewsletter: () => newsletter }));
+const serveNewsletter = (respond: () => unknown = () => ({})) => {
+    const received: unknown[] = [];
+
+    serveEndpoint("/api/newsletter", async (event) => {
+        received.push(await readBody(event));
+
+        return respond();
+    });
+
+    return received;
+};
+
+const rejectWith = (statusCode: number, data?: unknown) => () => {
+    throw createError({ statusCode, data });
+};
 
 const mount = (props: Record<string, unknown> = {}) =>
     mountSuspended(NewsletterForm, { props, global: { stubs: { FormChallenge } } });
@@ -53,41 +61,35 @@ describe("newsletter form", () => {
     });
 
     beforeEach(() => {
-        vi.clearAllMocks();
         vi.unstubAllGlobals();
-        newsletter.status = ref("idle");
-        newsletter.errors = ref([]);
     });
 
     it("subscribes the trimmed address through the challenge, so a token rides with it", async () => {
+        const received = serveNewsletter();
         const wrapper = await mount();
 
         await submit(wrapper, " lucia@ejemplo.es ");
 
-        expect(newsletter.send).toHaveBeenCalledWith(
-            { email: "lucia@ejemplo.es", honeypot: "" },
-            challenge,
-        );
+        expect(received).toEqual([{ email: "lucia@ejemplo.es", honeypot: "", token: "tok" }]);
     });
 
     it("sends what a bot typed into the honeypot, which sits inside the form it guards", async () => {
+        const received = serveNewsletter();
         const wrapper = await mount();
 
         await wrapper.find("form input[name=sitio]").setValue("https://spam.test");
         await submit(wrapper, "lucia@ejemplo.es");
 
-        expect(newsletter.send).toHaveBeenCalledWith(
-            { email: "lucia@ejemplo.es", honeypot: "https://spam.test" },
-            challenge,
-        );
+        expect(received).toEqual([expect.objectContaining({ honeypot: "https://spam.test" })]);
     });
 
     it("withholds the request and shows the field error on an address with no domain", async () => {
+        const received = serveNewsletter();
         const wrapper = await mount();
 
         await submit(wrapper, "lucia@");
 
-        expect(newsletter.send).not.toHaveBeenCalled();
+        expect(received).toHaveLength(0);
         expect(wrapper.find("[data-slot=error]").text()).toBe("invalid address");
     });
 
@@ -97,11 +99,12 @@ describe("newsletter form", () => {
     ])(
         "shakes %s field instead of marking it, and tells only a screen reader why",
         async (_, email) => {
+            const received = serveNewsletter();
             const wrapper = await mount();
 
             await submit(wrapper, email);
 
-            expect(newsletter.send).not.toHaveBeenCalled();
+            expect(received).toHaveLength(0);
             expect(wrapper.find("[data-slot=error]").exists()).toBe(false);
             expect(wrapper.find("input[type=email]").attributes("aria-invalid")).not.toBe("true");
             expect(wrapper.find("[aria-live=polite]").text()).toBe("required address");
@@ -131,29 +134,11 @@ describe("newsletter form", () => {
         expect(wrapper.find("[data-slot=error]").text()).toBe("required address");
     });
 
-    it("marks the form busy and locks the field while submitting, keeping what was typed", async () => {
-        const wrapper = await mount();
-
-        await wrapper.find("input[type=email]").setValue("lucia@ejemplo.es");
-        newsletter.status.value = "submitting";
-        await flushPromises();
-
-        const input = wrapper.find("input[type=email]");
-
-        expect(wrapper.find("form").attributes("aria-busy")).toBe("true");
-        expect(input.attributes("disabled")).toBeDefined();
-        expect((input.element as HTMLInputElement).value).toBe("lucia@ejemplo.es");
-        expect(wrapper.findComponent({ name: "UButton" }).props("loading")).toBe(true);
-    });
-
     it.each([
         ["invalid", "invalid address"],
         ["rejected", "rejected address"],
     ])("words the server's %s code on the input, so it is read with it", async (code, message) => {
-        newsletter.send.mockImplementation(() => {
-            newsletter.status.value = "invalid";
-            newsletter.errors.value = [{ name: "email", message: code }];
-        });
+        serveNewsletter(rejectWith(422, [{ name: "email", message: code }]));
         const wrapper = await mount();
 
         await submit(wrapper, "lucia@ejemplo.es");
@@ -164,28 +149,6 @@ describe("newsletter form", () => {
         expect(error.text()).toBe(message);
         expect(input.attributes("aria-invalid")).toBe("true");
         expect(input.attributes("aria-describedby")).toContain(error.attributes("id"));
-    });
-
-    it("announces a failed request and keeps the form for a retry", async () => {
-        newsletter.status = ref("error");
-        const wrapper = await mount();
-
-        expect(wrapper.find("[role=alert]").text()).toContain("error title");
-        expect(wrapper.find("input[type=email]").exists()).toBe(true);
-    });
-
-    it("replaces the form with the success panel, so nobody subscribes twice", async () => {
-        newsletter.status = ref("success");
-        const wrapper = await mount();
-
-        expect(wrapper.find("form").exists()).toBe(false);
-        expect(wrapper.find("h3").text()).toBe("success title");
-    });
-
-    it("links the privacy section from the notice under the field", async () => {
-        const wrapper = await mount();
-
-        expect(wrapper.find("form p a").attributes("href")).toBe("/aviso-legal/#privacidad");
     });
 
     it.each([

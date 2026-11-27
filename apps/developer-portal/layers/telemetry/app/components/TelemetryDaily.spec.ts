@@ -43,8 +43,8 @@ const USAGE = {
             areas: {},
             flags: {},
             days: {
-                "2026-11-08": { runs: 2, agent: 1, failures: 0 },
-                "2026-11-09": { runs: 4, agent: 3, failures: 2 },
+                "2026-11-08": { runs: 2, agent: 1, failures: 0, known: 2 },
+                "2026-11-09": { runs: 4, agent: 3, failures: 2, known: 4 },
             },
         },
     },

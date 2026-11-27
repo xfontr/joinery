@@ -52,34 +52,18 @@ describe("WordpressProvider", () => {
             });
         });
 
-        it("filters by author id", async () => {
-            await build().listEntries("posts", { author: "12" });
+        it.each([
+            ["author id", { author: "12" }, { author: "12" }],
+            [
+                "the taxonomy the term names",
+                { term: { resource: "categories", id: "12" } },
+                { categories: "12" },
+            ],
+        ])("filters by %s", async (_, query, expected) => {
+            await build().listEntries("posts", query as never);
 
             expect(get).toHaveBeenCalledWith(POSTS_URL, {
-                query: {
-                    page: undefined,
-                    per_page: 10,
-                    slug: undefined,
-                    search: undefined,
-                    author: "12",
-                    _embed: "wp:featuredmedia,wp:term,author",
-                },
-            });
-        });
-
-        it("filters by the taxonomy the term names", async () => {
-            await build().listEntries("posts", { term: { resource: "categories", id: "12" } });
-
-            expect(get).toHaveBeenCalledWith(POSTS_URL, {
-                query: {
-                    page: undefined,
-                    per_page: 10,
-                    slug: undefined,
-                    search: undefined,
-                    categories: "12",
-                    author: undefined,
-                    _embed: "wp:featuredmedia,wp:term,author",
-                },
+                query: expect.objectContaining(expected) as unknown,
             });
         });
     });

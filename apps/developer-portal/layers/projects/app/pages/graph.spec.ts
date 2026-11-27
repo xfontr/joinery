@@ -1,11 +1,14 @@
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
 import type { VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Manifest } from "#layers/snapshot/shared/types/Manifest.ts";
 import type { MetricsArtifact } from "#layers/snapshot/shared/types/MetricsArtifact.ts";
 import type { ProjectNode } from "#layers/snapshot/shared/types/ProjectNode.ts";
 import type { ProjectsArtifact } from "#layers/snapshot/shared/types/ProjectsArtifact.ts";
 import Page from "./graph.vue";
+
+// The map draws on a canvas happy-dom lacks, and has its own spec.
+const MapStub = { name: "GraphMap", template: "<div />" };
+const mount = () => mountSuspended(Page, { global: { stubs: { GraphMap: MapStub } } });
 
 const MESSAGES = {
     app: {
@@ -55,42 +58,22 @@ const MESSAGES = {
         usedBy: "Used by: {list}",
         uses: "Uses: {list}",
     },
-    graphMap: {
-        empty: "No projects collected yet.",
-        lead: "Each arrow points from a project to one it depends on.",
-        title: "Project map",
-    },
     pageHeader: {
         wordmark: "joinery",
-    },
-    snapshotAge: {
-        at: "At {commit} on {branch}",
-        collected: "Collected {age}",
     },
 };
 
 const artifacts = vi.hoisted(() => ({
-    manifest: null as Manifest | null,
     metrics: null as MetricsArtifact | null,
     projects: null as ProjectsArtifact | null,
 }));
-mockNuxtImport("snapshotManifest", () => () => artifacts.manifest);
 mockNuxtImport("metricsArtifact", () => () => artifacts.metrics);
 mockNuxtImport("projectsArtifact", () => () => artifacts.projects);
 
 beforeEach(() => {
-    artifacts.manifest = null;
     artifacts.metrics = null;
     artifacts.projects = null;
 });
-
-const MANIFEST = {
-    schemaVersion: 1,
-    generatedAt: "2026-11-01T00:00:00Z",
-    commit: "abc",
-    branch: "master",
-    artifacts: {},
-} satisfies Manifest;
 
 const node = (root: string, links: Partial<ProjectNode> = {}): ProjectNode => ({
     name: root.split("/").pop()!,
@@ -112,7 +95,6 @@ const METRICS = {
 } satisfies MetricsArtifact;
 
 const serve = (projects: ProjectNode[], metrics: MetricsArtifact = METRICS) => {
-    artifacts.manifest = MANIFEST;
     artifacts.projects = { generatedAt: "2026-11-01T00:00:00Z", projects, retired: [] };
     artifacts.metrics = metrics;
 };
@@ -140,7 +122,7 @@ describe("graph page", () => {
             node("infrastructure/scripts"),
             node("apps/blog"),
         ]);
-        const wrapper = await mountSuspended(Page);
+        const wrapper = await mount();
 
         expect(listed(wrapper, "Applications")).toEqual(["site", "blog"]);
         expect(listed(wrapper, "Shared building blocks")).toEqual(["ui"]);
@@ -152,7 +134,7 @@ describe("graph page", () => {
             node("apps/site", { dependsOn: ["ui", "content"] }),
             node("packages/ui", { dependedOnBy: ["site"] }),
         ]);
-        const wrapper = await mountSuspended(Page);
+        const wrapper = await mount();
 
         expect(group(wrapper, "Applications").textContent).toContain("Uses: ui, content");
         expect(group(wrapper, "Shared building blocks").textContent).toContain("Used by: site");
@@ -160,7 +142,7 @@ describe("graph page", () => {
 
     it("says a group is empty instead of leaving a blank card", async () => {
         serve([node("apps/site")]);
-        const wrapper = await mountSuspended(Page);
+        const wrapper = await mount();
 
         expect(group(wrapper, "Shared building blocks").textContent).toContain(
             "No projects in this group.",
@@ -170,22 +152,13 @@ describe("graph page", () => {
         );
     });
 
-    it("draws the project map from the collected graph instead of embedding a viewer", async () => {
-        serve([node("apps/site", { dependsOn: ["ui"] }), node("packages/ui")]);
-        const wrapper = await mountSuspended(Page);
-
-        expect(wrapper.find("iframe").exists()).toBe(false);
-        expect(wrapper.find("a[href='/projects/site']").exists()).toBe(true);
-    });
-
-    it("dates the page by the projects snapshot and surfaces invariant findings", async () => {
+    it("surfaces invariant findings", async () => {
         serve([], {
             ...METRICS,
             invariantFindings: [{ id: "x", title: "Drift", detail: "Fix it", evidence: [] }],
         });
-        const wrapper = await mountSuspended(Page);
+        const wrapper = await mount();
 
-        expect(wrapper.find("[title='At abc on master']").exists()).toBe(true);
         expect(wrapper.text()).toContain("Drift");
     });
 });

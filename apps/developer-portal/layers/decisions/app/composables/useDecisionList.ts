@@ -26,7 +26,6 @@ export const useDecisionList = () => {
     );
 
     return {
-        manifest: snapshotManifest(),
         reports,
         status,
         decision,

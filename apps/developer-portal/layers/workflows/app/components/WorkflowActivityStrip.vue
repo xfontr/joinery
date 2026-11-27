@@ -8,7 +8,7 @@
             <span class="tabular-nums">{{ lastCommit }}</span>
         </figcaption>
 
-        <div ref="track" class="overflow-x-auto">
+        <div ref="track" class="scrollbar-none overflow-x-auto">
             <ol class="flex h-6 w-max items-end gap-px">
                 <li
                     v-for="column in columns"

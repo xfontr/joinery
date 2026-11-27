@@ -1,9 +1,14 @@
 import { describe, expect, it } from "vitest";
 import type { LintRuleUsage } from "#layers/snapshot/shared/types/LintRuleUsage.ts";
 import type { ScriptUsage } from "#layers/snapshot/shared/types/ScriptUsage.ts";
+import type { TaskUsage } from "#layers/snapshot/shared/types/TaskUsage.ts";
 import {
+    ciBuildTimes,
     dailyTotals,
+    failureCauseRows,
+    formatMs,
     lintTable,
+    localBuildTimes,
     ruleQuadrants,
     scriptQuadrants,
     scriptRows,
@@ -55,7 +60,11 @@ describe("shownDays", () => {
     it("starts the strip at the first recorded run instead of months of empty days", () => {
         const days = shownDays({
             generatedAt: NOW,
-            scripts: { map: usage({ days: { "2026-10-01": { runs: 1, agent: 1, failures: 0 } } }) },
+            scripts: {
+                map: usage({
+                    days: { "2026-10-01": { runs: 1, agent: 1, failures: 0, known: 1 } },
+                }),
+            },
         });
 
         expect(days[0]).toBe("2026-10-01");
@@ -65,7 +74,11 @@ describe("shownDays", () => {
     it("still shows two weeks when recording began yesterday", () => {
         const days = shownDays({
             generatedAt: NOW,
-            scripts: { map: usage({ days: { "2026-11-08": { runs: 1, agent: 1, failures: 0 } } }) },
+            scripts: {
+                map: usage({
+                    days: { "2026-11-08": { runs: 1, agent: 1, failures: 0, known: 1 } },
+                }),
+            },
         });
 
         expect(days).toHaveLength(14);
@@ -78,7 +91,11 @@ describe("scriptRows", () => {
             generatedAt: NOW,
             windowDays: 90,
             known: ["drift", "map"],
-            scripts: { map: usage({ days: { "2026-11-08": { runs: 2, agent: 1, failures: 0 } } }) },
+            scripts: {
+                map: usage({
+                    days: { "2026-11-08": { runs: 2, agent: 1, failures: 0, known: 2 } },
+                }),
+            },
         });
 
         expect(rows.map((row) => [row.name, row.runs, row.last])).toEqual([
@@ -94,7 +111,9 @@ describe("scriptRows", () => {
             known: [],
             scripts: {
                 old: usage({ runs: 500, days: {} }),
-                fresh: usage({ days: { "2026-11-09": { runs: 1, agent: 0, failures: 0 } } }),
+                fresh: usage({
+                    days: { "2026-11-09": { runs: 1, agent: 0, failures: 0, known: 1 } },
+                }),
             },
         });
 
@@ -110,7 +129,9 @@ describe("scriptRows", () => {
             generatedAt: NOW,
             windowDays: 90,
             known: [],
-            scripts: { ci: usage({ days: { "2026-11-08": { runs, agent: runs, failures } } }) },
+            scripts: {
+                ci: usage({ days: { "2026-11-08": { runs, agent: runs, failures, known: runs } } }),
+            },
         });
 
         expect(row?.failing).toBe(failing);
@@ -124,12 +145,12 @@ describe("dailyTotals", () => {
             windowDays: 90,
             known: [],
             scripts: {
-                a: usage({ days: { "2026-11-09": { runs: 2, agent: 2, failures: 1 } } }),
-                b: usage({ days: { "2026-11-09": { runs: 3, agent: 0, failures: 0 } } }),
+                a: usage({ days: { "2026-11-09": { runs: 2, agent: 2, failures: 1, known: 2 } } }),
+                b: usage({ days: { "2026-11-09": { runs: 3, agent: 0, failures: 0, known: 3 } } }),
             },
         });
 
-        expect(dailyTotals(rows).at(-1)).toEqual({ runs: 5, agent: 2, failures: 1 });
+        expect(dailyTotals(rows).at(-1)).toEqual({ runs: 5, agent: 2, failures: 1, known: 5 });
     });
 });
 
@@ -170,7 +191,9 @@ describe("scriptQuadrants", () => {
             generatedAt: NOW,
             windowDays: 90,
             known: ["idle"],
-            scripts: { ci: usage({ days: { "2026-11-08": { runs: 8, agent: 8, failures: 2 } } }) },
+            scripts: {
+                ci: usage({ days: { "2026-11-08": { runs: 8, agent: 8, failures: 2, known: 8 } } }),
+            },
         });
 
         const chart = scriptQuadrants(rows);
@@ -185,8 +208,12 @@ describe("scriptQuadrants", () => {
             windowDays: 90,
             known: [],
             scripts: {
-                busy: usage({ days: { "2026-11-08": { runs: 90, agent: 0, failures: 0 } } }),
-                rare: usage({ days: { "2026-11-08": { runs: 2, agent: 1, failures: 0 } } }),
+                busy: usage({
+                    days: { "2026-11-08": { runs: 90, agent: 0, failures: 0, known: 90 } },
+                }),
+                rare: usage({
+                    days: { "2026-11-08": { runs: 2, agent: 1, failures: 0, known: 2 } },
+                }),
             },
         });
 
@@ -236,5 +263,132 @@ describe("ruleQuadrants threshold", () => {
         const chart = ruleQuadrants({ since: "2026-11-01", rules: { a: rule({ disabled: 22 }) } });
 
         expect(chart.y.ticks.map(({ label }) => Number(label) % 1)).toEqual([0, 0, 0, 0, 0]);
+    });
+});
+
+describe("failure rate", () => {
+    // Rows carried over from before outcomes were kept would otherwise dilute the rate.
+    it("divides by the runs whose outcome is known, so unclassified runs never dilute it", () => {
+        const [row] = scriptRows({
+            generatedAt: NOW,
+            windowDays: 90,
+            known: [],
+            scripts: {
+                ci: usage({
+                    days: { "2026-11-08": { runs: 40, agent: 40, failures: 2, known: 8 } },
+                }),
+            },
+        });
+
+        expect(row?.failing).toBe(true);
+    });
+
+    it("leaves a script with no classified run off the triage chart instead of plotting it at 0%", () => {
+        const rows = scriptRows({
+            generatedAt: NOW,
+            windowDays: 90,
+            known: [],
+            scripts: {
+                old: usage({
+                    days: { "2026-11-08": { runs: 9, agent: 9, failures: 0, known: 0 } },
+                }),
+            },
+        });
+
+        expect(scriptQuadrants(rows).points).toEqual([]);
+    });
+});
+
+describe("formatMs", () => {
+    it("keeps one unit per size, so a column of times compares at a glance", () => {
+        expect(formatMs(820)).toBe("820 ms");
+        expect(formatMs(12_700)).toBe("12.7 s");
+        expect(formatMs(330_000)).toBe("5.5 min");
+    });
+});
+
+const task = (overrides: Partial<TaskUsage> = {}): TaskUsage => ({
+    runs: 4,
+    hits: 1,
+    misses: { runs: 3, medianMs: 8000, p90Ms: 12_000 },
+    byCaller: {},
+    byHook: {},
+    ...overrides,
+});
+
+describe("localBuildTimes", () => {
+    it("puts the whole check first, then each target slowest first", () => {
+        const rows = localBuildTimes({
+            scripts: {
+                tasks: usage({
+                    commandDurations: { check: { runs: 2, medianMs: 36_000, p90Ms: 40_000 } },
+                }),
+            },
+            tasks: {
+                typecheck: task({ misses: { runs: 3, medianMs: 4900, p90Ms: 9400 } }),
+                "eslint:lint": task({
+                    misses: { runs: 3, medianMs: 12_700, p90Ms: 28_000 },
+                    byHook: { "pre-push": { runs: 1, medianMs: 20_000, p90Ms: 20_000 } },
+                }),
+            },
+        });
+
+        expect(rows.map((row) => row.name)).toEqual(["check", "eslint:lint", "typecheck"]);
+        expect(rows[1]).toMatchObject({ prePushMs: 20_000, hitShare: 0.25 });
+    });
+
+    it("keeps a target with only cache hits, untimed, rather than dropping it", () => {
+        const rows = localBuildTimes({
+            scripts: {},
+            tasks: { test: task({ hits: 4, misses: null }) },
+        });
+
+        expect(rows).toEqual([
+            { name: "test", kind: "target", durations: null, prePushMs: null, hitShare: 1 },
+        ]);
+    });
+});
+
+describe("ciBuildTimes", () => {
+    it("lists the steps before the jobs, and nothing when GitHub wasn't read", () => {
+        const rows = ciBuildTimes({
+            ci: {
+                runs: 20,
+                jobs: { e2e: { runs: 20, medianMs: 395_000, p90Ms: 490_000 } },
+                steps: { "nx test:e2e": { runs: 20, medianMs: 330_000, p90Ms: 436_000 } },
+            },
+        });
+
+        expect(rows.map((row) => [row.kind, row.name])).toEqual([
+            ["step", "nx test:e2e"],
+            ["job", "e2e"],
+        ]);
+        expect(ciBuildTimes({ ci: null })).toEqual([]);
+    });
+});
+
+describe("failureCauseRows", () => {
+    it("lists only scripts that failed, with each crash kind and the runs left unclassified", () => {
+        const rows = failureCauseRows({
+            scripts: {
+                workflow: usage({
+                    runs: 10,
+                    outcomes: { ok: 4, refused: 3, crash: 1 },
+                    errors: { "gh:exit": 1 },
+                }),
+                map: usage({ runs: 5, outcomes: { ok: 3, finding: 2 } }),
+            },
+        });
+
+        expect(rows).toEqual([
+            {
+                name: "workflow",
+                refused: 3,
+                usage: 0,
+                crash: 1,
+                crashes: "gh:exit ×1",
+                unknown: 2,
+            },
+        ]);
     });
 });

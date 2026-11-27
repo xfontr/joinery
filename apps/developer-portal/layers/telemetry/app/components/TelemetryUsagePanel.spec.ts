@@ -40,7 +40,7 @@ const script = (runs: number, agent: number, failures: number): ScriptUsage => (
     targets: {},
     areas: {},
     flags: {},
-    days: { "2026-11-09": { runs, agent, failures } },
+    days: { "2026-11-09": { runs, agent, failures, known: runs } },
 });
 
 const USAGE: UsageArtifact = {

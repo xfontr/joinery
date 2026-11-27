@@ -126,14 +126,4 @@ describe("WorkList", () => {
 
         expect(lit(wrapper)).toEqual(["marina-roustan"]);
     });
-
-    it("lights nothing once the lit row leaves the middle", async () => {
-        const wrapper = await mountSuspended(WorkList);
-        window.dispatchEvent(new Event("scroll"));
-
-        await cross(wrapper, "wp-editor", true);
-        await cross(wrapper, "wp-editor", false);
-
-        expect(lit(wrapper)).toEqual([]);
-    });
 });

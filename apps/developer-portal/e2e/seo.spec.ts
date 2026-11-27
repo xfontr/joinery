@@ -15,15 +15,6 @@ test.describe("@any-width", () => {
         }
     });
 
-    test("publishes the figures the personal site reads", async ({ request }) => {
-        const response = await request.get("/portal/embed/data.json");
-
-        expect(response.ok()).toBe(true);
-        expect(Object.keys((await response.json()) as object).sort()).toEqual(
-            ["benchmarks", "decisions", "rules", "specs", "workflows"].sort(),
-        );
-    });
-
     test("a missing page answers 404", async ({ request }) => {
         expect((await request.get("/portal/no-such-page/")).status()).toBe(404);
     });

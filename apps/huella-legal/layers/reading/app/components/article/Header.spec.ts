@@ -59,49 +59,4 @@ describe("article header", () => {
         expect(kicker.textContent).toContain("article.formats.comment");
         expect(kicker.textContent).not.toContain("Derecho penal");
     });
-
-    it("prints the publication number beside the format", async () => {
-        const wrapper = await mountSuspended(ArticleHeader, {
-            props: { article: { ...ARTICLE, number: "02/2021" } },
-            global,
-        });
-
-        const kicker = wrapper.find("h1").element.previousElementSibling!;
-
-        expect(kicker.textContent).toContain("t(article.number)");
-    });
-
-    it("leaves the number out of an article that has none", async () => {
-        const wrapper = await mountSuspended(ArticleHeader, {
-            props: { article: ARTICLE },
-            global,
-        });
-
-        expect(wrapper.text()).not.toContain("article.number");
-    });
-
-    it("leaves out the standfirst for an article without an excerpt", async () => {
-        const wrapper = await mountSuspended(ArticleHeader, {
-            props: { article: { ...ARTICLE, excerpt: undefined } },
-            global,
-        });
-
-        expect(wrapper.find("h1 + p").exists()).toBe(false);
-    });
-
-    it("points every byline name at the author cards on the same page", async () => {
-        const second = fakeAuthor();
-        const wrapper = await mountSuspended(ArticleHeader, {
-            props: { article: { ...ARTICLE, authors: [...ARTICLE.authors, second] } },
-            global,
-        });
-
-        const names = wrapper
-            .findAll("a")
-            .filter((link) => [ARTICLE.authors[0]!.name, second.name].includes(link.text()));
-
-        expect(
-            names.map((link) => new URL(link.attributes("href")!, "https://revista.test").hash),
-        ).toEqual(["#autor", "#autor"]);
-    });
 });

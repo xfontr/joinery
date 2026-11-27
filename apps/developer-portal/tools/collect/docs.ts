@@ -1,9 +1,8 @@
 import { access, readFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
+import { resolve } from "node:path";
 import type { AuditMeta } from "#layers/snapshot/shared/types/AuditMeta.ts";
 import type { DecisionOutcome, DecisionStatus } from "#layers/snapshot/shared/decisions.ts";
 import type { DocKind } from "#layers/snapshot/shared/types/DocKind.ts";
-import type { DocLink } from "#layers/snapshot/shared/types/DocLink.ts";
 import type { DocPage } from "#layers/snapshot/shared/types/DocPage.ts";
 import type { DocsArtifact } from "#layers/snapshot/shared/types/DocsArtifact.ts";
 import { parseFindings } from "#layers/snapshot/shared/audits.ts";
@@ -12,44 +11,10 @@ import { frontmatterFields } from "../lib/decisions.ts";
 import { WORKSPACE_ROOT } from "../lib/paths.ts";
 import { git } from "../lib/run.ts";
 
-// Excluding nested openers keeps failed link candidates from rescanning each other's text and href.
-const LINK = /\[[^[\]]*\]\((?<href>[^()\s]+)(?:\s+"[^"]*")?\)/g;
 const HEADING = /^#{1,3}[^\S\n]+\S.*$/gm;
-const FENCE = /^\s*(`{3,}|~{3,})/;
-// Match whole backtick runs so an unmatched delimiter cannot restart at each of its backticks.
-const CODE_SPAN = /(?<!`)(`+)(?:[^`\n]|\n(?![^\S\n]*\n))+\1(?!`)/g;
-
-/**
- * Every inline link's href outside code. A docs page that shows link syntax in a sample is
- * describing a link, not making one, and the remark plugin never sees it as one.
- */
-export const hrefsIn = (source: string): string[] => {
-    const prose: string[] = [];
-    let fence: string | null = null;
-
-    for (const line of source.split("\n")) {
-        const marker = FENCE.exec(line)?.[1];
-
-        if (fence === null && marker) fence = marker;
-        else if (fence !== null && marker?.startsWith(fence) && line.trim() === marker)
-            fence = null;
-        else if (fence === null) prose.push(line);
-    }
-
-    return [...prose.join("\n").replace(CODE_SPAN, " ").matchAll(LINK)].map(
-        (match) => match.groups?.href ?? "",
-    );
-};
 
 const DECISION_PATH = /^docs\/decisions\/\d{4}-/;
 const AUDIT_PATH = /^docs\/audits\/\d{4}-/;
-
-/**
- * Anchors and external links are somebody else's problem; only repo-relative paths are resolvable.
- * A `<placeholder>` is an instruction to whoever copies the doc, not a link, so it is never flagged.
- */
-const isRepoRelative = (href: string): boolean =>
-    !/^(?:[a-z]+:|\/\/|#)/i.test(href) && !href.includes("<");
 
 const exists = async (path: string): Promise<boolean> => {
     try {
@@ -59,25 +24,6 @@ const exists = async (path: string): Promise<boolean> => {
     } catch {
         return false;
     }
-};
-
-/**
- * Resolves against the filesystem, not the route table: these files are read on GitHub first, where
- * a link to `./layers` or to `./vite.config.ts` is valid.
- */
-const checkLink = async (fromFile: string, href: string): Promise<DocLink | null> => {
-    const [target] = href.split("#");
-    const path = target?.replace(/:\d+(?:-\d+)?$/, "");
-
-    if (!path) return null;
-
-    const absolute = resolve(dirname(resolve(WORKSPACE_ROOT, fromFile)), decodeURIComponent(path));
-
-    if (await exists(absolute)) return null;
-
-    if (await exists(`${absolute}.md`)) return null;
-
-    return { href, resolved: absolute.slice(WORKSPACE_ROOT.length + 1) };
 };
 
 const kindOf = (path: string): DocKind => {
@@ -151,13 +97,6 @@ export const collectDocs = async (generatedAt: string): Promise<DocsArtifact> =>
             const source = await readFile(absolute, "utf8");
 
             const title = source.match(HEADING)?.[0]?.replace(/^#{1,3}\s+/, "");
-            const checked = await Promise.all(
-                hrefsIn(source)
-                    .filter(isRepoRelative)
-                    .map((href) => checkLink(path, href)),
-            );
-            const brokenLinks = checked.filter((link): link is DocLink => link !== null);
-
             const updatedAt = (await git(["log", "-1", "--format=%cI", "--", path])).trim();
             const decisionMeta = decisionMetaOf(path, source);
 
@@ -171,7 +110,6 @@ export const collectDocs = async (generatedAt: string): Promise<DocsArtifact> =>
                 decisionOutcome: decisionMeta.decision,
                 decisionSupersededBy: decisionMeta.supersededBy,
                 audit: auditMetaOf(path, source),
-                brokenLinks,
             };
         }),
     );
@@ -179,9 +117,5 @@ export const collectDocs = async (generatedAt: string): Promise<DocsArtifact> =>
 
     pages.sort((a, b) => a.path.localeCompare(b.path));
 
-    return {
-        generatedAt,
-        pages,
-        brokenLinkCount: pages.reduce((sum, page) => sum + page.brokenLinks.length, 0),
-    };
+    return { generatedAt, pages };
 };

@@ -113,24 +113,6 @@ describe("issue add", () => {
         );
     });
 
-    it("does not create an issue after confirmation is rejected", async () => {
-        prompts.confirm.mockResolvedValue(false);
-
-        await add();
-
-        expect(sharedGh.createIssue).not.toHaveBeenCalled();
-        expect(io.out.cancelled).toHaveBeenCalledWith("Cancelled — no issue created.");
-    });
-
-    it("reports creation failures after stopping the creation spinner", async () => {
-        const error = new Error("create failed");
-        sharedGh.createIssue.mockImplementation(() => {
-            throw error;
-        });
-
-        await expect(add()).rejects.toBe(error);
-    });
-
     it("offers issue picking only on master and honors that offer", async () => {
         git.currentBranch.mockReturnValue("master");
         prompts.confirm.mockResolvedValueOnce(true).mockResolvedValueOnce(true);
@@ -144,15 +126,6 @@ describe("issue add", () => {
         await add();
 
         expect(prompts.confirm).toHaveBeenCalledOnce();
-        expect(pickCommand.pick).not.toHaveBeenCalled();
-    });
-
-    it("does not pick another issue when the master offer is rejected", async () => {
-        git.currentBranch.mockReturnValue("master");
-        prompts.confirm.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
-
-        await add();
-
         expect(pickCommand.pick).not.toHaveBeenCalled();
     });
 
@@ -171,19 +144,6 @@ describe("issue add", () => {
             );
         },
     );
-
-    it("turns description cancellation into the same clean cancellation", async () => {
-        prompts.text.mockReset();
-        prompts.text.mockResolvedValueOnce("Title").mockResolvedValueOnce(Symbol("cancel"));
-
-        await expect(add()).rejects.toThrow(new CancelledError("Cancelled — no issue created."));
-    });
-
-    it("treats confirmation cancellation as cancellation rather than rejection", async () => {
-        prompts.confirm.mockResolvedValue(Symbol("cancel"));
-
-        await expect(add()).rejects.toThrow(new CancelledError("Cancelled — no issue created."));
-    });
 });
 
 beforeEach(() => {

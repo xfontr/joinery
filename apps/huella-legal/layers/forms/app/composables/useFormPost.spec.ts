@@ -1,8 +1,8 @@
 import type { Challenge } from "../types/Challenge";
-import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
+import { serveEndpoint, withSetup } from "@joinery/configs/vitest/utils/nuxt";
 import type { FormError } from "@nuxt/ui";
-import { mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { createError, readBody, readMultipartFormData } from "h3";
+import { describe, expect, it, vi } from "vitest";
 import { useFormPost } from "./useFormPost";
 
 type Failure = "duplicate" | "unavailable";
@@ -17,22 +17,23 @@ const FIELDS = { email: "lucia@ejemplo.es", honeypot: "" };
 
 const FAILURES = { 409: "duplicate" } as const satisfies Partial<Record<number, Failure>>;
 
-const fetch = vi.hoisted(() => vi.fn());
-
-// The i18n loader fetches the locale through the same import, so only the route is faked
-mockNuxtImport(
-    "$fetch",
-    () => (url: string, options: unknown) =>
-        url === ENDPOINT ? fetch(url, options) : globalThis.$fetch(url, options as never),
-);
-
 const challenge = vi.fn((send: (token: string) => Promise<unknown>) => send("tok")) as Challenge;
 
-const rejected = (statusCode: number, data?: unknown) =>
-    Object.assign(new Error("fetch failed"), {
-        statusCode,
-        data: { error: true, statusCode, statusMessage: "Refused", data },
+const serve = (respond: (call: number) => unknown = () => ({})) => {
+    const received: unknown[] = [];
+
+    serveEndpoint(ENDPOINT, async (event) => {
+        received.push(await readBody(event));
+
+        return respond(received.length);
     });
+
+    return received;
+};
+
+const rejectWith = (statusCode: number, data?: unknown) => () => {
+    throw createError({ statusCode, data });
+};
 
 const setUp = async (multipart = false) =>
     (
@@ -44,64 +45,67 @@ const setUp = async (multipart = false) =>
         )
     ).value;
 
-beforeEach(() => {
-    vi.clearAllMocks();
-    fetch.mockResolvedValue(undefined);
-});
-
 describe("useFormPost", () => {
     it("posts the fields and the honeypot with the challenge's token, then reports success", async () => {
+        const received = serve();
         const post = await setUp();
 
         await post.send(FIELDS, challenge);
 
-        expect(fetch).toHaveBeenCalledWith(ENDPOINT, {
-            method: "POST",
-            body: { ...FIELDS, token: "tok" },
-        });
+        expect(received).toEqual([{ ...FIELDS, token: "tok" }]);
         expect(post.status.value).toBe("success");
     });
 
     it("posts multipart fields as FormData, keeping a file as a file and dropping an empty one", async () => {
+        let parts: Awaited<ReturnType<typeof readMultipartFormData>>;
+
+        serveEndpoint(ENDPOINT, async (event) => {
+            parts = await readMultipartFormData(event);
+
+            return {};
+        });
         const post = await setUp(true);
         const file = new File(["PK"], "borrador.docx");
 
         await post.send({ ...FIELDS, consent: true, file, none: null } as never, challenge);
 
-        const body = fetch.mock.calls[0]?.[1].body as FormData;
+        const texts = Object.fromEntries(
+            (parts ?? [])
+                .filter((part) => !part.filename)
+                .map((part) => [part.name, part.data.toString()]),
+        );
+        const sent = parts?.find((part) => part.name === "file");
 
-        expect(body).toBeInstanceOf(FormData);
-        expect(Object.fromEntries(body)).toEqual({
-            ...FIELDS,
-            consent: "true",
-            file,
-            token: "tok",
-        });
-        expect((body.get("file") as File).name).toBe("borrador.docx");
+        expect(texts).toEqual({ ...FIELDS, consent: "true", token: "tok" });
+        expect(sent?.filename).toBe("borrador.docx");
+        expect(sent?.data.toString()).toBe("PK");
     });
 
     it("is submitting while the request is in flight, and ignores a second submit", async () => {
-        const post = await setUp();
         let settle: () => void = () => undefined;
-
-        fetch.mockReturnValue(new Promise<void>((resolve) => (settle = resolve)));
+        const received = serve(
+            () => new Promise<object>((resolve) => (settle = () => resolve({}))),
+        );
+        const post = await setUp();
 
         const first = post.send(FIELDS, challenge);
 
         await vi.waitFor(() => expect(post.status.value).toBe("submitting"));
         await post.send(FIELDS, challenge);
+        await vi.waitFor(() => expect(received).toHaveLength(1));
         settle();
         await first;
 
-        expect(fetch).toHaveBeenCalledOnce();
+        expect(received).toHaveLength(1);
         expect(post.status.value).toBe("success");
     });
 
     it("turns a 422 into invalid, keeping the server's issue codes with no failure to announce", async () => {
-        const post = await setUp();
         const issues = [{ name: "email", message: "invalid" }];
 
-        fetch.mockRejectedValue(rejected(422, issues));
+        serve(rejectWith(422, issues));
+        const post = await setUp();
+
         await post.send(FIELDS, challenge);
 
         expect(post.status.value).toBe("invalid");
@@ -115,9 +119,9 @@ describe("useFormPost", () => {
         [502, "unavailable"],
         [422, "unavailable"],
     ] as const)("turns a %s with no field blamed into error: %s", async (statusCode, failure) => {
+        serve(rejectWith(statusCode));
         const post = await setUp();
 
-        fetch.mockRejectedValue(rejected(statusCode));
         await post.send(FIELDS, challenge);
 
         expect(post.status.value).toBe("error");
@@ -126,20 +130,29 @@ describe("useFormPost", () => {
     });
 
     it("turns a challenge that never yields a token into error without posting", async () => {
+        const received = serve();
         const post = await setUp();
 
         await post.send(FIELDS, () => Promise.reject(new Error("Timeout")));
 
-        expect(fetch).not.toHaveBeenCalled();
+        expect(received).toHaveLength(0);
         expect(post.status.value).toBe("error");
     });
 
     it("clears the last attempt's errors and failure on a retry", async () => {
+        serve((call) => {
+            if (call === 1)
+                throw createError({
+                    statusCode: 422,
+                    data: [{ name: "email", message: "invalid" }],
+                });
+            if (call === 2) throw createError({ statusCode: 409 });
+
+            return {};
+        });
         const post = await setUp();
 
-        fetch.mockRejectedValueOnce(rejected(422, [{ name: "email", message: "invalid" }]));
         await post.send(FIELDS, challenge);
-        fetch.mockRejectedValueOnce(rejected(409));
         await post.send(FIELDS, challenge);
         await post.send(FIELDS, challenge);
 

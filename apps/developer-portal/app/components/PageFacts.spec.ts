@@ -11,7 +11,7 @@ const FACTS = [
 describe("PageFacts", () => {
     it("makes only a fact that drives the chart a button, pressed while it is the one drawn", async () => {
         const wrapper = await mountSuspended(PageFacts, {
-            props: { provenance: "", facts: FACTS, series: "runs" },
+            props: { facts: FACTS, series: "runs" },
         });
 
         expect(
@@ -21,7 +21,7 @@ describe("PageFacts", () => {
 
     it("reports the series picked", async () => {
         const wrapper = await mountSuspended(PageFacts, {
-            props: { provenance: "", facts: FACTS, series: "runs" },
+            props: { facts: FACTS, series: "runs" },
         });
 
         await wrapper.findAll("button")[1]?.trigger("click");
@@ -31,7 +31,7 @@ describe("PageFacts", () => {
 
     it("leaves out the list when there are no facts", async () => {
         const wrapper = await mountSuspended(PageFacts, {
-            props: { provenance: "Placeholder", facts: [] },
+            props: { facts: [] },
         });
 
         expect(wrapper.find("dl").exists()).toBe(false);

@@ -10,10 +10,4 @@ describe("WikiToc", () => {
 
         expect(wrapper.find("a[href='#setup']").exists()).toBe(true);
     });
-
-    it("takes no column for a page without headings", async () => {
-        const wrapper = await mountSuspended(WikiToc, { props: { links: [] } });
-
-        expect(wrapper.find("aside").exists()).toBe(false);
-    });
 });

@@ -9,10 +9,12 @@ describe("normalizeGraph", () => {
                     nodes: {
                         z: {
                             name: "zeta",
+                            type: "app",
                             data: { root: "z", tags: ["scope:internal", "npm:private", "other"] },
                         },
                         a: {
                             name: "alpha",
+                            type: "lib",
                             data: { root: "a", tags: ["type:lib", "npm:private"] },
                         },
                     },
@@ -32,9 +34,9 @@ describe("normalizeGraph", () => {
             {
                 graph: {
                     nodes: {
-                        app: { name: "app", data: { root: "apps/app" } },
-                        docs: { name: "docs", data: { root: "apps/docs" } },
-                        ui: { name: "ui", data: { root: "packages/ui" } },
+                        app: { name: "app", type: "app", data: { root: "apps/app" } },
+                        docs: { name: "docs", type: "app", data: { root: "apps/docs" } },
+                        ui: { name: "ui", type: "lib", data: { root: "packages/ui" } },
                     },
                     dependencies: {
                         app: [
@@ -53,6 +55,7 @@ describe("normalizeGraph", () => {
             {
                 name: "app",
                 root: "apps/app",
+                type: "app",
                 tags: [],
                 dependsOn: ["docs", "ui"],
                 dependedOnBy: ["ui"],
@@ -60,6 +63,7 @@ describe("normalizeGraph", () => {
             {
                 name: "docs",
                 root: "apps/docs",
+                type: "app",
                 tags: [],
                 dependsOn: [],
                 dependedOnBy: ["app"],
@@ -67,6 +71,7 @@ describe("normalizeGraph", () => {
             {
                 name: "ui",
                 root: "packages/ui",
+                type: "lib",
                 tags: [],
                 dependsOn: ["app"],
                 dependedOnBy: ["app"],

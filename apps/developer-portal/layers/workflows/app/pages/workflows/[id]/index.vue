@@ -5,6 +5,9 @@
                 :crumbs="[{ label: $t('workflows.crumb'), to: '/workflows' }]"
                 :title="base?.project.title ?? $t('workflow.fallback')"
             >
+                <template v-if="view" #lead>
+                    <WorkflowProgress :view />
+                </template>
                 <template #actions>
                     <WorkflowActions
                         :project="id"
@@ -35,13 +38,7 @@
                     @select="select"
                     @details="openDetails"
                 />
-                <WorkflowGraphSection
-                    :view
-                    :selected
-                    :titles
-                    @select="select"
-                    @details="openDetails"
-                />
+                <WorkflowGraphSection :view :selected @select="select" @details="openDetails" />
             </div>
 
             <WorkflowDetails

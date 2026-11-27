@@ -67,6 +67,7 @@ and are documented once in the [root README](../README.md#getting-started).
 | `pnpm exec nx editor @joinery/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
 | `pnpm exec nx editor:dev @joinery/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
 | `pnpm exec nx coverage @joinery/scripts` | [`infrastructure/scripts/package.json`](../infrastructure/scripts/package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
+| `pnpm exec nx tasks @joinery/scripts` | [`infrastructure/scripts/package.json`](../infrastructure/scripts/package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
 | `pnpm exec nx cli @joinery/scripts` | [`infrastructure/scripts/package.json`](../infrastructure/scripts/package.json) | [`infrastructure/scripts/README.md`](../infrastructure/scripts/README.md) |
 | `pnpm exec nx serve @joinery/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |
 | `pnpm exec nx docker:up @joinery/translations` | [`infrastructure/translations/package.json`](../infrastructure/translations/package.json) | [`infrastructure/translations/README.md`](../infrastructure/translations/README.md) |

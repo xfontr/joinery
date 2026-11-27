@@ -1,10 +1,8 @@
-import { slotStub } from "@joinery/configs/vitest/utils/nuxt";
-import type { FormError } from "@nuxt/ui";
+import { serveEndpoint, slotStub } from "@joinery/configs/vitest/utils/nuxt";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ref } from "vue";
-import type { FormPostStatus } from "#layers/forms/app/composables/useFormPost";
+import { readMultipartFormData } from "h3";
 import { MANUSCRIPT_MAX_BYTES } from "../../shared/schemas/submission";
 import PublishForm from "./PublishForm.vue";
 
@@ -48,17 +46,28 @@ const FIELDS = {
     summary: "La admisibilidad de los mensajes de WhatsApp como prueba.",
 };
 
-const submission = vi.hoisted(() => ({
-    status: undefined as unknown as import("vue").Ref<FormPostStatus>,
-    errors: undefined as unknown as import("vue").Ref<FormError[]>,
-    send: vi.fn(),
-}));
-
-const challenge = vi.hoisted(() => vi.fn());
+const challenge = vi.hoisted(() =>
+    vi.fn((send: (token: string) => Promise<unknown>) => send("tok")),
+);
 
 const FormChallenge = slotStub({ challenge });
 
-vi.mock("../composables/useSubmission", () => ({ useSubmission: () => submission }));
+type Parts = Awaited<ReturnType<typeof readMultipartFormData>>;
+
+const serveSubmissions = (respond: () => unknown = () => ({})) => {
+    const received: Parts[] = [];
+
+    serveEndpoint("/api/submissions", async (event) => {
+        received.push(await readMultipartFormData(event));
+
+        return respond();
+    });
+
+    return received;
+};
+
+const text = (parts: Parts, name: string) =>
+    parts?.find((part) => part.name === name)?.data.toString();
 
 type Wrapper = Awaited<ReturnType<typeof mountSuspended>>;
 
@@ -99,11 +108,8 @@ describe("publish form", () => {
     });
 
     beforeEach(() => {
-        vi.clearAllMocks();
         // UFileUpload previews through Node's URL, which refuses the test DOM's File
         vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:borrador");
-        submission.status = ref("idle");
-        submission.errors = ref([]);
     });
 
     afterEach(() => {
@@ -111,29 +117,40 @@ describe("publish form", () => {
     });
 
     it("sends a proposal with no file, defaulting the kind to an article", async () => {
+        const received = serveSubmissions();
         const wrapper = await mount();
 
         await fill(wrapper, { ...FIELDS, email: ` ${FIELDS.email} ` });
         await submit(wrapper);
 
-        expect(submission.send).toHaveBeenCalledWith(
-            { ...FIELDS, kind: "article", title: "", file: null, consent: true, honeypot: "" },
-            challenge,
-        );
+        const [parts] = received;
+
+        expect(received).toHaveLength(1);
+        expect(parts?.map((part) => part.name)).not.toContain("file");
+        expect(text(parts, "name")).toBe(FIELDS.name);
+        expect(text(parts, "email")).toBe(FIELDS.email);
+        expect(text(parts, "summary")).toBe(FIELDS.summary);
+        expect(text(parts, "kind")).toBe("article");
+        expect(text(parts, "consent")).toBe("true");
+        expect(text(parts, "token")).toBe("tok");
     });
 
     it("sends the attached File itself, not the reactive proxy FormData would refuse", async () => {
+        const received = serveSubmissions();
         const wrapper = await mount();
-        const file = new File(["PK"], "borrador.docx");
 
         await fill(wrapper, FIELDS);
-        await attach(wrapper, file);
+        await attach(wrapper, new File(["PK"], "borrador.docx"));
         await submit(wrapper);
 
-        expect(submission.send.mock.calls[0]?.[0].file).toBe(file);
+        const file = received[0]?.find((part) => part.name === "file");
+
+        expect(file?.filename).toBe("borrador.docx");
+        expect(file?.data.toString()).toBe("PK");
     });
 
     it("refuses a file over the cap on the file field, without sending", async () => {
+        const received = serveSubmissions();
         const wrapper = await mount();
         const file = new File(["x"], "borrador.pdf");
 
@@ -142,76 +159,7 @@ describe("publish form", () => {
         await attach(wrapper, file);
         await submit(wrapper);
 
-        expect(submission.send).not.toHaveBeenCalled();
+        expect(received).toHaveLength(0);
         expect(wrapper.find("[role=alert]").text()).toContain("file: too large");
-    });
-
-    it("offers only the accepted file types to the picker", async () => {
-        const wrapper = await mount();
-
-        expect(wrapper.find("input[type=file]").attributes("accept")).toBe(
-            ".docx,.pages,.pdf,.txt",
-        );
-    });
-
-    it("lists every invalid field in a summary that links to it", async () => {
-        const wrapper = await mount();
-
-        await fill(wrapper, { name: "   ", email: "lucia@" }, false);
-        await submit(wrapper);
-
-        const links = wrapper.findAll("[role=alert] a");
-
-        expect(submission.send).not.toHaveBeenCalled();
-        expect(links.map((link) => link.text())).toEqual(["name", "email", "summary", "consent"]);
-    });
-
-    it("words the server's codes on their fields and in the summary", async () => {
-        submission.send.mockImplementation(() => {
-            submission.status.value = "invalid";
-            submission.errors.value = [{ name: "file", message: "fileType" }];
-        });
-        const wrapper = await mount();
-
-        await fill(wrapper, FIELDS);
-        await submit(wrapper);
-
-        expect(wrapper.find("[role=alert]").text()).toContain("file: wrong type");
-    });
-
-    it("marks the form busy while submitting, keeping what was typed", async () => {
-        const wrapper = await mount();
-
-        await fill(wrapper, FIELDS);
-        submission.status.value = "submitting";
-        await flushPromises();
-
-        const textarea = wrapper.find("textarea");
-
-        expect(wrapper.find("form").attributes("aria-busy")).toBe("true");
-        expect(textarea.attributes("disabled")).toBeDefined();
-        expect((textarea.element as HTMLTextAreaElement).value).toBe(FIELDS.summary);
-    });
-
-    it("announces a failed request and keeps the form for a retry", async () => {
-        submission.status = ref("error");
-        const wrapper = await mount();
-
-        expect(wrapper.find("[role=alert]").text()).toContain("error title");
-        expect(wrapper.find("textarea").exists()).toBe(true);
-    });
-
-    it("replaces the form with the success panel, so nobody sends the proposal twice", async () => {
-        submission.status = ref("success");
-        const wrapper = await mount();
-
-        expect(wrapper.find("form").exists()).toBe(false);
-        expect(wrapper.find("h3").text()).toBe("success title");
-    });
-
-    it("links the privacy section from the notice", async () => {
-        const wrapper = await mount();
-
-        expect(wrapper.find("form p a").attributes("href")).toBe("/aviso-legal/#privacidad");
     });
 });

@@ -5,15 +5,6 @@ import PageHeading from "./PageHeading.vue";
 const props = { kicker: "Área · 12 publicaciones", title: "Derecho penal" };
 
 describe("page heading", () => {
-    it("titles the page with its one h1, under the kicker", async () => {
-        const wrapper = await mountSuspended(PageHeading, { props });
-
-        expect(wrapper.findAll("h1").map((heading) => heading.text())).toEqual(["Derecho penal"]);
-        expect(wrapper.text().indexOf(props.kicker)).toBeLessThan(
-            wrapper.text().indexOf(props.title),
-        );
-    });
-
     it("draws no empty paragraph when there is no lead", async () => {
         const bare = await mountSuspended(PageHeading, { props });
         const led = await mountSuspended(PageHeading, {

@@ -248,6 +248,11 @@ mark {
     font-style: italic;
 }
 
+/* A strip that scrolls by trackpad or drag but would break its row with a visible bar */
+@utility scrollbar-none {
+    scrollbar-width: none;
+}
+
 /* An ink fill that stays dark in both modes, such as the developer rail; it sets the fill itself */
 @utility surface-ink {
     --ui-bg: var(--color-paper-950);

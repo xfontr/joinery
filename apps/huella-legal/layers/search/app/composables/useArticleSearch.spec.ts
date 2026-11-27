@@ -1,7 +1,6 @@
-import { withSetup } from "@joinery/configs/vitest/utils/nuxt";
-import { mockNuxtImport } from "@nuxt/test-utils/runtime";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { ref, type Ref } from "vue";
+import { serveEndpoint, withSetup } from "@joinery/configs/vitest/utils/nuxt";
+import { createError, getQuery } from "h3";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { useRouter, type RouteLocationRaw } from "vue-router";
 import { useArticleSearch } from "./useArticleSearch";
 
@@ -15,32 +14,21 @@ const SEARCH: ArticleSearch = {
     subjects: [],
 };
 
-const fetching = vi.hoisted(() => ({
-    query: undefined as Ref<Record<string, unknown>> | undefined,
-    enabled: undefined as (() => boolean) | undefined,
-    error: undefined as { cause: { response: { status: number } } } | undefined,
-    errorRef: undefined as Ref<{ cause: { response: { status: number } } } | undefined> | undefined,
-}));
+const serveSearch = (rejectPage?: string) => {
+    const received: Record<string, unknown>[] = [];
 
-const errors = vi.hoisted(() => ({ show: vi.fn() }));
+    serveEndpoint("/api/search", (event) => {
+        const query = getQuery(event);
 
-mockNuxtImport(
-    "useCachedFetch",
-    () =>
-        (
-            _url: string,
-            options: { query: Ref<Record<string, unknown>>; enabled: () => boolean },
-        ) => {
-            fetching.query = options.query;
-            fetching.enabled = options.enabled;
-            fetching.errorRef = ref(fetching.error);
+        received.push(query);
 
-            const result = { data: ref(SEARCH), error: fetching.errorRef, status: ref("success") };
+        if (rejectPage && query.page === rejectPage) throw createError({ statusCode: 404 });
 
-            return Object.assign(Promise.resolve(result), result);
-        },
-);
-mockNuxtImport("showError", () => errors.show);
+        return SEARCH;
+    });
+
+    return received;
+};
 
 const searchAt = async (route: string) => {
     const { value } = await withSetup(
@@ -62,30 +50,39 @@ const searchAt = async (route: string) => {
 // Navigating there imports the page's whole graph, which is slow cold
 beforeAll(() => import("../pages/search.vue"));
 
+// useCachedFetch serves a payload it already holds, which would outlive the test that fetched it
 beforeEach(() => {
-    vi.clearAllMocks();
-    fetching.error = undefined;
+    clearNuxtData();
+});
+
+afterEach(() => {
+    clearError();
 });
 
 describe("useArticleSearch", () => {
     it("sends the trimmed query and the page from the URL to the route", async () => {
+        const received = serveSearch();
+
         await searchAt("/buscar/?query=%20culpa%20&page=2");
 
-        expect(fetching.query?.value).toEqual({ query: "culpa", page: "2" });
-        expect(fetching.enabled?.()).toBe(true);
+        expect(received).toEqual([{ query: "culpa", page: "2" }]);
     });
 
     it.each(["/buscar/", "/buscar/?query=%20%20", "/buscar/?query=a&query=b"])(
         "treats %s as the empty state and never asks the route",
         async (route) => {
+            const received = serveSearch();
+
             const search = await searchAt(route);
 
-            expect(fetching.enabled?.()).toBe(false);
+            expect(received).toEqual([]);
             expect(search.term.value).toBe("");
         },
     );
 
     it("keeps the query in every page link and leaves page one out of it", async () => {
+        serveSearch();
+
         const search = await searchAt("/buscar/?query=culpa&page=2");
 
         expect(search.href(search.pageLink(1))).toBe("/buscar/?query=culpa");
@@ -93,6 +90,8 @@ describe("useArticleSearch", () => {
     });
 
     it("starts a new query from its first page, and clears the URL for a blank one", async () => {
+        serveSearch();
+
         const search = await searchAt("/buscar/?query=culpa&page=2");
         const { router } = search;
 
@@ -106,17 +105,17 @@ describe("useArticleSearch", () => {
     });
 
     it("shows the route's 404 when a later page is rejected", async () => {
-        await searchAt("/buscar/?query=culpa");
+        serveSearch("99");
 
-        fetching.errorRef!.value = { cause: { response: { status: 404 } } };
+        const search = await searchAt("/buscar/?query=culpa");
 
-        await vi.waitFor(() =>
-            expect(errors.show).toHaveBeenCalledWith(expect.objectContaining({ status: 404 })),
-        );
+        await search.router.push("/buscar/?query=culpa&page=99");
+
+        await vi.waitFor(() => expect(useError().value).toMatchObject({ status: 404 }));
     });
 
     it("fails the first render with a 404 when the URL holds a page past the end", async () => {
-        fetching.error = { cause: { response: { status: 404 } } };
+        serveSearch("99");
 
         await expect(searchAt("/buscar/?query=culpa&page=99")).rejects.toMatchObject({
             status: 404,

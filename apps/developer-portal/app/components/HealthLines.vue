@@ -1,9 +1,5 @@
 <template>
-    <WidgetPanel
-        :title="$t('healthLines.title')"
-        :meta="$t('healthLines.meta', { age: collectedAge })"
-        to="/coverage"
-    >
+    <WidgetPanel :title="$t('healthLines.title')" to="/coverage">
         <dl class="divide-y divide-default">
             <div
                 v-for="line in rows"
@@ -33,11 +29,9 @@ import type { HealthLine } from "~/types/HealthLine";
 
 interface Props {
     lines: HealthLine[];
-    /** When the snapshot behind every line was collected, as relative time. */
-    collectedAge: string;
 }
 
-const { lines, collectedAge } = defineProps<Props>();
+const { lines } = defineProps<Props>();
 
 const rows = computed(() =>
     lines.map((line) => ({ ...line, figureClass: toneClass(line.tone) || "text-highlighted" })),

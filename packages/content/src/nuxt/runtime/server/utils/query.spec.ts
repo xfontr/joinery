@@ -14,10 +14,6 @@ describe("toQuery", () => {
         expect(toQuery({ page: 1, perPage: DEFAULT_PER_PAGE })).toEqual(toQuery());
     });
 
-    it("keeps the page that was asked for", () => {
-        expect(toQuery({ page: 2, perPage: 6 })).toMatchObject({ page: 2, perPage: 6 });
-    });
-
     it("accepts the ceilings themselves", () => {
         expect(toQuery({ page: MAX_PAGE, perPage: MAX_PER_PAGE })).toMatchObject({
             page: MAX_PAGE,

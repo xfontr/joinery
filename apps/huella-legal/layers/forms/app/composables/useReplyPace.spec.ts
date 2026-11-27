@@ -1,38 +1,26 @@
-import { mockNuxtImport } from "@nuxt/test-utils/runtime";
+import { serveEndpoint, withSetup } from "@joinery/configs/vitest/utils/nuxt";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ref } from "vue";
 import { useReplyPace } from "./useReplyPace";
 
-const fetch = vi.hoisted(() => ({ pace: undefined as ReplyPace | undefined, call: vi.fn() }));
+const setUp = async () => (await withSetup(() => useReplyPace())).value;
 
-mockNuxtImport("useFetch", () => (url: string, options: unknown) => {
-    fetch.call(url, options);
-
-    return { data: ref(fetch.pace) };
-});
-
+// useFetch keeps a payload it already holds under its key, which would outlive the test that read it
 beforeEach(() => {
-    vi.clearAllMocks();
-    fetch.pace = undefined;
+    clearNuxtData();
 });
 
 describe("useReplyPace", () => {
-    it("reads the date in the browser, so a prerendered page never bakes it in", () => {
-        useReplyPace();
+    it("reports no slow date until the route has answered, rather than flashing a warning", async () => {
+        serveEndpoint("/api/replies", () => ({ slowUntil: "2026-08-31" }));
 
-        expect(fetch.call).toHaveBeenCalledWith(
-            "/api/replies",
-            expect.objectContaining({ server: false }),
-        );
+        expect((await setUp()).value).toBeUndefined();
     });
 
-    it("reports no slow date until the route has answered, rather than flashing a warning", () => {
-        expect(useReplyPace().value).toBeUndefined();
-    });
+    it("hands on the last slow day the route names", async () => {
+        serveEndpoint("/api/replies", () => ({ slowUntil: "2026-08-31" }));
 
-    it("hands on the last slow day the route names", () => {
-        fetch.pace = { slowUntil: "2026-08-31" };
+        const pace = await setUp();
 
-        expect(useReplyPace().value).toBe("2026-08-31");
+        await vi.waitFor(() => expect(pace.value).toBe("2026-08-31"));
     });
 });

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { resolve } from "node:path";
 import { WORKSPACE_ROOT } from "../lib/paths.ts";
 import { collectDocs } from "./docs.ts";
-import { decisionMetaOf, hrefsIn } from "./docs.ts";
+import { decisionMetaOf } from "./docs.ts";
 
 const state = vi.hoisted(() => ({
     files: new Set<string>(),
@@ -100,59 +100,6 @@ describe("decisionMetaOf", () => {
     });
 });
 
-describe("hrefsIn", () => {
-    it("skips link syntax shown in a code span or a fenced sample, so documenting a link never reports it broken", () => {
-        const source = [
-            "Write `[x](y)` to link.",
-            "```md",
-            "[template](./<previous>.md)",
-            "```",
-            "- A list item:",
-            "  ```sh",
-            "  echo [a](b)",
-            "  ```",
-            "[real](./real.md)",
-        ].join("\n");
-
-        expect(hrefsIn(source)).toEqual(["./real.md"]);
-    });
-
-    it("keeps a link whose text is code, including brackets inside that code", () => {
-        expect(
-            hrefsIn("See [`add.ts`](./add.ts) and [`pages/[slug].vue`](./pages/%5Bslug%5D.vue)."),
-        ).toEqual(["./add.ts", "./pages/%5Bslug%5D.vue"]);
-        expect(hrefsIn('[`[artifact].get.ts`](./[artifact].get.ts "Route [artifact]")')).toEqual([
-            "./[artifact].get.ts",
-        ]);
-    });
-
-    it("pairs a code span that wraps a line, but never lets one run past a blank line", () => {
-        expect(
-            hrefsIn("the `pnpm install\n--prod` in the [`Dockerfile`](./docker/Dockerfile)"),
-        ).toEqual(["./docker/Dockerfile"]);
-        expect(hrefsIn("a stray ` tick\n\n[after](./after.md)")).toEqual(["./after.md"]);
-    });
-
-    it("reads titled links after malformed brackets without rescanning a long prefix", () => {
-        const source = `${"[".repeat(20_000)}\n[good](./good.md "A title")`;
-
-        expect(hrefsIn(source)).toEqual(["./good.md"]);
-        expect(hrefsIn(`${"[bad](unterminated ".repeat(20_000)}[good](./good.md)`)).toEqual([
-            "./good.md",
-        ]);
-    });
-
-    it("skips multiline code spans and leaves links after unmatched backtick runs", () => {
-        expect(hrefsIn("``[hidden](./hidden.md)\nstill hidden`` [shown](./shown.md)")).toEqual([
-            "./shown.md",
-        ]);
-        expect(hrefsIn(`stray ${"`".repeat(20_000)}\n\n[after](./after.md)`)).toEqual([
-            "./after.md",
-        ]);
-        expect(hrefsIn("`` [visible](./visible.md) ```")).toEqual(["./visible.md"]);
-    });
-});
-
 describe("collectDocs", () => {
     it("collects only tracked and unignored markdown paths with titles, fallback names and timestamps", async () => {
         const files = [
@@ -199,33 +146,6 @@ describe("collectDocs", () => {
             kind: "doc",
         });
         expect(result.pages).toHaveLength(files.length);
-    });
-
-    it("counts missing relative targets while excluding external, anchor, mailto, placeholder and existing-directory links", async () => {
-        addFile(
-            "docs/source.md",
-            [
-                "# Source",
-                "[valid](./target.md)",
-                "[extensionless](./target)",
-                "[missing](./gone.md)",
-                "[external](https://example.test)",
-                "[anchor](#section)",
-                "[mail](mailto:docs@example.test)",
-                "[placeholder](<file>.md)",
-                "[directory](../packages/ui)",
-            ].join("\n"),
-        );
-        addFile("docs/target.md", "# Target\n");
-        addFile("packages/ui/README.md", "# UI\n");
-        addFile("packages/ui", "");
-        state.paths = ["docs/source.md"];
-
-        const result = await collectDocs("now");
-        const page = result.pages[0];
-
-        expect(page?.brokenLinks).toEqual([{ href: "./gone.md", resolved: "docs/gone.md" }]);
-        expect(result.brokenLinkCount).toBe(1);
     });
 
     it("parses decision metadata only for numbered decision reports", async () => {

@@ -7,12 +7,6 @@ import { SOUGHT } from "./fakes.ts";
 
 const MISSING = "kardashov";
 
-const STATES = [
-    { name: "results", path: `/buscar/?query=${SOUGHT}` },
-    { name: "no-results", path: `/buscar/?query=${MISSING}` },
-    { name: "empty", path: "/buscar/" },
-];
-
 test("a search lists every post that matches, under its count and query", async ({ page }) => {
     const response = await page.goto(`/buscar/?query=${SOUGHT}`);
 
@@ -22,6 +16,7 @@ test("a search lists every post that matches, under its count and query", async 
         `2 resultados para «${SOUGHT}»`,
     );
     await expect(page.getByRole("main").getByRole("article")).toHaveCount(2);
+    expect(await axeViolations(page)).toEqual([]);
 });
 
 test("a search with no match says so and offers subjects to browse instead", async ({ page }) => {
@@ -32,6 +27,7 @@ test("a search with no match says so and offers subjects to browse instead", asy
     ).toBeVisible();
     await expect(page.getByRole("main").locator("a[href^='/areas/']")).not.toHaveCount(0);
     await expect(page.getByRole("main").getByRole("article")).toHaveCount(0);
+    expect(await axeViolations(page)).toEqual([]);
 });
 
 test("the page with no query invites a search instead of listing anything", async ({ page }) => {
@@ -40,6 +36,7 @@ test("the page with no query invites a search instead of listing anything", asyn
     await expect(page.getByRole("searchbox", { name: t("searchForm.label") })).toHaveValue("");
     await expect(page.getByText("Escribe una o varias palabras")).toBeVisible();
     await expect(page.getByRole("main").getByRole("article")).toHaveCount(0);
+    expect(await axeViolations(page)).toEqual([]);
 });
 
 test("submitting the form puts the query in the URL, so a search can be shared", async ({
@@ -125,18 +122,6 @@ test("the open search dialog has no WCAG AA violations", async ({ page }) => {
 
     expect(await axeViolations(page)).toEqual([]);
 });
-
-for (const { name, path } of STATES) {
-    test(`the ${name} state has no WCAG AA violations`, async ({ page }, testInfo) => {
-        await page.goto(path);
-
-        await testInfo.attach(`buscar-${name}-${testInfo.project.name}`, {
-            body: await page.screenshot({ fullPage: true }),
-            contentType: "image/png",
-        });
-        expect(await axeViolations(page)).toEqual([]);
-    });
-}
 
 test.describe("a 404 search", () => {
     test.use({ allowedConsole: [NOT_FOUND_DOCUMENT] });

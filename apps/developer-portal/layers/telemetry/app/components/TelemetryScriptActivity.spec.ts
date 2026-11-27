@@ -24,7 +24,7 @@ const map: ScriptUsage = {
     targets: {},
     areas: {},
     flags: {},
-    days: { "2026-11-08": { runs: 8, agent: 8, failures: 2 } },
+    days: { "2026-11-08": { runs: 8, agent: 8, failures: 2, known: 8 } },
 };
 
 const usage: Omit<UsageArtifact, "lint"> = {
@@ -35,6 +35,19 @@ const usage: Omit<UsageArtifact, "lint"> = {
 };
 
 describe("TelemetryScriptActivity", () => {
+    it("shows each script's median run time beside its failure rate", async () => {
+        const timed = {
+            ...usage,
+            scripts: { map: { ...map, durations: { runs: 8, medianMs: 137, p90Ms: 271 } } },
+        };
+        const wrapper = await mountSuspended(TelemetryScriptActivity, {
+            props: { usage: timed },
+            global,
+        });
+
+        expect(wrapper.findAll("tbody tr")[0]?.findAll("td")[5]?.text()).toBe("137 ms");
+    });
+
     it("keeps a script that never ran as a row that says so, rather than hiding it", async () => {
         const wrapper = await mountSuspended(TelemetryScriptActivity, { props: { usage }, global });
 
@@ -42,7 +55,7 @@ describe("TelemetryScriptActivity", () => {
             .findAll("tbody tr")
             .map((row) => row.findAll("td").map((td) => td.text()));
 
-        expect(rows[1]).toEqual(["env-sync", "", "—", "—", "—", "common.never"]);
+        expect(rows[1]).toEqual(["env-sync", "", "—", "—", "—", "—", "common.never"]);
     });
 
     it("marks a failing script's rate in the bad tone, so the column isn't read by number alone", async () => {

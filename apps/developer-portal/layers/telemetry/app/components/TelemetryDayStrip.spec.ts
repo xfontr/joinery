@@ -20,8 +20,8 @@ describe("TelemetryDayStrip", () => {
             props: {
                 days: ["2026-11-05", "2026-11-06"],
                 usage: [
-                    { runs: 1, agent: 0, failures: 0 },
-                    { runs: 4, agent: 2, failures: 2 },
+                    { runs: 1, agent: 0, failures: 0, known: 1 },
+                    { runs: 4, agent: 2, failures: 2, known: 4 },
                 ],
                 busiest: 4,
             },

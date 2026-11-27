@@ -299,28 +299,6 @@ describe("project settings", () => {
         expect(sizes.every((size) => size.attributes("disabled") !== undefined)).toBe(true);
     });
 
-    it("points at workflow:drop before deleting, since the drop needs the project file", async () => {
-        const wrapper = await open(
-            workflows([
-                ticket(1),
-                ticket(2, { blockedBy: [{ number: 1, open: true, closedAt: null }] }),
-                ticket(3, { owner: true }),
-                ticket(4, { branch: true }),
-                ticket(5, { pr: true }),
-                ticket(6, { state: "closed", reason: "completed" }),
-                ticket(7, { state: "closed", reason: "not_planned" }),
-            ]),
-        );
-
-        await button(wrapper, "Delete project…")!.trigger("click");
-        await flushPromises();
-
-        expect(dialog()?.textContent).toContain(
-            "3 tickets are untouched and 4 already started or closed",
-        );
-        expect(dialog()?.textContent).toContain("pnpm workflow:drop blog --yes");
-    });
-
     it("offers no delete on the static site", async () => {
         editing.editable = false;
         const wrapper = await open();

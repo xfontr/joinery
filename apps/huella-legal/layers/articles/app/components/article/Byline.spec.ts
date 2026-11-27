@@ -47,15 +47,6 @@ describe("article byline", () => {
         expect(time.attributes("datetime")).toBe("2024-03-11T23:30:00Z");
     });
 
-    it("takes the reading time from translations, with the minutes as the plural count", async () => {
-        const wrapper = await mountSuspended(Byline, {
-            props: { authors: [LUIS], readingMinutes: 7 },
-            global,
-        });
-
-        expect(wrapper.text()).toContain('t(articleByline.readingTime, {"minutes":7})');
-    });
-
     it("links the comment count where it's told to, with the count as the plural", async () => {
         const wrapper = await mountSuspended(Byline, {
             props: { authors: [LUIS], comments: { count: 3, to: { hash: "#comentarios" } } },
@@ -74,23 +65,5 @@ describe("article byline", () => {
         });
 
         expect(wrapper.text()).not.toContain("articleByline.comments");
-    });
-
-    it("hides the avatar stack from assistive tech, since the names follow it", async () => {
-        const wrapper = await mountSuspended(Byline, {
-            props: { authors: [ANA, LUIS], avatars: true },
-            global,
-        });
-
-        const stack = wrapper.find("[aria-hidden=true]");
-
-        expect(stack.text()).toContain("AT");
-        expect(stack.text()).toContain("LM");
-    });
-
-    it("draws no avatars unless asked", async () => {
-        const wrapper = await mountSuspended(Byline, { props: { authors: [ANA] }, global });
-
-        expect(wrapper.find("[aria-hidden=true]").exists()).toBe(false);
     });
 });

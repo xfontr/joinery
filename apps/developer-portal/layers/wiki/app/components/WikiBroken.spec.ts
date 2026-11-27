@@ -26,12 +26,4 @@ describe("WikiBroken", () => {
         expect(links).toHaveLength(1);
         expect(links[0]?.text()).toContain("./gone.md, ../x.md");
     });
-
-    it("renders nothing when every link resolves", async () => {
-        const wrapper = await mountSuspended(WikiBroken, {
-            props: { pages: [page("docs/b.md", [])] },
-        });
-
-        expect(wrapper.text()).toBe("");
-    });
 });

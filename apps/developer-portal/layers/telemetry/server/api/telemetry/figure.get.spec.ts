@@ -1,12 +1,11 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { DayUsage } from "#layers/snapshot/shared/types/DayUsage.ts";
 import type { UsageArtifact } from "#layers/snapshot/shared/types/UsageArtifact.ts";
 
-const store = vi.hoisted(() => ({ readArtifact: vi.fn() }));
-const h3 = vi.hoisted(() => ({ defineEventHandler: (handler: unknown) => handler }));
-
-vi.mock("#layers/snapshot/server/utils/store.ts", () => store);
-vi.mock("h3", () => h3);
+vi.mock("h3", () => ({ defineEventHandler: (handler: unknown) => handler }));
 
 import handler from "./figure.get.ts";
 
@@ -36,25 +35,34 @@ const usage = (day: DayUsage): UsageArtifact => ({
     lint: { since: null, rules: {} },
 });
 
-beforeEach(() => {
-    vi.clearAllMocks();
+let dir = "";
+
+const artifact = (name: string, value: unknown) =>
+    writeFile(join(dir, `${name}.json`), JSON.stringify(value));
+
+beforeEach(async () => {
+    dir = await mkdtemp(join(tmpdir(), "snapshot-"));
+    vi.stubGlobal("useRuntimeConfig", () => ({ snapshotDir: dir }));
+});
+
+afterEach(async () => {
+    vi.unstubAllGlobals();
+    await rm(dir, { recursive: true, force: true });
 });
 
 describe("telemetry figure route", () => {
     it("prints a dash, not 0%, when nothing was collected or nothing ran", async () => {
-        store.readArtifact.mockResolvedValue(null);
-
         await expect(handler({} as never)).resolves.toEqual({ value: "—", alert: false });
     });
 
     it("alerts once enough runs fail", async () => {
-        store.readArtifact.mockResolvedValue(usage({ runs: 8, agent: 0, failures: 4 }));
+        await artifact("usage", usage({ runs: 8, agent: 0, failures: 4, known: 8 }));
 
         await expect(handler({} as never)).resolves.toEqual({ value: "50%", alert: true });
     });
 
     it("stays quiet under the failing rate", async () => {
-        store.readArtifact.mockResolvedValue(usage({ runs: 10, agent: 0, failures: 1 }));
+        await artifact("usage", usage({ runs: 10, agent: 0, failures: 1, known: 10 }));
 
         await expect(handler({} as never)).resolves.toEqual({ value: "10%", alert: false });
     });

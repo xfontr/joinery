@@ -1,11 +1,8 @@
-import { slotStub } from "@joinery/configs/vitest/utils/nuxt";
-import type { FormError } from "@nuxt/ui";
+import { serveEndpoint, slotStub } from "@joinery/configs/vitest/utils/nuxt";
 import { mountSuspended } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
+import { createError, readBody } from "h3";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ref } from "vue";
-import type { FormPostStatus } from "#layers/forms/app/composables/useFormPost";
-import type { PostCommentFailure } from "../composables/usePostComment";
 import CommentForm from "./CommentForm.vue";
 
 const MESSAGES = {
@@ -41,18 +38,27 @@ const REPLY_TO: ReaderComment = {
     paragraphs: ["Hola"],
 };
 
-const comment = vi.hoisted(() => ({
-    status: undefined as unknown as import("vue").Ref<FormPostStatus>,
-    errors: undefined as unknown as import("vue").Ref<FormError[]>,
-    failure: undefined as unknown as import("vue").Ref<PostCommentFailure | undefined>,
-    send: vi.fn(),
-}));
-
-const challenge = vi.hoisted(() => vi.fn());
+const challenge = vi.hoisted(() =>
+    vi.fn((send: (token: string) => Promise<unknown>) => send("tok")),
+);
 
 const FormChallenge = slotStub({ challenge });
 
-vi.mock("../composables/usePostComment", () => ({ usePostComment: () => comment }));
+const serveComments = (respond: () => unknown = () => ({})) => {
+    const received: unknown[] = [];
+
+    serveEndpoint("/api/comments", async (event) => {
+        received.push(await readBody(event));
+
+        return respond();
+    });
+
+    return received;
+};
+
+const rejectWith = (statusCode: number, data?: unknown) => () => {
+    throw createError({ statusCode, data });
+};
 
 type Wrapper = Awaited<ReturnType<typeof mountSuspended>>;
 
@@ -82,36 +88,27 @@ describe("comment form", () => {
         useNuxtApp().$i18n.mergeLocaleMessage("es-ES", MESSAGES);
     });
 
-    beforeEach(() => {
-        vi.clearAllMocks();
-        comment.status = ref("idle");
-        comment.errors = ref([]);
-        comment.failure = ref();
-    });
-
     it("sends the trimmed fields as a top-level comment on the article, with the honeypot", async () => {
+        const received = serveComments();
         const wrapper = await mount();
 
         await fill(wrapper, { ...FIELDS, name: ` ${FIELDS.name} ` });
         await submit(wrapper);
 
-        expect(comment.send).toHaveBeenCalledWith(
-            { ...FIELDS, consent: true, post: "42", parent: "0", honeypot: "" },
-            challenge,
-        );
+        expect(received).toEqual([
+            { ...FIELDS, consent: true, post: "42", parent: "0", honeypot: "", token: "tok" },
+        ]);
     });
 
     it("sends a reply under the comment it answers, and says whom it answers", async () => {
+        const received = serveComments();
         const wrapper = await mount({ replyTo: REPLY_TO });
 
         await fill(wrapper, FIELDS);
         await submit(wrapper);
 
         expect(wrapper.text()).toContain("replying to Ana");
-        expect(comment.send).toHaveBeenCalledWith(
-            expect.objectContaining({ parent: "9" }),
-            challenge,
-        );
+        expect(received).toEqual([expect.objectContaining({ parent: "9" })]);
     });
 
     it("moves focus to the comment field when a reply starts, so the reader lands where they type", async () => {
@@ -135,49 +132,33 @@ describe("comment form", () => {
         expect(wrapper.emitted("cancelReply")).toHaveLength(1);
     });
 
-    it("withholds the request without consent, and blames the checkbox", async () => {
-        const wrapper = await mount();
-
-        await fill(wrapper, FIELDS, false);
-        await submit(wrapper);
-
-        expect(comment.send).not.toHaveBeenCalled();
-        expect(wrapper.find("[role=alert]").text()).toContain("consent: required value");
-    });
-
     it("refuses a comment past the length WordPress would take, without sending it", async () => {
+        const received = serveComments();
         const wrapper = await mount();
 
         await fill(wrapper, { ...FIELDS, content: "x".repeat(5001) });
         await submit(wrapper);
 
-        expect(comment.send).not.toHaveBeenCalled();
+        expect(received).toHaveLength(0);
         expect(wrapper.find("[role=alert]").text()).toContain("content: long value");
     });
 
-    it.each(["duplicate", "closed", "flood", "unavailable"] as const)(
+    it.each([
+        ["duplicate", 409],
+        ["closed", 410],
+        ["flood", 429],
+        ["unavailable", 500],
+    ] as const)(
         "tells the reader why the comment failed when it was %s, keeping the form",
-        async (failure) => {
-            comment.status = ref("error");
-            comment.failure = ref(failure);
+        async (failure, status) => {
+            serveComments(rejectWith(status));
             const wrapper = await mount();
+
+            await fill(wrapper, FIELDS);
+            await submit(wrapper);
 
             expect(wrapper.find("[role=alert]").text()).toContain(failure);
             expect(wrapper.find("textarea").exists()).toBe(true);
         },
     );
-
-    it("replaces the form with the success panel, so nobody sends the comment twice", async () => {
-        comment.status = ref("success");
-        const wrapper = await mount();
-
-        expect(wrapper.find("form").exists()).toBe(false);
-        expect(wrapper.find("h4").text()).toBe("success title");
-    });
-
-    it("links the privacy section from the notice", async () => {
-        const wrapper = await mount();
-
-        expect(wrapper.find("form p a").attributes("href")).toBe("/aviso-legal/#privacidad");
-    });
 });

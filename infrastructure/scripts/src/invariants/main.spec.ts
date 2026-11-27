@@ -47,17 +47,10 @@ describe("invariants main", () => {
         expect(git.manifestAt).toHaveBeenCalledWith("HEAD", "packages/demo/package.json");
     });
 
-    it("warns about docs drift without failing", () => {
+    it("fails on a project missing from the README layout block", () => {
         files.projectRoots.mockReturnValue(["apps/ghost"]);
 
-        expect(() => main(args())).not.toThrow();
-        expect(io.out.warn).toHaveBeenCalledWith(expect.stringContaining("ghost"));
-    });
-
-    it("prints findings as json and exits clean, so the portal can render a failing tree", () => {
-        expect(() => main(args("base=HEAD", "json"))).not.toThrow();
-        expect(io.out.json).toHaveBeenCalledWith([
-            expect.objectContaining({ id: "version-hand-edit", blocks: true }),
-        ]);
+        expect(() => main(args())).toThrow("found 1 violation(s)");
+        expect(io.out.error).toHaveBeenCalledWith(expect.stringContaining("ghost"));
     });
 });

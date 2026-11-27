@@ -11,6 +11,7 @@ interface RawGraph {
             string,
             {
                 name: string;
+                type: "app" | "lib" | "e2e";
                 data: { root: string; tags?: string[]; targets?: Record<string, unknown> };
             }
         >;
@@ -34,6 +35,7 @@ export const normalizeGraph = (
         .map((node) => ({
             name: node.name,
             root: node.data.root,
+            type: node.type,
             tags: (node.data.tags ?? []).filter(isDeclaredTag),
             dependsOn: edges
                 .filter((edge) => edge.source === node.name)

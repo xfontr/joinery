@@ -1,11 +1,7 @@
 <template>
     <UDashboardPanel id="graph">
         <template #header>
-            <PageHeader :title="$t('graph.title')">
-                <template #actions>
-                    <SnapshotAge :manifest artifact="projects" />
-                </template>
-            </PageHeader>
+            <PageHeader :title="$t('graph.title')" />
         </template>
 
         <template #body>
@@ -28,7 +24,6 @@
 </template>
 
 <script setup lang="ts">
-const manifest = snapshotManifest();
 const projects = projectsArtifact()?.projects ?? [];
 const findings = metricsArtifact()?.invariantFindings ?? [];
 </script>
