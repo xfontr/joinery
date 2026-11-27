@@ -70,7 +70,6 @@
     "@joinery/configs": "workspace:*",
     "@nuxt/test-utils": "^4.3.2",
     "@playwright/test": "catalog:",
-    "@types/cytoscape-dagre": "^2.3.4",
     "@types/node": "catalog:",
     "@types/serve-handler": "^6.1.4",
     "@vitest/coverage-v8": "catalog:",

@@ -1,7 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import type { ArtifactStatus } from "#layers/snapshot/shared/types/ArtifactStatus.ts";
-import type { Manifest } from "#layers/snapshot/shared/types/Manifest.ts";
 import { toBadges } from "./badges.ts";
 import { collectCoverage } from "./coverage.ts";
 import { collectDeps } from "./deps.ts";
@@ -25,6 +23,20 @@ const write = async (name: string, value: unknown): Promise<void> => {
         "utf8",
     );
 };
+
+interface ArtifactStatus {
+    generatedAt: string;
+    ok: boolean;
+    error?: string;
+}
+
+interface Manifest {
+    schemaVersion: number;
+    generatedAt: string;
+    commit: string;
+    branch: string;
+    artifacts: Record<string, ArtifactStatus>;
+}
 
 interface Run {
     generatedAt: string;
