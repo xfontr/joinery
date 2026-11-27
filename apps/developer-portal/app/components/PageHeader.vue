@@ -34,9 +34,7 @@
                 <slot name="title">
                     <h1 class="truncate text-2xl font-semibold text-highlighted">{{ title }}</h1>
                 </slot>
-                <slot name="lead">
-                    <p v-if="lead" class="mt-1 text-xs text-muted">{{ lead }}</p>
-                </slot>
+                <p v-if="lead" class="mt-1 text-xs text-muted">{{ lead }}</p>
             </div>
             <div
                 v-if="$slots.actions || $slots.facts"

@@ -4,8 +4,9 @@
             <PageHeader
                 :crumbs="[{ label: $t('workflows.crumb'), to: '/workflows' }]"
                 :title="base?.project.title ?? $t('workflow.fallback')"
+                :lead="base?.project.summary"
             >
-                <template v-if="view" #lead>
+                <template v-if="view" #facts>
                     <WorkflowProgress :view />
                 </template>
                 <template #actions>

@@ -33,7 +33,6 @@ const VIEW = assembleWorkflows(
                 template: "site",
                 milestone: "2026 Q1",
                 area: "app:blog",
-                summary: "Student legal blog",
             },
         },
     ],
@@ -54,9 +53,5 @@ describe("WorkflowProgress", () => {
         const text = (await mount()).text();
 
         expect(text).toContain("0 of 2 blocks done (0/0 SP)");
-    });
-
-    it("says what the project is in its own few words", async () => {
-        expect((await mount()).text()).toContain("Student legal blog");
     });
 });

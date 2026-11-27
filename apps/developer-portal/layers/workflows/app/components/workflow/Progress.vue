@@ -1,10 +1,7 @@
 <template>
-    <div class="mt-1 flex flex-col gap-3">
-        <p v-if="view.project.summary" class="text-sm text-muted">{{ view.project.summary }}</p>
-        <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
-            <WorkflowProgressMeter :percent="view.progress.percent" class="w-56" />
-            <p class="text-sm tabular-nums">{{ done }}</p>
-        </div>
+    <div class="flex flex-wrap items-center justify-end gap-x-4 gap-y-1">
+        <p class="text-sm tabular-nums">{{ done }}</p>
+        <WorkflowProgressMeter :percent="view.progress.percent" class="w-56" />
     </div>
 </template>
 
