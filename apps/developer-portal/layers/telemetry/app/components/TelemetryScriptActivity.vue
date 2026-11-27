@@ -59,10 +59,7 @@
                             {{ row.failed }}
                         </td>
                         <td class="numeric font-mono whitespace-nowrap">{{ row.median }}</td>
-                        <td
-                            class="numeric font-mono whitespace-nowrap text-muted"
-                            :title="row.lastExact"
-                        >
+                        <td class="numeric font-mono whitespace-nowrap text-muted">
                             {{ row.last }}
                         </td>
                     </tr>
@@ -146,8 +143,7 @@ const rows = computed(() =>
         failed: failedShare(row),
         median: medianOf(row.name),
         agentShare: agentShare(row),
-        last: shortAge(row.last, t),
-        lastExact: row.last ? calendarDay(row.last.slice(0, 10)) : "",
+        last: row.last ? calendarDay(row.last.slice(0, 10)) : t("common.never"),
     })),
 );
 

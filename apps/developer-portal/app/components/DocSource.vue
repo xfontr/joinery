@@ -18,5 +18,7 @@ const { source, words = null, updatedAt = null } = defineProps<Props>();
 
 const { t } = useI18n();
 
-const updated = computed(() => relativeTime(updatedAt, t));
+const updated = computed(() =>
+    updatedAt ? calendarDay(updatedAt.slice(0, 10)) : t("common.never"),
+);
 </script>

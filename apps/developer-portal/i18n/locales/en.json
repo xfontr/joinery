@@ -686,7 +686,7 @@
         "title": "Ticket size"
     },
     "statusBar": {
-        "collected": "{'@'}{commit} · collected {age}",
+        "collected": "{'@'}{commit} · collected at {at}",
         "items": {
             "advisories": "advisories",
             "advisoriesBadge": "{count} adv.",

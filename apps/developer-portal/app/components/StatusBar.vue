@@ -61,7 +61,7 @@ const provenance = computed(() =>
     collected
         ? t("statusBar.collected", {
               commit: collected.commit.slice(0, 7),
-              age: relativeTime(collected.at, t),
+              at: calendarTime(collected.at),
           })
         : "",
 );
