@@ -1,32 +1,43 @@
 <template>
     <div ref="root" class="flex flex-col gap-6">
         <div>
-            <UCollapsible
-                v-if="activity || days > 0"
-                v-model:open="showActivity"
-                class="mb-4 border-b border-default pb-3"
-            >
-                <UButton
-                    :label="$t('workflowBoard.activity')"
-                    icon="i-lucide-chart-column"
-                    :trailing-icon="showActivity ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-                    color="neutral"
-                    variant="ghost"
-                    size="xs"
-                    class="-ml-2"
-                />
-                <template #content>
-                    <div class="flex flex-wrap items-start gap-x-8 gap-y-3 pt-3">
-                        <WorkflowActivityStrip
-                            v-if="activity"
-                            :activity
-                            :stages="syncedStages"
-                            class="w-full shrink-0 sm:w-80"
-                        />
-                        <WorkflowReplay v-if="days > 0" v-model:day="day" :days :label="dayLabel" />
-                    </div>
-                </template>
-            </UCollapsible>
+            <div class="mb-4 border-b border-default pb-3">
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                    <UButton
+                        v-if="activity || days > 0"
+                        :label="$t('workflowBoard.activity')"
+                        icon="i-lucide-chart-column"
+                        :trailing-icon="
+                            showActivity ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'
+                        "
+                        color="neutral"
+                        variant="ghost"
+                        size="xs"
+                        class="-ml-2"
+                        :aria-expanded="showActivity"
+                        @click="showActivity = !showActivity"
+                    />
+                    <div class="min-w-0 flex-1"><slot name="summary" /></div>
+                </div>
+                <UCollapsible v-if="activity || days > 0" v-model:open="showActivity">
+                    <template #content>
+                        <div class="flex flex-wrap items-start gap-x-8 gap-y-3 pt-3">
+                            <WorkflowActivityStrip
+                                v-if="activity"
+                                :activity
+                                :stages="syncedStages"
+                                class="w-full shrink-0 sm:w-80"
+                            />
+                            <WorkflowReplay
+                                v-if="days > 0"
+                                v-model:day="day"
+                                :days
+                                :label="dayLabel"
+                            />
+                        </div>
+                    </template>
+                </UCollapsible>
+            </div>
             <WorkflowSkyline
                 :stages
                 :selected="activeStage?.id ?? null"

@@ -44,6 +44,8 @@ const VIEW = assembleWorkflows(
     {},
 ).projects[0];
 
+const ACTIVITY = "button:has(.i-lucide-chart-column), button:has([class*='chart-column'])";
+
 const mount = (days: number) => {
     if (!VIEW) throw new Error("the fixture project did not assemble");
     return mountSuspended(Board, {
@@ -79,7 +81,20 @@ describe("WorkflowBoard", () => {
     });
 
     it("offers the replay only when the snapshot covers a day", async () => {
-        expect((await mount(0)).find("[aria-label='Day to replay']").exists()).toBe(false);
-        expect((await mount(3)).find("[aria-label='Day to replay']").exists()).toBe(true);
+        expect((await mount(0)).find(ACTIVITY).exists()).toBe(false);
+
+        const wrapper = await mount(3);
+        await wrapper.find(ACTIVITY).trigger("click");
+
+        expect(wrapper.find("[aria-label='Day to replay']").exists()).toBe(true);
+    });
+
+    it("returns to today when the activity is hidden, so no past day stays on unseen", async () => {
+        const wrapper = await mount(3);
+
+        await wrapper.find(ACTIVITY).trigger("click");
+        await wrapper.find(ACTIVITY).trigger("click");
+
+        expect(wrapper.emitted("update:day")?.at(-1)).toEqual([2]);
     });
 });

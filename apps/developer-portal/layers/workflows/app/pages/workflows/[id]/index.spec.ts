@@ -317,6 +317,9 @@ describe("workflow page", () => {
 
         expect(graphBlock(wrapper, "Comments").text()).toContain("Done");
 
+        await wrapper
+            .find("button:has(.i-lucide-chart-column), button:has([class*='chart-column'])")
+            .trigger("click");
         await wrapper.findComponent({ name: "USlider" }).setValue(0);
 
         expect(graphBlock(wrapper, "Comments").text()).toContain("In flight");

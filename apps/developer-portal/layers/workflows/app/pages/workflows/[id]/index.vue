@@ -23,7 +23,6 @@
             <WorkflowMissing v-if="!base || !view" :id />
 
             <div v-else class="flex flex-col gap-6">
-                <WorkflowSummary :view :selected="selectedId" :blank @select="select" />
                 <WorkflowAlerts :project="id" :blank />
                 <WorkflowBoard
                     v-model:day="dayIndex"
@@ -38,7 +37,11 @@
                     @select-stage="(stage) => (stageId = stage)"
                     @select="select"
                     @details="openDetails"
-                />
+                >
+                    <template #summary>
+                        <WorkflowSummary :view :selected="selectedId" :blank @select="select" />
+                    </template>
+                </WorkflowBoard>
                 <WorkflowGraphSection :view :selected @select="select" @details="openDetails" />
             </div>
 
