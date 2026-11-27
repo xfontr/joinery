@@ -6,8 +6,12 @@
             <p>{{ direction.idea }}</p>
             <p>{{ direction.look }}</p>
             <p class="links">
+                <NuxtLink to="/lab2/d">D · C con las secciones de L+K</NuxtLink>
+                <NuxtLink to="/lab2/b">B · antes</NuxtLink>
                 <NuxtLink to="/lab2/c">Inicio</NuxtLink>
-                <NuxtLink to="/lab2/c/trayectoria">Formación y trayectoria</NuxtLink>
+                <NuxtLink to="/lab2/c/terapias">Terapias</NuxtLink>
+                <NuxtLink to="/lab2/c/sobre-mi">Sobre mí</NuxtLink>
+                <NuxtLink to="/lab2/c/blog">Blog</NuxtLink>
                 <NuxtLink to="/lab2/c/contacto">Contacto</NuxtLink>
             </p>
         </header>
@@ -20,7 +24,7 @@
         </section>
 
         <section>
-            <h2>Dos preguntas</h2>
+            <h2>Una pregunta</h2>
             <div v-for="item in decisions" :key="item.question" class="decision">
                 <h3>{{ item.question }}</h3>
                 <p>{{ item.answer }}</p>

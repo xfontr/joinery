@@ -24,126 +24,72 @@
                         1994
                     </p>
                 </div>
-                <nav class="arch" aria-labelledby="arch-title">
-                    <h2 id="arch-title">¿Qué te trae por aquí?</h2>
-                    <ul>
-                        <li v-for="item in concerns" :key="item.title">
-                            <NuxtLink :to="`#tema-${slug(item.title)}`">
-                                {{ item.title }}<span aria-hidden="true">→</span>
-                            </NuxtLink>
-                        </li>
-                        <li>
-                            <NuxtLink to="#contacto">
-                                Otra cosa, o no lo sé<span aria-hidden="true">→</span>
-                            </NuxtLink>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </section>
-
-        <section id="primera-vez" class="k-wrap k-block">
-            <h2 class="k-h2">La primera vez</h2>
-            <p class="section-lead">
-                Pedir ayuda cuesta. Así es como empezamos, sin compromiso de seguir.
-            </p>
-            <ol class="steps">
-                <li v-for="(step, index) in proposal.steps" :key="step.title">
-                    <span class="step-n" aria-hidden="true">{{ index + 1 }}</span>
-                    <div>
-                        <h3>{{ step.title }}</h3>
-                        <p>{{ step.body }}</p>
-                    </div>
-                </li>
-            </ol>
-        </section>
-
-        <section id="ayuda" class="sand">
-            <div class="k-wrap k-block">
-                <h2 class="k-h2">En qué te puedo ayudar</h2>
-                <ul class="concerns">
-                    <li v-for="item in concerns" :id="`tema-${slug(item.title)}`" :key="item.title">
-                        <h3>{{ item.title }}</h3>
-                        <p>{{ concernDetail[item.title] }}</p>
-                        <NuxtLink
-                            :to="{ query: { tema: item.title }, hash: '#contacto' }"
-                            class="more"
-                            >Cuéntame <span aria-hidden="true">→</span></NuxtLink
-                        >
-                    </li>
-                </ul>
-                <div class="ways-row">
-                    <div class="ways">
-                        <h3>Cómo trabajo</h3>
-                        <dl>
-                            <div v-for="item in therapies" :key="item.name">
-                                <dt>{{ item.name }}</dt>
-                                <dd>{{ item.line }}</dd>
-                            </div>
-                        </dl>
-                    </div>
-                    <aside class="legal">
-                        <h3>¿Te deriva un juzgado o un abogado?</h3>
-                        <p>
-                            Hago coordinación de parentalidad e informes periciales, y los defiendo
-                            en juicio.
-                        </p>
-                        <NuxtLink :to="{ query: { tema: legalTopic }, hash: '#contacto' }"
-                            >Contactar sobre un caso <span aria-hidden="true">→</span></NuxtLink
-                        >
-                        <NuxtLink to="/lab2/c/trayectoria"
-                            >Ver mi trayectoria <span aria-hidden="true">→</span></NuxtLink
-                        >
-                    </aside>
-                </div>
-            </div>
-        </section>
-
-        <section id="sobre-mi" class="k-wrap k-block about">
-            <figure class="portrait">
-                <img :src="portrait" alt="Marina Roustan" width="319" height="546" />
-            </figure>
-            <div>
-                <h2 class="k-h2">Sobre mí</h2>
-                <p v-for="line in intro.body" :key="line">{{ line }}</p>
-                <dl class="creds">
-                    <div v-for="item in credentials" :key="item.label">
-                        <dt>{{ item.label }}</dt>
-                        <dd>{{ item.value }}</dd>
-                    </div>
-                </dl>
-                <NuxtLink to="/lab2/c/trayectoria" class="more"
-                    >Formación y trayectoria <span aria-hidden="true">→</span></NuxtLink
+                <svg
+                    class="arch"
+                    viewBox="0 0 400 460"
+                    aria-hidden="true"
+                    fill="none"
+                    stroke="var(--ink)"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
                 >
+                    <path
+                        d="M0 460V180A200 180 0 0 1 400 180V460Z"
+                        fill="var(--sand)"
+                        stroke="none"
+                    />
+                    <circle cx="200" cy="175" r="58" fill="var(--sun)" stroke="none" />
+                    <path d="M40 420H360" />
+                    <g id="k-chair">
+                        <rect
+                            x="66"
+                            y="252"
+                            width="30"
+                            height="116"
+                            rx="15"
+                            fill="#fff"
+                            transform="rotate(-9 81 368)"
+                        />
+                        <rect x="78" y="336" width="88" height="30" rx="12" fill="#fff" />
+                        <path d="M96 318H150Q160 318 160 328V336" />
+                        <path d="M90 366L82 420M156 366L164 420" />
+                    </g>
+                    <use href="#k-chair" transform="translate(400 0) scale(-1 1)" />
+                    <path d="M176 366H224M200 366V420M186 420H214" />
+                    <path d="M190 366L187 344H213L210 366Z" fill="var(--ink)" />
+                    <path
+                        d="M200 344C200 318 196 300 186 286M200 344C202 316 210 298 222 290M200 344C198 326 204 312 200 300"
+                    />
+                    <path
+                        d="M186 286C176 284 172 292 176 298C184 300 188 294 186 286ZM222 290C232 286 236 294 230 300C222 302 220 296 222 290ZM200 300C194 294 196 286 200 282C204 286 206 294 200 300Z"
+                        fill="var(--ink)"
+                    />
+                </svg>
             </div>
         </section>
 
-        <section id="cancer" class="sand">
-            <div class="k-wrap k-block cancer">
-                <div>
-                    <h2 class="k-h2">Más de 15 años acompañando a quien vive un cáncer</h2>
-                    <p>
-                        En consulta individual y en grupos para mujeres con cáncer de mama, con el
-                        método GAFA, que creé y publiqué en 2011. Durante el tratamiento y también
-                        después, cuando hay que reorganizar la vida.
+        <TherapiesBlock />
+
+        <section id="sobre-mi" class="about-band">
+            <div class="k-wrap about">
+                <figure class="portrait">
+                    <img :src="portrait" alt="Marina Roustan" width="319" height="546" />
+                </figure>
+                <div class="about-text">
+                    <h2 class="k-h2">Sobre mí</h2>
+                    <p class="creds">
+                        Psicóloga clínica especialista · Colegiada 7538 COPC · Doctora por la UAB
                     </p>
-                    <NuxtLink :to="{ query: { tema: 'Cáncer' }, hash: '#contacto' }" class="more"
-                        >Hablar de tu caso <span aria-hidden="true">→</span></NuxtLink
+                    <p v-for="line in intro.body" :key="line">{{ line }}</p>
+                    <NuxtLink to="/lab2/c/sobre-mi" class="more"
+                        >Formación y trayectoria <span aria-hidden="true">→</span></NuxtLink
                     >
                 </div>
-                <figure class="cancer-book">
-                    <img
-                        :src="book.image"
-                        :alt="`Portada de ${book.title}`"
-                        width="500"
-                        height="800"
-                    />
-                    <figcaption>
-                        Mi libro, <em>{{ book.title }}</em>
-                    </figcaption>
-                </figure>
             </div>
         </section>
+
+        <CancerBlock />
 
         <section id="opiniones">
             <div class="k-wrap k-block">
@@ -181,6 +127,18 @@
             </div>
         </section>
 
+        <section>
+            <div class="k-wrap k-block">
+                <div class="blog-head">
+                    <h2 class="k-h2">Del blog</h2>
+                    <NuxtLink to="/lab2/c/blog" class="more"
+                        >Todos los artículos <span aria-hidden="true">→</span></NuxtLink
+                    >
+                </div>
+                <PostList :items="latest" />
+            </div>
+        </section>
+
         <section id="contacto">
             <ContactSplit
                 level="h2"
@@ -194,23 +152,13 @@
 
 <script setup lang="ts">
 import ConsultaShell from "~/lab2/c/ConsultaShell.vue";
+import CancerBlock from "~/lab2/c/CancerBlock.vue";
 import ContactSplit from "~/lab2/c/ContactSplit.vue";
-import {
-    book,
-    concernDetail,
-    concerns,
-    contact,
-    credentials,
-    intro,
-    legalTopic,
-    mapsUrl,
-    portrait,
-    proposal,
-    slug,
-    therapies,
-    voiceHeads,
-    voices,
-} from "~/lab2/content";
+import PostList from "~/lab2/c/PostList.vue";
+import TherapiesBlock from "~/lab2/c/TherapiesBlock.vue";
+import { contact, intro, mapsUrl, portrait, posts, voiceHeads, voices } from "~/lab2/content";
+
+const latest = posts.slice(0, 3);
 
 useHead({ title: "C · Consulta · Lab 2" });
 </script>
@@ -263,267 +211,63 @@ h1 {
     color: #3b4253;
 }
 
-/* The arch rises from the band's bottom edge, as the portrait did. */
+/* The arch rises from the band's bottom edge. */
 .arch {
+    display: block;
     align-self: end;
     justify-self: center;
     width: min(100%, 25rem);
-    background: #fff;
-    border-radius: 50% 50% 0 0 / 7.5rem 7.5rem 0 0;
-    padding: 3.5rem 2rem 2rem;
-}
-.arch h2 {
-    font-size: 1.625rem;
-    line-height: 1.2;
-    text-align: center;
-    margin-bottom: 1.25rem;
-}
-.arch li + li {
-    border-top: 1px solid var(--line);
-}
-.arch a {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding-block: 0.7rem;
-    font-weight: 500;
-    text-decoration: none;
-}
-.arch a span {
-    transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-.arch a:hover span {
-    transform: translateX(4px);
-}
-.arch a:hover {
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-}
-
-.section-lead {
-    max-width: 38rem;
-    color: var(--muted);
-}
-.steps {
-    margin-top: 2.5rem;
-    display: grid;
-    gap: 2rem;
-}
-@media (min-width: 800px) {
-    .steps {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 3rem;
-    }
-}
-.steps li {
-    display: flex;
-    gap: 1rem;
-}
-.step-n {
-    flex: none;
-    display: grid;
-    place-items: center;
-    width: 2.6rem;
-    height: 2.6rem;
-    border-radius: 999px;
-    background: var(--sun);
-    font-family: "Young Serif", Georgia, serif;
-    font-size: 1.25rem;
-}
-.steps h3,
-.concerns h3,
-.ways h3 {
-    font-family: "Young Serif", Georgia, serif;
-    font-size: 1.375rem;
-    line-height: 1.25;
-    margin-bottom: 0.35rem;
-}
-.steps p {
-    color: var(--muted);
-}
-.sand {
-    background: var(--sand);
-}
-.concerns {
-    margin-top: 2.25rem;
-    display: grid;
-    gap: 0 2.5rem;
-}
-@media (min-width: 700px) {
-    .concerns {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-@media (min-width: 1000px) {
-    .concerns {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-.concerns li {
-    padding-block: 1.4rem 1.6rem;
-    border-top: 1.5px solid var(--ink);
-    scroll-margin-top: 1.5rem;
-}
-.concerns li:target {
-    background: rgb(244 201 93 / 0.35);
-    box-shadow: 0 0 0 0.75rem rgb(244 201 93 / 0.35);
-}
-.concerns p {
-    color: var(--muted);
-}
-.consulta .more {
-    display: inline-block;
-    margin-top: 0.6rem;
-    font-weight: 600;
-    text-decoration: none;
-}
-.consulta .more:hover {
-    text-decoration: underline;
-}
-.ways-row {
-    margin-top: 3rem;
-    display: grid;
-    gap: 1.25rem;
-}
-@media (min-width: 1000px) {
-    .ways-row {
-        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-    }
-}
-.legal {
-    padding: 1.75rem;
-    border-radius: 12px;
-    background: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-}
-.legal h3 {
-    font-family: "Young Serif", Georgia, serif;
-    font-size: 1.375rem;
-    line-height: 1.25;
-}
-.legal p {
-    font-size: 1rem;
-    color: var(--muted);
-    margin-bottom: 0.25rem;
-}
-.consulta .legal a {
-    font-weight: 600;
-    text-decoration: none;
-}
-.consulta .legal a:hover {
-    text-decoration: underline;
-}
-.cancer {
-    display: grid;
-    gap: 2.5rem;
-}
-@media (min-width: 900px) {
-    .cancer {
-        grid-template-columns: minmax(0, 38rem) 11rem;
-        justify-content: space-between;
-        align-items: center;
-        gap: 5rem;
-    }
-}
-.cancer .k-h2 {
-    max-width: 20ch;
-}
-.cancer-book {
-    width: 9rem;
-}
-@media (min-width: 900px) {
-    .cancer-book {
-        width: 100%;
-    }
-}
-.cancer-book img {
-    display: block;
-    width: 100%;
     height: auto;
-    border-radius: 3px;
-    box-shadow: 0 6px 18px rgb(29 41 67 / 0.18);
 }
-.cancer-book figcaption {
-    margin-top: 0.9rem;
-    font-size: 0.9375rem;
-    line-height: 1.45;
-    color: var(--muted);
-}
-.ways {
-    padding: 1.75rem;
-    background: #fff;
-    border-radius: 12px;
-}
-.ways dl {
-    margin-top: 1rem;
-    display: grid;
-    gap: 1rem 2rem;
-}
-@media (min-width: 800px) {
-    .ways dl {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-.ways dt {
-    font-weight: 600;
-}
-.ways dd {
-    color: var(--muted);
-    font-size: 1rem;
+.about-band {
+    background: var(--sun);
 }
 .about {
     display: grid;
     gap: 2.5rem;
+    padding-top: 4.5rem;
 }
 @media (min-width: 900px) {
     .about {
-        grid-template-columns: 22rem minmax(0, 1fr);
-        gap: 5rem;
-        align-items: start;
+        grid-template-columns: 18rem minmax(0, 1fr);
+        gap: 4rem;
+        padding-top: 6rem;
     }
 }
 .portrait {
-    background: var(--sand);
-    border-radius: 50% 50% 0 0 / 9rem 9rem 0 0;
-    padding: 2rem 2rem 0;
-    width: min(100%, 22rem);
+    order: 2;
+    align-self: end;
+    justify-self: center;
+    width: min(100%, 14rem);
 }
 .portrait img {
     display: block;
-    width: 78%;
+    width: 100%;
     height: auto;
-    margin: 0 auto;
-    mix-blend-mode: multiply;
 }
-.about p + p {
+.about-text p {
+    max-width: 44rem;
+}
+.about-text p + p {
     margin-top: 1em;
 }
+.about-text {
+    padding-bottom: 1rem;
+}
 .creds {
-    margin-block: 1.75rem 0.5rem;
-    display: grid;
-    gap: 0;
-}
-.creds div {
-    display: grid;
-    grid-template-columns: 9.5rem 1fr;
-    gap: 1rem;
-    padding-block: 0.6rem;
-    border-top: 1px solid var(--line);
+    margin-top: -0.25rem;
+    margin-bottom: 1.5rem;
     font-size: 1rem;
+    letter-spacing: 0.01em;
+    color: #3b4253;
 }
-.creds dt {
-    font-weight: 600;
-}
-.creds dd {
-    color: var(--muted);
-}
-@media (max-width: 520px) {
-    .creds div {
-        grid-template-columns: 1fr;
-        gap: 0;
+@media (min-width: 900px) {
+    .portrait {
+        order: 0;
+    }
+    .about-text {
+        align-self: center;
+        padding-bottom: 4rem;
     }
 }
 .voices {
@@ -550,6 +294,14 @@ h1 {
 .voices figcaption {
     margin-top: 0.9rem;
     font-weight: 600;
+}
+.blog-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    margin-bottom: 2rem;
 }
 .place {
     display: grid;

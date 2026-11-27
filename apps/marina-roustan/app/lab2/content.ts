@@ -1,15 +1,32 @@
 // Round 2 of the lab. Facts come from ../lab/fixtures (the live site); anything marked
 // `proposal` is new copy for Marina to confirm.
-import { book, concerns, contact, intro, testimonials } from "../lab/fixtures";
+import {
+    areas,
+    book,
+    concerns,
+    contact,
+    formatDate,
+    intro,
+    posts,
+    services,
+    testimonials,
+} from "../lab/fixtures";
 import portrait from "../lab/images/portrait.png";
 
-export { book, concerns, contact, intro, portrait };
+export { areas, book, concerns, contact, formatDate, intro, portrait, posts, services };
+
+export type LabPage = "inicio" | "terapias" | "sobre-mi" | "blog" | "contacto";
+
+// C and D share these components; the path picks which lab a link stays in.
+export const useLabBase = () => (useRoute().path.startsWith("/lab2/d") ? "/lab2/d" : "/lab2/c");
+
+export const navFor = (base: string) => [
+    { label: "Terapias", to: `${base}/terapias` },
+    { label: "Sobre mí", to: `${base}/sobre-mi` },
+    { label: base === "/lab2/d" ? "Publicaciones" : "Blog", to: `${base}/blog` },
+];
 
 export const voices = testimonials.filter((item) => !("invented" in item));
-
-export const legalTopic = "Caso judicial o peritaje";
-
-export const topics = [...concerns.map((item) => item.title), legalTopic, "Otra cosa"];
 
 export const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("Carrer del Comte d'Urgell 237, 08036 Barcelona")}`;
 
@@ -126,20 +143,5 @@ export const trajectory = {
 };
 
 export const proposal = {
-    steps: [
-        {
-            title: "Me escribes o me llamas",
-            body: "Por WhatsApp, por teléfono o con el formulario. Basta con una frase.",
-        },
-        {
-            title: "Te contesto yo",
-            body: "Buscamos una hora que te vaya bien, en la consulta del Eixample.",
-        },
-        {
-            title: "Primera sesión",
-            body: "Me cuentas qué te pasa, sin prisa, y vemos si puedo ayudarte y cómo.",
-        },
-    ],
-    urgent: "Este formulario no es para urgencias: puedo tardar un día o dos en contestar. Si ahora mismo estás en peligro o piensas en hacerte daño, llama al 024 (gratis, 24 horas) o al 112.",
     cookies: "Esta web no usa cookies.",
 };

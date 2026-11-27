@@ -1,7 +1,7 @@
 <!-- eslint-disable better-tailwindcss/no-unknown-classes -- throwaway lab -->
 <template>
     <nav v-if="!clean" class="lb" aria-label="Laboratorio">
-        <NuxtLink to="/lab2">Lab 2 · C</NuxtLink>
+        <NuxtLink to="/lab2">Lab 2 · {{ letter }}</NuxtLink>
         <span aria-hidden="true">·</span>
         <NuxtLink
             v-for="item in pages"
@@ -15,17 +15,23 @@
 <!-- eslint-enable better-tailwindcss/no-unknown-classes -->
 
 <script setup lang="ts">
+import { type LabPage, useLabBase } from "./content";
+
 interface Props {
-    page: "inicio" | "trayectoria" | "contacto";
+    page: LabPage;
 }
 
 defineProps<Props>();
 
+const base = useLabBase();
+const letter = base.slice(-1).toUpperCase();
 const clean = "clean" in useRoute().query;
 const pages = [
-    { id: "inicio", label: "Inicio", to: "/lab2/c" },
-    { id: "trayectoria", label: "Trayectoria", to: "/lab2/c/trayectoria" },
-    { id: "contacto", label: "Contacto", to: "/lab2/c/contacto" },
+    { id: "inicio", label: "Inicio", to: base },
+    { id: "terapias", label: "Terapias", to: `${base}/terapias` },
+    { id: "sobre-mi", label: "Sobre mí", to: `${base}/sobre-mi` },
+    { id: "blog", label: "Blog", to: `${base}/blog` },
+    { id: "contacto", label: "Contacto", to: `${base}/contacto` },
 ];
 </script>
 

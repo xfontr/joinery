@@ -2,14 +2,14 @@
 <template>
     <ConsultaShell page="trayectoria">
         <section class="top">
-            <div class="k-wrap top-grid">
+            <div class="kb-wrap top-grid">
                 <div>
                     <h1>Formación y trayectoria</h1>
                     <p class="lead">
                         Lo esencial para saber con quién vas a hablar. El currículum completo, con
                         cursos, ponencias y congresos, está en PDF.
                     </p>
-                    <a :href="cvUrl" class="k-button outline" target="_blank" rel="noopener"
+                    <a :href="cvUrl" class="kb-button outline" target="_blank" rel="noopener"
                         >Descargar el CV completo (PDF, 7 páginas)</a
                     >
                 </div>
@@ -22,8 +22,8 @@
             </div>
         </section>
 
-        <section class="k-wrap k-block sheet">
-            <h2 class="k-h2">Experiencia</h2>
+        <section class="kb-wrap kb-block sheet">
+            <h2 class="kb-h2">Experiencia</h2>
             <ul class="work">
                 <li v-for="item in trajectory.work" :key="item.title">
                     <h3>{{ item.title }}</h3>
@@ -33,8 +33,8 @@
         </section>
 
         <section class="sand">
-            <div class="k-wrap k-block sheet">
-                <h2 class="k-h2">Formación</h2>
+            <div class="kb-wrap kb-block sheet">
+                <h2 class="kb-h2">Formación</h2>
                 <ol class="years">
                     <li v-for="item in education" :key="item.text">
                         <span class="year">{{ item.year }}</span>
@@ -44,8 +44,8 @@
             </div>
         </section>
 
-        <section class="k-wrap k-block sheet">
-            <h2 class="k-h2">Publicaciones</h2>
+        <section class="kb-wrap kb-block sheet">
+            <h2 class="kb-h2">Publicaciones</h2>
             <ol class="years">
                 <li v-for="item in trajectory.publications" :key="item.text">
                     <span class="year">{{ item.year }}</span>
@@ -59,12 +59,12 @@
 <!-- eslint-enable better-tailwindcss/no-unknown-classes, vue/max-lines-per-block -->
 
 <script setup lang="ts">
-import ConsultaShell from "~/lab2/c/ConsultaShell.vue";
-import { credentials, cvUrl, trajectory } from "~/lab2/content";
+import ConsultaShell from "~/lab2b/c/ConsultaShell.vue";
+import { credentials, cvUrl, trajectory } from "~/lab2b/content";
 
 const education = trajectory.education.toSorted((a, b) => b.year.localeCompare(a.year));
 
-useHead({ title: "C · Consulta · Trayectoria · Lab 2" });
+useHead({ title: "B · antes · Trayectoria · Lab 2" });
 </script>
 
 <style scoped>

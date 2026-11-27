@@ -1,15 +1,6 @@
 <!-- eslint-disable better-tailwindcss/no-unknown-classes -- throwaway lab -->
 <template>
     <form v-if="!sent" class="lf" @submit.prevent="sent = true">
-        <fieldset class="lf-topics">
-            <legend>¿Sobre qué quieres hablar?</legend>
-            <div class="lf-chips">
-                <label v-for="topic in topics" :key="topic" class="lf-chip">
-                    <input v-model="chosen" type="checkbox" :value="topic" />
-                    <span>{{ topic }}</span>
-                </label>
-            </div>
-        </fieldset>
         <div class="lf-row">
             <label class="lf-field">
                 <span>Tu nombre</span>
@@ -38,23 +29,8 @@
 <!-- eslint-enable better-tailwindcss/no-unknown-classes -->
 
 <script setup lang="ts">
-import { contact, topics } from "./content";
+import { contact } from "./content";
 
-const route = useRoute();
-const fromQuery = () => {
-    const { tema } = route.query;
-    return typeof tema === "string" && topics.includes(tema) ? [tema] : [];
-};
-const chosen = ref<string[]>(fromQuery());
-
-// The home page links to its own form with `?tema=…#contacto`, which keeps this component mounted.
-watch(
-    () => route.query.tema,
-    () => {
-        const next = fromQuery();
-        if (next.length > 0) chosen.value = next;
-    },
-);
 const sent = ref(false);
 </script>
 
@@ -64,12 +40,6 @@ const sent = ref(false);
     flex-direction: column;
     gap: 1.75rem;
 }
-.lf-topics {
-    border: 0;
-    padding: 0;
-    margin: 0;
-}
-.lf-topics legend,
 .lf-field > span {
     display: block;
     margin-bottom: 0.6rem;
@@ -79,38 +49,6 @@ const sent = ref(false);
     font-style: normal;
     font-weight: 400;
     color: var(--f-muted);
-}
-.lf-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-.lf-chip input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-.lf-chip span {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--f-line);
-    border-radius: 999px;
-    cursor: pointer;
-    transition:
-        background-color 150ms,
-        border-color 150ms;
-}
-.lf-chip span:hover {
-    border-color: var(--f-ink);
-}
-.lf-chip input:checked + span {
-    background: var(--f-accent);
-    border-color: var(--f-accent);
-    color: var(--f-accent-ink);
-}
-.lf-chip input:focus-visible + span {
-    outline: 2px solid var(--f-accent);
-    outline-offset: 2px;
 }
 .lf-row {
     display: grid;

@@ -36,7 +36,6 @@
         </div>
         <div class="panel">
             <p class="panel-title">Mándame un mensaje</p>
-            <p class="urgent" role="note">{{ proposal.urgent }}</p>
             <Lab2Form />
         </div>
     </div>
@@ -44,7 +43,7 @@
 <!-- eslint-enable better-tailwindcss/no-unknown-classes -->
 
 <script setup lang="ts">
-import { contact, mapsUrl, proposal } from "../content";
+import { contact, mapsUrl } from "../content";
 import Lab2Form from "../Lab2Form.vue";
 
 interface Props {
@@ -110,13 +109,5 @@ defineProps<Props>();
     font-size: 1.625rem;
     line-height: 1.2;
     margin-bottom: 1.25rem;
-}
-.urgent {
-    margin-bottom: 1.75rem;
-    padding: 0.9rem 1.1rem;
-    border-radius: 8px;
-    background: #fff;
-    font-size: 0.9875rem;
-    color: var(--muted);
 }
 </style>
