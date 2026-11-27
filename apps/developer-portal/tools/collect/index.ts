@@ -111,7 +111,7 @@ const main = async (): Promise<void> => {
                 coverage ?? { generatedAt, totals: null, report: false, projects: [] },
                 generatedAt,
             ),
-        (value) => `${value.invariantFindings.length} invariant findings`,
+        (value) => `${value.projects.length} projects measured`,
     );
 
     const deps = await step(
@@ -125,7 +125,7 @@ const main = async (): Promise<void> => {
         run,
         "docs",
         () => collectDocs(generatedAt),
-        (value) => `${value.pages.length} pages, ${value.brokenLinkCount} broken links`,
+        (value) => `${value.pages.length} pages`,
     );
 
     await step(

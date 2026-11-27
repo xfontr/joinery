@@ -18,7 +18,6 @@ export const toBadges = ({ deps, coverage, docs, metrics }: Collected): Badges =
     worstSeverity: worstSeverity(deps?.vulnerabilities),
     lineCoverage: coverage?.totals?.lines ?? null,
     docPages: docs?.pages.length ?? null,
-    brokenLinks: docs?.brokenLinkCount ?? 0,
     collected: metrics
         ? { branch: metrics.branch, commit: metrics.commit, at: metrics.generatedAt }
         : null,

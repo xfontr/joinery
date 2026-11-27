@@ -6,6 +6,5 @@ export interface Badges {
     worstSeverity: VulnerabilityAdvisory["severity"] | null;
     lineCoverage: number | null;
     docPages: number | null;
-    brokenLinks: number;
     collected: { branch: string; commit: string; at: string } | null;
 }
