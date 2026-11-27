@@ -1,0 +1,23 @@
+name: Spike
+description: A decision has to be made before work can start
+labels: ["spike"]
+body:
+    - type: textarea
+      id: context
+      attributes:
+          label: Decision needed
+          description: What is planned or assumed, and what it is in tension with.
+      validations:
+          required: true
+    - type: textarea
+      id: question
+      attributes:
+          label: Question
+          description: Framed as a choice between named options.
+      validations:
+          required: true
+    - type: input
+      id: blocks
+      attributes:
+          label: Blocks
+          description: The work waiting on this, or "nothing yet".

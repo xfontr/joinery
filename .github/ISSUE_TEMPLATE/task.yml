@@ -1,0 +1,25 @@
+name: Task
+description: A regular unit of work
+labels: ["enhancement"]
+body:
+    - type: input
+      id: story
+      attributes:
+          label: User story
+          placeholder: As a <role>, I want <capability>, so that <benefit>.
+      validations:
+          required: true
+    - type: textarea
+      id: criteria
+      attributes:
+          label: Acceptance criteria
+          value: |
+              - [ ]
+      validations:
+          required: true
+    - type: input
+      id: blocked-by
+      attributes:
+          label: Blocked by
+          description: Issue numbers, or leave empty.
+          placeholder: "#123"
