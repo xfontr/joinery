@@ -18,7 +18,7 @@
             :ui="{
                 root: 'surface-ink min-h-0 border-e border-default',
                 content: 'surface-ink lg:hidden',
-                header: 'h-14 pr-2 pl-5',
+                header: 'h-14 px-3',
                 body: 'gap-4 px-3 py-0 pb-4',
                 footer: 'flex-col items-stretch gap-0 border-t border-default p-0 sm:px-0',
             }"
@@ -27,7 +27,7 @@
                 <NuxtLink
                     v-if="!collapsed"
                     to="/"
-                    class="min-w-0 flex-1 font-display text-xl text-highlighted italic"
+                    class="min-w-0 flex-1 ps-2 font-display text-xl text-highlighted italic"
                 >
                     {{ $t("app.dev.wordmark") }}
                 </NuxtLink>
@@ -43,10 +43,15 @@
                 <UDashboardSearchButton
                     :collapsed
                     color="neutral"
-                    variant="outline"
+                    :variant="collapsed ? 'ghost' : 'outline'"
                     size="sm"
-                    class="bg-elevated text-sm font-normal text-muted ring-default"
-                    :ui="{ leadingIcon: 'size-3.5' }"
+                    class="text-sm font-normal text-muted"
+                    :class="
+                        collapsed
+                            ? 'h-9 w-full px-2 hover:text-highlighted'
+                            : 'bg-elevated ring-default'
+                    "
+                    :ui="{ leadingIcon: collapsed ? 'size-4' : 'size-3.5' }"
                 />
 
                 <!-- It hands every nested list's open state to one v-model, so it stays uncontrolled -->
