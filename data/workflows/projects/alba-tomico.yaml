@@ -105,13 +105,14 @@ extras:
 
   - id: images
     stage: build
-    title: Images
+    title: Images from ImageKit
     complexity: 5
-    dependsOn: [imagekit-vendor]
-    summary: Responsive ImageKit renditions, sized from metadata, ready before the effects that show
-      them.
+    dependsOn: [imagekit-vendor, landing-contact, grid-views, scatter-layout, project-page]
+    summary: The mock views swapped for ImageKit, as responsive renditions sized from metadata and
+      ready before the effects that show them.
     reuse: { plan: method, from: apps/huella-legal/server/plugins/cdn.ts }
     doneWhen:
+      - Every page reads ImageKit, and the mock views in server/utils/mockViews.ts are gone.
       - Every image is served through ImageKit transforms with width and height set.
       - The menu carousel and landing rotation renditions are loaded before they are shown.
 
@@ -119,8 +120,8 @@ extras:
     stage: build
     title: Layouts, navigation and menu
     complexity: 8
-    dependsOn: [app-scaffold, images]
-    summary: Both layouts, the navigation bar, the full menu with its hover carousel, the landing
+    dependsOn: [app-scaffold]
+    summary: On mock views, both layouts, the navigation bar, the full menu with its hover carousel, the landing
       menu and the invert toggle.
     reuse: { plan: method, from: apps/huella-legal/app/layouts }
     doneWhen:
@@ -135,7 +136,7 @@ extras:
     summary: The home rotation and the contact page.
     reuse: { plan: new }
     doneWhen:
-      - Both match the baseline at 390, 768 and 1280 px, from real content.
+      - Both match the baseline at 390, 768 and 1280 px, on the mock views.
 
   - id: grid-views
     stage: build
@@ -145,7 +146,7 @@ extras:
     summary: The work grid and the travel zoom grid.
     reuse: { plan: new }
     doneWhen:
-      - Both match the baseline at 390, 768 and 1280 px, from real content.
+      - Both match the baseline at 390, 768 and 1280 px, on the mock views.
 
   - id: scatter-layout
     stage: build
@@ -167,7 +168,7 @@ extras:
     summary: A project's gallery under its view.
     reuse: { plan: new }
     doneWhen:
-      - Matches the baseline at 390, 768 and 1280 px, from real content.
+      - Matches the baseline at 390, 768 and 1280 px, on the mock views.
       - An unknown project answers 404.
 
   - id: motion
