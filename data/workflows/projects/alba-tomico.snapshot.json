@@ -1,20 +1,21 @@
 {
-    "syncedAt": "2026-11-28T00:25:31.519Z",
+    "syncedAt": "2026-11-28T00:40:39.090Z",
     "milestone": "Alba Tomico",
     "issues": [
         {
             "number": 544,
             "title": "404 and error pages, App scaffold",
             "url": "https://github.com/xfontr/joinery/issues/544",
-            "state": "open",
-            "reason": null,
+            "state": "closed",
+            "reason": "completed",
             "caps": [
                 "app-scaffold",
                 "error-pages"
             ],
             "createdAt": "2026-11-27T23:37:10Z",
-            "closedAt": null,
+            "closedAt": "2026-11-28T00:40:39.090Z",
             "activity": [
+                "2026-11-28",
                 "2026-11-28"
             ],
             "blockedBy": [],
@@ -60,8 +61,8 @@
             "blockedBy": [
                 {
                     "number": 544,
-                    "open": true,
-                    "closedAt": null
+                    "open": false,
+                    "closedAt": "2026-11-28T00:40:39.090Z"
                 }
             ],
             "branch": false,
