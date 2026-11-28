@@ -171,8 +171,8 @@ re-render; CI's `docs:map --check` fails a hand edit between the markers, the wa
 A Nuxt app's `tsconfig.json` is `files: []` plus references into `.nuxt/`, so anything that opens it
 fails while that directory is missing. Two mechanisms cover it. In [`nx.json`](./nx.json), `lint`,
 `typecheck`, `test` and `build` depend on a `nuxt-prepare` target that only exists where a project
-defines that script — currently every app: `developer-portal`, `huella-legal`, `marina-roustan`,
-`wp-editor` and `portfolio`. Everything else is covered by
+defines that script — currently every app: `alba-tomico`, `developer-portal`, `huella-legal`,
+`marina-roustan`, `wp-editor` and `portfolio`. Everything else is covered by
 [`prepareNuxt.mjs`](./packages/configs/src/vitest/setup/prepareNuxt.mjs), which every Vitest preset carries
 and which runs `nuxi prepare` when a project has a `nuxt.config.ts` and no `.nuxt`: `test:coverage`,
 the per-spec targets `@nx/vitest` generates, and a bare `pnpm vitest`. A new Nuxt app needs the

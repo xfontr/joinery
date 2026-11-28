@@ -26,6 +26,10 @@ const boundaries: object = {
                     { sourceTag: "type:config", onlyDependOnLibsWithTags: [] },
                     { sourceTag: "scope:shared", onlyDependOnLibsWithTags: ["scope:shared"] },
                     {
+                        sourceTag: "scope:alba-tomico",
+                        onlyDependOnLibsWithTags: ["scope:alba-tomico", "scope:shared"],
+                    },
+                    {
                         sourceTag: "scope:huella-legal",
                         onlyDependOnLibsWithTags: ["scope:huella-legal", "scope:shared"],
                     },

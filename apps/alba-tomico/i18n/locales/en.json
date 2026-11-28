@@ -1,0 +1,10 @@
+{
+    "error": {
+        "head": "{status} · Alba Tomico",
+        "notFound": "The frame is empty",
+        "server": "Something went really, really wrong.",
+        "cta": "Don't worry — beauty is just one click away.",
+        "home": "Go back home",
+        "retry": "Try again"
+    }
+}

@@ -47,6 +47,9 @@ and are documented once in the [root README](../README.md#getting-started).
 | `pnpm release` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm release:dry` | [`package.json`](../package.json) | [`README.md`](../README.md) |
 | `pnpm exec nx test:e2e @joinery/configs` | [`packages/configs/package.json`](../packages/configs/package.json) | [`packages/configs/README.md`](../packages/configs/README.md) |
+| `pnpm exec nx preview @joinery/alba-tomico` | [`apps/alba-tomico/package.json`](../apps/alba-tomico/package.json) | [`apps/alba-tomico/README.md`](../apps/alba-tomico/README.md) |
+| `pnpm exec nx nuxt-prepare @joinery/alba-tomico` | [`apps/alba-tomico/package.json`](../apps/alba-tomico/package.json) | [`apps/alba-tomico/README.md`](../apps/alba-tomico/README.md) |
+| `pnpm exec nx test:e2e @joinery/alba-tomico` | [`apps/alba-tomico/package.json`](../apps/alba-tomico/package.json) | [`apps/alba-tomico/README.md`](../apps/alba-tomico/README.md) |
 | `pnpm exec nx nuxt-prepare @joinery/developer-portal` | [`apps/developer-portal/package.json`](../apps/developer-portal/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
 | `pnpm exec nx test:e2e @joinery/developer-portal` | [`apps/developer-portal/package.json`](../apps/developer-portal/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
 | `pnpm exec nx collect @joinery/developer-portal` | [`apps/developer-portal/package.json`](../apps/developer-portal/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
@@ -61,7 +64,7 @@ and are documented once in the [root README](../README.md#getting-started).
 | `pnpm exec nx preview @joinery/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
 | `pnpm exec nx nuxt-prepare @joinery/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
 | `pnpm exec nx test:e2e @joinery/marina-roustan` | [`apps/marina-roustan/package.json`](../apps/marina-roustan/package.json) | [`apps/marina-roustan/README.md`](../apps/marina-roustan/README.md) |
-| `pnpm exec nx nuxt-prepare @joinery/portfolio` | [`apps/portfolio/package.json`](../apps/portfolio/package.json) | [`apps/developer-portal/README.md`](../apps/developer-portal/README.md) |
+| `pnpm exec nx nuxt-prepare @joinery/portfolio` | [`apps/portfolio/package.json`](../apps/portfolio/package.json) | [`apps/alba-tomico/README.md`](../apps/alba-tomico/README.md) |
 | `pnpm exec nx test:e2e @joinery/portfolio` | [`apps/portfolio/package.json`](../apps/portfolio/package.json) | [`apps/portfolio/README.md`](../apps/portfolio/README.md) |
 | `pnpm exec nx dev:api @joinery/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |
 | `pnpm exec nx mocks:reset @joinery/wp-editor` | [`apps/wp-editor/package.json`](../apps/wp-editor/package.json) | [`apps/wp-editor/README.md`](../apps/wp-editor/README.md) |

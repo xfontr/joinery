@@ -1,0 +1,157 @@
+{
+    "syncedAt": "2026-11-28T00:40:39.090Z",
+    "milestone": "Alba Tomico",
+    "issues": [
+        {
+            "number": 544,
+            "title": "404 and error pages, App scaffold",
+            "url": "https://github.com/xfontr/joinery/issues/544",
+            "state": "closed",
+            "reason": "completed",
+            "caps": [
+                "app-scaffold",
+                "error-pages"
+            ],
+            "createdAt": "2026-11-27T23:37:10Z",
+            "closedAt": "2026-11-28T00:40:39.090Z",
+            "activity": [
+                "2026-11-28",
+                "2026-11-28"
+            ],
+            "blockedBy": [],
+            "branch": true,
+            "pr": false,
+            "owner": false,
+            "complexity": 5
+        },
+        {
+            "number": 545,
+            "title": "Visual baseline and bug inventory, ImageKit content model, Hosting, rendering and rebuilds",
+            "url": "https://github.com/xfontr/joinery/issues/545",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "hosting-rendering",
+                "imagekit-content-model",
+                "visual-baseline"
+            ],
+            "createdAt": "2026-11-27T23:37:21Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 15
+        },
+        {
+            "number": 546,
+            "title": "Layouts, navigation and menu, Landing and contact, Work and travel grids",
+            "url": "https://github.com/xfontr/joinery/issues/546",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "grid-views",
+                "landing-contact",
+                "shell-and-menu"
+            ],
+            "createdAt": "2026-11-28T00:24:41Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [
+                {
+                    "number": 544,
+                    "open": false,
+                    "closedAt": "2026-11-28T00:40:39.090Z"
+                }
+            ],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 16
+        },
+        {
+            "number": 547,
+            "title": "Editorial and still-life scatter",
+            "url": "https://github.com/xfontr/joinery/issues/547",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "scatter-layout"
+            ],
+            "createdAt": "2026-11-28T00:24:52Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [
+                {
+                    "number": 546,
+                    "open": true,
+                    "closedAt": null
+                }
+            ],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 8
+        },
+        {
+            "number": 548,
+            "title": "Project gallery",
+            "url": "https://github.com/xfontr/joinery/issues/548",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "project-page"
+            ],
+            "createdAt": "2026-11-28T00:25:04Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [
+                {
+                    "number": 546,
+                    "open": true,
+                    "closedAt": null
+                }
+            ],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 3
+        },
+        {
+            "number": 549,
+            "title": "GSAP transitions",
+            "url": "https://github.com/xfontr/joinery/issues/549",
+            "state": "open",
+            "reason": null,
+            "caps": [
+                "motion"
+            ],
+            "createdAt": "2026-11-28T00:25:17Z",
+            "closedAt": null,
+            "activity": [],
+            "blockedBy": [
+                {
+                    "number": 546,
+                    "open": true,
+                    "closedAt": null
+                },
+                {
+                    "number": 547,
+                    "open": true,
+                    "closedAt": null
+                },
+                {
+                    "number": 548,
+                    "open": true,
+                    "closedAt": null
+                }
+            ],
+            "branch": false,
+            "pr": false,
+            "owner": false,
+            "complexity": 13
+        }
+    ],
+    "noMilestone": []
+}
